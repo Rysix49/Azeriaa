@@ -743,7 +743,7 @@ button.use:hover { border-color: var(--line-2); }
 }
 .chat-h { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
 .chat-h b { font-size: 22px; color: var(--gold-2); flex: 1; }
-.chat-st { font-size: 11px; font-weight: 900; color: var(--dim); display: inline-flex; align-items: center; gap: 5px; }
+.chat-st { background: none; border: 1px solid transparent; border-radius: 999px; padding: 3px 8px; cursor: pointer; font-size: 11px; font-weight: 900; color: var(--dim); display: inline-flex; align-items: center; gap: 5px; }
 .chat-st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dim); }
 .chat-st.on { color: var(--win); } .chat-st.on::before { background: var(--win); box-shadow: 0 0 6px var(--win); }
 .chat-st.off { color: #ff8b78; } .chat-st.off::before { background: var(--hp); }
@@ -810,3 +810,14 @@ label.btn { cursor: pointer; }
 .is-dev body { padding-top: 30px; }
 .is-dev .topbar, .is-dev .side { top: calc(30px + env(safe-area-inset-top, 0px)); }
 @media (max-width: 520px) { .dev-ribbon > span { display: none; } }
+
+.chat-st:hover, .chat-st[aria-expanded="true"] { border-color: var(--line-2); background: #ffffff08; }
+.chat-st.on::after { content: "▾"; font-size: 10px; margin-left: 2px; }
+.chat-st[aria-expanded="true"]::after { content: "▴"; }
+.chat-players { border-bottom: 1px solid var(--line); background: #00000030; padding: 10px 14px; max-height: 40%; overflow-y: auto; animation: tin .15s ease-out; }
+.cp-h { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-weight: 900; margin-bottom: 6px; }
+.chat-players ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.chat-players li { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13.5px; }
+.chat-players li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--win); box-shadow: 0 0 6px var(--win); flex: none; }
+.chat-players li small { color: var(--gold-2); font-size: 11px; }
+.cp-anon { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }

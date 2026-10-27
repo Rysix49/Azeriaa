@@ -178,7 +178,8 @@ function shell() {
   <nav class="bottom-nav" aria-label="Sections du jeu">${nav}</nav>
   <button class="chat-fab" data-act="chattoggle" aria-label="Ouvrir le chat Général">💬 <span>Général</span><i class="chat-badge" id="chatbadge" hidden></i></button>
   <section class="chat-panel" id="chat" hidden aria-label="Chat Général">
-    <header class="chat-h"><b class="display">Général</b><span class="chat-st" id="chatst">Connexion…</span><button class="btn sm ghost" data-act="chattoggle" aria-label="Fermer le chat">✕</button></header>
+    <header class="chat-h"><b class="display">Général</b><button type="button" class="chat-st" id="chatst" data-act="chatplayers" aria-expanded="false">Connexion…</button><button class="btn sm ghost" data-act="chattoggle" aria-label="Fermer le chat">✕</button></header>
+    <div class="chat-players" id="chatplayers" hidden></div>
     <div class="chat-list" id="chatlist"></div>
     <form class="chat-form" id="chatform">
       <div class="chat-name" id="chatnamebox"><label class="label" for="chatname">Ton pseudo</label><input id="chatname" type="text" maxlength="20" autocomplete="nickname" placeholder="Pseudo visible par tous"></div>
@@ -802,6 +803,7 @@ const ACTIONS = {
   eat(d) { const h = heroById(d.hero); const err = eat(st, h, d.id); if (err) toast(err, 'warn'); else toast(`${h.name} mange ${RESOURCES[d.id].name} : ${RESOURCES[d.id].food.desc}.`, 'quest'); },
   closeaway() { const b = $('#modal'); b.hidden = true; b.innerHTML = ''; return 'keep'; },
   layout(d) { applyLayout(d.v); ui._psig = ''; scrollTop(); },
+  chatplayers() { if (chat.ok) { chat.showPlayers = !chat.showPlayers; renderChat(); } return 'keep'; },
   chattoggle() {
     chat.open = !chat.open; $('#chat').hidden = !chat.open; document.body.classList.toggle('chat-open', chat.open);
     if (chat.open) { chat.unread = 0; chatFetch(); const l = $('#chatlist'); l.scrollTop = l.scrollHeight; setTimeout(() => (chatName() ? $('#chatmsg') : $('#chatname')).focus(), 30); }
@@ -968,15 +970,15 @@ function accountCard() {
    Hors du site Netlify (aperçu Claude, fichier local), le chat s'affiche hors ligne. */
 const CHAT_URL = '/api/chat';
 const CHAT_CID = (() => { try { let c = sessionStorage.getItem('amakna-cid'); if (!c) { c = Math.random().toString(36).slice(2, 12); sessionStorage.setItem('amakna-cid', c); } return c; } catch (e) { return Math.random().toString(36).slice(2, 12); } })();
-const chat = { online: 0, open: false, msgs: [], last: 0, unread: 0, ok: null, loaded: false, sending: false };
+const chat = { players: [], anonymous: 0, showPlayers: false, online: 0, open: false, msgs: [], last: 0, unread: 0, ok: null, loaded: false, sending: false };
 function chatName() { if (acc.name) return acc.name; try { return localStorage.getItem('amakna-pseudo') || ''; } catch (e) { return ''; } }
 function setChatName(n) { try { localStorage.setItem('amakna-pseudo', n); } catch (e) {} }
 function nameColor(n) { let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) % 360; return `hsl(${h} 70% 70%)`; }
 async function chatFetch() {
   try {
-    const r = await fetch(`${CHAT_URL}?since=${chat.last}&cid=${CHAT_CID}`, { cache: 'no-store' });
+    const r = await fetch(`${CHAT_URL}?since=${chat.last}&cid=${CHAT_CID}&n=${encodeURIComponent(chatName())}`, { cache: 'no-store' });
     if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) throw new Error('indisponible');
-    const d = await r.json(); chat.ok = true; if (typeof d.online === 'number') chat.online = d.online;
+    const d = await r.json(); chat.ok = true; if (typeof d.online === 'number') chat.online = d.online; if (Array.isArray(d.players)) { chat.players = d.players; chat.anonymous = d.anonymous || 0; }
     const fresh = (d.messages || []).filter(m => m.t > chat.last);
     if (fresh.length) {
       chat.msgs = chat.msgs.concat(fresh).slice(-150);
@@ -990,8 +992,18 @@ async function chatFetch() {
 function renderChat() {
   const st = $('#chatst'); if (!st) return;
   st.textContent = chat.ok === null ? 'Connexion…' : chat.ok ? `En ligne · ${chat.online || 1} joueur${(chat.online || 1) > 1 ? 's' : ''}` : 'Hors ligne';
-  st.title = chat.ok ? 'Joueurs ayant le jeu ouvert en ce moment' : '';
+  st.title = chat.ok ? 'Voir les joueurs connectés' : '';
   st.className = 'chat-st ' + (chat.ok ? 'on' : chat.ok === false ? 'off' : '');
+  st.setAttribute('aria-expanded', String(chat.showPlayers && !!chat.ok));
+  const pl = $('#chatplayers'); pl.hidden = !(chat.showPlayers && chat.ok);
+  if (!pl.hidden) {
+    const me = chatName();
+    const html = `<div class="cp-h">Joueurs connectés</div>`
+      + (chat.players.length ? `<ul>${chat.players.map(n => `<li>${avatarHtml(n, 0, 'sm')}<span>${esc(n)}</span>${n === me ? '<small>toi</small>' : ''}</li>`).join('')}</ul>` : '')
+      + (chat.anonymous ? `<p class="cp-anon">+ ${chat.anonymous} joueur${chat.anonymous > 1 ? 's' : ''} sans pseudo</p>` : '')
+      + (!chat.players.length && !chat.anonymous ? '<p class="cp-anon">Personne pour l’instant.</p>' : '');
+    if (pl.dataset.h !== html) { pl.innerHTML = html; pl.dataset.h = html; }
+  }
   const badge = $('#chatbadge'); const n = chat.unread > 99 ? '99+' : String(chat.unread);
   badge.hidden = !chat.unread; if (badge.textContent !== n) { badge.textContent = n; badge.classList.remove('pop'); void badge.offsetWidth; badge.classList.add('pop'); }
   $('.chat-fab').classList.toggle('has-new', !!chat.unread);
