@@ -231,12 +231,12 @@ function renderCombat() {
   return `<div class="fights">${st.heroes.map(fightCard).join('')}</div>
     ${more ? `<div class="hint-band"><span>Ton groupe peut accueillir un héros de plus${st.kamas >= cost ? '.' : ` (${fmt(cost)} kamas).`}</span><button class="btn sm ${st.kamas >= cost ? 'gold' : ''}" data-act="recruitnav">Recruter un héros</button></div>` : ''}`;
 }
-function rateChips(list) { return list.map(([l, v]) => `<span class="rate"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
+function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
   const s = h.session; if (!s) return '';
-  const el = Math.max(1, Date.now() - s.start); const perH = v => fmt(v / el * 3600000);
-  if (h.act.type === 'harvest') return rateChips([['XP métier / h', perH(s.xp)], ['Récolte / h', perH(s.kills)], ['Récoltés', fmt(s.kills)]]);
-  return rateChips([['XP / h', perH(s.xp)], ['Kamas / h', perH(s.kamas)], [h.act.type === 'dungeon' ? 'Donjons' : 'Vaincus', fmt(h.act.type === 'dungeon' ? s.runs : s.kills)]]);
+  const r = sessionRates(h);
+  if (h.act.type === 'harvest') return rateChips([['XP métier / h', fmt(r.xp)], ['Récolte / h', fmt(r.n)], ['Récoltés', fmt(s.kills)]]);
+  return rateChips([['XP / h', fmt(r.xp)], ['Kamas / h', fmt(r.kamas)], [h.act.type === 'dungeon' ? 'Donjons' : 'Vaincus', fmt(h.act.type === 'dungeon' ? s.runs : s.kills)]]);
 }
 function fightCard(h) {
   const t = heroTotals(st, h); const hp = displayHp(st, h);
