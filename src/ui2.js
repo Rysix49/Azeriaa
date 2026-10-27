@@ -419,6 +419,8 @@ function slotTile(h, slot) {
   const ic = SLOT_ICON[slot.startsWith('anneau') ? 'anneau' : slot];
   return `<button class="slot-t ${g ? qClass(g) : 'empty'}${sel ? ' sel' : ''}" data-act="pickslot" data-slot="${slot}" aria-pressed="${sel}" title="${g ? esc(ITEMS[g.id].name) : SLOT_LABEL[slot] + ' : vide'}">${g ? itemIcon(g.id) : `<span class="ph">${ic}</span>`}<span class="st-l">${SLOT_LABEL[slot]}</span></button>`;
 }
+/* Valeur globale d'un objet pour trier ses exemplaires (somme des stats, stasifié en tête) */
+function gearScore(g) { if (!g) return 0; return Object.entries(g.stats).reduce((s, [k, v]) => s + v * (k === 'vit' ? .5 : ['pui', 'res', 'crit', 'pp'].includes(k) ? 1.5 : 1), 0) + (g.stasis ? 1e6 : 0); }
 function compareTarget(h, g) {
   const sl = slotsFor(ITEMS[g.id].slot);
   const slot = ui.slot && sl.includes(ui.slot) ? ui.slot : sl.find(s => !h.equip[s]) || sl[0];
@@ -465,19 +467,43 @@ function combatGear(h) {
         ${d.set ? setBlock(d.set, h) : ''}</div>`;
   }
   const typeOf = s => (s && s.startsWith('anneau') ? 'anneau' : s);
-  const pool = st.gear.filter(g => !ITEMS[g.id].harvest && !ITEMS[g.id].relic && (!ui.slot || ITEMS[g.id].slot === typeOf(ui.slot)))
-    .filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); })
-    .sort((a, b) => (h.lvl >= ITEMS[b.id].lvl) - (h.lvl >= ITEMS[a.id].lvl) || ITEMS[b.id].lvl - ITEMS[a.id].lvl || itemQuality(b) - itemQuality(a));
-  const list = pool.length ? `<div class="bag-list">${pool.slice(0, ui.slot ? 60 : 20).map(g => { const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const ok = h.lvl >= d.lvl;
-      return `<div class="bag-r ${qClass(g)}"><div class="tile sm ${qClass(g)}">${itemIcon(g.id)}</div>
-        <div class="br-main"><div class="br-top"><b>${esc(d.name)}</b><small class="sub">niv. ${d.lvl}</small>${qualityTag(g)}${by ? `<small class="eqby">porté par ${esc(by.name)}</small>` : ''}</div>
+  const free = st.gear.filter(g => !ITEMS[g.id].harvest && !ITEMS[g.id].relic).filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); });
+  let body;
+  if (!ui.slot) {
+    // Vue d'ensemble : un bouton par type d'objet, avec le nombre et le meilleur gain possible
+    const types = ['coiffe', 'cape', 'amulette', 'anneau', 'ceinture', 'bottes', 'arme'];
+    body = `<div class="type-grid">${types.map(ty => {
+      const items = free.filter(g => ITEMS[g.id].slot === ty); const slot = ty === 'anneau' ? 'anneau1' : ty;
+      const up = items.some(g => h.lvl >= ITEMS[g.id].lvl && gearScore(g) > gearScore(compareTarget(h, g)));
+      return `<button class="type-btn${items.length ? '' : ' none'}" data-act="pickslot" data-slot="${slot}" ${items.length ? '' : 'disabled'}><span class="tb-ic">${SLOT_ICON[ty]}</span><span class="tb-t"><b>${SLOT_LABEL[slot]}${ty === 'anneau' ? 'x' : 's'}</b><small>${items.length ? `${items.length} objet${items.length > 1 ? 's' : ''}` : 'aucun'}</small></span>${up ? '<i class="tb-up" title="Un objet meilleur que celui porté est disponible">▲</i>' : ''}</button>`;
+    }).join('')}</div>`;
+  } else {
+    // Objets du type choisi, regroupés par modèle : le meilleur jet en avant, les autres repliés
+    const pool = free.filter(g => ITEMS[g.id].slot === typeOf(ui.slot));
+    const groups = {};
+    for (const g of pool) (groups[g.id] = groups[g.id] || []).push(g);
+    const list = Object.values(groups).map(gs => gs.sort((a, b) => gearScore(b) - gearScore(a)))
+      .sort((A, B) => (h.lvl >= ITEMS[B[0].id].lvl) - (h.lvl >= ITEMS[A[0].id].lvl) || ITEMS[B[0].id].lvl - ITEMS[A[0].id].lvl);
+    ui.openGroups = ui.openGroups || {};
+    const row = (g, small) => { const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const ok = h.lvl >= d.lvl;
+      return `<div class="bag-r ${qClass(g)}${small ? ' sub-r' : ''}"><div class="tile sm ${qClass(g)}">${itemIcon(g.id)}</div>
+        <div class="br-main"><div class="br-top">${small ? '' : `<b>${esc(d.name)}</b><small class="sub">niv. ${d.lvl}</small>`}${qualityTag(g)}${by ? `<small class="eqby">porté par ${esc(by.name)}</small>` : ''}</div>
         <div class="sd-list">${statDiff(g, compareTarget(h, g))}</div></div>
-        <button class="btn sm gold" data-act="equip" data-uid="${g.uid}" data-slot="${ui.slot || ''}" ${ok ? '' : 'disabled'}>${ok ? 'Équiper' : `Niv. ${d.lvl}`}</button></div>`; }).join('')}</div>`
-    : `<div class="empty sm">${ui.slot ? `Aucun objet de type ${SLOT_LABEL[ui.slot].toLowerCase()} dans le sac.` : 'Aucun objet dans le sac.'} <button class="btn sm" data-act="view" data-v="ateliers">Aller aux Ateliers</button></div>`;
+        <button class="btn sm gold" data-act="equip" data-uid="${g.uid}" data-slot="${ui.slot}" ${ok ? '' : 'disabled'}>${ok ? 'Équiper' : `Niv. ${d.lvl}`}</button></div>`; };
+    body = list.length ? `<div class="bag-list">${list.map(gs => {
+      const id = gs[0].id, more = gs.length - 1, open = !!ui.openGroups[id];
+      const extra = gs.slice(1).filter(g => !equippedBy(st, g.uid) && !g.stasis);
+      return `<div class="bag-group">${row(gs[0])}
+        ${more ? `<div class="bg-tools"><button class="link" data-act="togglegroup" data-id="${id}">${open ? '▴ Masquer' : `▾ ${more} autre${more > 1 ? 's' : ''} exemplaire${more > 1 ? 's' : ''}`}</button>
+          ${extra.length ? (ui.sellDup === id ? `<button class="btn sm danger" data-act="selldup" data-id="${id}">Confirmer · +${fmt(extra.reduce((s, g) => s + itemValue(g), 0))} K</button><button class="btn sm ghost" data-act="selldupcancel">Annuler</button>`
+            : `<button class="btn sm ghost" data-act="selldupask" data-id="${id}">Vendre les ${extra.length} moins bons</button>`) : ''}</div>` : ''}
+        ${open ? `<div class="bg-more">${gs.slice(1).map(g => row(g, true)).join('')}</div>` : ''}</div>`;
+    }).join('')}</div>` : `<div class="empty sm">Aucun objet de type ${SLOT_LABEL[ui.slot].toLowerCase()} dans le sac. <button class="btn sm" data-act="view" data-v="ateliers">Aller aux Ateliers</button></div>`;
+  }
   return `${doll}${detail}${sets ? `<div class="sets">${sets}</div>` : ''}
-    <div class="list-h"><span class="label">${ui.slot ? `Sac · ${SLOT_LABEL[ui.slot]}` : 'Sac · tous les équipements'}</span>
-      ${ui.slot ? '<button class="btn sm ghost" data-act="pickslot" data-slot="">Tout afficher</button>' : '<span class="hint">Clique sur un emplacement pour filtrer et comparer</span>'}</div>
-    ${list}`;
+    <div class="list-h"><span class="label">${ui.slot ? `Sac · ${SLOT_LABEL[ui.slot]}` : 'Sac · choisis un type d’objet'}</span>
+      ${ui.slot ? '<button class="btn sm ghost" data-act="pickslot" data-slot="">◂ Tous les types</button>' : '<span class="hint">▲ = un objet meilleur que celui porté</span>'}</div>
+    ${body}`;
 }
 function statsPanel(h) {
   const t = heroTotals(st, h); const c = CLASSES[h.cls];
@@ -813,6 +839,15 @@ const ACTIONS = {
   hslot(d) { ui.hslot = ui.hslot === d.slot ? null : d.slot; },
   hunequip(d) { const h = selHero(); if (h.hequip) delete h.hequip[d.slot]; },
   pickslot(d) { ui.slot = d.slot && ui.slot !== d.slot ? d.slot : null; },
+  togglegroup(d) { ui.openGroups = ui.openGroups || {}; ui.openGroups[d.id] = !ui.openGroups[d.id]; },
+  selldupask(d) { ui.sellDup = d.id; },
+  selldupcancel() { ui.sellDup = null; },
+  selldup(d) {
+    const h = selHero(); const gs = st.gear.filter(g => g.id === d.id && !(equippedBy(st, g.uid))).sort((a, b) => gearScore(b) - gearScore(a));
+    const keep = st.gear.filter(g => g.id === d.id).sort((a, b) => gearScore(b) - gearScore(a))[0];
+    let k = 0, n = 0; for (const g of gs) if (g !== keep && !g.stasis) { k += sellGear(st, g.uid); n++; }
+    ui.sellDup = null; if (n) toast(`${n} exemplaire${n > 1 ? 's' : ''} vendu${n > 1 ? 's' : ''} pour ${fmt(k)} kamas. Le meilleur est gardé.`);
+  },
   togglemon(d) { ui.openMons = ui.openMons || {}; ui.openMons[d.k] = !ui.openMons[d.k]; },
   ztier(d) { ui.zoneTier = ui.zoneTier || {}; ui.zoneTier[d.id] = +d.t; },
   pick(d) {
