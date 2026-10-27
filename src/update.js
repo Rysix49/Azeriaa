@@ -43,18 +43,20 @@
   el.innerHTML = '<span>Version de test · comptes et chat séparés du site public</span>';
   document.body.appendChild(el);
   document.documentElement.classList.add('is-dev');
-  const addPublish = (num) => {
-    const a = document.createElement('a'); a.className = 'dev-publish'; a.target = '_blank'; a.rel = 'noopener';
-    a.href = 'https://github.com/Rysix49/Azeriaa/pull/' + num; a.textContent = '🚀 Publier sur le site officiel';
-    a.addEventListener('click', () => {
-      const t = document.getElementById('toasts');
-      if (t) { const d = document.createElement('div'); d.className = 'toast quest'; d.textContent = 'Sur GitHub, clique sur « Merge pull request » puis « Confirm merge ». Le site officiel se met à jour en environ une minute.'; t.appendChild(d); setTimeout(() => d.remove(), 9000); }
-    });
-    el.appendChild(a);
-  };
+  // Bouton « Publier » : toujours présent sur le site de test.
+  // Il pointe vers la demande de fusion ouverte dev -> main (ou propose d'en créer une).
+  const a = document.createElement('a'); a.className = 'dev-publish'; a.target = '_blank'; a.rel = 'noopener';
+  a.href = 'https://github.com/Rysix49/Azeriaa/compare/main...dev?expand=1';
+  a.textContent = '🚀 Publier sur le site officiel';
+  el.appendChild(a);
+  const say = (txt) => { const t = document.getElementById('toasts'); if (t) { const d = document.createElement('div'); d.className = 'toast quest'; d.textContent = txt; t.appendChild(d); setTimeout(() => d.remove(), 9000); } };
+  let pr = null;
+  a.addEventListener('click', () => say(pr
+    ? 'Sur GitHub, clique sur « Merge pull request » puis « Confirm merge ». Le site officiel se met à jour en 1 à 2 minutes.'
+    : 'Sur GitHub, clique sur « Create pull request », puis « Merge pull request » et « Confirm merge ». Le site officiel se met à jour en 1 à 2 minutes.'));
+  const setPr = (num) => { pr = num; a.href = 'https://github.com/Rysix49/Azeriaa/pull/' + num; a.textContent = '🚀 Publier sur le site officiel (#' + num + ')'; };
   const m = h.match(/^deploy-preview-(\d+)--/);
-  if (m) return addPublish(m[1]);
-  // Cloudflare : on cherche la demande de fusion ouverte de la branche dev
+  if (m) return setPr(m[1]);
   fetch('https://api.github.com/repos/Rysix49/Azeriaa/pulls?state=open&head=Rysix49:dev', { headers: { accept: 'application/vnd.github+json' } })
-    .then(r => r.ok ? r.json() : []).then(list => { if (list && list[0]) addPublish(list[0].number); }).catch(() => {});
+    .then(r => r.ok ? r.json() : []).then(list => { if (list && list[0]) setPr(list[0].number); }).catch(() => {});
 })();

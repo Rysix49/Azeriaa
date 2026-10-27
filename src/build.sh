@@ -6,6 +6,7 @@ OUT_DIR=.
 [ -n "$1" ] && OUT_DIR="$1"
 {
 cat <<'HEAD'
+<meta charset="utf-8">
 <title>Amakna Idle</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta id="vp" name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
