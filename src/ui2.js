@@ -705,11 +705,6 @@ function renderOptions() {
   const s = st.stats;
   return `<div class="opt-grid">
     ${accountCard()}
-    <section class="panel"><h3 class="display">Interface</h3>
-      <p class="sub" style="margin:0">Tu utilises la nouvelle interface. Ta partie est la même dans les deux : tu peux passer de l’une à l’autre quand tu veux.</p>
-      <div class="skin-pick"><button class="skin on" disabled><b>Nouvelle</b><small>Barre latérale, scènes de combat, poupée d’équipement</small></button>
-        <button class="skin" data-act="skin" data-v="classic"><b>Classique</b><small>L’interface d’avant, avec les onglets en haut</small></button></div>
-      <p class="hint">La page se recharge pour appliquer le changement.</p></section>
     <section class="panel"><h3 class="display">Format d’affichage</h3>
       <p class="sub" style="margin:0">Choisis comment le jeu s’affiche sur cet appareil.</p>
       <div class="skin-pick three">${[['auto', 'Automatique', 'S’adapte à la taille de l’écran'], ['mobile', 'Téléphone', 'Une colonne, navigation en bas'], ['pc', 'PC', 'Barre latérale, plusieurs colonnes']].map(([v, l, d]) => `<button class="skin${LAYOUT === v ? ' on' : ''}" data-act="layout" data-v="${v}" ${LAYOUT === v ? 'disabled' : ''}><b>${l}</b><small>${d}</small></button>`).join('')}</div></section>
@@ -841,7 +836,6 @@ const ACTIONS = {
   resetask() { ui.resetStep = 1; },
   resetcancel() { ui.resetStep = 0; },
   reset() { st = newState(); ui.resetStep = 0; ui.hero = null; ui.view = 'combat'; ui._psig = ''; saveGame(); toast('Nouvelle partie.'); },
-  skin(d) { saveGame(); setSkin(d.v); return 'keep'; },
 };
 document.addEventListener('click', e => {
   ui.click = { x: e.clientX, y: e.clientY };

@@ -1,7 +1,5 @@
 #!/bin/sh
 # Assemble le jeu en un seul fichier index.html.
-# Les deux interfaces (nouvelle = ui2.js + style2.css, classique = ui.js + style.css)
-# sont incluses ; skin.js choisit laquelle démarrer.
 cd "$(dirname "$0")"
 BUILD_ID=$(date +%s)
 OUT_DIR=.
@@ -15,22 +13,16 @@ cat <<'HEAD'
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap">
 HEAD
-echo '<style id="css-new" media="not all">'; cat style2.css; python3 gen_mobile.py style2.css; echo '</style>'
-echo '<style id="css-classic" media="not all">'; cat style.css; echo '</style>'
+echo '<style id="css-new">'; cat style2.css; python3 gen_mobile.py style2.css; echo '</style>'
 echo '<div id="app"></div>'
 echo '<div class="toasts" id="toasts" aria-live="polite"></div>'
 echo '<div class="modal-back" id="modal" hidden></div>'
 echo '<script>'
 echo "const BUILD_ID = '$BUILD_ID';"
 cat data.js engine.js art.js skin.js update.js
-echo 'function bootClassic() {'
-echo "document.getElementById('app').innerHTML = CLASSIC_SHELL;"
-cat ui.js
-echo '}'
-echo 'function bootNew() {'
+echo '(function () {'
 cat ui2.js
-echo '}'
-echo '(SKIN === "classic" ? bootClassic : bootNew)();'
+echo '})();'
 echo '</script>'
 } > "$OUT_DIR/index.html"
 echo "{\"build\":\"$BUILD_ID\"}" > "$OUT_DIR/version.json"
