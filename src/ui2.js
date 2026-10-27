@@ -315,7 +315,7 @@ function playPerfect(card, p) {
   const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
   const ov = document.createElement('div'); ov.className = 'perfect';
   ov.style.cssText = `--ax:${a.x}px;--ay:${a.y}px;--bx:${b.x}px;--by:${b.y}px;--ang:${ang}deg;--len:${len}px;--hit:${hit}`;
-  ov.innerHTML = `<div class="pf-bar top"></div><div class="pf-bar bot"></div><div class="pf-dim"></div>
+  ov.innerHTML = `<div class="pf-dim"></div>
     <div class="pf-scope"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="30" class="in"/><path d="M50 0v38M50 62v38M0 50h38M62 50h38"/><path class="tick" d="M50 20v6M50 74v6M20 50h6M74 50h6"/></svg></div>
     <div class="pf-title">TIR PARFAIT</div>
     <div class="pf-shot"><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>

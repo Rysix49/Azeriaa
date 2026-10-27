@@ -1023,13 +1023,8 @@ label.btn { cursor: pointer; }
 
 /* Tir Parfait */
 .perfect { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
-.pf-bar { position: absolute; left: 0; right: 0; height: 0; background: #000; transition: height .22s ease-out; z-index: 3; }
-.pf-bar.top { top: 0; } .pf-bar.bot { bottom: 0; }
-.perfect.go .pf-bar { height: 13%; }
 .pf-dim { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at var(--bx) var(--by), transparent 34px, #06120a 120px); transition: opacity .25s; }
 .perfect.go .pf-dim { opacity: .82; animation: pfout .4s ease-in 1.45s forwards; }
-.perfect.go .pf-bar { animation: pfbars .35s ease-in 1.5s forwards; }
-@keyframes pfbars { to { height: 0; } }
 @keyframes pfout { to { opacity: 0; } }
 .pf-scope { position: absolute; left: var(--bx); top: var(--by); width: 92px; height: 92px; margin: -46px; opacity: 0; }
 .pf-scope svg { width: 100%; height: 100%; fill: none; stroke: #b6ff7a; stroke-width: 1.4; filter: drop-shadow(0 0 3px #4aff1a); }
