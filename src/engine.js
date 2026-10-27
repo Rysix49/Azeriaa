@@ -328,7 +328,7 @@ function monsterTurn(st, h, t, m, ev) {
     ev.log(h, line + `🪤 ${def.name} déclenche le piège de ${h.name} : −${tr.v}${tr.crit ? ' CC' : ''} et perd son tour !${m.hp <= 0 && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'hero');
     return;
   }
-  if (h.cls === 'sram' && f.invis && Math.random() < 0.4) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
+  if (h.cls === 'sram' && f.invis && Math.random() < 0.3) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
   if (Math.random() * 100 < t.dodgePct) { ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
@@ -345,7 +345,7 @@ function monsterTurn(st, h, t, m, ev) {
 }
 
 /* ---------------------- Ombre & Pièges du Sram ---------------------- */
-const SRAM_INVIS_DMG = 25;
+const SRAM_INVIS_DMG = 15;
 /* Une élimination rend le Sram invisible (s'il reste des ennemis) */
 function sramVanish(f) { if (!f.mons.some(m => m.hp > 0)) return false; f.invis = true; f.vanishSeq = (f.vanishSeq || 0) + 1; return true; }
 const SRAM_TRAP = { id: 'piege_sournois', name: 'Piège sournois', min: 9, max: 13, type: 'dmg' };

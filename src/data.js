@@ -99,11 +99,11 @@ const CLASSES = {
   sram: {
     name: 'Sram', role: 'Assassin sournois', main: 'deg', elem: 'agi', hpMult: 0.9, color: '#6a5fb5',
     desc: 'Poisons et coups critiques. Rapporte plus de kamas.',
-    passive: { name: 'Ombre & Pièges', points: [['👁️','Invisibilité','Il commence chaque combat invisible : les monstres ont 40 % de chance de le rater et ses coups infligent +25 % de dégâts. Il redevient visible à la fin de son tour.'],['💨','Disparition','Quand il achève un monstre (même avec son poison ou son piège), il disparaît dans un nuage de fumée et redevient invisible pour son tour suivant.'],['🪤','Piège sournois','Avant chaque combat, il cache un piège sous un ennemi au hasard. Quand cet ennemi attaque, le piège explose : il subit des dégâts et perd son tour.']], desc: 'Invisible en début de combat et après chaque élimination ; un piège caché sous un ennemi.' },
+    passive: { name: 'Ombre & Pièges', points: [['👁️','Invisibilité','Il commence chaque combat invisible : les monstres ont 30 % de chance de le rater et ses coups infligent +15 % de dégâts. Il redevient visible à la fin de son tour.'],['💨','Disparition','Quand il achève un monstre (même avec son poison ou son piège), il disparaît dans un nuage de fumée et redevient invisible pour son tour suivant.'],['🪤','Piège sournois','Avant chaque combat, il cache un piège sous un ennemi au hasard. Quand cet ennemi attaque, le piège explose : il subit des dégâts et perd son tour.']], desc: 'Invisible en début de combat et après chaque élimination ; un piège caché sous un ennemi.' },
     spells: [
-      { id: 'sournoiserie', name: 'Sournoiserie', lvl: 1, pa: 3, min: 7, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
+      { id: 'sournoiserie', name: 'Sournoiserie', lvl: 1, pa: 3, min: 6, max: 9, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'poison_paralysant', name: 'Poison Paralysant', lvl: 6, pa: 2, min: 5, max: 7, stat: 'agi', type: 'poison', turns: 3, cd: 1 },
-      { id: 'arnaque', name: 'Arnaque', lvl: 13, pa: 4, min: 15, max: 20, stat: 'agi', type: 'dmg', max_: 1 },
+      { id: 'arnaque', name: 'Arnaque', lvl: 13, pa: 4, min: 13, max: 18, stat: 'agi', type: 'dmg', max_: 1 },
       { id: 'piege_masse', name: 'Piège de Masse', lvl: 24, pa: 4, min: 12, max: 16, stat: 'agi', type: 'aoe', max_: 1 },
       { id: 'attaque_mortelle', name: 'Attaque Mortelle', lvl: 38, pa: 6, min: 50, max: 65, stat: 'agi', type: 'dmg', cd: 3 },
     ],
