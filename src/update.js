@@ -37,7 +37,13 @@
   if (!/^(dev|deploy-preview-\d+)--/.test(location.hostname)) return;
   const el = document.createElement('div');
   el.className = 'dev-ribbon';
-  el.textContent = 'Version de test · les comptes et le chat sont séparés du site public';
+  const m = location.hostname.match(/^deploy-preview-(\d+)--/);
+  el.innerHTML = '<span>Version de test · comptes et chat séparés du site public</span>'
+    + (m ? `<a class="dev-publish" href="https://github.com/Rysix49/Azeriaa/pull/${m[1]}" target="_blank" rel="noopener">🚀 Publier sur le site officiel</a>` : '');
   document.body.appendChild(el);
+  if (m) el.querySelector('a').addEventListener('click', () => {
+    const t = document.getElementById('toasts');
+    if (t) { const d = document.createElement('div'); d.className = 'toast quest'; d.textContent = 'Sur GitHub, clique sur « Merge pull request » puis « Confirm merge ». Le site officiel se met à jour en environ une minute.'; t.appendChild(d); setTimeout(() => d.remove(), 9000); }
+  });
   document.documentElement.classList.add('is-dev');
 })();
