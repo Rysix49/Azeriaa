@@ -4,3 +4,4 @@
 set -e
 rm -rf dist && mkdir dist
 cp index.html version.json _headers dist/
+cp cf_redirects dist/_redirects
