@@ -279,9 +279,11 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
+          ${h.cls === 'iop' ? furyGauge(h) : ''}
+          ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
           <div class="sprite">${emblem(h.cls, 'big')}</div></div>
         ${stage}
       </div>
@@ -292,6 +294,71 @@ function fightCard(h) {
       <div class="rates" data-k="rates">${fightRates(h)}</div>
     </footer>
   </article>`;
+}
+/* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
+const FURY_ANIM = {};
+const COLERE_ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="cfb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient></defs><path d="M16 2 L19 6 L19 20 L13 20 L13 6 Z" fill="url(#cfb)" stroke="#5a1408" stroke-width="1.2"/><path d="M16 4 L16 19" stroke="#e8a52a" stroke-width="1"/><path d="M8 20 Q16 23 24 20 L24 22.5 Q16 25.5 8 22.5 Z" fill="#ffb62e" stroke="#5a1408" stroke-width="1.1"/><rect x="14.4" y="23" width="3.2" height="5" rx="1" fill="#7a2410" stroke="#3a0c04" stroke-width=".8"/><circle cx="16" cy="29.3" r="1.9" fill="#ff3b22" stroke="#3a0c04" stroke-width=".8"/></svg>`;
+function furyGauge(h) {
+  const p = clamp((h.fury || 0) / FURY_MAX, 0, 1);
+  return `<div class="fury${p >= 1 ? ' full' : ''}" data-k="fury" title="Jauge de Fureur : ${Math.floor(h.fury || 0)} / ${FURY_MAX}"><span class="fury-fill" style="--p:${p.toFixed(3)}"></span><span class="fury-lbl">${p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'}</span></div>`;
+}
+const COLERE_SWORD = `<svg class="cl-sword-svg" viewBox="0 0 120 400" aria-hidden="true"><defs>
+  <linearGradient id="clBlade" x1="0" x2="1"><stop offset="0" stop-color="#9fb4c8"/><stop offset=".45" stop-color="#ffffff"/><stop offset=".55" stop-color="#e9f3ff"/><stop offset="1" stop-color="#6f849a"/></linearGradient>
+  <linearGradient id="clGold" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff2b0"/><stop offset=".5" stop-color="#f2b233"/><stop offset="1" stop-color="#9a5a0e"/></linearGradient>
+  <radialGradient id="clGem"><stop offset="0" stop-color="#ffd0c0"/><stop offset=".4" stop-color="#ff3b22"/><stop offset="1" stop-color="#6a0a02"/></radialGradient>
+  <filter id="clGlow" x="-50%" y="-10%" width="200%" height="120%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <g filter="url(#clGlow)">
+    <rect x="52" y="6" width="16" height="44" rx="5" fill="#5a1a0c" stroke="#2a0802" stroke-width="2"/>
+    <path d="M52 14h16M52 24h16M52 34h16M52 44h16" stroke="#a8401c" stroke-width="2"/>
+    <circle cx="60" cy="6" r="9" fill="url(#clGold)" stroke="#3a1c04" stroke-width="2"/><circle cx="60" cy="6" r="4" fill="url(#clGem)"/>
+    <path d="M6 58 Q30 44 60 52 Q90 44 114 58 L108 68 Q84 60 60 66 Q36 60 12 68 Z" fill="url(#clGold)" stroke="#3a1c04" stroke-width="2.4"/>
+    <circle cx="60" cy="60" r="8" fill="url(#clGem)" stroke="#3a1c04" stroke-width="2"/>
+    <path d="M40 68 L80 68 L76 350 L60 396 L44 350 Z" fill="url(#clBlade)" stroke="#2c3a4a" stroke-width="2.4"/>
+    <path d="M60 72 L60 372" stroke="#8aa0b8" stroke-width="3"/><path d="M57 80 L57 340" stroke="#ffffffaa" stroke-width="1.5"/>
+    <path d="M46 120 L52 112 M74 160 L68 152 M48 230 L54 222" stroke="#ff5a2a" stroke-width="2.5" opacity=".8"/>
+  </g></svg>`;
+function relPos(el, scene) { const a = el.getBoundingClientRect(), b = scene.getBoundingClientRect(); return { x: a.left - b.left + a.width / 2, y: a.top - b.top + a.height / 2, w: b.width, h: b.height }; }
+function playColere(card, h, done) {
+  const scene = card.querySelector('.scene'); const hero = card.querySelector('[data-k="fighter"]');
+  if (!scene || !hero) { done(); return; }
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = reduced ? { title: 0, drop: 150, impact: 300, end: 900 } : { title: 380, drop: 900, impact: 1350, end: 2700 };
+  const mons = [...card.querySelectorAll('.unit.mon:not(.dead)')];
+  const hp = relPos(hero.querySelector('.sprite') || hero, scene);
+  const foes = mons.length ? mons.map(m => relPos(m.querySelector('.sprite') || m, scene)) : [{ x: hp.w * .72, y: hp.h * .6 }];
+  const cx = foes.reduce((s, p) => s + p.x, 0) / foes.length, gy = Math.max(...foes.map(p => p.y)) + 18;
+  const ov = document.createElement('div'); ov.className = 'colere'; ov.style.setProperty('--hx', hp.x + 'px'); ov.style.setProperty('--hy', hp.y + 'px'); ov.style.setProperty('--cx', cx + 'px'); ov.style.setProperty('--gy', gy + 'px');
+  let parts = '';
+  for (let i = 0; i < 16; i++) { const a = Math.random() * Math.PI * 2, r = 70 + Math.random() * 60; parts += `<i class="cl-in" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r * .7).toFixed(0)}px;--d:${(Math.random() * 380).toFixed(0)}ms"></i>`; }
+  let embers = '';
+  for (let i = 0; i < 26; i++) { const a = -Math.PI * (0.05 + Math.random() * 0.9), r = 60 + Math.random() * 150; embers += `<i class="cl-ember" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r).toFixed(0)}px;--s:${(3 + Math.random() * 5).toFixed(1)}px;--d:${(Math.random() * 120).toFixed(0)}ms"></i>`; }
+  let rocks = '';
+  for (let i = 0; i < 10; i++) { const a = -Math.PI * (0.1 + Math.random() * 0.8), r = 40 + Math.random() * 90; rocks += `<i class="cl-rock" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r).toFixed(0)}px;--r:${(Math.random() * 720 - 360).toFixed(0)}deg"></i>`; }
+  ov.innerHTML = `<div class="cl-dark"></div>
+    <div class="cl-aura"><svg class="cl-rune" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="34" class="r2"/><path d="M50 6 L58 50 L50 94 L42 50 Z M6 50 L50 42 L94 50 L50 58 Z" class="r3"/></svg>${parts}</div>
+    <div class="cl-title"><span>COLÈRE</span><b>DE IOP</b></div>
+    <div class="cl-beam"></div>
+    <div class="cl-sword">${COLERE_SWORD}</div>
+    <div class="cl-impact"><div class="cl-wave"></div><div class="cl-wave w2"></div><div class="cl-wave w3"></div>
+      <svg class="cl-crack" viewBox="-100 -20 200 40"><path d="M0 0 L-30 6 L-52 2 L-80 10 M0 0 L26 8 L48 3 L84 11 M0 0 L-14 14 M0 0 L12 16 L22 14 M-30 6 L-38 16 M48 3 L56 -6"/></svg>
+      ${embers}${rocks}</div>
+    <div class="cl-flash"></div>`;
+  scene.appendChild(ov);
+  scene.classList.add('cl-on'); hero.classList.add('cl-charge');
+  requestAnimationFrame(() => ov.classList.add('s1'));
+  setTimeout(() => ov.classList.add('s2'), T.title);
+  setTimeout(() => ov.classList.add('s3'), T.drop);
+  setTimeout(() => {
+    ov.classList.add('s4'); scene.classList.add('cl-shake');
+    hero.classList.remove('cl-charge'); hero.classList.add('cl-release');
+    const hits = done();
+    if (hits) mons.forEach(m => { const i = +m.dataset.mon; const x = hits[i]; if (!x) return;
+      const n = document.createElement('span'); n.className = 'cl-num' + (x.crit ? ' crit' : ''); n.textContent = '−' + fmt(x.v); m.appendChild(n); setTimeout(() => n.remove(), 1700);
+      m.classList.add('cl-hit'); setTimeout(() => m.classList.remove('cl-hit'), 900); });
+  }, T.impact);
+  setTimeout(() => scene.classList.remove('cl-shake'), T.impact + 520);
+  setTimeout(() => { ov.classList.add('s5'); }, T.end - 450);
+  setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-release'); }, T.end);
 }
 function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
 function floatNum(el, txt, cls) {
@@ -360,6 +427,8 @@ function patchCombat() {
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
+    const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
@@ -807,7 +876,7 @@ function render(force) {
   const now = Date.now();
   if (force) { renderMain(true); lastSlow = now; return; }
   if (ui.view === 'combat' && st.heroes.length) {
-    if (combatSig() !== ui.lastSig) renderMain(); else patchCombat();
+    if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) renderMain(); else patchCombat();
   } else if (now - lastSlow > 1500 && ui.view !== 'options') {
     renderMain(); lastSlow = now;
   }
@@ -827,6 +896,19 @@ const ACTIONS = {
   gorecipe(d) { ui.view = 'ateliers'; ui.job = d.job; ui.rtab = d.h === '1' ? 'recolte' : 'combat'; scrollTop(); },
   send(d) { const h = heroById(d.hero); setActivity(st, h, d.type, d.id, +d.t || 0); toast(`${h.name} part pour ${placeName(h.act)}.`); },
   stop(d) { const h = heroById(d.hero); setActivity(st, h, null); },
+  iopfury(d) {
+    const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true;
+    const btn = card.querySelector('[data-k="furybtn"]'); if (btn) btn.hidden = true;
+    playColere(card, h, () => {
+      const hits = unleashFury(st, h, liveEv);
+      patchCombat(); saveGame();
+      return hits;
+    });
+    setTimeout(() => { delete FURY_ANIM[h.id]; h.wait = Math.max(h.wait, 600); }, 2800);
+    return 'keep';
+  },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
   alloc(d) { allocate(selHero(), d.stat, +d.n); },
   resetstats() { resetStats(st, selHero()); selHero().auto = ''; },
@@ -1144,7 +1226,7 @@ function showAway(s) {
 function loop() {
   const now = Date.now(); let dt = now - st.lastTick; st.lastTick = now;
   if (dt < 0) dt = 0;
-  if (dt <= 15000) for (const h of st.heroes) tickHero(st, h, dt, liveEv);
+  if (dt <= 15000) for (const h of st.heroes) if (!FURY_ANIM[h.id]) tickHero(st, h, dt, liveEv); // le temps se fige pendant la Colère de Iop
   else offline(dt); // onglet en veille : rattrapage, 20 min maximum
   render();
 }

@@ -38,12 +38,12 @@ const CLASSES = {
   iop: {
     name: 'Iop', role: 'Guerrier impétueux', main: 'deg', elem: 'for', hpMult: 1.1, color: '#d0533f',
     desc: 'Frappe fort et sans détour. Ses sorts de zone nettoient les groupes.',
-    passive: { name: 'Rage Croissante', points: [['🔥','Rage Croissante','Chaque tour où il attaque : +12 Dégâts jusqu’à la fin du combat.'],['📈','Cumul','5 cumuls maximum, soit +60 Dégâts.']], desc: 'Chaque tour où il attaque, le Iop gagne +12 Dégâts jusqu’à la fin du combat (max 5 cumuls, soit +60 Dégâts).' },
+    passive: { name: 'Rage Croissante · Colère de Iop', points: [['🔥','Rage Croissante','Chaque tour où il attaque : +12 Dégâts jusqu’à la fin du combat (5 cumuls max, +60).'],['😡','Jauge de Fureur','Chaque tour où il attaque remplit la jauge (+4, et +3 par coup critique). Elle se garde d’un combat à l’autre (quelques minutes de combat pour la remplir).'],['⚔️','Colère de Iop','Jauge pleine : clique sur l’épée au-dessus du Iop pour faire tomber une lame colossale sur tous les ennemis. Ignore les résistances, +25 % de critique, Rage portée au max.']], desc: 'Chaque tour où il attaque, le Iop gagne +12 Dégâts jusqu’à la fin du combat (max 5 cumuls, soit +60 Dégâts).' },
     spells: [
       { id: 'pression', name: 'Pression', lvl: 1, pa: 3, min: 7, max: 11, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'compulsion', name: 'Compulsion', lvl: 4, pa: 2, type: 'buff', buff: { deg: 40 }, turns: 3, cd: 5 },
       { id: 'epee_divine', name: 'Épée Divine', lvl: 9, pa: 3, min: 8, max: 12, stat: 'for', type: 'aoe', max_: 1 },
-      { id: 'colere', name: 'Colère de Iop', lvl: 20, pa: 6, min: 38, max: 52, stat: 'for', type: 'dmg', cd: 3 },
+      { id: 'colere', name: 'Épée du Destin', lvl: 20, pa: 6, min: 38, max: 52, stat: 'for', type: 'dmg', cd: 3 },
       { id: 'epee_celeste', name: 'Épée Céleste', lvl: 35, pa: 4, min: 16, max: 22, stat: 'for', type: 'aoe', max_: 1 },
     ],
   },

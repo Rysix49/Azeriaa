@@ -214,6 +214,7 @@ function heroTurn(st, h, t, ev) {
   const phase = (gainGrains) => {
   f.casts = {};
   let pa = t.pa;
+  if (gainGrains) { f.turnCasts = 0; f.turnCrits = 0; }
   for (let guard = 0; guard < 12; guard++) {
     const alive = f.mons.filter(m => m.hp > 0);
     if (!alive.length) break;
@@ -244,7 +245,9 @@ function heroTurn(st, h, t, ev) {
     f.casts[best.id] = (f.casts[best.id] || 0) + 1;
     if (best.cd) f.cds[best.id] = best.cd + 1;
     const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
-    actions.push(castSpell(st, h, t, best, target, alive));
+    const line = castSpell(st, h, t, best, target, alive);
+    actions.push(line);
+    if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
     (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
     if (f.fx.length > 16) f.fx.shift();
@@ -254,6 +257,7 @@ function heroTurn(st, h, t, ev) {
   phase(true);
   if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
+  if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
   if (h.cls === 'sram' && f.turn === 1 && actions.length) pre += 'Embuscade ! ';
   ev.log(h, pre + (actions.length ? actions.join(' · ') : `${h.name} passe son tour.`), 'hero');
 }
@@ -318,6 +322,44 @@ function monsterTurn(st, h, t, m, ev) {
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Colère de Iop (jauge de Fureur) ----------------------
+   Chaque tour où le Iop attaque remplit sa jauge (+ bonus par coup critique).
+   La jauge persiste entre les combats. Pleine, le joueur déclenche l'attaque
+   à la main : une épée colossale frappe tous les ennemis. */
+const FURY_MAX = 300;
+const FURY_PER_TURN = 4, FURY_PER_CRIT = 3;
+function gainFury(h, casts, crits, nMons = 1) {
+  const before = h.fury || 0;
+  h.fury = Math.min(FURY_MAX, before + (casts ? FURY_PER_TURN * (1 + nMons) / 3 : 0) + crits * FURY_PER_CRIT);
+}
+function furyReady(h) { return h.cls === 'iop' && (h.fury || 0) >= FURY_MAX; }
+const COLERE_SPELL = { id: 'colere_ult', name: 'Colère de Iop', min: 140, max: 180, type: 'aoe' };
+/* Déclenche l'attaque. Retourne les dégâts infligés (ou null si impossible) */
+function unleashFury(st, h, ev) {
+  const f = h.fight;
+  if (!furyReady(h) || !f) return null;
+  const alive = f.mons.filter(m => m.hp > 0);
+  if (!alive.length) return null;
+  const t = heroTotals(st, h);
+  f.rage = 5; // la colère porte la Rage au maximum
+  const { scale } = spellPower(h, t, f, COLERE_SPELL);
+  const hits = f.mons.map(m => {
+    if (m.hp <= 0) return null;
+    const crit = Math.random() * 100 < t.critPct + 25;
+    let v = rnd(COLERE_SPELL.min, COLERE_SPELL.max) * scale + t.dmg;
+    if (crit) v *= 1.5;
+    if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+    v = Math.max(1, Math.round(v)); // ignore les résistances
+    m.hp = Math.max(0, m.hp - v);
+    return { v, crit };
+  });
+  h.fury = 0;
+  h.furyCount = (h.furyCount || 0) + 1;
+  f.ult = (f.ult || 0) + 1;
+  ev.log(h, `⚔️ COLÈRE DE IOP ! ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}`, 'boss');
+  return hits;
 }
 
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
