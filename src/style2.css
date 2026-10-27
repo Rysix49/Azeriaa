@@ -996,3 +996,71 @@ label.btn { cursor: pointer; }
 @keyframes clnum { 0% { opacity: 0; transform: scale(2.6) rotate(-12deg); } 15% { opacity: 1; transform: scale(1) rotate(-4deg); } 70% { opacity: 1; transform: translateY(-14px) rotate(-4deg); } 100% { opacity: 0; transform: translateY(-34px) rotate(-4deg) scale(.9); } }
 @media (prefers-reduced-motion: reduce) { .fury-btn, .fury-btn::before, .fury-btn::after, .fury.full, .scene.cl-shake { animation: none; } }
 .unit.hero.cl-charge, .unit.hero.cl-release { z-index: 21; }
+
+/* ===================== Traque du Cra ===================== */
+.unit.mon.huntable { cursor: crosshair; border-radius: 10px; transition: background .2s; }
+.unit.mon.huntable:hover { background: #a8ff6a14; }
+.unit.mon.huntable:focus-visible { outline: 2px solid #b6ff7a; outline-offset: 2px; }
+.unit.mon .reticle { position: absolute; left: 50%; bottom: -10px; width: 74px; height: 74px; margin-left: -37px; z-index: 3; pointer-events: none; opacity: 0; transform: scale(1.6) rotate(-45deg); transition: opacity .25s, transform .35s cubic-bezier(.2, 1.4, .4, 1); }
+.unit.mon.prey .reticle { opacity: 1; transform: scale(1) rotate(0); }
+.unit.mon.huntable:not(.prey):not(.dead):hover .reticle { opacity: .35; transform: scale(1.15); }
+.reticle .seg { fill: none; stroke: #ffffff30; stroke-width: 3.2; stroke-linecap: round; transition: stroke .25s; }
+.reticle .seg.on { stroke: #9dff5a; filter: drop-shadow(0 0 3px #6aff2a); }
+.reticle .cross { stroke: #c8ff9a; stroke-width: 1.8; stroke-linecap: round; opacity: .85; }
+.reticle .dot { fill: #e8ffd0; }
+.reticle { animation: retspin 6s linear infinite; }
+.unit.mon.prey .reticle { animation: retspin 6s linear infinite; }
+.reticle.ready .seg.on { stroke: #ff4a2a; filter: drop-shadow(0 0 4px #ff2a0a); }
+.reticle.ready .cross { stroke: #ffb0a0; }
+.unit.mon.prey .reticle.ready { animation: retspin 1.4s linear infinite, retlock .7s ease-in-out infinite; }
+@keyframes retspin { to { rotate: 360deg; } }
+@keyframes retlock { 50% { scale: .86; } }
+.unit.mon.prey .u-name::before { content: "🎯 "; }
+.focus { display: inline-flex; align-items: center; gap: 2px; margin-top: 4px; padding: 2px 5px; border-radius: 8px; background: #00000070; font-size: 10px; }
+.focus i { width: 6px; height: 6px; border-radius: 50%; background: #ffffff25; border: 1px solid #00000080; }
+.focus i.on { background: #9dff5a; box-shadow: 0 0 4px #6aff2a; }
+.focus.full i.on { background: #ff5a2a; box-shadow: 0 0 5px #ff2a0a; animation: furyfull .7s ease-in-out infinite; }
+
+/* Tir Parfait */
+.perfect { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
+.pf-bar { position: absolute; left: 0; right: 0; height: 0; background: #000; transition: height .22s ease-out; z-index: 3; }
+.pf-bar.top { top: 0; } .pf-bar.bot { bottom: 0; }
+.perfect.go .pf-bar { height: 13%; }
+.pf-dim { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at var(--bx) var(--by), transparent 34px, #06120a 120px); transition: opacity .25s; }
+.perfect.go .pf-dim { opacity: .82; animation: pfout .4s ease-in 1.45s forwards; }
+.perfect.go .pf-bar { animation: pfbars .35s ease-in 1.5s forwards; }
+@keyframes pfbars { to { height: 0; } }
+@keyframes pfout { to { opacity: 0; } }
+.pf-scope { position: absolute; left: var(--bx); top: var(--by); width: 92px; height: 92px; margin: -46px; opacity: 0; }
+.pf-scope svg { width: 100%; height: 100%; fill: none; stroke: #b6ff7a; stroke-width: 1.4; filter: drop-shadow(0 0 3px #4aff1a); }
+.pf-scope .in { stroke-dasharray: 3 4; } .pf-scope .tick { stroke-width: 2.6; }
+.perfect.go .pf-scope { animation: pfscope .75s cubic-bezier(.2, .9, .3, 1) forwards, pfout .3s ease-in 1.3s forwards; }
+@keyframes pfscope { 0% { opacity: 0; transform: scale(3.4) rotate(-90deg); } 60% { opacity: 1; transform: scale(.9) rotate(4deg); } 80% { transform: scale(1.05) rotate(0); } 100% { opacity: 1; transform: scale(1); stroke: #ff4a2a; } }
+.perfect.go .pf-scope svg { animation: pfred .1s linear .62s forwards; }
+@keyframes pfred { to { stroke: #ff5a3a; filter: drop-shadow(0 0 5px #ff2a0a); } }
+.pf-title { position: absolute; left: 50%; top: 15%; translate: -50% 0; z-index: 4; white-space: nowrap; font: 900 clamp(20px, 4.4vw, 32px)/1 var(--display, Georgia, serif); letter-spacing: .22em; margin-right: -.22em;
+  color: #effff0; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 2px 0 #0c2a06, 0 0 14px #6aff2a; opacity: 0; }
+.perfect.go .pf-title { animation: pftitle 1.5s ease-out .1s forwards; }
+@keyframes pftitle { 0% { opacity: 0; letter-spacing: .8em; filter: blur(4px); } 25% { opacity: 1; letter-spacing: .22em; filter: blur(0); } 80% { opacity: 1; } 100% { opacity: 0; } }
+.pf-shot { position: absolute; left: var(--ax); top: var(--ay); width: var(--len); height: 0; transform-origin: 0 0; rotate: var(--ang); z-index: 2; }
+.pf-trail { position: absolute; left: 0; top: -2px; height: 4px; width: 100%; transform-origin: left; transform: scaleX(0); border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #b6ff7a88 40%, #ffffff); box-shadow: 0 0 10px #8aff4a, 0 0 20px #4aff1a; }
+.pf-arrow { position: absolute; left: 0; top: -9px; width: 54px; height: 18px; margin-left: -54px; opacity: 0; filter: drop-shadow(0 0 6px #c8ff9a); }
+.pf-arrow svg { width: 100%; height: 100%; overflow: visible; }
+.perfect.go .pf-trail { animation: pftrail .3s cubic-bezier(.7, 0, .9, .4) .55s forwards, pfout .5s ease-in 1s forwards; }
+.perfect.go .pf-arrow { animation: pfarrow .3s cubic-bezier(.7, 0, .9, .4) .55s forwards; }
+@keyframes pftrail { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pfarrow { 0% { opacity: 1; left: 0; } 99% { opacity: 1; } 100% { opacity: 0; left: 100%; } }
+.pf-burst { position: absolute; width: 0; height: 0; z-index: 3; }
+.pf-burst i { position: absolute; left: -2px; top: -16px; width: 4px; height: 32px; border-radius: 2px; background: linear-gradient(#fff, #9dff5a00); transform-origin: 2px 16px; opacity: 0; }
+.pf-burst i:nth-child(2) { rotate: 45deg; } .pf-burst i:nth-child(3) { rotate: 90deg; } .pf-burst i:nth-child(4) { rotate: 135deg; } .pf-burst i:nth-child(5) { rotate: 180deg; } .pf-burst i:nth-child(6) { rotate: 225deg; } .pf-burst i:nth-child(7) { rotate: 270deg; } .pf-burst i:nth-child(8) { rotate: 315deg; }
+.perfect.go .pf-burst i { animation: pfburst .5s ease-out .74s forwards; }
+@keyframes pfburst { 0% { opacity: 1; transform: translateY(0) scaleY(.3); } 100% { opacity: 0; transform: translateY(-34px) scaleY(1.2); } }
+.scene.pf-kick { animation: pfkick .3s ease-out; }
+@keyframes pfkick { 20% { transform: translateX(6px); } 50% { transform: translateX(-3px); } }
+.pf-num { position: absolute; left: 50%; top: 10%; z-index: 25; translate: -50% 0; white-space: nowrap; pointer-events: none; font-weight: 900; animation: clnum 1.4s cubic-bezier(.2, 1.5, .4, 1) forwards; }
+.pf-num.main { font-size: 25px; color: #f4ffe8; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 3px 0 #0c2a06, 0 0 12px #6aff2a; }
+.pf-num.main::after { content: " !"; color: #9dff5a; }
+.pf-num.pierce { font-size: 19px; color: #c8ff9a; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 2px 0 #0c2a06; }
+.pf-num.pierce::before { content: "➶ "; }
+@media (prefers-reduced-motion: reduce) { .reticle, .unit.mon.prey .reticle, .unit.mon.prey .reticle.ready { animation: none; } }

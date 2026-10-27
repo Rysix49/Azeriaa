@@ -191,7 +191,7 @@ function spellPower(h, t, f, sp) {
 function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct;
+  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
   if (h.cls === 'sram' && f && f.turn === 1 && sp.type !== 'heal') v *= 2;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
@@ -222,7 +222,7 @@ function heroTurn(st, h, t, ev) {
       && (sp.max_ == null || (f.casts[sp.id] || 0) < sp.max_));
     if (!usable.length) break;
     const hpRatio = h.hp / t.maxHp;
-    const target = alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+    const target = h.cls === 'cra' ? craPrey(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
     let best = null, bestVal = -1;
     for (const sp of usable) {
       const { avg } = spellPower(h, t, f, sp);
@@ -237,6 +237,7 @@ function heroTurn(st, h, t, ev) {
         const totalHp = alive.reduce((s, m) => s + m.hp, 0);
         val = already ? 0 : totalHp > t.pa * 8 ? 9999 : 0;
       }
+      if (h.cls === 'cra' && sp.type === 'dmg' && (h.focus || 0) >= CRA_FOCUS_MAX) val = Math.max(val, 1) * 6; // garde le Tir Parfait pour la proie
       val = val / sp.pa;
       if (val > bestVal) { bestVal = val; best = sp; }
     }
@@ -284,9 +285,12 @@ function castSpell(st, h, t, sp, target, alive) {
   };
   if (sp.type === 'aoe') {
     const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
+    if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
     return `${sp.name} → ${parts.join('/')}`;
   }
+  if (h.cls === 'cra' && sp.type === 'dmg' && f.mons.indexOf(target) === f.mark && (h.focus || 0) >= CRA_FOCUS_MAX) return perfectShot(h, t, f, sp, target);
   const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
+  if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
   if (sp.type === 'poison') {
     target.poison = { dmg: r.v, turns: sp.turns };
     return `${sp.name} sur ${MONSTERS[target.mid].name} (${r.v}/tour)`;
@@ -322,6 +326,42 @@ function monsterTurn(st, h, t, m, ev) {
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Traque du Cra ----------------------
+   Le joueur choisit une proie (f.mark). Chaque tir dessus donne de la
+   Concentration (h.focus). À 5, le prochain tir est un Tir Parfait qui transperce. */
+const CRA_FOCUS_MAX = 5, CRA_FOCUS_CRIT = 6;
+function craPrey(f, alive) {
+  const cur = f.mons[f.mark];
+  if (cur && cur.hp > 0) return cur;
+  const t = alive.reduce((a, b) => (b.hp < a.hp ? b : a)); // la traque continue
+  f.mark = f.mons.indexOf(t);
+  return t;
+}
+function setPrey(h, idx) {
+  const f = h.fight; if (!f || h.cls !== 'cra') return false;
+  const m = f.mons[idx]; if (!m || m.hp <= 0 || f.mark === idx) return false;
+  f.mark = idx; h.focus = 0; f.manual = true;
+  return true;
+}
+function perfectShot(h, t, f, sp, target) {
+  const { scale } = spellPower(h, t, f, sp);
+  let v = (rnd(sp.min, sp.max) * scale + t.dmg) * 3;
+  if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+  v = Math.max(1, Math.round(v));
+  const ti = f.mons.indexOf(target);
+  const over = Math.max(0, v - target.hp);
+  target.hp = Math.max(0, target.hp - v);
+  let pierce = null, s = `🏹 TIR PARFAIT ! ${sp.name} ${v} CC`;
+  if (over > 0) {
+    const next = f.mons.filter(m => m.hp > 0).sort((a, b) => a.hp - b.hp)[0];
+    if (next) { const pv = Math.max(1, Math.round(over)); next.hp = Math.max(0, next.hp - pv); pierce = { i: f.mons.indexOf(next), v: pv }; s += ` → transperce ${MONSTERS[next.mid].name} (${pv})`; }
+  }
+  h.focus = 0;
+  f.perfectSeq = (f.perfectSeq || 0) + 1;
+  f.perfect = { n: f.perfectSeq, t: ti, v, pierce };
+  return s;
 }
 
 /* ---------------------- Colère de Iop (jauge de Fureur) ----------------------

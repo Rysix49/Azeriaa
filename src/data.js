@@ -50,7 +50,7 @@ const CLASSES = {
   cra: {
     name: 'Cra', role: 'Archère précise', main: 'deg', elem: 'agi', hpMult: 0.95, color: '#5c9a45',
     desc: 'Tire de loin, empoisonne et esquive. Critiques fréquents.',
-    passive: { name: 'Œil de Lynx', points: [['🎯','Précision','+5 % de coups critiques.'],['💥','Tir mortel','Ses critiques infligent ×1,8 au lieu de ×1,5.']], desc: '+5 % de coups critiques. Ses critiques infligent ×1,8 au lieu de ×1,5.', stats: { crit: 5 } },
+    passive: { name: 'Traque · Tir Parfait', points: [['🎯','Proie marquée','Clique sur un monstre pour en faire sa proie : ses sorts à cible unique la visent en priorité. Sans choix de ta part, elle traque le plus faible.'],['🔭','Concentration','Chaque sort qui touche la proie ajoute 1 point de Concentration (max 5) : +6 % de critique par point. Elle se garde même quand la proie meurt ou qu’un nouveau combat commence… mais changer de proie toi-même la remet à zéro.'],['🏹','Tir Parfait','À 5 de Concentration, le tir suivant sur la proie est un critique garanti ×3 qui ignore les résistances. Les dégâts en trop transpercent la proie et touchent l’ennemi suivant.'],['🦅','Œil de Lynx','+5 % de critique ; ses critiques infligent ×1,8 au lieu de ×1,5.']], desc: 'Marque une proie, accumule la Concentration et décoche un Tir Parfait qui transperce.', stats: { crit: 5 } },
     spells: [
       { id: 'fleche_magique', name: 'Flèche Magique', lvl: 1, pa: 3, min: 6, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'fleche_empoisonnee', name: 'Flèche Empoisonnée', lvl: 5, pa: 2, min: 4, max: 6, stat: 'agi', type: 'poison', turns: 3, cd: 2 },

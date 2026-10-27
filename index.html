@@ -1003,6 +1003,74 @@ label.btn { cursor: pointer; }
 @keyframes clnum { 0% { opacity: 0; transform: scale(2.6) rotate(-12deg); } 15% { opacity: 1; transform: scale(1) rotate(-4deg); } 70% { opacity: 1; transform: translateY(-14px) rotate(-4deg); } 100% { opacity: 0; transform: translateY(-34px) rotate(-4deg) scale(.9); } }
 @media (prefers-reduced-motion: reduce) { .fury-btn, .fury-btn::before, .fury-btn::after, .fury.full, .scene.cl-shake { animation: none; } }
 .unit.hero.cl-charge, .unit.hero.cl-release { z-index: 21; }
+
+/* ===================== Traque du Cra ===================== */
+.unit.mon.huntable { cursor: crosshair; border-radius: 10px; transition: background .2s; }
+.unit.mon.huntable:hover { background: #a8ff6a14; }
+.unit.mon.huntable:focus-visible { outline: 2px solid #b6ff7a; outline-offset: 2px; }
+.unit.mon .reticle { position: absolute; left: 50%; bottom: -10px; width: 74px; height: 74px; margin-left: -37px; z-index: 3; pointer-events: none; opacity: 0; transform: scale(1.6) rotate(-45deg); transition: opacity .25s, transform .35s cubic-bezier(.2, 1.4, .4, 1); }
+.unit.mon.prey .reticle { opacity: 1; transform: scale(1) rotate(0); }
+.unit.mon.huntable:not(.prey):not(.dead):hover .reticle { opacity: .35; transform: scale(1.15); }
+.reticle .seg { fill: none; stroke: #ffffff30; stroke-width: 3.2; stroke-linecap: round; transition: stroke .25s; }
+.reticle .seg.on { stroke: #9dff5a; filter: drop-shadow(0 0 3px #6aff2a); }
+.reticle .cross { stroke: #c8ff9a; stroke-width: 1.8; stroke-linecap: round; opacity: .85; }
+.reticle .dot { fill: #e8ffd0; }
+.reticle { animation: retspin 6s linear infinite; }
+.unit.mon.prey .reticle { animation: retspin 6s linear infinite; }
+.reticle.ready .seg.on { stroke: #ff4a2a; filter: drop-shadow(0 0 4px #ff2a0a); }
+.reticle.ready .cross { stroke: #ffb0a0; }
+.unit.mon.prey .reticle.ready { animation: retspin 1.4s linear infinite, retlock .7s ease-in-out infinite; }
+@keyframes retspin { to { rotate: 360deg; } }
+@keyframes retlock { 50% { scale: .86; } }
+.unit.mon.prey .u-name::before { content: "🎯 "; }
+.focus { display: inline-flex; align-items: center; gap: 2px; margin-top: 4px; padding: 2px 5px; border-radius: 8px; background: #00000070; font-size: 10px; }
+.focus i { width: 6px; height: 6px; border-radius: 50%; background: #ffffff25; border: 1px solid #00000080; }
+.focus i.on { background: #9dff5a; box-shadow: 0 0 4px #6aff2a; }
+.focus.full i.on { background: #ff5a2a; box-shadow: 0 0 5px #ff2a0a; animation: furyfull .7s ease-in-out infinite; }
+
+/* Tir Parfait */
+.perfect { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
+.pf-bar { position: absolute; left: 0; right: 0; height: 0; background: #000; transition: height .22s ease-out; z-index: 3; }
+.pf-bar.top { top: 0; } .pf-bar.bot { bottom: 0; }
+.perfect.go .pf-bar { height: 13%; }
+.pf-dim { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at var(--bx) var(--by), transparent 34px, #06120a 120px); transition: opacity .25s; }
+.perfect.go .pf-dim { opacity: .82; animation: pfout .4s ease-in 1.45s forwards; }
+.perfect.go .pf-bar { animation: pfbars .35s ease-in 1.5s forwards; }
+@keyframes pfbars { to { height: 0; } }
+@keyframes pfout { to { opacity: 0; } }
+.pf-scope { position: absolute; left: var(--bx); top: var(--by); width: 92px; height: 92px; margin: -46px; opacity: 0; }
+.pf-scope svg { width: 100%; height: 100%; fill: none; stroke: #b6ff7a; stroke-width: 1.4; filter: drop-shadow(0 0 3px #4aff1a); }
+.pf-scope .in { stroke-dasharray: 3 4; } .pf-scope .tick { stroke-width: 2.6; }
+.perfect.go .pf-scope { animation: pfscope .75s cubic-bezier(.2, .9, .3, 1) forwards, pfout .3s ease-in 1.3s forwards; }
+@keyframes pfscope { 0% { opacity: 0; transform: scale(3.4) rotate(-90deg); } 60% { opacity: 1; transform: scale(.9) rotate(4deg); } 80% { transform: scale(1.05) rotate(0); } 100% { opacity: 1; transform: scale(1); stroke: #ff4a2a; } }
+.perfect.go .pf-scope svg { animation: pfred .1s linear .62s forwards; }
+@keyframes pfred { to { stroke: #ff5a3a; filter: drop-shadow(0 0 5px #ff2a0a); } }
+.pf-title { position: absolute; left: 50%; top: 15%; translate: -50% 0; z-index: 4; white-space: nowrap; font: 900 clamp(20px, 4.4vw, 32px)/1 var(--display, Georgia, serif); letter-spacing: .22em; margin-right: -.22em;
+  color: #effff0; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 2px 0 #0c2a06, 0 0 14px #6aff2a; opacity: 0; }
+.perfect.go .pf-title { animation: pftitle 1.5s ease-out .1s forwards; }
+@keyframes pftitle { 0% { opacity: 0; letter-spacing: .8em; filter: blur(4px); } 25% { opacity: 1; letter-spacing: .22em; filter: blur(0); } 80% { opacity: 1; } 100% { opacity: 0; } }
+.pf-shot { position: absolute; left: var(--ax); top: var(--ay); width: var(--len); height: 0; transform-origin: 0 0; rotate: var(--ang); z-index: 2; }
+.pf-trail { position: absolute; left: 0; top: -2px; height: 4px; width: 100%; transform-origin: left; transform: scaleX(0); border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #b6ff7a88 40%, #ffffff); box-shadow: 0 0 10px #8aff4a, 0 0 20px #4aff1a; }
+.pf-arrow { position: absolute; left: 0; top: -9px; width: 54px; height: 18px; margin-left: -54px; opacity: 0; filter: drop-shadow(0 0 6px #c8ff9a); }
+.pf-arrow svg { width: 100%; height: 100%; overflow: visible; }
+.perfect.go .pf-trail { animation: pftrail .3s cubic-bezier(.7, 0, .9, .4) .55s forwards, pfout .5s ease-in 1s forwards; }
+.perfect.go .pf-arrow { animation: pfarrow .3s cubic-bezier(.7, 0, .9, .4) .55s forwards; }
+@keyframes pftrail { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pfarrow { 0% { opacity: 1; left: 0; } 99% { opacity: 1; } 100% { opacity: 0; left: 100%; } }
+.pf-burst { position: absolute; width: 0; height: 0; z-index: 3; }
+.pf-burst i { position: absolute; left: -2px; top: -16px; width: 4px; height: 32px; border-radius: 2px; background: linear-gradient(#fff, #9dff5a00); transform-origin: 2px 16px; opacity: 0; }
+.pf-burst i:nth-child(2) { rotate: 45deg; } .pf-burst i:nth-child(3) { rotate: 90deg; } .pf-burst i:nth-child(4) { rotate: 135deg; } .pf-burst i:nth-child(5) { rotate: 180deg; } .pf-burst i:nth-child(6) { rotate: 225deg; } .pf-burst i:nth-child(7) { rotate: 270deg; } .pf-burst i:nth-child(8) { rotate: 315deg; }
+.perfect.go .pf-burst i { animation: pfburst .5s ease-out .74s forwards; }
+@keyframes pfburst { 0% { opacity: 1; transform: translateY(0) scaleY(.3); } 100% { opacity: 0; transform: translateY(-34px) scaleY(1.2); } }
+.scene.pf-kick { animation: pfkick .3s ease-out; }
+@keyframes pfkick { 20% { transform: translateX(6px); } 50% { transform: translateX(-3px); } }
+.pf-num { position: absolute; left: 50%; top: 10%; z-index: 25; translate: -50% 0; white-space: nowrap; pointer-events: none; font-weight: 900; animation: clnum 1.4s cubic-bezier(.2, 1.5, .4, 1) forwards; }
+.pf-num.main { font-size: 25px; color: #f4ffe8; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 3px 0 #0c2a06, 0 0 12px #6aff2a; }
+.pf-num.main::after { content: " !"; color: #9dff5a; }
+.pf-num.pierce { font-size: 19px; color: #c8ff9a; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 2px 0 #0c2a06; }
+.pf-num.pierce::before { content: "➶ "; }
+@media (prefers-reduced-motion: reduce) { .reticle, .unit.mon.prey .reticle, .unit.mon.prey .reticle.ready { animation: none; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1063,7 +1131,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793121308';
+const BUILD_ID = '1793123212';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -1116,7 +1184,7 @@ const CLASSES = {
   cra: {
     name: 'Cra', role: 'Archère précise', main: 'deg', elem: 'agi', hpMult: 0.95, color: '#5c9a45',
     desc: 'Tire de loin, empoisonne et esquive. Critiques fréquents.',
-    passive: { name: 'Œil de Lynx', points: [['🎯','Précision','+5 % de coups critiques.'],['💥','Tir mortel','Ses critiques infligent ×1,8 au lieu de ×1,5.']], desc: '+5 % de coups critiques. Ses critiques infligent ×1,8 au lieu de ×1,5.', stats: { crit: 5 } },
+    passive: { name: 'Traque · Tir Parfait', points: [['🎯','Proie marquée','Clique sur un monstre pour en faire sa proie : ses sorts à cible unique la visent en priorité. Sans choix de ta part, elle traque le plus faible.'],['🔭','Concentration','Chaque sort qui touche la proie ajoute 1 point de Concentration (max 5) : +6 % de critique par point. Elle se garde même quand la proie meurt ou qu’un nouveau combat commence… mais changer de proie toi-même la remet à zéro.'],['🏹','Tir Parfait','À 5 de Concentration, le tir suivant sur la proie est un critique garanti ×3 qui ignore les résistances. Les dégâts en trop transpercent la proie et touchent l’ennemi suivant.'],['🦅','Œil de Lynx','+5 % de critique ; ses critiques infligent ×1,8 au lieu de ×1,5.']], desc: 'Marque une proie, accumule la Concentration et décoche un Tir Parfait qui transperce.', stats: { crit: 5 } },
     spells: [
       { id: 'fleche_magique', name: 'Flèche Magique', lvl: 1, pa: 3, min: 6, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'fleche_empoisonnee', name: 'Flèche Empoisonnée', lvl: 5, pa: 2, min: 4, max: 6, stat: 'agi', type: 'poison', turns: 3, cd: 2 },
@@ -1759,7 +1827,7 @@ function spellPower(h, t, f, sp) {
 function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct;
+  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
   if (h.cls === 'sram' && f && f.turn === 1 && sp.type !== 'heal') v *= 2;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
@@ -1790,7 +1858,7 @@ function heroTurn(st, h, t, ev) {
       && (sp.max_ == null || (f.casts[sp.id] || 0) < sp.max_));
     if (!usable.length) break;
     const hpRatio = h.hp / t.maxHp;
-    const target = alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+    const target = h.cls === 'cra' ? craPrey(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
     let best = null, bestVal = -1;
     for (const sp of usable) {
       const { avg } = spellPower(h, t, f, sp);
@@ -1805,6 +1873,7 @@ function heroTurn(st, h, t, ev) {
         const totalHp = alive.reduce((s, m) => s + m.hp, 0);
         val = already ? 0 : totalHp > t.pa * 8 ? 9999 : 0;
       }
+      if (h.cls === 'cra' && sp.type === 'dmg' && (h.focus || 0) >= CRA_FOCUS_MAX) val = Math.max(val, 1) * 6; // garde le Tir Parfait pour la proie
       val = val / sp.pa;
       if (val > bestVal) { bestVal = val; best = sp; }
     }
@@ -1852,9 +1921,12 @@ function castSpell(st, h, t, sp, target, alive) {
   };
   if (sp.type === 'aoe') {
     const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
+    if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
     return `${sp.name} → ${parts.join('/')}`;
   }
+  if (h.cls === 'cra' && sp.type === 'dmg' && f.mons.indexOf(target) === f.mark && (h.focus || 0) >= CRA_FOCUS_MAX) return perfectShot(h, t, f, sp, target);
   const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
+  if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
   if (sp.type === 'poison') {
     target.poison = { dmg: r.v, turns: sp.turns };
     return `${sp.name} sur ${MONSTERS[target.mid].name} (${r.v}/tour)`;
@@ -1890,6 +1962,42 @@ function monsterTurn(st, h, t, m, ev) {
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Traque du Cra ----------------------
+   Le joueur choisit une proie (f.mark). Chaque tir dessus donne de la
+   Concentration (h.focus). À 5, le prochain tir est un Tir Parfait qui transperce. */
+const CRA_FOCUS_MAX = 5, CRA_FOCUS_CRIT = 6;
+function craPrey(f, alive) {
+  const cur = f.mons[f.mark];
+  if (cur && cur.hp > 0) return cur;
+  const t = alive.reduce((a, b) => (b.hp < a.hp ? b : a)); // la traque continue
+  f.mark = f.mons.indexOf(t);
+  return t;
+}
+function setPrey(h, idx) {
+  const f = h.fight; if (!f || h.cls !== 'cra') return false;
+  const m = f.mons[idx]; if (!m || m.hp <= 0 || f.mark === idx) return false;
+  f.mark = idx; h.focus = 0; f.manual = true;
+  return true;
+}
+function perfectShot(h, t, f, sp, target) {
+  const { scale } = spellPower(h, t, f, sp);
+  let v = (rnd(sp.min, sp.max) * scale + t.dmg) * 3;
+  if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+  v = Math.max(1, Math.round(v));
+  const ti = f.mons.indexOf(target);
+  const over = Math.max(0, v - target.hp);
+  target.hp = Math.max(0, target.hp - v);
+  let pierce = null, s = `🏹 TIR PARFAIT ! ${sp.name} ${v} CC`;
+  if (over > 0) {
+    const next = f.mons.filter(m => m.hp > 0).sort((a, b) => a.hp - b.hp)[0];
+    if (next) { const pv = Math.max(1, Math.round(over)); next.hp = Math.max(0, next.hp - pv); pierce = { i: f.mons.indexOf(next), v: pv }; s += ` → transperce ${MONSTERS[next.mid].name} (${pv})`; }
+  }
+  h.focus = 0;
+  f.perfectSeq = (f.perfectSeq || 0) + 1;
+  f.perfect = { n: f.perfectSeq, t: ti, v, pierce };
+  return s;
 }
 
 /* ---------------------- Colère de Iop (jauge de Fureur) ----------------------
@@ -2987,10 +3095,12 @@ function fightCard(h) {
   } else {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
-      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}" data-mon="${i}" data-hp="${m.hp}">
+      const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
+      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+        ${cra ? reticleHtml(h) : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -3002,7 +3112,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -3017,6 +3127,37 @@ function fightCard(h) {
       <div class="rates" data-k="rates">${fightRates(h)}</div>
     </footer>
   </article>`;
+}
+/* ---------------------- Traque du Cra ---------------------- */
+function focusHtml(h) { const n = h.focus || 0; return `🔭 ${Array.from({ length: CRA_FOCUS_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`; }
+function reticleHtml(h) {
+  const n = h.focus || 0; let segs = '';
+  for (let i = 0; i < CRA_FOCUS_MAX; i++) { const a0 = -90 + i * 72 + 6, a1 = a0 + 60, r = 26, p = a => [32 + r * Math.cos(a * Math.PI / 180), 32 + r * Math.sin(a * Math.PI / 180)].map(x => x.toFixed(1)).join(' ');
+    segs += `<path class="seg${i < n ? ' on' : ''}" d="M${p(a0)} A${r} ${r} 0 0 1 ${p(a1)}"/>`; }
+  return `<svg class="reticle${n >= CRA_FOCUS_MAX ? ' ready' : ''}" data-k="ret" viewBox="0 0 64 64" aria-hidden="true">${segs}<path class="cross" d="M32 2v10M32 52v10M2 32h10M52 32h10"/><circle class="dot" cx="32" cy="32" r="2"/></svg>`;
+}
+function playPerfect(card, p) {
+  const scene = card.querySelector('.scene'); if (!scene) return;
+  const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
+  if (!hero || !tgt) return;
+  const a = relPos(hero, scene), b = relPos(tgt, scene);
+  const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
+  const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
+  const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
+  const ov = document.createElement('div'); ov.className = 'perfect';
+  ov.style.cssText = `--ax:${a.x}px;--ay:${a.y}px;--bx:${b.x}px;--by:${b.y}px;--ang:${ang}deg;--len:${len}px;--hit:${hit}`;
+  ov.innerHTML = `<div class="pf-bar top"></div><div class="pf-bar bot"></div><div class="pf-dim"></div>
+    <div class="pf-scope"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="30" class="in"/><path d="M50 0v38M50 62v38M0 50h38M62 50h38"/><path class="tick" d="M50 20v6M50 74v6M20 50h6M74 50h6"/></svg></div>
+    <div class="pf-title">TIR PARFAIT</div>
+    <div class="pf-shot"><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>
+    <div class="pf-burst" style="left:var(--bx);top:var(--by)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`;
+  scene.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const num = (el, txt, cls, delay) => setTimeout(() => { if (!el) return; const n = document.createElement('span'); n.className = 'pf-num ' + cls; n.textContent = txt; el.parentElement.appendChild(n); setTimeout(() => n.remove(), 1500); }, delay);
+  num(tgt, '−' + fmt(p.v), 'main', 760);
+  if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', 860);
+  setTimeout(() => { scene.classList.add('pf-kick'); setTimeout(() => scene.classList.remove('pf-kick'), 350); }, 740);
+  setTimeout(() => ov.remove(), 1900);
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
 const FURY_ANIM = {};
@@ -3118,6 +3259,7 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
@@ -3150,6 +3292,11 @@ function patchCombat() {
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    if (h.cls === 'cra') {
+      const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
+        const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
+    }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
@@ -3619,6 +3766,11 @@ const ACTIONS = {
   gorecipe(d) { ui.view = 'ateliers'; ui.job = d.job; ui.rtab = d.h === '1' ? 'recolte' : 'combat'; scrollTop(); },
   send(d) { const h = heroById(d.hero); setActivity(st, h, d.type, d.id, +d.t || 0); toast(`${h.name} part pour ${placeName(h.act)}.`); },
   stop(d) { const h = heroById(d.hero); setActivity(st, h, null); },
+  cramark(d) {
+    const h = heroById(d.hero); if (!h) return 'keep';
+    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
+    patchCombat(); return 'keep';
+  },
   iopfury(d) {
     const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
@@ -3726,7 +3878,7 @@ document.addEventListener('click', e => {
   if (r !== 'keep') { saveGame(); render(true); }
 });
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act]')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act], [role="button"][data-act]')) { e.preventDefault(); e.target.click(); }
 });
 document.addEventListener('change', e => {
   const el = e.target;

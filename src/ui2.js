@@ -264,10 +264,12 @@ function fightCard(h) {
   } else {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
-      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}" data-mon="${i}" data-hp="${m.hp}">
+      const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
+      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+        ${cra ? reticleHtml(h) : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -279,7 +281,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -294,6 +296,37 @@ function fightCard(h) {
       <div class="rates" data-k="rates">${fightRates(h)}</div>
     </footer>
   </article>`;
+}
+/* ---------------------- Traque du Cra ---------------------- */
+function focusHtml(h) { const n = h.focus || 0; return `🔭 ${Array.from({ length: CRA_FOCUS_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`; }
+function reticleHtml(h) {
+  const n = h.focus || 0; let segs = '';
+  for (let i = 0; i < CRA_FOCUS_MAX; i++) { const a0 = -90 + i * 72 + 6, a1 = a0 + 60, r = 26, p = a => [32 + r * Math.cos(a * Math.PI / 180), 32 + r * Math.sin(a * Math.PI / 180)].map(x => x.toFixed(1)).join(' ');
+    segs += `<path class="seg${i < n ? ' on' : ''}" d="M${p(a0)} A${r} ${r} 0 0 1 ${p(a1)}"/>`; }
+  return `<svg class="reticle${n >= CRA_FOCUS_MAX ? ' ready' : ''}" data-k="ret" viewBox="0 0 64 64" aria-hidden="true">${segs}<path class="cross" d="M32 2v10M32 52v10M2 32h10M52 32h10"/><circle class="dot" cx="32" cy="32" r="2"/></svg>`;
+}
+function playPerfect(card, p) {
+  const scene = card.querySelector('.scene'); if (!scene) return;
+  const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
+  if (!hero || !tgt) return;
+  const a = relPos(hero, scene), b = relPos(tgt, scene);
+  const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
+  const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
+  const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
+  const ov = document.createElement('div'); ov.className = 'perfect';
+  ov.style.cssText = `--ax:${a.x}px;--ay:${a.y}px;--bx:${b.x}px;--by:${b.y}px;--ang:${ang}deg;--len:${len}px;--hit:${hit}`;
+  ov.innerHTML = `<div class="pf-bar top"></div><div class="pf-bar bot"></div><div class="pf-dim"></div>
+    <div class="pf-scope"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="30" class="in"/><path d="M50 0v38M50 62v38M0 50h38M62 50h38"/><path class="tick" d="M50 20v6M50 74v6M20 50h6M74 50h6"/></svg></div>
+    <div class="pf-title">TIR PARFAIT</div>
+    <div class="pf-shot"><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>
+    <div class="pf-burst" style="left:var(--bx);top:var(--by)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`;
+  scene.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const num = (el, txt, cls, delay) => setTimeout(() => { if (!el) return; const n = document.createElement('span'); n.className = 'pf-num ' + cls; n.textContent = txt; el.parentElement.appendChild(n); setTimeout(() => n.remove(), 1500); }, delay);
+  num(tgt, '−' + fmt(p.v), 'main', 760);
+  if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', 860);
+  setTimeout(() => { scene.classList.add('pf-kick'); setTimeout(() => scene.classList.remove('pf-kick'), 350); }, 740);
+  setTimeout(() => ov.remove(), 1900);
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
 const FURY_ANIM = {};
@@ -395,6 +428,7 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
@@ -427,6 +461,11 @@ function patchCombat() {
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    if (h.cls === 'cra') {
+      const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
+        const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
+    }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
@@ -896,6 +935,11 @@ const ACTIONS = {
   gorecipe(d) { ui.view = 'ateliers'; ui.job = d.job; ui.rtab = d.h === '1' ? 'recolte' : 'combat'; scrollTop(); },
   send(d) { const h = heroById(d.hero); setActivity(st, h, d.type, d.id, +d.t || 0); toast(`${h.name} part pour ${placeName(h.act)}.`); },
   stop(d) { const h = heroById(d.hero); setActivity(st, h, null); },
+  cramark(d) {
+    const h = heroById(d.hero); if (!h) return 'keep';
+    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
+    patchCombat(); return 'keep';
+  },
   iopfury(d) {
     const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
@@ -1003,7 +1047,7 @@ document.addEventListener('click', e => {
   if (r !== 'keep') { saveGame(); render(true); }
 });
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act]')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act], [role="button"][data-act]')) { e.preventDefault(); e.target.click(); }
 });
 document.addEventListener('change', e => {
   const el = e.target;
