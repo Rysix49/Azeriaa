@@ -467,4 +467,12 @@ const RELIC_DROPS = {
 /* Coût de recrutement des héros (index = nombre de héros déjà possédés) */
 const RECRUIT_COST = [0, 4000, 30000, 160000];
 
-const HERO_NAMES = ['Brakmouth', 'Pimprenelle', 'Tarnak', 'Mirabulle', 'Fendrel', 'Oswyna', 'Garrok', 'Sélénia', 'Kryssa', 'Bolgo', 'Elyndre', 'Patouf'];
+const HERO_NAMES = [
+  'Brakmouth', 'Pimprenelle', 'Tarnak', 'Mirabulle', 'Fendrel', 'Oswyna', 'Garrok', 'Sélénia', 'Kryssa', 'Bolgo', 'Elyndre', 'Patouf',
+  'Arkanis', 'Bérénice', 'Calvok', 'Dorinette', 'Escarbouille', 'Fanrir', 'Gribouille', 'Hestiane', 'Ixoral', 'Jorvik', 'Kalinka', 'Loumir',
+  'Mortimus', 'Nymphéa', 'Orgalius', 'Plumerette', 'Quentarn', 'Rhubarbe', 'Sylvorn', 'Tibaldine', 'Ulrak', 'Vaïmoana', 'Wolfgar', 'Xélandra',
+  'Yrgos', 'Zéphirine', 'Agrippa', 'Brindille', 'Cornebouc', 'Darkéon', 'Églantine', 'Frimousse', 'Gromalt', 'Hirondelle', 'Isengrin', 'Jasmora',
+  'Korvax', 'Lavandine', 'Malakor', 'Noisette', 'Obéron', 'Pistache', 'Ragnulf', 'Sarcelle', 'Torgal', 'Ursulka', 'Velours', 'Wrenna',
+  'Azalée', 'Bastok', 'Cerisette', 'Draknor', 'Ebonix', 'Flocon', 'Gaïamène', 'Hargnor', 'Iris', 'Jabot', 'Kestrel', 'Lumina',
+  'Mandrak', 'Nébuleuse', 'Olgrim', 'Paprika', 'Quartzine', 'Rouquin', 'Saphyra', 'Tonnerre', 'Ulysse', 'Vortan', 'Willow', 'Yzalis',
+];
