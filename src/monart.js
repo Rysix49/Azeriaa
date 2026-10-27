@@ -211,14 +211,14 @@ pissenlit: `<svg class="ms ms-pissenlit" viewBox="0 0 128 128" aria-hidden="true
     <g>
       <!-- pétales en couronne complète -->
       <g fill="url(#pdY)" stroke="#b09020" stroke-width="1.4">
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(0 64 56)"/>
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(45 64 56)"/>
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(90 64 56)"/>
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(135 64 56)"/>
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(180 64 56)"/>
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(225 64 56)"/>
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(270 64 56)"/>
-        <ellipse cx="64" cy="40" rx="8" ry="18" transform="rotate(315 64 56)"/>
+        <ellipse cx="64.0" cy="40.0" rx="8" ry="18" style="transform:rotate(0deg);transform-origin:50% 50%"/>
+        <ellipse cx="75.3" cy="44.7" rx="8" ry="18" style="transform:rotate(45deg);transform-origin:50% 50%"/>
+        <ellipse cx="80.0" cy="56.0" rx="8" ry="18" style="transform:rotate(90deg);transform-origin:50% 50%"/>
+        <ellipse cx="75.3" cy="67.3" rx="8" ry="18" style="transform:rotate(135deg);transform-origin:50% 50%"/>
+        <ellipse cx="64.0" cy="72.0" rx="8" ry="18" style="transform:rotate(180deg);transform-origin:50% 50%"/>
+        <ellipse cx="52.7" cy="67.3" rx="8" ry="18" style="transform:rotate(225deg);transform-origin:50% 50%"/>
+        <ellipse cx="48.0" cy="56.0" rx="8" ry="18" style="transform:rotate(270deg);transform-origin:50% 50%"/>
+        <ellipse cx="52.7" cy="44.7" rx="8" ry="18" style="transform:rotate(315deg);transform-origin:50% 50%"/>
       </g>
       <!-- centre brun (visage) -->
       <circle cx="64" cy="56" r="18" fill="#8a5010" stroke="#5a3008" stroke-width="2.5"/>
