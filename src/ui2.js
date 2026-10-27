@@ -14,7 +14,8 @@ const VIEWS = [
   ['ateliers', 'Ateliers', 'Transforme tes ressources en équipements.'],
   ['options', 'Options', 'Sauvegarde, statistiques et choix de l’interface.'],
 ];
-const STAT_COLOR = { xpPct: 'var(--xp)', dmgPct: 'var(--hp)', dodge: 'var(--air)', regen: 'var(--win)', speed: 'var(--gold-2)', kamas: 'var(--gold-2)', rxp: 'var(--xp)', rqty: 'var(--win)', rspd: 'var(--gold-2)', vit: 'var(--vit)', sag: 'var(--sag)', for: 'var(--terre)', int: 'var(--feu)', cha: 'var(--eau)', agi: 'var(--air)', pui: 'var(--gold-2)', crit: 'var(--hp)', pp: 'var(--eau)', res: 'var(--muted)', soin: 'var(--win)', dmg: 'var(--fg)', pa: 'var(--eau)' };
+const STAT_HINT = { vit: '1 pt = +1 PV', sag: '1 pt = +0,5 % XP', deg: '1 pt = +1 % dégâts et soins' };
+const STAT_COLOR = { xpPct: 'var(--xp)', dmgPct: 'var(--hp)', dodge: 'var(--air)', regen: 'var(--win)', speed: 'var(--gold-2)', kamas: 'var(--gold-2)', rxp: 'var(--xp)', rqty: 'var(--win)', rspd: 'var(--gold-2)', vit: 'var(--vit)', sag: 'var(--sag)', deg: 'var(--hp)', for: 'var(--terre)', int: 'var(--feu)', cha: 'var(--eau)', agi: 'var(--air)', crit: 'var(--hp)', pp: 'var(--eau)', res: 'var(--muted)', soin: 'var(--win)', dmg: 'var(--fg)', pa: 'var(--eau)' };
 
 /* Ambiance des scènes : [ciel, sol] par région */
 const THEME = {
@@ -381,7 +382,7 @@ function renderRecruit(first) {
   return `<section class="panel recruit">
     <div><h2 class="display big-title">${first ? 'Bienvenue dans le Monde des Douze' : 'Recruter un héros'}</h2>
       <p class="sub" style="margin:4px 0 0">${first ? 'Choisis la classe de ton premier héros. Il combattra seul dans les zones que tu choisis, tant que le jeu est ouvert.' : `Héros ${st.heroes.length + 1} sur ${RECRUIT_COST.length}. Chaque héros a sa propre activité et son propre équipement.`}</p></div>
-    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">${STAT_ELEM[k.main] || ''} · ${STAT_LABEL[k.main]}</span></button>`).join('')}</div>
+    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">Élément ${STAT_ELEM[k.elem] || '—'}</span></button>`).join('')}</div>
     <div class="recruit-detail" style="--c:${c.color}">
       ${emblem(ui.recruitCls, 'xl')}
       <div class="rd-main"><h3 class="display">${c.name} <small>${c.role}</small></h3><p>${c.desc}</p>
@@ -420,7 +421,7 @@ function slotTile(h, slot) {
   return `<button class="slot-t ${g ? qClass(g) : 'empty'}${sel ? ' sel' : ''}" data-act="pickslot" data-slot="${slot}" aria-pressed="${sel}" title="${g ? esc(ITEMS[g.id].name) : SLOT_LABEL[slot] + ' : vide'}">${g ? itemIcon(g.id) : `<span class="ph">${ic}</span>`}<span class="st-l">${SLOT_LABEL[slot]}</span></button>`;
 }
 /* Valeur globale d'un objet pour trier ses exemplaires (somme des stats, stasifié en tête) */
-function gearScore(g) { if (!g) return 0; return Object.entries(g.stats).reduce((s, [k, v]) => s + v * (k === 'vit' ? .5 : ['pui', 'res', 'crit', 'pp'].includes(k) ? 1.5 : 1), 0) + (g.stasis ? 1e6 : 0); }
+function gearScore(g) { if (!g) return 0; return Object.entries(g.stats).reduce((s, [k, v]) => s + v * (k === 'vit' ? .5 : k === 'sag' ? .6 : ['res', 'crit', 'dodge'].includes(k) ? 3 : k === 'pp' ? .8 : 1), 0) + (g.stasis ? 1e6 : 0); }
 function compareTarget(h, g) {
   const sl = slotsFor(ITEMS[g.id].slot);
   const slot = ui.slot && sl.includes(ui.slot) ? ui.slot : sl.find(s => !h.equip[s]) || sl[0];
@@ -508,11 +509,11 @@ function combatGear(h) {
 function statsPanel(h) {
   const t = heroTotals(st, h); const c = CLASSES[h.cls];
   const rows = STATS.map(s => { const bonus = t[s] - h.base[s]; const off = h.capital < STAT_COST[s] ? 'disabled' : '';
-    return `<div class="srow"><span class="dot" style="--c:${STAT_COLOR[s]}"></span><span class="sname">${STAT_LABEL[s]}${STAT_ELEM[s] ? `<small>${STAT_ELEM[s]}</small>` : ''}${STAT_COST[s] > 1 ? `<small>${STAT_COST[s]} pts</small>` : ''}</span>
+    return `<div class="srow"><span class="dot" style="--c:${STAT_COLOR[s]}"></span><span class="sname">${STAT_LABEL[s]}<small>${STAT_HINT[s]}</small>${STAT_COST[s] > 1 ? `<small>${STAT_COST[s]} pts</small>` : ''}</span>
       <span class="sval num"><b>${t[s]}</b>${bonus ? `<small>${h.base[s]} + ${bonus} équip.</small>` : ''}</span>
       <span class="sbtns"><button class="btn sm" data-act="alloc" data-stat="${s}" data-n="1" ${off} aria-label="+1 ${STAT_LABEL[s]}">+1</button><button class="btn sm" data-act="alloc" data-stat="${s}" data-n="10" ${off} aria-label="+10 ${STAT_LABEL[s]}">+10</button></span></div>`; }).join('');
-  const cs = [['Points de vie', fmt(t.maxHp)], ['PA', t.pa], ['Puissance', t.pui], ['Critique', t.critPct.toFixed(1).replace('.', ',') + ' %'], ['Esquive', t.dodgePct.toFixed(1).replace('.', ',') + ' %'],
-    ['Résistance', t.resPct + ' %'], ['Prospection', t.ppTotal], ['Bonus XP', '+' + t.xpBonus + ' %'], ...(t.kamas ? [['Bonus kamas', '+' + t.kamas + ' %']] : []), ...(t.dmgPct ? [['Dégâts', '+' + t.dmgPct + ' %']] : []), ...(t.speed ? [['Vitesse combat', '+' + t.speed + ' %']] : []), ...(t.regen ? [['Régén. / tour', t.regen + ' %']] : [])];
+  const cs = [['Points de vie', fmt(t.maxHp)], ['PA', t.pa], ['Dégâts', '+' + t.deg + ' %'], ['Critique', t.critPct.toFixed(1).replace('.', ',') + ' %'], ['Esquive', t.dodgePct.toFixed(1).replace('.', ',') + ' %'],
+    ['Résistance', t.resPct + ' %'], ['Prospection', t.ppTotal], ['Bonus XP', '+' + t.xpBonus + ' %'], ...(t.kamas ? [['Bonus kamas', '+' + t.kamas + ' %']] : []), ...(t.dmgPct ? [['Dégâts finaux', '+' + t.dmgPct + ' %']] : []), ...(t.speed ? [['Vitesse combat', '+' + t.speed + ' %']] : []), ...(t.regen ? [['Régén. / tour', t.regen + ' %']] : [])];
   const spells = spellsOf(h).map(sp => {
     const p = sp.type === 'buff' ? null : spellPower(h, t, null, sp);
     const eff = sp.type === 'buff' ? Object.entries(sp.buff).map(([k, v]) => `+${v} ${STAT_LABEL[k]}`).join(', ') + ` pendant ${sp.turns} tours`

@@ -3,7 +3,7 @@
    Aucune dépendance au DOM : tout est testable hors navigateur.
    ===================================================================== */
 
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2; // 2 : stats élémentaires fusionnées en Dégâts
 const STEP_MS = 550;            // durée d'une action de combat
 const REGEN_FULL_MS = 9000;    // temps pour récupérer 100 % des PV
 const DEATH_REST_MS = 20000;    // repos après une défaite
@@ -50,7 +50,7 @@ function newState() {
 function newHero(st, name, cls) {
   const h = {
     id: uid(), name, cls, lvl: 1, xp: 0, capital: 0, auto: CLASSES[cls].main,
-    base: { vit: 0, sag: 0, for: 0, int: 0, cha: 0, agi: 0 },
+    base: { vit: 0, sag: 0, deg: 0 },
     equip: {}, hp: 0, act: null, fight: null, wait: 0, restTotal: 0, resting: false,
     log: [], session: null,
   };
@@ -81,13 +81,13 @@ function setBonus(setId, count) {
 
 /* Statistiques totales d'un héros (base + équipement + panoplies + passif) */
 function heroTotals(st, h) {
-  const t = { vit: 0, sag: 0, for: 0, int: 0, cha: 0, agi: 0, pui: 0, res: 0, pp: 0, crit: 0, soin: 0, dmg: 0, pa: 0, kamas: 0 };
+  const t = { vit: 0, sag: 0, deg: 0, res: 0, pp: 0, crit: 0, soin: 0, dmg: 0, pa: 0, kamas: 0 };
   for (const s of STATS) t[s] += h.base[s];
   for (const slot of SLOTS) {
     const g = h.equip[slot] && gearById(st, h.equip[slot]);
     if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v;
   }
-  for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] += v;
+  for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] = (t[k] || 0) + v;
   if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const f = RESOURCES[h.food.id].food; if (f.speed) t.speed = (t.speed || 0) + f.speed; }
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
@@ -95,11 +95,11 @@ function heroTotals(st, h) {
   if (cl.passive && cl.passive.stats) for (const [k, v] of Object.entries(cl.passive.stats)) t[k] = (t[k] || 0) + v;
   t.maxHp = Math.round((50 + h.lvl * 6) * cl.hpMult + t.vit);
   t.pa = 6 + (h.lvl >= 100 ? 1 : 0) + t.pa;
-  t.critPct = clamp(3 + t.crit + t.agi / 25, 0, 50);
-  t.dodgePct = clamp(t.agi / 12 + (t.dodge || 0), 0, 35);
+  t.critPct = clamp(3 + t.crit, 0, 50);
+  t.dodgePct = clamp(t.dodge || 0, 0, 35);
   t.resPct = clamp(t.res, 0, 50);
-  t.ppTotal = 100 + t.pp + Math.floor(t.cha / 5);
-  t.xpBonus = t.sag + (t.xpPct || 0);
+  t.ppTotal = 100 + t.pp;
+  t.xpBonus = Math.round((t.sag * SAG_XP + (t.xpPct || 0)) * 10) / 10;
   return t;
 }
 
@@ -183,9 +183,8 @@ function passivePui(h, t, f) {
   return 0;
 }
 function spellPower(h, t, f, sp) {
-  const stat = sp.stat ? t[sp.stat] : 0;
-  const pui = t.pui + (f ? buffTotal(f, 'pui') : 0) + passivePui(h, t, f);
-  const scale = (1 + h.lvl * 0.045) * (1 + (stat + pui) / 100);
+  const deg = t.deg + (f ? buffTotal(f, 'deg') : 0) + passivePui(h, t, f);
+  const scale = (1 + h.lvl * 0.045) * (1 + deg / 100);
   return { scale, avg: ((sp.min + sp.max) / 2) * scale + t.dmg };
 }
 
@@ -650,15 +649,37 @@ function migrate(obj) {
   for (const j of [...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)]) if (!st.jobs[j]) st.jobs[j] = { lvl: 1, xp: 0 };
   for (const h of st.heroes) {
     h.log = h.log || []; h.hequip = h.hequip || {};
+    // v8 : Force/Intelligence/Chance/Agilité fusionnées en Dégâts → points de capital remboursés
+    const ob = h.base || {};
+    if ((obj.v || 1) < 2 || OLD_ELEM_STATS.some(k => k in ob)) {
+      let cap = 0; for (const [k, v] of Object.entries(ob)) cap += v * (k === 'sag' ? 3 : 1);
+      h.base = { vit: 0, sag: 0, deg: 0 }; h.capital = (h.capital || 0) + cap;
+      if (OLD_ELEM_STATS.includes(h.auto)) h.auto = 'deg';
+      if (h.auto) autoAllocate(h);
+    }
+    if (h.fight && h.fight.buffs) for (const b of h.fight.buffs) if (b.stats && 'pui' in b.stats) b.stats = convertOldStats(b.stats);
     // contenu supprimé entre versions : on nettoie
     if (h.act && !findPlace(h.act.type, h.act.id)) setActivity(st, h, null);
     if (h.fight && h.fight.mons.some(m => !MONSTERS[m.mid])) h.fight = null;
   }
   st.gear = st.gear.filter(g => ITEMS[g.id]);
+  for (const g of st.gear) migrateGear(g, (obj.v || 1) < 2);
   for (const k of Object.keys(st.res)) if (!RESOURCES[k]) delete st.res[k];
   st.v = SAVE_VERSION;
   return st;
 }
+/* Convertit un objet d'une ancienne version (stats élémentaires, sans prospection) */
+function migrateGear(g, old) {
+  const def = ITEMS[g.id];
+  if (old || Object.keys(g.stats).some(k => OLD_ELEM_STATS.includes(k) || k === 'pui')) g.stats = convertOldStats(g.stats);
+  const q = Math.max(0, Math.min(1, itemQualityRaw(g, def)));
+  for (const [k, [a, b]] of Object.entries(def.stats)) {
+    if (g.stats[k] === undefined) g.stats[k] = g.stasis ? b * 2 : Math.round(a + (b - a) * q);
+    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(b, g.stats[k]));
+  }
+  for (const k of Object.keys(g.stats)) if (!(k in def.stats)) delete g.stats[k];
+}
+function itemQualityRaw(g, def) { let tot = 0, n = 0; for (const [k, [a, b]] of Object.entries(def.stats)) if (g.stats[k] !== undefined) { tot += b === a ? 1 : (g.stats[k] - a) / (b - a); n++; } return n ? tot / n : 0.5; }
 function exportSave(st) { return btoa(unescape(encodeURIComponent(serialize(st)))); }
 function importSave(str) { return migrate(JSON.parse(decodeURIComponent(escape(atob(str.trim()))))); }
 
