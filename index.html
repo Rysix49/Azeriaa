@@ -730,6 +730,46 @@ button.use:hover { border-color: var(--line-2); }
 .food-on small { color: var(--muted); font-variant-numeric: tabular-nums; }
 .food-off { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .food-desc { padding: 8px 10px; border-radius: 9px; background: #e8aa2e12; color: var(--gold-2); font-size: 13px; font-weight: 700; }
+
+/* ---------- Chat « Général » ---------- */
+.chat-fab {
+  position: fixed; z-index: 55; right: max(20px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; font-weight: 900; font-size: 14px;
+  border: 1px solid #b9800f; background: linear-gradient(180deg, #f8d77c, #e5a52a); color: var(--gold-ink); box-shadow: 0 2px 0 #6e4a07, 0 10px 24px #000a;
+}
+.chat-open .chat-fab { display: none; }
+.chat-badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--hp); color: #fff; font-style: normal; font-size: 11px; font-weight: 900; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--bg); }
+.chat-panel {
+  position: fixed; z-index: 56; right: max(20px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  width: min(380px, calc(100vw - 40px)); height: min(520px, calc(100vh - 120px)); display: flex; flex-direction: column;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: 0 20px 50px #000c; overflow: hidden; animation: tin .2s ease-out;
+}
+.chat-h { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.chat-h b { font-size: 22px; color: var(--gold-2); flex: 1; }
+.chat-st { font-size: 11px; font-weight: 900; color: var(--dim); display: inline-flex; align-items: center; gap: 5px; }
+.chat-st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dim); }
+.chat-st.on { color: var(--win); } .chat-st.on::before { background: var(--win); box-shadow: 0 0 6px var(--win); }
+.chat-st.off { color: #ff8b78; } .chat-st.off::before { background: var(--hp); }
+.chat-list { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; }
+.chat-empty { margin: auto; text-align: center; color: var(--muted); font-size: 13px; max-width: 28ch; }
+.msg { max-width: 88%; align-self: flex-start; background: #ffffff0a; border: 1px solid #ffffff0d; border-radius: 12px 12px 12px 4px; padding: 6px 10px; }
+.msg.me { align-self: flex-end; background: #e8aa2e1c; border-color: #e8aa2e40; border-radius: 12px 12px 4px 12px; }
+.msg-h { display: flex; gap: 8px; align-items: baseline; }
+.msg-h b { font-size: 12.5px; }
+.msg-h time { font-size: 10.5px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.msg p { margin: 2px 0 0; font-size: 13.5px; overflow-wrap: anywhere; }
+.chat-form { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); background: #00000025; }
+.chat-name { display: flex; flex-direction: column; gap: 4px; }
+.chat-row { display: flex; gap: 6px; }
+.chat-row input { flex: 1; min-width: 0; }
+@media (max-width: 900px) {
+  .chat-fab { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); padding: 9px 14px; }
+  .chat-panel { left: 0; right: 0; bottom: 0; width: auto; height: min(78vh, 600px); border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+:root[data-layout="mobile"] .chat-fab { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+:root[data-layout="mobile"] .chat-panel { left: 0; right: 0; bottom: 0; width: auto; max-width: 460px; margin-inline: auto; height: min(78vh, 600px); border-radius: 16px 16px 0 0; }
+.toasts { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 900px) { .toasts { bottom: calc(136px + env(safe-area-inset-bottom, 0px)); } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -777,6 +817,9 @@ button.use:hover { border-color: var(--line-2); }
 :root[data-layout="mobile"] .cr-send { grid-column: 1 / -1; justify-content: flex-start; }
 :root[data-layout="mobile"] .skin-pick, :root[data-layout="mobile"] .skin-pick.three { grid-template-columns: 1fr; }
 :root[data-layout="mobile"] .toasts { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+:root[data-layout="mobile"] .chat-fab { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); padding: 9px 14px; }
+:root[data-layout="mobile"] .chat-panel { left: 0; right: 0; bottom: 0; width: auto; height: min(78vh, 600px); border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+:root[data-layout="mobile"] .toasts { bottom: calc(136px + env(safe-area-inset-bottom, 0px)); }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -3507,7 +3550,16 @@ function shell() {
     <main id="main"></main>
     <footer class="foot">Jeu de fan non officiel et gratuit, inspiré de l'univers de Dofus. Dofus et tous les noms associés appartiennent à Ankama Games. Aucune image du jeu original n'est utilisée.</footer>
   </div>
-  <nav class="bottom-nav" aria-label="Sections du jeu">${nav}</nav>`;
+  <nav class="bottom-nav" aria-label="Sections du jeu">${nav}</nav>
+  <button class="chat-fab" data-act="chattoggle" aria-label="Ouvrir le chat Général">💬 <span>Général</span><i class="chat-badge" id="chatbadge" hidden></i></button>
+  <section class="chat-panel" id="chat" hidden aria-label="Chat Général">
+    <header class="chat-h"><b class="display">Général</b><span class="chat-st" id="chatst">Connexion…</span><button class="btn sm ghost" data-act="chattoggle" aria-label="Fermer le chat">✕</button></header>
+    <div class="chat-list" id="chatlist"></div>
+    <form class="chat-form" id="chatform">
+      <div class="chat-name" id="chatnamebox"><label class="label" for="chatname">Ton pseudo</label><input id="chatname" type="text" maxlength="20" autocomplete="nickname" placeholder="Pseudo visible par tous"></div>
+      <div class="chat-row"><input id="chatmsg" type="text" maxlength="240" autocomplete="off" placeholder="Écris un message…"><button class="btn sm gold" type="submit">Envoyer</button></div>
+    </form>
+  </section>`;
 }
 function updateChrome() {
   for (const b of document.querySelectorAll('.nav-btn')) { const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
@@ -4127,6 +4179,11 @@ const ACTIONS = {
   eat(d) { const h = heroById(d.hero); const err = eat(st, h, d.id); if (err) toast(err, 'warn'); else toast(`${h.name} mange ${RESOURCES[d.id].name} : ${RESOURCES[d.id].food.desc}.`, 'quest'); },
   closeaway() { const b = $('#modal'); b.hidden = true; b.innerHTML = ''; return 'keep'; },
   layout(d) { applyLayout(d.v); ui._psig = ''; scrollTop(); },
+  chattoggle() {
+    chat.open = !chat.open; $('#chat').hidden = !chat.open; document.body.classList.toggle('chat-open', chat.open);
+    if (chat.open) { chat.unread = 0; chatFetch(); const l = $('#chatlist'); l.scrollTop = l.scrollHeight; setTimeout(() => (chatName() ? $('#chatmsg') : $('#chatname')).focus(), 30); }
+    renderChat(); return 'keep';
+  },
   rcls(d) { ui.recruitCls = d.cls; },
   rrandom() { ui.recruitName = HERO_NAMES[irnd(0, HERO_NAMES.length - 1)]; },
   recruit() {
@@ -4176,6 +4233,70 @@ document.addEventListener('pointerdown', e => {
 document.addEventListener('pointerup', () => setTimeout(() => { pointerDown = false; }, 0), true);
 document.addEventListener('pointercancel', () => { pointerDown = false; }, true);
 
+/* ---------------------------- Chat « Général » ----------------------------
+   Messages partagés via la fonction Netlify /api/chat (voir netlify/functions/chat.mjs).
+   Hors du site Netlify (aperçu Claude, fichier local), le chat s'affiche hors ligne. */
+const CHAT_URL = '/api/chat';
+const chat = { open: false, msgs: [], last: 0, unread: 0, ok: null, loaded: false, sending: false };
+function chatName() { try { return localStorage.getItem('amakna-pseudo') || ''; } catch (e) { return ''; } }
+function setChatName(n) { try { localStorage.setItem('amakna-pseudo', n); } catch (e) {} }
+function nameColor(n) { let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) % 360; return `hsl(${h} 70% 70%)`; }
+async function chatFetch() {
+  try {
+    const r = await fetch(`${CHAT_URL}?since=${chat.last}`, { cache: 'no-store' });
+    if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) throw new Error('indisponible');
+    const d = await r.json(); chat.ok = true;
+    const fresh = (d.messages || []).filter(m => m.t > chat.last);
+    if (fresh.length) {
+      chat.msgs = chat.msgs.concat(fresh).slice(-150);
+      chat.last = Math.max(chat.last, ...fresh.map(m => m.t));
+      if (chat.loaded && !chat.open) chat.unread += fresh.filter(m => m.n !== chatName()).length;
+    }
+    chat.loaded = true;
+  } catch (e) { chat.ok = false; }
+  renderChat();
+}
+function renderChat() {
+  const st = $('#chatst'); if (!st) return;
+  st.textContent = chat.ok === null ? 'Connexion…' : chat.ok ? 'En ligne' : 'Hors ligne';
+  st.className = 'chat-st ' + (chat.ok ? 'on' : chat.ok === false ? 'off' : '');
+  const badge = $('#chatbadge'); badge.hidden = !chat.unread; badge.textContent = chat.unread > 99 ? '99+' : chat.unread;
+  const nb = $('#chatnamebox'); nb.hidden = !!chatName();
+  const list = $('#chatlist');
+  const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
+  const me = chatName();
+  const html = chat.ok === false
+    ? '<div class="chat-empty">Le chat fonctionne sur le site en ligne (Netlify). Ici, il est hors ligne.</div>'
+    : chat.msgs.length ? chat.msgs.map(m => { const d = new Date(m.t);
+        return `<div class="msg${m.n === me ? ' me' : ''}"><div class="msg-h"><b style="color:${nameColor(m.n)}">${esc(m.n)}</b><time>${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}</time></div><p>${esc(m.x)}</p></div>`; }).join('')
+    : '<div class="chat-empty">Aucun message pour l’instant. Dis bonjour !</div>';
+  if (list.dataset.h !== html) { list.innerHTML = html; list.dataset.h = html; if (atBottom || !list.dataset.init) { list.scrollTop = list.scrollHeight; list.dataset.init = 1; } }
+  const off = chat.ok === false;
+  for (const el of document.querySelectorAll('#chatform input, #chatform button')) el.disabled = off || chat.sending;
+  const ch = $('.chat-h b'); if (ch && me) ch.title = `Ton pseudo : ${me}`;
+}
+let chatAt = 0;
+function chatLoop() {
+  chatFetch(); chatAt = Date.now();
+  setInterval(() => { if (Date.now() - chatAt >= (chat.open ? 3000 : 15000)) { chatAt = Date.now(); chatFetch(); } }, 1000);
+}
+async function chatSend() {
+  const msgEl = $('#chatmsg'); const nameEl = $('#chatname');
+  const x = msgEl.value.trim(); let n = chatName();
+  if (!n) { n = nameEl.value.trim().slice(0, 20); if (!n) { nameEl.focus(); toast('Choisis un pseudo pour parler dans le chat.', 'warn'); return; } setChatName(n); }
+  if (!x) return;
+  chat.sending = true; renderChat();
+  try {
+    const h = st.heroes[0];
+    const r = await fetch(CHAT_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ n, x, c: h ? h.cls : '' }) });
+    if (!r.ok) throw new Error(await r.text());
+    msgEl.value = '';
+    await chatFetch();
+  } catch (e) { toast('Message non envoyé. Vérifie ta connexion et réessaie.', 'warn'); }
+  chat.sending = false; renderChat(); msgEl.focus();
+}
+document.addEventListener('submit', e => { if (e.target.id === 'chatform') { e.preventDefault(); chatSend(); } });
+
 /* ---------------------------- Hors-ligne (20 min max) ---------------------------- */
 function offline(ms) {
   if (!st.heroes.some(h => h.act)) return;
@@ -4214,6 +4335,7 @@ function start(data) {
   shell();
   if (away > 15000) offline(away);
   render(true);
+  chatLoop();
   setInterval(loop, 200);
   setInterval(saveGame, 10000);
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });

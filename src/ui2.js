@@ -175,7 +175,16 @@ function shell() {
     <main id="main"></main>
     <footer class="foot">Jeu de fan non officiel et gratuit, inspiré de l'univers de Dofus. Dofus et tous les noms associés appartiennent à Ankama Games. Aucune image du jeu original n'est utilisée.</footer>
   </div>
-  <nav class="bottom-nav" aria-label="Sections du jeu">${nav}</nav>`;
+  <nav class="bottom-nav" aria-label="Sections du jeu">${nav}</nav>
+  <button class="chat-fab" data-act="chattoggle" aria-label="Ouvrir le chat Général">💬 <span>Général</span><i class="chat-badge" id="chatbadge" hidden></i></button>
+  <section class="chat-panel" id="chat" hidden aria-label="Chat Général">
+    <header class="chat-h"><b class="display">Général</b><span class="chat-st" id="chatst">Connexion…</span><button class="btn sm ghost" data-act="chattoggle" aria-label="Fermer le chat">✕</button></header>
+    <div class="chat-list" id="chatlist"></div>
+    <form class="chat-form" id="chatform">
+      <div class="chat-name" id="chatnamebox"><label class="label" for="chatname">Ton pseudo</label><input id="chatname" type="text" maxlength="20" autocomplete="nickname" placeholder="Pseudo visible par tous"></div>
+      <div class="chat-row"><input id="chatmsg" type="text" maxlength="240" autocomplete="off" placeholder="Écris un message…"><button class="btn sm gold" type="submit">Envoyer</button></div>
+    </form>
+  </section>`;
 }
 function updateChrome() {
   for (const b of document.querySelectorAll('.nav-btn')) { const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
@@ -795,6 +804,11 @@ const ACTIONS = {
   eat(d) { const h = heroById(d.hero); const err = eat(st, h, d.id); if (err) toast(err, 'warn'); else toast(`${h.name} mange ${RESOURCES[d.id].name} : ${RESOURCES[d.id].food.desc}.`, 'quest'); },
   closeaway() { const b = $('#modal'); b.hidden = true; b.innerHTML = ''; return 'keep'; },
   layout(d) { applyLayout(d.v); ui._psig = ''; scrollTop(); },
+  chattoggle() {
+    chat.open = !chat.open; $('#chat').hidden = !chat.open; document.body.classList.toggle('chat-open', chat.open);
+    if (chat.open) { chat.unread = 0; chatFetch(); const l = $('#chatlist'); l.scrollTop = l.scrollHeight; setTimeout(() => (chatName() ? $('#chatmsg') : $('#chatname')).focus(), 30); }
+    renderChat(); return 'keep';
+  },
   rcls(d) { ui.recruitCls = d.cls; },
   rrandom() { ui.recruitName = HERO_NAMES[irnd(0, HERO_NAMES.length - 1)]; },
   recruit() {
@@ -844,6 +858,70 @@ document.addEventListener('pointerdown', e => {
 document.addEventListener('pointerup', () => setTimeout(() => { pointerDown = false; }, 0), true);
 document.addEventListener('pointercancel', () => { pointerDown = false; }, true);
 
+/* ---------------------------- Chat « Général » ----------------------------
+   Messages partagés via la fonction Netlify /api/chat (voir netlify/functions/chat.mjs).
+   Hors du site Netlify (aperçu Claude, fichier local), le chat s'affiche hors ligne. */
+const CHAT_URL = '/api/chat';
+const chat = { open: false, msgs: [], last: 0, unread: 0, ok: null, loaded: false, sending: false };
+function chatName() { try { return localStorage.getItem('amakna-pseudo') || ''; } catch (e) { return ''; } }
+function setChatName(n) { try { localStorage.setItem('amakna-pseudo', n); } catch (e) {} }
+function nameColor(n) { let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) % 360; return `hsl(${h} 70% 70%)`; }
+async function chatFetch() {
+  try {
+    const r = await fetch(`${CHAT_URL}?since=${chat.last}`, { cache: 'no-store' });
+    if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) throw new Error('indisponible');
+    const d = await r.json(); chat.ok = true;
+    const fresh = (d.messages || []).filter(m => m.t > chat.last);
+    if (fresh.length) {
+      chat.msgs = chat.msgs.concat(fresh).slice(-150);
+      chat.last = Math.max(chat.last, ...fresh.map(m => m.t));
+      if (chat.loaded && !chat.open) chat.unread += fresh.filter(m => m.n !== chatName()).length;
+    }
+    chat.loaded = true;
+  } catch (e) { chat.ok = false; }
+  renderChat();
+}
+function renderChat() {
+  const st = $('#chatst'); if (!st) return;
+  st.textContent = chat.ok === null ? 'Connexion…' : chat.ok ? 'En ligne' : 'Hors ligne';
+  st.className = 'chat-st ' + (chat.ok ? 'on' : chat.ok === false ? 'off' : '');
+  const badge = $('#chatbadge'); badge.hidden = !chat.unread; badge.textContent = chat.unread > 99 ? '99+' : chat.unread;
+  const nb = $('#chatnamebox'); nb.hidden = !!chatName();
+  const list = $('#chatlist');
+  const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
+  const me = chatName();
+  const html = chat.ok === false
+    ? '<div class="chat-empty">Le chat fonctionne sur le site en ligne (Netlify). Ici, il est hors ligne.</div>'
+    : chat.msgs.length ? chat.msgs.map(m => { const d = new Date(m.t);
+        return `<div class="msg${m.n === me ? ' me' : ''}"><div class="msg-h"><b style="color:${nameColor(m.n)}">${esc(m.n)}</b><time>${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}</time></div><p>${esc(m.x)}</p></div>`; }).join('')
+    : '<div class="chat-empty">Aucun message pour l’instant. Dis bonjour !</div>';
+  if (list.dataset.h !== html) { list.innerHTML = html; list.dataset.h = html; if (atBottom || !list.dataset.init) { list.scrollTop = list.scrollHeight; list.dataset.init = 1; } }
+  const off = chat.ok === false;
+  for (const el of document.querySelectorAll('#chatform input, #chatform button')) el.disabled = off || chat.sending;
+  const ch = $('.chat-h b'); if (ch && me) ch.title = `Ton pseudo : ${me}`;
+}
+let chatAt = 0;
+function chatLoop() {
+  chatFetch(); chatAt = Date.now();
+  setInterval(() => { if (Date.now() - chatAt >= (chat.open ? 3000 : 15000)) { chatAt = Date.now(); chatFetch(); } }, 1000);
+}
+async function chatSend() {
+  const msgEl = $('#chatmsg'); const nameEl = $('#chatname');
+  const x = msgEl.value.trim(); let n = chatName();
+  if (!n) { n = nameEl.value.trim().slice(0, 20); if (!n) { nameEl.focus(); toast('Choisis un pseudo pour parler dans le chat.', 'warn'); return; } setChatName(n); }
+  if (!x) return;
+  chat.sending = true; renderChat();
+  try {
+    const h = st.heroes[0];
+    const r = await fetch(CHAT_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ n, x, c: h ? h.cls : '' }) });
+    if (!r.ok) throw new Error(await r.text());
+    msgEl.value = '';
+    await chatFetch();
+  } catch (e) { toast('Message non envoyé. Vérifie ta connexion et réessaie.', 'warn'); }
+  chat.sending = false; renderChat(); msgEl.focus();
+}
+document.addEventListener('submit', e => { if (e.target.id === 'chatform') { e.preventDefault(); chatSend(); } });
+
 /* ---------------------------- Hors-ligne (20 min max) ---------------------------- */
 function offline(ms) {
   if (!st.heroes.some(h => h.act)) return;
@@ -882,6 +960,7 @@ function start(data) {
   shell();
   if (away > 15000) offline(away);
   render(true);
+  chatLoop();
   setInterval(loop, 200);
   setInterval(saveGame, 10000);
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
