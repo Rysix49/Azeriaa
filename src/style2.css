@@ -775,3 +775,15 @@ button.use:hover { border-color: var(--line-2); }
 .update-band span { flex: 1; min-width: 180px; }
 .update-band button { border: 1px solid #b9800f; background: linear-gradient(180deg, #f8d77c, #e5a52a); color: #2a1c04; font: 800 13px 'Nunito', system-ui, sans-serif; padding: 8px 14px; border-radius: 9px; cursor: pointer; white-space: nowrap; }
 @keyframes bandin { from { opacity: 0; transform: translate(-50%, -10px); } }
+
+/* ---------- Compte ---------- */
+.acc-form { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; align-items: center; }
+@media (max-width: 420px) { .acc-form { grid-template-columns: minmax(0, 1fr); } }
+.acc-on { display: flex; align-items: center; gap: 12px; }
+.acc-av { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font: 700 22px var(--f-display); color: var(--gold-ink); background: radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold) 60%, #9c6a10); box-shadow: 0 0 0 2px #0008; }
+.acc-on b { display: block; font-size: 16px; }
+.acc-on small { color: var(--muted); }
+.acc-err { margin: 0; color: #ff9a87; font-size: 13px; font-weight: 700; }
+.acc-ok { margin: 0; color: var(--win); font-size: 13px; font-weight: 700; }
+.acc-chip { cursor: pointer; }
+.acc-chip b { color: var(--gold-2); }

@@ -782,6 +782,18 @@ button.use:hover { border-color: var(--line-2); }
 .update-band span { flex: 1; min-width: 180px; }
 .update-band button { border: 1px solid #b9800f; background: linear-gradient(180deg, #f8d77c, #e5a52a); color: #2a1c04; font: 800 13px 'Nunito', system-ui, sans-serif; padding: 8px 14px; border-radius: 9px; cursor: pointer; white-space: nowrap; }
 @keyframes bandin { from { opacity: 0; transform: translate(-50%, -10px); } }
+
+/* ---------- Compte ---------- */
+.acc-form { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; align-items: center; }
+@media (max-width: 420px) { .acc-form { grid-template-columns: minmax(0, 1fr); } }
+.acc-on { display: flex; align-items: center; gap: 12px; }
+.acc-av { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font: 700 22px var(--f-display); color: var(--gold-ink); background: radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold) 60%, #9c6a10); box-shadow: 0 0 0 2px #0008; }
+.acc-on b { display: block; font-size: 16px; }
+.acc-on small { color: var(--muted); }
+.acc-err { margin: 0; color: #ff9a87; font-size: 13px; font-weight: 700; }
+.acc-ok { margin: 0; color: var(--win); font-size: 13px; font-weight: 700; }
+.acc-chip { cursor: pointer; }
+.acc-chip b { color: var(--gold-2); }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -832,6 +844,7 @@ button.use:hover { border-color: var(--line-2); }
 :root[data-layout="mobile"] .chat-fab { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); padding: 9px 14px; }
 :root[data-layout="mobile"] .chat-panel { left: 0; right: 0; bottom: 0; width: auto; height: min(78vh, 600px); border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
 :root[data-layout="mobile"] .toasts { bottom: calc(136px + env(safe-area-inset-bottom, 0px)); }
+:root[data-layout="mobile"] .acc-form { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -1385,7 +1398,7 @@ footer { color: var(--dim); font-size: 11.5px; text-align: center; margin-top: 3
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793109422';
+const BUILD_ID = '1793109624';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3627,6 +3640,7 @@ function updateChrome() {
   const active = st.heroes.filter(h => h.act).length;
   const w = `<span class="wchip gold" title="Kamas">${coin}<b class="num">${fmt(st.kamas)}</b></span>
     <span class="wchip" title="Héros en activité"><small>Actifs</small><b class="num">${active}/${st.heroes.length}</b></span>
+    ${acc.token ? `<button class="wchip acc-chip hide-sm" data-act="goaccount" title="Compte connecté">👤 <b>${esc(acc.name)}</b></button>` : ''}
     <span class="wchip hide-sm" title="Monstres vaincus"><small>Vaincus</small><b class="num">${fmt(st.stats.totalKills)}</b></span>`;
   if (w !== ui._wallet) { $('#wallet').innerHTML = w; ui._wallet = w; }
   renderParty();
@@ -3786,6 +3800,7 @@ function renderRecruit(first) {
     <div class="recruit-foot"><label class="label" for="rname">Nom</label>
       <input id="rname" type="text" maxlength="18" value="${esc(ui.recruitName)}" data-input="rname">
       <button class="btn sm ghost" data-act="rrandom">Au hasard</button><span class="grow"></span>
+      ${first && !acc.token ? '<button class="btn ghost" data-act="goaccount">J’ai déjà un compte</button>' : ''}
       ${!first ? '<button class="btn ghost" data-act="recruitclose">Annuler</button>' : ''}
       <button class="btn gold lg" data-act="recruit" ${st.kamas < cost ? 'disabled' : ''}>${cost ? `Recruter · ${fmt(cost)} kamas` : 'Commencer l’aventure'}</button>
     </div>
@@ -4135,6 +4150,7 @@ function renderAteliers() {
 function renderOptions() {
   const s = st.stats;
   return `<div class="opt-grid">
+    ${accountCard()}
     <section class="panel"><h3 class="display">Interface</h3>
       <p class="sub" style="margin:0">Tu utilises la nouvelle interface. Ta partie est la même dans les deux : tu peux passer de l’une à l’autre quand tu veux.</p>
       <div class="skin-pick"><button class="skin on" disabled><b>Nouvelle</b><small>Barre latérale, scènes de combat, poupée d’équipement</small></button>
@@ -4242,6 +4258,11 @@ const ACTIONS = {
     if (chat.open) { chat.unread = 0; chatFetch(); const l = $('#chatlist'); l.scrollTop = l.scrollHeight; setTimeout(() => (chatName() ? $('#chatmsg') : $('#chatname')).focus(), 30); }
     renderChat(); return 'keep';
   },
+  accregister() { accRun('register'); return 'keep'; },
+  acclogin() { accRun('login'); return 'keep'; },
+  accsave() { acc.msg = ''; accCloudSave().then(() => { if (!acc.err) acc.msg = 'Partie sauvegardée en ligne.'; render(true); }); return 'keep'; },
+  acclogout() { const t = { action: 'logout', name: acc.name, token: acc.token }; accCloudSave().finally(() => { accCall(t).catch(() => {}); accLocalLogout(); acc.msg = ''; render(true); toast('Déconnecté. Ta partie reste aussi sur cet appareil.'); }); return 'keep'; },
+  goaccount() { ui.view = 'options'; scrollTop(); },
   rcls(d) { ui.recruitCls = d.cls; },
   rrandom() { ui.recruitName = HERO_NAMES[irnd(0, HERO_NAMES.length - 1)]; },
   recruit() {
@@ -4291,13 +4312,82 @@ document.addEventListener('pointerdown', e => {
 document.addEventListener('pointerup', () => setTimeout(() => { pointerDown = false; }, 0), true);
 document.addEventListener('pointercancel', () => { pointerDown = false; }, true);
 
+/* ---------------------------- Compte joueur (sauvegarde cloud) ----------------------------
+   Fonction Netlify /api/account (voir netlify/functions/account.mjs). */
+const ACC_URL = '/api/account';
+const ACC_KEY = 'amakna-account';
+const acc = { name: '', token: '', at: 0, busy: false, msg: '', err: '' };
+try { Object.assign(acc, JSON.parse(localStorage.getItem(ACC_KEY) || '{}')); } catch (e) {}
+function accPersist() { try { localStorage.setItem(ACC_KEY, JSON.stringify({ name: acc.name, token: acc.token, at: acc.at })); } catch (e) {} }
+async function accCall(body, keepalive) {
+  let r;
+  try { r = await fetch(ACC_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), keepalive: !!keepalive }); }
+  catch (e) { throw new Error('Connexion impossible. Les comptes fonctionnent sur le site en ligne.'); }
+  let d = null; try { d = await r.json(); } catch (e) {}
+  if (!d) throw new Error('Les comptes fonctionnent sur le site en ligne (Netlify), pas dans cet aperçu.');
+  if (!r.ok) { const er = new Error(d.error || 'Erreur du serveur.'); er.status = r.status; throw er; }
+  return d;
+}
+function accAdopt(saveStr, savedAt) {
+  st = migrate(JSON.parse(saveStr)); st.lastTick = Date.now();
+  ui.hero = null; ui._psig = ''; ui.sel = null; ui.lastSig = '';
+  acc.at = savedAt; accPersist(); saveGame();
+}
+function accLocalLogout() { acc.name = ''; acc.token = ''; acc.at = 0; accPersist(); }
+async function accCloudSave(keepalive) {
+  if (!acc.token || acc.busy) return;
+  try { const d = await accCall({ action: 'save', name: acc.name, token: acc.token, save: serialize(st) }, keepalive); acc.at = d.savedAt; acc.err = ''; accPersist(); }
+  catch (e) { acc.err = e.message; if (e.status === 401) { accLocalLogout(); toast('Ta session a expiré : reconnecte-toi dans Options.', 'warn'); } }
+}
+async function accSync() {
+  if (!acc.token) return;
+  try {
+    const d = await accCall({ action: 'load', name: acc.name, token: acc.token });
+    if (d.save && d.savedAt > acc.at) { accAdopt(d.save, d.savedAt); toast(`Partie de ${acc.name} récupérée depuis ton compte.`, 'quest'); render(true); }
+    else accCloudSave();
+  } catch (e) { acc.err = e.message; if (e.status === 401) accLocalLogout(); }
+}
+async function accRun(kind) {
+  const name = ($('#accname') || {}).value || ''; const pass = ($('#accpass') || {}).value || '';
+  acc.busy = true; acc.msg = ''; acc.err = ''; render(true);
+  try {
+    if (kind === 'register') {
+      const d = await accCall({ action: 'register', name: name.trim(), pass, save: serialize(st) });
+      Object.assign(acc, { name: d.name, token: d.token, at: d.savedAt }); accPersist();
+      acc.msg = 'Compte créé. Ta partie est sauvegardée en ligne.'; toast(`Compte ${d.name} créé !`, 'quest');
+    } else {
+      const d = await accCall({ action: 'login', name: name.trim(), pass });
+      Object.assign(acc, { name: d.name, token: d.token }); acc.busy = false;
+      if (d.save) { accAdopt(d.save, d.savedAt); acc.msg = 'Connecté. Ta partie a été chargée.'; }
+      else { acc.at = 0; accPersist(); await accCloudSave(); acc.msg = 'Connecté. Ta partie actuelle est maintenant liée au compte.'; }
+      toast(`Bon retour, ${d.name} !`, 'quest');
+    }
+  } catch (e) { acc.err = e.message; }
+  acc.busy = false; render(true);
+}
+function accountCard() {
+  const when = acc.at ? new Date(acc.at).toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '—';
+  if (acc.token) return `<section class="panel acc-card"><h3 class="display">Compte</h3>
+    <div class="acc-on"><span class="acc-av">${esc(acc.name.slice(0, 1).toUpperCase())}</span><div><b>${esc(acc.name)}</b><small>Dernière sauvegarde en ligne : ${when}</small></div></div>
+    <p class="hint">Ta partie est sauvegardée en ligne toutes les minutes et quand tu quittes le jeu. Connecte-toi avec ce pseudo sur un autre appareil pour la retrouver.</p>
+    ${acc.err ? `<p class="acc-err">${esc(acc.err)}</p>` : ''}${acc.msg ? `<p class="acc-ok">${esc(acc.msg)}</p>` : ''}
+    <div class="row-btns left"><button class="btn gold" data-act="accsave">Sauvegarder maintenant</button><button class="btn ghost" data-act="acclogout">Se déconnecter</button></div></section>`;
+  return `<section class="panel acc-card"><h3 class="display">Compte</h3>
+    <p class="sub" style="margin:0">Crée un compte pour sauvegarder ta partie en ligne et la retrouver sur n’importe quel appareil.</p>
+    <div class="acc-form"><label class="label" for="accname">Pseudo</label><input id="accname" type="text" maxlength="20" autocomplete="username" placeholder="3 à 20 caractères">
+      <label class="label" for="accpass">Mot de passe</label><input id="accpass" type="password" autocomplete="current-password" placeholder="4 caractères minimum"></div>
+    ${acc.err ? `<p class="acc-err">${esc(acc.err)}</p>` : ''}
+    <div class="row-btns left"><button class="btn gold" data-act="acclogin" ${acc.busy ? 'disabled' : ''}>Se connecter</button><button class="btn" data-act="accregister" ${acc.busy ? 'disabled' : ''}>Créer un compte</button></div>
+    <p class="hint">Se connecter remplace la partie de cet appareil par celle du compte. Créer un compte enregistre ta partie actuelle.</p></section>`;
+}
+
 /* ---------------------------- Chat « Général » ----------------------------
    Messages partagés via la fonction Netlify /api/chat (voir netlify/functions/chat.mjs).
    Hors du site Netlify (aperçu Claude, fichier local), le chat s'affiche hors ligne. */
 const CHAT_URL = '/api/chat';
 const CHAT_CID = (() => { try { let c = sessionStorage.getItem('amakna-cid'); if (!c) { c = Math.random().toString(36).slice(2, 12); sessionStorage.setItem('amakna-cid', c); } return c; } catch (e) { return Math.random().toString(36).slice(2, 12); } })();
 const chat = { online: 0, open: false, msgs: [], last: 0, unread: 0, ok: null, loaded: false, sending: false };
-function chatName() { try { return localStorage.getItem('amakna-pseudo') || ''; } catch (e) { return ''; } }
+function chatName() { if (acc.name) return acc.name; try { return localStorage.getItem('amakna-pseudo') || ''; } catch (e) { return ''; } }
 function setChatName(n) { try { localStorage.setItem('amakna-pseudo', n); } catch (e) {} }
 function nameColor(n) { let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) % 360; return `hsl(${h} 70% 70%)`; }
 async function chatFetch() {
@@ -4396,6 +4486,9 @@ function start(data) {
   if (away > 15000) offline(away);
   render(true);
   chatLoop();
+  accSync();
+  setInterval(() => accCloudSave(), 60000);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) accCloudSave(true); });
   setInterval(loop, 200);
   setInterval(saveGame, 10000);
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
