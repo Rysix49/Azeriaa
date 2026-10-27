@@ -179,7 +179,6 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
   if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
-  if (h.cls === 'sacrieur') return Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100);
   return 0;
 }
 function spellPower(h, t, f, sp) {
@@ -196,6 +195,7 @@ function rollSpell(h, t, f, sp, monRes) {
   if (h.cls === 'sram' && f && f.turn === 1 && sp.type !== 'heal') v *= 2;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
+  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }

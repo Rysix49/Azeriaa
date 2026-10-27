@@ -1126,7 +1126,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793123434';
+const BUILD_ID = '1793124994';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -1204,7 +1204,7 @@ const CLASSES = {
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
-    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 Dégâts par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, il frappe avec +70 Dégâts.']], desc: 'Gagne +1 Dégâts par % de PV manquant. À 30 % de vie, il frappe avec +70 Dégâts.' },
+    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 % de dégâts finaux par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, ses dégâts sont multipliés par 1,7.']], desc: '+1 % de dégâts finaux par % de PV manquant.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
@@ -1810,7 +1810,6 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
   if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
-  if (h.cls === 'sacrieur') return Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100);
   return 0;
 }
 function spellPower(h, t, f, sp) {
@@ -1827,6 +1826,7 @@ function rollSpell(h, t, f, sp, monRes) {
   if (h.cls === 'sram' && f && f.turn === 1 && sp.type !== 'heal') v *= 2;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
+  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }

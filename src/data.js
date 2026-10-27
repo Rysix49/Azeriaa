@@ -75,7 +75,7 @@ const CLASSES = {
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
-    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 Dégâts par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, il frappe avec +70 Dégâts.']], desc: 'Gagne +1 Dégâts par % de PV manquant. À 30 % de vie, il frappe avec +70 Dégâts.' },
+    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 % de dégâts finaux par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, ses dégâts sont multipliés par 1,7.']], desc: '+1 % de dégâts finaux par % de PV manquant.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
