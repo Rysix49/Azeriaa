@@ -249,7 +249,7 @@ function heroTurn(st, h, t, ev) {
   }
   };
   phase(true);
-  if (rewind && f.mons.some(m => m.hp > 0)) { actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'sram' && f.turn === 1 && actions.length) pre += 'Embuscade ! ';
   ev.log(h, pre + (actions.length ? actions.join(' · ') : `${h.name} passe son tour.`), 'hero');

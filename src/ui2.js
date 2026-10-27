@@ -273,7 +273,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}">
+      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           <div class="sprite">${emblem(h.cls, 'big')}</div></div>
@@ -293,12 +293,36 @@ function floatNum(el, txt, cls) {
   el.appendChild(f); setTimeout(() => f.remove(), 950);
   if (cls === 'dmg') { el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 300); }
 }
+/* Effets visuels des passifs (Xélor) posés par-dessus la scène */
+function sceneFx(scene, kind, text) {
+  if (!scene) return;
+  const fx = document.createElement('div'); fx.className = 'fx fx-' + kind;
+  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">⏳</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
+  scene.appendChild(fx);
+  scene.classList.remove('fx-' + kind + '-on'); void scene.offsetWidth; scene.classList.add('fx-' + kind + '-on');
+  setTimeout(() => { fx.remove(); scene.classList.remove('fx-' + kind + '-on'); }, 1500);
+}
+function iceBurst(el) {
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('span'); s.className = 'ice'; s.textContent = '❄';
+    const a = (i / 6) * Math.PI * 2; s.style.setProperty('--dx', Math.cos(a) * 34 + 'px'); s.style.setProperty('--dy', Math.sin(a) * 26 - 10 + 'px');
+    el.appendChild(s); setTimeout(() => s.remove(), 800);
+  }
+  el.classList.remove('freeze-pop'); void el.offsetWidth; el.classList.add('freeze-pop');
+}
 function patchCombat() {
   for (const h of st.heroes) {
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) continue;
     const t = heroTotals(st, h); const hp = displayHp(st, h);
     const q = k => card.querySelector(`[data-k="${k}"]`);
     const [sc, stxt] = statusOf(h);
+    const scene = card.querySelector('.scene');
+    if (h.fight && scene) {
+      const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
+      if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
+      scene.dataset.rw = rw; scene.dataset.px = px;
+    }
     const s1 = q('status'); if (s1) { if (s1.textContent !== stxt) s1.textContent = stxt; s1.className = 'status ' + sc; }
     const fg = q('fighter');
     if (fg) {
@@ -319,6 +343,7 @@ function patchCombat() {
       if (!isNaN(prev) && m.hp < prev) floatNum(el, '−' + fmt(prev - m.hp), 'dmg');
       el.dataset.hp = m.hp;
       el.classList.toggle('dead', m.hp <= 0);
+      if (m.frozen && m.hp > 0 && !el.classList.contains('frozen')) iceBurst(el);
       el.classList.toggle('frozen', !!m.frozen && m.hp > 0);
       setBar(el, m.hp, m.max);
       el.querySelector('[data-k="mhp"]').textContent = fmt(m.hp);
