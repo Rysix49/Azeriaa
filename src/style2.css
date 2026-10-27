@@ -1084,3 +1084,6 @@ label.btn { cursor: pointer; }
 @keyframes trapped { 0% { transform: translateY(0); } 20% { transform: translateY(-18px) rotate(10deg); filter: brightness(1.8) hue-rotate(220deg); } 55% { transform: translateY(0) rotate(-4deg); } 100% { transform: none; filter: none; } }
 .fnum.miss { color: #d8ccff; font-style: italic; text-shadow: 0 1px 2px #000, 0 0 8px #6a4aff; }
 @media (prefers-reduced-motion: reduce) { .unit.hero.invis .sprite, .trap.armed { animation: none; } }
+
+.update-band.is-dev-update { top: calc(38px + env(safe-area-inset-top, 0px)); background: linear-gradient(90deg, #2c5419, #3f7a22); border-color: #93cf5f; color: #f0ffe0; }
+.update-band.is-dev-update button { background: #93cf5f; color: #12230a; }

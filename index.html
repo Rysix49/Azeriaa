@@ -1092,6 +1092,9 @@ label.btn { cursor: pointer; }
 @keyframes trapped { 0% { transform: translateY(0); } 20% { transform: translateY(-18px) rotate(10deg); filter: brightness(1.8) hue-rotate(220deg); } 55% { transform: translateY(0) rotate(-4deg); } 100% { transform: none; filter: none; } }
 .fnum.miss { color: #d8ccff; font-style: italic; text-shadow: 0 1px 2px #000, 0 0 8px #6a4aff; }
 @media (prefers-reduced-motion: reduce) { .unit.hero.invis .sprite, .trap.armed { animation: none; } }
+
+.update-band.is-dev-update { top: calc(38px + env(safe-area-inset-top, 0px)); background: linear-gradient(90deg, #2c5419, #3f7a22); border-color: #93cf5f; color: #f0ffe0; }
+.update-band.is-dev-update button { background: #93cf5f; color: #12230a; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1152,7 +1155,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793134804';
+const BUILD_ID = '1793136704';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2608,6 +2611,8 @@ applyLayout(LAYOUT);
    ===================================================================== */
 (function () {
   let shown = false;
+  // Site de test (Cloudflare dev.<projet>.pages.dev, ou ancien Netlify dev--/deploy-preview-)
+  const DEV = /^[^.]+\.[^.]+\.pages\.dev$/.test(location.hostname) || /^(dev|deploy-preview-\d+)--/.test(location.hostname);
   async function check() {
     if (shown) return;
     try {
@@ -2622,7 +2627,10 @@ applyLayout(LAYOUT);
     const el = document.createElement('div');
     el.className = 'update-band';
     el.setAttribute('role', 'status');
-    el.innerHTML = '<span><b>Nouvelle version disponible.</b> Recharge la page pour en profiter, ta partie est conservée.</span><button type="button">Recharger la page</button>';
+    el.innerHTML = DEV
+      ? '<span><b>🧪 Nouveauté publiée sur le site de test !</b> Recharge ton jeu (dev) pour la tester, ta partie est conservée.</span><button type="button">Recharger (dev)</button>'
+      : '<span><b>Nouvelle version disponible.</b> Recharge la page pour en profiter, ta partie est conservée.</span><button type="button">Recharger la page</button>';
+    if (DEV) el.classList.add('is-dev-update');
     el.querySelector('button').addEventListener('click', () => {
       try { window.__game && window.__game.st && localStorage.setItem('amakna-idle-save-v1', serialize(window.__game.st)); } catch (e) {}
       location.reload();
@@ -2630,7 +2638,7 @@ applyLayout(LAYOUT);
     document.body.appendChild(el);
   }
   setTimeout(check, 5000);
-  setInterval(check, 60000);
+  setInterval(check, DEV ? 15000 : 60000); // le site de test vérifie plus souvent
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
 })();
 
