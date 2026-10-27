@@ -862,15 +862,16 @@ document.addEventListener('pointercancel', () => { pointerDown = false; }, true)
    Messages partagés via la fonction Netlify /api/chat (voir netlify/functions/chat.mjs).
    Hors du site Netlify (aperçu Claude, fichier local), le chat s'affiche hors ligne. */
 const CHAT_URL = '/api/chat';
-const chat = { open: false, msgs: [], last: 0, unread: 0, ok: null, loaded: false, sending: false };
+const CHAT_CID = (() => { try { let c = sessionStorage.getItem('amakna-cid'); if (!c) { c = Math.random().toString(36).slice(2, 12); sessionStorage.setItem('amakna-cid', c); } return c; } catch (e) { return Math.random().toString(36).slice(2, 12); } })();
+const chat = { online: 0, open: false, msgs: [], last: 0, unread: 0, ok: null, loaded: false, sending: false };
 function chatName() { try { return localStorage.getItem('amakna-pseudo') || ''; } catch (e) { return ''; } }
 function setChatName(n) { try { localStorage.setItem('amakna-pseudo', n); } catch (e) {} }
 function nameColor(n) { let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) % 360; return `hsl(${h} 70% 70%)`; }
 async function chatFetch() {
   try {
-    const r = await fetch(`${CHAT_URL}?since=${chat.last}`, { cache: 'no-store' });
+    const r = await fetch(`${CHAT_URL}?since=${chat.last}&cid=${CHAT_CID}`, { cache: 'no-store' });
     if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) throw new Error('indisponible');
-    const d = await r.json(); chat.ok = true;
+    const d = await r.json(); chat.ok = true; if (typeof d.online === 'number') chat.online = d.online;
     const fresh = (d.messages || []).filter(m => m.t > chat.last);
     if (fresh.length) {
       chat.msgs = chat.msgs.concat(fresh).slice(-150);
@@ -883,7 +884,8 @@ async function chatFetch() {
 }
 function renderChat() {
   const st = $('#chatst'); if (!st) return;
-  st.textContent = chat.ok === null ? 'Connexion…' : chat.ok ? 'En ligne' : 'Hors ligne';
+  st.textContent = chat.ok === null ? 'Connexion…' : chat.ok ? `En ligne · ${chat.online || 1} joueur${(chat.online || 1) > 1 ? 's' : ''}` : 'Hors ligne';
+  st.title = chat.ok ? 'Joueurs ayant le jeu ouvert en ce moment' : '';
   st.className = 'chat-st ' + (chat.ok ? 'on' : chat.ok === false ? 'off' : '');
   const badge = $('#chatbadge'); badge.hidden = !chat.unread; badge.textContent = chat.unread > 99 ? '99+' : chat.unread;
   const nb = $('#chatnamebox'); nb.hidden = !!chatName();
