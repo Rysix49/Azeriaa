@@ -31,3 +31,13 @@
   setInterval(check, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
 })();
+
+/* Ruban « version de test » sur le site de la branche dev (adresse dev--…netlify.app) */
+(function () {
+  if (!/^dev--/.test(location.hostname)) return;
+  const el = document.createElement('div');
+  el.className = 'dev-ribbon';
+  el.textContent = 'Version de test · les comptes et le chat sont séparés du site public';
+  document.body.appendChild(el);
+  document.documentElement.classList.add('is-dev');
+})();

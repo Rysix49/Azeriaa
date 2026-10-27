@@ -802,3 +802,8 @@ button.use:hover { border-color: var(--line-2); }
 .acc-on { align-items: flex-start; }
 label.btn { cursor: pointer; }
 .is-busy { opacity: .5; pointer-events: none; }
+
+/* Ruban du site de test */
+.dev-ribbon { position: fixed; z-index: 99; left: 0; right: 0; top: env(safe-area-inset-top, 0px); padding: 4px max(12px, env(safe-area-inset-right, 0px)) 4px max(12px, env(safe-area-inset-left, 0px)); text-align: center; font: 800 11.5px 'Nunito', system-ui, sans-serif; letter-spacing: .04em; color: #12230a; background: repeating-linear-gradient(135deg, #93cf5f 0 14px, #7bbd47 14px 28px); box-shadow: 0 2px 8px #0008; pointer-events: none; }
+.is-dev body { padding-top: 22px; }
+.is-dev .topbar, .is-dev .side { top: calc(22px + env(safe-area-inset-top, 0px)); }

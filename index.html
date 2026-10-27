@@ -809,6 +809,11 @@ button.use:hover { border-color: var(--line-2); }
 .acc-on { align-items: flex-start; }
 label.btn { cursor: pointer; }
 .is-busy { opacity: .5; pointer-events: none; }
+
+/* Ruban du site de test */
+.dev-ribbon { position: fixed; z-index: 99; left: 0; right: 0; top: env(safe-area-inset-top, 0px); padding: 4px max(12px, env(safe-area-inset-right, 0px)) 4px max(12px, env(safe-area-inset-left, 0px)); text-align: center; font: 800 11.5px 'Nunito', system-ui, sans-serif; letter-spacing: .04em; color: #12230a; background: repeating-linear-gradient(135deg, #93cf5f 0 14px, #7bbd47 14px 28px); box-shadow: 0 2px 8px #0008; pointer-events: none; }
+.is-dev body { padding-top: 22px; }
+.is-dev .topbar, .is-dev .side { top: calc(22px + env(safe-area-inset-top, 0px)); }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -868,7 +873,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793110109';
+const BUILD_ID = '1793110383';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2147,6 +2152,16 @@ applyLayout(LAYOUT);
   setTimeout(check, 5000);
   setInterval(check, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+})();
+
+/* Ruban « version de test » sur le site de la branche dev (adresse dev--…netlify.app) */
+(function () {
+  if (!/^dev--/.test(location.hostname)) return;
+  const el = document.createElement('div');
+  el.className = 'dev-ribbon';
+  el.textContent = 'Version de test · les comptes et le chat sont séparés du site public';
+  document.body.appendChild(el);
+  document.documentElement.classList.add('is-dev');
 })();
 (function () {
 /* =====================================================================

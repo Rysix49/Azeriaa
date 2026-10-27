@@ -9,8 +9,14 @@ const sha = (t) => createHash("sha256").update(t).digest("hex");
 const KEY = "general";
 const MAX_KEEP = 200;
 
-export default async (req) => {
-  const store = getStore("chat");
+// Site de test (branche dev) : données séparées du site public
+const storeName = (base, context) => {
+  const ctx = (context && context.deploy && context.deploy.context) || process.env.CONTEXT || "production";
+  return ctx === "production" ? base : base + "-dev";
+};
+
+export default async (req, context) => {
+  const store = getStore(storeName("chat", context));
   if (req.method === "GET") {
     const url = new URL(req.url);
     const since = Number(url.searchParams.get("since") || 0);
@@ -30,7 +36,7 @@ export default async (req) => {
     const n = String(body.n || "").replace(/\s+/g, " ").trim().slice(0, 20);
     const x = String(body.x || "").replace(/\s+/g, " ").trim().slice(0, 240);
     if (!n || !x) return new Response("Pseudo et message requis", { status: 400 });
-    const owner = await getStore("accounts").get("user:" + n.toLowerCase(), { type: "json" });
+    const owner = await getStore(storeName("accounts", context)).get("user:" + n.toLowerCase(), { type: "json" });
     if (owner && !(body.token && (owner.tokens || []).includes(sha(String(body.token)))))
       return new Response("Ce pseudo appartient à un compte : connecte-toi pour l'utiliser.", { status: 403 });
     const list = (await store.get(KEY, { type: "json" })) || [];

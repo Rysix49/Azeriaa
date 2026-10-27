@@ -15,11 +15,17 @@ const json = (o, status = 200) => Response.json(o, { status, headers: { "cache-c
 const hashPass = (p, salt) => scryptSync(p, salt, 32).toString("hex");
 const sha = (t) => createHash("sha256").update(t).digest("hex");
 
-export default async (req) => {
+// Site de test (branche dev) : données séparées du site public
+const storeName = (base, context) => {
+  const ctx = (context && context.deploy && context.deploy.context) || process.env.CONTEXT || "production";
+  return ctx === "production" ? base : base + "-dev";
+};
+
+export default async (req, context) => {
   if (req.method !== "POST") return json({ error: "Méthode non autorisée." }, 405);
   let b;
   try { b = await req.json(); } catch { return json({ error: "Requête invalide." }, 400); }
-  const store = getStore("accounts");
+  const store = getStore(storeName("accounts", context));
   const name = String(b.name || "").replace(/\s+/g, " ").trim().slice(0, 20);
   if (!/^[\p{L}\p{N} _.-]{3,20}$/u.test(name)) return json({ error: "Le pseudo doit faire de 3 à 20 caractères (lettres, chiffres, espace, _ . -)." }, 400);
   const key = "user:" + name.toLowerCase();
