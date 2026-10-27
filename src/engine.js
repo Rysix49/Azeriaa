@@ -244,7 +244,11 @@ function heroTurn(st, h, t, ev) {
     pa -= best.pa;
     f.casts[best.id] = (f.casts[best.id] || 0) + 1;
     if (best.cd) f.cds[best.id] = best.cd + 1;
+    const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
     actions.push(castSpell(st, h, t, best, target, alive));
+    f.fxSeq = (f.fxSeq || 0) + 1;
+    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
+    if (f.fx.length > 16) f.fx.shift();
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
   };

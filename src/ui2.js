@@ -278,7 +278,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
+      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           <div class="sprite">${emblem(h.cls, 'big')}</div></div>
@@ -323,6 +323,9 @@ function patchCombat() {
     const [sc, stxt] = statusOf(h);
     const scene = card.querySelector('.scene');
     if (h.fight && scene) {
+      const seen = +(scene.dataset.fx || 0);
+      const fresh = (h.fight.fx || []).filter(c => c.n > seen);
+      if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
@@ -1126,6 +1129,6 @@ function start(data) {
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
   window.addEventListener('pagehide', saveGame);
   window.claude?.hot?.snapshot?.(() => ({ save: serialize(st) }));
-  window.__game = { get st() { return st; }, ui, liveEv, render }; // accès de débogage (console)
+  window.__game = { get st() { return st; }, ui, liveEv, render, fx: playSpellFx }; // accès de débogage (console)
 }
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
