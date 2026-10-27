@@ -55,3 +55,13 @@ jobs:
           sed -i 's/^ *//' wrangler.toml && cat wrangler.toml
       - name: Publier
         run: npx wrangler pages deploy dist --project-name "$PROJECT" --branch "${{ github.ref_name }}" --commit-dirty=true
+      - name: Vérifier le site publié
+        run: |
+          DOMAIN=$(npx wrangler pages project list --json | node -e "const l=JSON.parse(require('fs').readFileSync(0,'utf8'));const p=l.find(x=>(x['Project Name']||x.name)===process.env.PROJECT)||{};const d=String(p['Project Domains']||p.domains||'').split(/[ ,]+/).find(s=>s.endsWith('.pages.dev'))||(process.env.PROJECT+'.pages.dev');process.stdout.write(d)")
+          if [ "${{ github.ref_name }}" = "main" ]; then URL="https://$DOMAIN"; else URL="https://${{ github.ref_name }}.$DOMAIN"; fi
+          sleep 15
+          V=$(curl -s "$URL/version.json"); C=$(curl -s "$URL/api/chat?since=0")
+          echo "::notice title=Adresse::$URL"
+          echo "::notice title=version.json::$V"
+          echo "::notice title=api/chat::$(echo "$C" | head -c 160)"
+          echo "$C" | grep -q '"online"' || { echo "::error title=Chat::L'API du chat ne répond pas correctement"; exit 1; }
