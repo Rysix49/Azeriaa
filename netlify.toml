@@ -3,9 +3,9 @@
   functions = "netlify/functions"
 
 # Adresse courte du site de test : azeriaa.netlify.app/test
-# (mise à jour à chaque nouvelle demande de fusion dev -> main : deploy-preview-6<numéro>)
+# (mise à jour à chaque nouvelle demande de fusion dev -> main : deploy-preview-7<numéro>)
 [[redirects]]
   from = "/test"
-  to = "https://deploy-preview-6--azeriaa.netlify.app/"
+  to = "https://deploy-preview-7--azeriaa.netlify.app/"
   status = 302
   force = true
