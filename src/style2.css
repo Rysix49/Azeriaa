@@ -763,3 +763,15 @@ button.use:hover { border-color: var(--line-2); }
 :root[data-layout="mobile"] .chat-panel { left: 0; right: 0; bottom: 0; width: auto; max-width: 460px; margin-inline: auto; height: min(78vh, 600px); border-radius: 16px 16px 0 0; }
 .toasts { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 @media (max-width: 900px) { .toasts { bottom: calc(136px + env(safe-area-inset-bottom, 0px)); } }
+
+/* Bandeau « nouvelle version » (commun aux deux interfaces) */
+.update-band {
+  position: fixed; z-index: 100; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top, 0px));
+  width: min(560px, calc(100vw - 24px)); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between;
+  padding: 10px 12px 10px 16px; border-radius: 14px; background: #2b2410; color: #f6e7bd; border: 1px solid #e8aa2e; box-shadow: 0 12px 30px #000c;
+  font: 600 13.5px/1.35 'Nunito', 'Segoe UI', system-ui, sans-serif; animation: bandin .3s ease-out;
+}
+.update-band b { color: #f6cd6a; }
+.update-band span { flex: 1; min-width: 180px; }
+.update-band button { border: 1px solid #b9800f; background: linear-gradient(180deg, #f8d77c, #e5a52a); color: #2a1c04; font: 800 13px 'Nunito', system-ui, sans-serif; padding: 8px 14px; border-radius: 9px; cursor: pointer; white-space: nowrap; }
+@keyframes bandin { from { opacity: 0; transform: translate(-50%, -10px); } }

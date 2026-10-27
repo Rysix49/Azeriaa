@@ -3,6 +3,9 @@
 # Les deux interfaces (nouvelle = ui2.js + style2.css, classique = ui.js + style.css)
 # sont incluses ; skin.js choisit laquelle démarrer.
 cd "$(dirname "$0")"
+BUILD_ID=$(date +%s)
+OUT_DIR=.
+[ -n "$1" ] && OUT_DIR="$1"
 {
 cat <<'HEAD'
 <title>Amakna Idle</title>
@@ -18,7 +21,8 @@ echo '<div id="app"></div>'
 echo '<div class="toasts" id="toasts" aria-live="polite"></div>'
 echo '<div class="modal-back" id="modal" hidden></div>'
 echo '<script>'
-cat data.js engine.js art.js skin.js
+echo "const BUILD_ID = '$BUILD_ID';"
+cat data.js engine.js art.js skin.js update.js
 echo 'function bootClassic() {'
 echo "document.getElementById('app').innerHTML = CLASSIC_SHELL;"
 cat ui.js
@@ -28,4 +32,5 @@ cat ui2.js
 echo '}'
 echo '(SKIN === "classic" ? bootClassic : bootNew)();'
 echo '</script>'
-} > ../index.html
+} > "$OUT_DIR/index.html"
+echo "{\"build\":\"$BUILD_ID\"}" > "$OUT_DIR/version.json"
