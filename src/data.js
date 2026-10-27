@@ -27,7 +27,7 @@ const CLASSES = {
   iop: {
     name: 'Iop', role: 'Guerrier impétueux', main: 'for', hpMult: 1.1, color: '#d0533f',
     desc: 'Frappe fort et sans détour. Ses sorts de zone nettoient les groupes.',
-    passive: { name: 'Rage Croissante', desc: 'Chaque tour où il attaque, le Iop gagne +12 Puissance jusqu’à la fin du combat (max 5 cumuls, soit +60).' },
+    passive: { name: 'Rage Croissante', points: [['🔥','Rage Croissante','Chaque tour où il attaque : +12 Puissance jusqu’à la fin du combat.'],['📈','Cumul','5 cumuls maximum, soit +60 Puissance.']], desc: 'Chaque tour où il attaque, le Iop gagne +12 Puissance jusqu’à la fin du combat (max 5 cumuls, soit +60).' },
     spells: [
       { id: 'pression', name: 'Pression', lvl: 1, pa: 3, min: 7, max: 11, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'compulsion', name: 'Compulsion', lvl: 4, pa: 2, type: 'buff', buff: { pui: 40 }, turns: 3, cd: 5 },
@@ -39,7 +39,7 @@ const CLASSES = {
   cra: {
     name: 'Cra', role: 'Archère précise', main: 'agi', hpMult: 0.95, color: '#5c9a45',
     desc: 'Tire de loin, empoisonne et esquive. Critiques fréquents.',
-    passive: { name: 'Œil de Lynx', desc: '+5 % de coups critiques. Ses critiques infligent ×1,8 au lieu de ×1,5.', stats: { crit: 5 } },
+    passive: { name: 'Œil de Lynx', points: [['🎯','Précision','+5 % de coups critiques.'],['💥','Tir mortel','Ses critiques infligent ×1,8 au lieu de ×1,5.']], desc: '+5 % de coups critiques. Ses critiques infligent ×1,8 au lieu de ×1,5.', stats: { crit: 5 } },
     spells: [
       { id: 'fleche_magique', name: 'Flèche Magique', lvl: 1, pa: 3, min: 6, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'fleche_empoisonnee', name: 'Flèche Empoisonnée', lvl: 5, pa: 2, min: 4, max: 6, stat: 'agi', type: 'poison', turns: 3, cd: 2 },
@@ -51,7 +51,7 @@ const CLASSES = {
   eniripsa: {
     name: 'Eniripsa', role: 'Soigneuse', main: 'int', hpMult: 0.95, color: '#c96fa8',
     desc: 'Ses mots blessent et soignent. Très résistante sur la durée.',
-    passive: { name: 'Souffle Vital', desc: 'Régénère 4 % de ses PV max au début de chaque tour. Ses soins sont augmentés de 25 %.' },
+    passive: { name: 'Souffle Vital', points: [['💗','Souffle Vital','Régénère 4 % de ses PV max au début de chaque tour.'],['✨','Soins renforcés','Ses soins sont augmentés de 25 %.']], desc: 'Régénère 4 % de ses PV max au début de chaque tour. Ses soins sont augmentés de 25 %.' },
     spells: [
       { id: 'mot_blessant', name: 'Mot Blessant', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
       { id: 'mot_soignant', name: 'Mot Soignant', lvl: 1, pa: 3, min: 10, max: 14, stat: 'int', type: 'heal', max_: 1 },
@@ -64,7 +64,7 @@ const CLASSES = {
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
-    passive: { name: 'Souffrance', desc: 'Gagne +1 Puissance par % de PV manquant. À 30 % de vie, il frappe avec +70 Puissance.' },
+    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 Puissance par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, il frappe avec +70 Puissance.']], desc: 'Gagne +1 Puissance par % de PV manquant. À 30 % de vie, il frappe avec +70 Puissance.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
@@ -76,7 +76,7 @@ const CLASSES = {
   enutrof: {
     name: 'Enutrof', role: 'Chercheur de trésors', main: 'cha', hpMult: 1.1, color: '#c9962e',
     desc: 'Trouve plus de butin et de kamas que quiconque.',
-    passive: { name: 'Flair du Trésor', desc: '+40 Prospection. 12 % de chance qu’un monstre vaincu lâche ses ressources en double.', stats: { pp: 40 } },
+    passive: { name: 'Flair du Trésor', points: [['🔎','Prospection','+40 Prospection.'],['💰','Double butin','12 % de chance qu’un monstre lâche ses ressources en double.']], desc: '+40 Prospection. 12 % de chance qu’un monstre vaincu lâche ses ressources en double.', stats: { pp: 40 } },
     spells: [
       { id: 'lancer_pieces', name: 'Lancer de Pièces', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
       { id: 'pelle_animee', name: 'Pelle Animée', lvl: 6, pa: 4, min: 15, max: 20, stat: 'cha', type: 'dmg', max_: 1 },
@@ -88,7 +88,7 @@ const CLASSES = {
   sram: {
     name: 'Sram', role: 'Assassin sournois', main: 'agi', hpMult: 0.9, color: '#6a5fb5',
     desc: 'Poisons et coups critiques. Rapporte plus de kamas.',
-    passive: { name: 'Embuscade', desc: 'Au premier tour de chaque combat, tous ses dégâts sont doublés. +25 % de kamas gagnés.', stats: { kamas: 25 } },
+    passive: { name: 'Embuscade', points: [['🗡️','Embuscade','Au premier tour de chaque combat, tous ses dégâts sont doublés.'],['🪙','Pickpocket','+25 % de kamas gagnés.']], desc: 'Au premier tour de chaque combat, tous ses dégâts sont doublés. +25 % de kamas gagnés.', stats: { kamas: 25 } },
     spells: [
       { id: 'sournoiserie', name: 'Sournoiserie', lvl: 1, pa: 3, min: 7, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'poison_paralysant', name: 'Poison Paralysant', lvl: 6, pa: 2, min: 5, max: 7, stat: 'agi', type: 'poison', turns: 3, cd: 1 },
@@ -100,7 +100,7 @@ const CLASSES = {
   xelor: {
     name: 'Xélor', role: 'Mage du temps', main: 'int', hpMult: 0.95, color: '#3f73c4',
     desc: 'Accumule du temps à chaque sort, fige ses ennemis et rejoue des tours entiers.',
-    passive: { name: 'Sablier Temporel', desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : au début de son tour, le Xélor le vide et rejoue un tour complet, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
+    passive: { name: 'Sablier Temporel', points: [['⏳','Grains du temps','Chaque PA dépensé ajoute 1 grain au sablier (12 max).'],['🔁','Rembobinage','Sablier plein : il le vide et rejoue un tour complet, sans regagner de grains.'],['❄️','Distorsion','12 % de chance de figer la cible : elle passe sa prochaine attaque.'],['🎯','Temps arrêté','Une cible figée subit +25 % de dégâts.'],['🌀','Paradoxe','Une fois par combat : s’il tombe à 0 PV avec 6 grains ou plus, il revient aux PV du début de son tour (30 % minimum).']], desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : au début de son tour, le Xélor le vide et rejoue un tour complet, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
     spells: [
       { id: 'aiguille', name: 'Aiguille', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
       { id: 'gelure', name: 'Gelure', lvl: 4, pa: 2, min: 3, max: 5, stat: 'int', type: 'dmg', freeze: 30, max_: 1 },

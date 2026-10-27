@@ -232,6 +232,11 @@ function renderCombat() {
   return `<div class="fights">${st.heroes.map(fightCard).join('')}</div>
     ${more ? `<div class="hint-band"><span>Ton groupe peut accueillir un héros de plus${st.kamas >= cost ? '.' : ` (${fmt(cost)} kamas).`}</span><button class="btn sm ${st.kamas >= cost ? 'gold' : ''}" data-act="recruitnav">Recruter un héros</button></div>` : ''}`;
 }
+function passiveHtml(c) {
+  const p = c.passive;
+  const body = p.points ? `<ul class="pv-list">${p.points.map(([ic, t, d]) => `<li><span class="pv-ic" aria-hidden="true">${ic}</span><div><b>${t}</b><span>${d}</span></div></li>`).join('')}</ul>` : `<span>${p.desc}</span>`;
+  return `<div class="passive" style="--c:${c.color}"><span class="label">Passif · ${p.name}</span>${body}</div>`;
+}
 function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
@@ -377,7 +382,7 @@ function renderRecruit(first) {
     <div class="recruit-detail" style="--c:${c.color}">
       ${emblem(ui.recruitCls, 'xl')}
       <div class="rd-main"><h3 class="display">${c.name} <small>${c.role}</small></h3><p>${c.desc}</p>
-        <div class="passive" style="--c:${c.color}"><span class="label">Passif · ${c.passive.name}</span><span>${c.passive.desc}</span></div>
+        ${passiveHtml(c)}
         <div class="rd-spells">${c.spells.map(sp => `<span class="chip">${sp.name} <small>niv. ${sp.lvl}</small></span>`).join('')}</div>
       </div>
     </div>
@@ -496,7 +501,7 @@ function statsPanel(h) {
     <div class="stat-rows">${rows}</div>
     <p class="hint">Chaque niveau donne ${CAPITAL_PER_LEVEL} points. En mode auto, ils sont placés dans la caractéristique choisie.</p>
     <div class="cstats">${cs.map(([l, v]) => `<div class="cs"><small>${l}</small><b class="num">${v}</b></div>`).join('')}</div>
-    <div class="passive" style="--c:${c.color}"><span class="label">Passif · ${c.passive.name}</span><span>${c.passive.desc}</span></div>
+    ${passiveHtml(c)}
     ${h.food ? `<div class="food-on"><span class="fo-ic">${RESOURCES[h.food.id].icon}</span><div><b>${RESOURCES[h.food.id].name}</b><small>${RESOURCES[h.food.id].food.desc} · encore ${mmss(h.food.left)}</small></div></div>`
       : Object.keys(st.res).some(id => RESOURCES[id].food && st.res[id] > 0) ? `<div class="food-off"><span class="sub">Aucun repas actif.</span>${Object.keys(st.res).filter(id => RESOURCES[id].food && st.res[id] > 0).map(id => `<button class="btn sm gold" data-act="eat" data-id="${id}" data-hero="${h.id}">${RESOURCES[id].icon} Manger ${RESOURCES[id].name} (${st.res[id]})</button>`).join('')}</div>` : ''}
     <div class="panel-h"><h3 class="display">Sorts</h3><span class="sub">${spellsOf(h).filter(sp => h.lvl >= sp.lvl).length}/${spellsOf(h).length} appris</span></div>
