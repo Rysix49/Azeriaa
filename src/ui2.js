@@ -194,7 +194,7 @@ function updateChrome() {
   const active = st.heroes.filter(h => h.act).length;
   const w = `<span class="wchip gold" title="Kamas">${coin}<b class="num">${fmt(st.kamas)}</b></span>
     <span class="wchip" title="Héros en activité"><small>Actifs</small><b class="num">${active}/${st.heroes.length}</b></span>
-    ${acc.token ? `<button class="wchip acc-chip hide-sm" data-act="goaccount" title="Compte connecté">👤 <b>${esc(acc.name)}</b></button>` : ''}
+    ${acc.token ? `<button class="wchip acc-chip hide-sm" data-act="goaccount" title="Compte connecté">${avatarHtml(acc.name, acc.avatarAt, 'sm')}<b>${esc(acc.name)}</b></button>` : ''}
     <span class="wchip hide-sm" title="Monstres vaincus"><small>Vaincus</small><b class="num">${fmt(st.stats.totalKills)}</b></span>`;
   if (w !== ui._wallet) { $('#wallet').innerHTML = w; ui._wallet = w; }
   renderParty();
@@ -811,6 +811,7 @@ const ACTIONS = {
   acclogin() { accRun('login'); return 'keep'; },
   accsave() { acc.msg = ''; accCloudSave().then(() => { if (!acc.err) acc.msg = 'Partie sauvegardée en ligne.'; render(true); }); return 'keep'; },
   acclogout() { const t = { action: 'logout', name: acc.name, token: acc.token }; accCloudSave().finally(() => { accCall(t).catch(() => {}); accLocalLogout(); acc.msg = ''; render(true); toast('Déconnecté. Ta partie reste aussi sur cet appareil.'); }); return 'keep'; },
+  accnophoto() { accSetAvatar(null); return 'keep'; },
   goaccount() { ui.view = 'options'; scrollTop(); },
   rcls(d) { ui.recruitCls = d.cls; },
   rrandom() { ui.recruitName = HERO_NAMES[irnd(0, HERO_NAMES.length - 1)]; },
@@ -864,9 +865,9 @@ document.addEventListener('pointercancel', () => { pointerDown = false; }, true)
    Fonction Netlify /api/account (voir netlify/functions/account.mjs). */
 const ACC_URL = '/api/account';
 const ACC_KEY = 'amakna-account';
-const acc = { name: '', token: '', at: 0, busy: false, msg: '', err: '' };
+const acc = { avatarAt: 0, name: '', token: '', at: 0, busy: false, msg: '', err: '' };
 try { Object.assign(acc, JSON.parse(localStorage.getItem(ACC_KEY) || '{}')); } catch (e) {}
-function accPersist() { try { localStorage.setItem(ACC_KEY, JSON.stringify({ name: acc.name, token: acc.token, at: acc.at })); } catch (e) {} }
+function accPersist() { try { localStorage.setItem(ACC_KEY, JSON.stringify({ name: acc.name, token: acc.token, at: acc.at, avatarAt: acc.avatarAt })); } catch (e) {} }
 async function accCall(body, keepalive) {
   let r;
   try { r = await fetch(ACC_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), keepalive: !!keepalive }); }
@@ -881,7 +882,37 @@ function accAdopt(saveStr, savedAt) {
   ui.hero = null; ui._psig = ''; ui.sel = null; ui.lastSig = '';
   acc.at = savedAt; accPersist(); saveGame();
 }
-function accLocalLogout() { acc.name = ''; acc.token = ''; acc.at = 0; accPersist(); }
+function accLocalLogout() { acc.name = ''; acc.token = ''; acc.at = 0; acc.avatarAt = 0; accPersist(); }
+function avatarHtml(name, av, cls = '') {
+  return av ? `<img class="av ${cls}" src="/api/avatar?n=${encodeURIComponent(name)}&v=${av}" alt="" loading="lazy">`
+    : `<span class="av letter ${cls}" style="background:${nameColor(name)}" aria-hidden="true">${esc((name || '?').slice(0, 1).toUpperCase())}</span>`;
+}
+/* Redimensionne la photo choisie en carré 128×128 (JPEG léger) avant l'envoi */
+function shrinkImage(file) {
+  return new Promise((ok, ko) => {
+    const rd = new FileReader();
+    rd.onerror = () => ko(new Error('Lecture du fichier impossible.'));
+    rd.onload = () => { const img = new Image();
+      img.onerror = () => ko(new Error('Ce fichier n’est pas une image lisible.'));
+      img.onload = () => { const S = 128, cv = document.createElement('canvas'); cv.width = cv.height = S;
+        const k = Math.max(S / img.width, S / img.height), w = img.width * k, h = img.height * k;
+        const cx = cv.getContext('2d'); cx.fillStyle = '#1d2218'; cx.fillRect(0, 0, S, S); cx.drawImage(img, (S - w) / 2, (S - h) / 2, w, h);
+        ok(cv.toDataURL('image/jpeg', 0.82)); };
+      img.src = rd.result; };
+    rd.readAsDataURL(file);
+  });
+}
+async function accSetAvatar(file) {
+  acc.busy = true; acc.err = ''; acc.msg = ''; render(true);
+  try {
+    const data = file ? await shrinkImage(file) : '';
+    const d = await accCall({ action: 'avatar', name: acc.name, token: acc.token, avatar: data });
+    acc.avatarAt = d.avatarAt; accPersist(); acc.msg = file ? 'Photo mise à jour.' : 'Photo retirée.';
+    ui._wallet = ''; const l = $('#chatlist'); if (l) l.dataset.h = ''; renderChat();
+  } catch (e) { acc.err = e.message; }
+  acc.busy = false; render(true);
+}
+document.addEventListener('change', e => { if (e.target.id === 'accphoto' && e.target.files[0]) accSetAvatar(e.target.files[0]); });
 async function accCloudSave(keepalive) {
   if (!acc.token || acc.busy) return;
   try { const d = await accCall({ action: 'save', name: acc.name, token: acc.token, save: serialize(st) }, keepalive); acc.at = d.savedAt; acc.err = ''; accPersist(); }
@@ -891,6 +922,7 @@ async function accSync() {
   if (!acc.token) return;
   try {
     const d = await accCall({ action: 'load', name: acc.name, token: acc.token });
+    if (typeof d.avatarAt === 'number' && d.avatarAt !== acc.avatarAt) { acc.avatarAt = d.avatarAt; accPersist(); ui._wallet = ''; }
     if (d.save && d.savedAt > acc.at) { accAdopt(d.save, d.savedAt); toast(`Partie de ${acc.name} récupérée depuis ton compte.`, 'quest'); render(true); }
     else accCloudSave();
   } catch (e) { acc.err = e.message; if (e.status === 401) accLocalLogout(); }
@@ -905,7 +937,7 @@ async function accRun(kind) {
       acc.msg = 'Compte créé. Ta partie est sauvegardée en ligne.'; toast(`Compte ${d.name} créé !`, 'quest');
     } else {
       const d = await accCall({ action: 'login', name: name.trim(), pass });
-      Object.assign(acc, { name: d.name, token: d.token }); acc.busy = false;
+      Object.assign(acc, { name: d.name, token: d.token, avatarAt: d.avatarAt || 0 }); acc.busy = false;
       if (d.save) { accAdopt(d.save, d.savedAt); acc.msg = 'Connecté. Ta partie a été chargée.'; }
       else { acc.at = 0; accPersist(); await accCloudSave(); acc.msg = 'Connecté. Ta partie actuelle est maintenant liée au compte.'; }
       toast(`Bon retour, ${d.name} !`, 'quest');
@@ -916,7 +948,9 @@ async function accRun(kind) {
 function accountCard() {
   const when = acc.at ? new Date(acc.at).toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '—';
   if (acc.token) return `<section class="panel acc-card"><h3 class="display">Compte</h3>
-    <div class="acc-on"><span class="acc-av">${esc(acc.name.slice(0, 1).toUpperCase())}</span><div><b>${esc(acc.name)}</b><small>Dernière sauvegarde en ligne : ${when}</small></div></div>
+    <div class="acc-on">${avatarHtml(acc.name, acc.avatarAt, 'xl')}<div><b>${esc(acc.name)}</b><small>Dernière sauvegarde en ligne : ${when}</small>
+      <div class="row-btns left" style="margin-top:6px"><label class="btn sm${acc.busy ? ' is-busy' : ''}" for="accphoto">${acc.avatarAt ? 'Changer la photo' : 'Ajouter une photo'}</label><input id="accphoto" type="file" accept="image/*" hidden ${acc.busy ? 'disabled' : ''}>
+      ${acc.avatarAt ? '<button class="btn sm ghost" data-act="accnophoto">Retirer</button>' : ''}</div></div></div>
     <p class="hint">Ta partie est sauvegardée en ligne toutes les minutes et quand tu quittes le jeu. Connecte-toi avec ce pseudo sur un autre appareil pour la retrouver.</p>
     ${acc.err ? `<p class="acc-err">${esc(acc.err)}</p>` : ''}${acc.msg ? `<p class="acc-ok">${esc(acc.msg)}</p>` : ''}
     <div class="row-btns left"><button class="btn gold" data-act="accsave">Sauvegarder maintenant</button><button class="btn ghost" data-act="acclogout">Se déconnecter</button></div></section>`;
@@ -966,7 +1000,7 @@ function renderChat() {
   const html = chat.ok === false
     ? '<div class="chat-empty">Le chat fonctionne sur le site en ligne (Netlify). Ici, il est hors ligne.</div>'
     : chat.msgs.length ? chat.msgs.map(m => { const d = new Date(m.t);
-        return `<div class="msg${m.n === me ? ' me' : ''}"><div class="msg-h"><b style="color:${nameColor(m.n)}">${esc(m.n)}</b><time>${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}</time></div><p>${esc(m.x)}</p></div>`; }).join('')
+        return `<div class="msg-row${m.n === me ? ' me' : ''}">${avatarHtml(m.n, m.av)}<div class="msg${m.n === me ? ' me' : ''}"><div class="msg-h"><b style="color:${nameColor(m.n)}">${esc(m.n)}</b><time>${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}</time></div><p>${esc(m.x)}</p></div></div>`; }).join('')
     : '<div class="chat-empty">Aucun message pour l’instant. Dis bonjour !</div>';
   if (list.dataset.h !== html) { list.innerHTML = html; list.dataset.h = html; if (atBottom || !list.dataset.init) { list.scrollTop = list.scrollHeight; list.dataset.init = 1; } }
   const off = chat.ok === false;
@@ -986,11 +1020,11 @@ async function chatSend() {
   chat.sending = true; renderChat();
   try {
     const h = st.heroes[0];
-    const r = await fetch(CHAT_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ n, x, c: h ? h.cls : '' }) });
-    if (!r.ok) throw new Error(await r.text());
+    const r = await fetch(CHAT_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ n, x, c: h ? h.cls : '', token: acc.name && acc.name.toLowerCase() === n.toLowerCase() ? acc.token : undefined }) });
+    if (!r.ok) { const t = await r.text(); throw new Error(r.status === 403 ? t : ''); }
     msgEl.value = '';
     await chatFetch();
-  } catch (e) { toast('Message non envoyé. Vérifie ta connexion et réessaie.', 'warn'); }
+  } catch (e) { toast(e.message || 'Message non envoyé. Vérifie ta connexion et réessaie.', 'warn'); if (e.message && !acc.token) { setChatName(''); } }
   chat.sending = false; renderChat(); msgEl.focus();
 }
 document.addEventListener('submit', e => { if (e.target.id === 'chatform') { e.preventDefault(); chatSend(); } });

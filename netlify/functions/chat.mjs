@@ -1,7 +1,10 @@
 // Chat « Général » d'Amakna Idle : messages stockés dans Netlify Blobs.
 // GET  /api/chat?since=<timestamp>&cid=<id joueur>  -> { messages: [...], online: <joueurs en ligne> }
-// POST /api/chat { n: pseudo, x: texte, c: classe } -> { ok, message }
+// POST /api/chat { n: pseudo, x: texte, c: classe, token? } -> { ok, message }
+// Un pseudo qui appartient à un compte exige le jeton de ce compte ; le message porte alors sa photo (av).
 import { getStore } from "@netlify/blobs";
+import { createHash } from "node:crypto";
+const sha = (t) => createHash("sha256").update(t).digest("hex");
 
 const KEY = "general";
 const MAX_KEEP = 200;
@@ -27,9 +30,12 @@ export default async (req) => {
     const n = String(body.n || "").replace(/\s+/g, " ").trim().slice(0, 20);
     const x = String(body.x || "").replace(/\s+/g, " ").trim().slice(0, 240);
     if (!n || !x) return new Response("Pseudo et message requis", { status: 400 });
+    const owner = await getStore("accounts").get("user:" + n.toLowerCase(), { type: "json" });
+    if (owner && !(body.token && (owner.tokens || []).includes(sha(String(body.token)))))
+      return new Response("Ce pseudo appartient à un compte : connecte-toi pour l'utiliser.", { status: 403 });
     const list = (await store.get(KEY, { type: "json" })) || [];
     const last = list[list.length - 1];
-    const m = { id: crypto.randomUUID(), t: Math.max(Date.now(), last ? last.t + 1 : 0), n, x, c: String(body.c || "").slice(0, 12) };
+    const m = { id: crypto.randomUUID(), t: Math.max(Date.now(), last ? last.t + 1 : 0), n: owner ? owner.name : n, x, c: String(body.c || "").slice(0, 12), av: owner ? owner.avatarAt || 0 : 0 };
     list.push(m);
     await store.setJSON(KEY, list.slice(-MAX_KEEP));
     return Response.json({ ok: true, message: m });

@@ -4,6 +4,7 @@
 //   login    { name, pass }        -> { name, token, save, savedAt }
 //   load     { name, token }       -> { name, save, savedAt }
 //   save     { name, token, save } -> { savedAt }
+//   avatar   { name, token, avatar } -> { avatarAt }   (avatar = image data:URL, ou vide pour retirer)
 //   logout   { name, token }       -> { ok }
 // Les mots de passe sont hachés (scrypt + sel). Les jetons de session sont stockés hachés.
 import { getStore } from "@netlify/blobs";
@@ -49,11 +50,11 @@ export default async (req) => {
       const h = Buffer.from(hashPass(String(b.pass || ""), user.salt), "hex");
       if (!timingSafeEqual(h, Buffer.from(user.hash, "hex"))) return json({ error: "Pseudo ou mot de passe incorrect." }, 401);
       const token = await issueToken(user);
-      return json({ ok: true, name: user.name, token, save: user.save, savedAt: user.savedAt });
+      return json({ ok: true, name: user.name, token, save: user.save, savedAt: user.savedAt, avatarAt: user.avatarAt || 0 });
     }
     case "load": {
       if (!authed()) return json({ error: "Session expirée, reconnecte-toi." }, 401);
-      return json({ ok: true, name: user.name, save: user.save, savedAt: user.savedAt });
+      return json({ ok: true, name: user.name, save: user.save, savedAt: user.savedAt, avatarAt: user.avatarAt || 0 });
     }
     case "save": {
       if (!authed()) return json({ error: "Session expirée, reconnecte-toi." }, 401);
@@ -62,6 +63,14 @@ export default async (req) => {
       user.save = save; user.savedAt = Date.now();
       await store.setJSON(key, user);
       return json({ ok: true, savedAt: user.savedAt });
+    }
+    case "avatar": {
+      if (!authed()) return json({ error: "Session expirée, reconnecte-toi." }, 401);
+      const av = String(b.avatar || "");
+      if (av && (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(av) || av.length > 150000)) return json({ error: "Image invalide ou trop lourde." }, 400);
+      user.avatar = av || null; user.avatarAt = av ? Date.now() : 0;
+      await store.setJSON(key, user);
+      return json({ ok: true, avatarAt: user.avatarAt });
     }
     case "logout": {
       if (authed()) { user.tokens = user.tokens.filter((t) => t !== sha(String(b.token))); await store.setJSON(key, user); }
