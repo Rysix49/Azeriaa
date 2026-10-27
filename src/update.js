@@ -59,7 +59,7 @@
   a.addEventListener('click', () => say(pr
     ? 'Sur GitHub, clique sur « Merge pull request » puis « Confirm merge ». Le site officiel se met à jour en 1 à 2 minutes.'
     : 'Sur GitHub, clique sur « Create pull request », puis « Merge pull request » et « Confirm merge ». Le site officiel se met à jour en 1 à 2 minutes.'));
-  const setPr = (num) => { pr = num; a.href = 'https://github.com/Rysix49/Azeriaa/pull/' + num; a.textContent = '🚀 Publier sur le site officiel (#' + num + ')'; };
+  const setPr = (num) => { pr = num; a.href = 'https://github.com/Rysix49/Azeriaa/pull/' + num + '#partial-pull-merging'; a.textContent = '🚀 Publier sur le site officiel (#' + num + ')'; };
   const m = h.match(/^deploy-preview-(\d+)--/);
   if (m) return setPr(m[1]);
   fetch('https://api.github.com/repos/Rysix49/Azeriaa/pulls?state=open&head=Rysix49:dev', { headers: { accept: 'application/vnd.github+json' } })
