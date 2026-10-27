@@ -811,9 +811,12 @@ label.btn { cursor: pointer; }
 .is-busy { opacity: .5; pointer-events: none; }
 
 /* Ruban du site de test */
-.dev-ribbon { position: fixed; z-index: 99; left: 0; right: 0; top: env(safe-area-inset-top, 0px); padding: 4px max(12px, env(safe-area-inset-right, 0px)) 4px max(12px, env(safe-area-inset-left, 0px)); text-align: center; font: 800 11.5px 'Nunito', system-ui, sans-serif; letter-spacing: .04em; color: #12230a; background: repeating-linear-gradient(135deg, #93cf5f 0 14px, #7bbd47 14px 28px); box-shadow: 0 2px 8px #0008; pointer-events: none; }
-.is-dev body { padding-top: 22px; }
-.is-dev .topbar, .is-dev .side { top: calc(22px + env(safe-area-inset-top, 0px)); }
+.dev-ribbon { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; position: fixed; z-index: 99; left: 0; right: 0; top: env(safe-area-inset-top, 0px); padding: 4px max(12px, env(safe-area-inset-right, 0px)) 4px max(12px, env(safe-area-inset-left, 0px)); text-align: center; font: 800 11.5px 'Nunito', system-ui, sans-serif; letter-spacing: .04em; color: #12230a; background: repeating-linear-gradient(135deg, #93cf5f 0 14px, #7bbd47 14px 28px); box-shadow: 0 2px 8px #0008; }
+.dev-publish { pointer-events: auto; text-decoration: none; color: #fff; background: #1f3b12; border: 1px solid #0d1a07; border-radius: 6px; padding: 2px 10px; font-weight: 900; white-space: nowrap; }
+.dev-publish:hover { background: #2c5419; }
+.is-dev body { padding-top: 30px; }
+.is-dev .topbar, .is-dev .side { top: calc(30px + env(safe-area-inset-top, 0px)); }
+@media (max-width: 520px) { .dev-ribbon > span { display: none; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -865,6 +868,7 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .chat-panel { left: 0; right: 0; bottom: 0; width: auto; height: min(78vh, 600px); border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
 :root[data-layout="mobile"] .toasts { bottom: calc(136px + env(safe-area-inset-bottom, 0px)); }
 :root[data-layout="mobile"] .acc-form { grid-template-columns: minmax(0, 1fr); }
+:root[data-layout="mobile"] .dev-ribbon > span { display: none; }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -873,7 +877,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793110753';
+const BUILD_ID = '1793111300';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -1343,7 +1347,15 @@ const RELIC_DROPS = {
 /* Coût de recrutement des héros (index = nombre de héros déjà possédés) */
 const RECRUIT_COST = [0, 4000, 30000, 160000];
 
-const HERO_NAMES = ['Brakmouth', 'Pimprenelle', 'Tarnak', 'Mirabulle', 'Fendrel', 'Oswyna', 'Garrok', 'Sélénia', 'Kryssa', 'Bolgo', 'Elyndre', 'Patouf'];
+const HERO_NAMES = [
+  'Brakmouth', 'Pimprenelle', 'Tarnak', 'Mirabulle', 'Fendrel', 'Oswyna', 'Garrok', 'Sélénia', 'Kryssa', 'Bolgo', 'Elyndre', 'Patouf',
+  'Arkanis', 'Bérénice', 'Calvok', 'Dorinette', 'Escarbouille', 'Fanrir', 'Gribouille', 'Hestiane', 'Ixoral', 'Jorvik', 'Kalinka', 'Loumir',
+  'Mortimus', 'Nymphéa', 'Orgalius', 'Plumerette', 'Quentarn', 'Rhubarbe', 'Sylvorn', 'Tibaldine', 'Ulrak', 'Vaïmoana', 'Wolfgar', 'Xélandra',
+  'Yrgos', 'Zéphirine', 'Agrippa', 'Brindille', 'Cornebouc', 'Darkéon', 'Églantine', 'Frimousse', 'Gromalt', 'Hirondelle', 'Isengrin', 'Jasmora',
+  'Korvax', 'Lavandine', 'Malakor', 'Noisette', 'Obéron', 'Pistache', 'Ragnulf', 'Sarcelle', 'Torgal', 'Ursulka', 'Velours', 'Wrenna',
+  'Azalée', 'Bastok', 'Cerisette', 'Draknor', 'Ebonix', 'Flocon', 'Gaïamène', 'Hargnor', 'Iris', 'Jabot', 'Kestrel', 'Lumina',
+  'Mandrak', 'Nébuleuse', 'Olgrim', 'Paprika', 'Quartzine', 'Rouquin', 'Saphyra', 'Tonnerre', 'Ulysse', 'Vortan', 'Willow', 'Yzalis',
+];
 /* =====================================================================
    AMAKNA IDLE — MOTEUR
    Aucune dépendance au DOM : tout est testable hors navigateur.
@@ -2159,8 +2171,14 @@ applyLayout(LAYOUT);
   if (!/^(dev|deploy-preview-\d+)--/.test(location.hostname)) return;
   const el = document.createElement('div');
   el.className = 'dev-ribbon';
-  el.textContent = 'Version de test · les comptes et le chat sont séparés du site public';
+  const m = location.hostname.match(/^deploy-preview-(\d+)--/);
+  el.innerHTML = '<span>Version de test · comptes et chat séparés du site public</span>'
+    + (m ? `<a class="dev-publish" href="https://github.com/Rysix49/Azeriaa/pull/${m[1]}" target="_blank" rel="noopener">🚀 Publier sur le site officiel</a>` : '');
   document.body.appendChild(el);
+  if (m) el.querySelector('a').addEventListener('click', () => {
+    const t = document.getElementById('toasts');
+    if (t) { const d = document.createElement('div'); d.className = 'toast quest'; d.textContent = 'Sur GitHub, clique sur « Merge pull request » puis « Confirm merge ». Le site officiel se met à jour en environ une minute.'; t.appendChild(d); setTimeout(() => d.remove(), 9000); }
+  });
   document.documentElement.classList.add('is-dev');
 })();
 (function () {
