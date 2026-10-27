@@ -266,10 +266,10 @@ function fightCard(h) {
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
-        ${cra ? reticleHtml(h) : ''}
+        ${cra ? reticleHtml(h) : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -281,8 +281,8 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}">
-        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}">
+        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
@@ -297,6 +297,24 @@ function fightCard(h) {
     </footer>
   </article>`;
 }
+/* ---------------------- Ombre & Pièges du Sram ---------------------- */
+const TRAP_SVG = `<svg viewBox="0 0 40 16"><ellipse cx="20" cy="10" rx="17" ry="5" fill="#1a0f2a" stroke="#9b7bff" stroke-width="1.2"/><path d="M8 10l3-6 3 6M16 10l4-8 4 8M26 10l3-6 3 6" fill="#c8b8ff" stroke="#3a2a6a" stroke-width=".8"/><circle cx="20" cy="10" r="1.6" fill="#ff5ad8"/></svg>`;
+function smokePuff(el, big) {
+  if (!el) return;
+  for (let i = 0; i < (big ? 12 : 7); i++) { const s = document.createElement('span'); s.className = 'smoke';
+    const a = Math.random() * Math.PI * 2, r = 18 + Math.random() * (big ? 34 : 22);
+    s.style.cssText = `--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r * .6 - 12).toFixed(0)}px;--s:${(16 + Math.random() * 18).toFixed(0)}px;animation-delay:${(Math.random() * 120).toFixed(0)}ms`;
+    el.appendChild(s); setTimeout(() => s.remove(), 1100); }
+}
+function trapBoom(card, fx) {
+  const mon = card.querySelector(`[data-mon="${fx.i}"]`); if (!mon) return;
+  const b = document.createElement('div'); b.className = 'trap-boom';
+  b.innerHTML = `<i></i><i></i><i></i><i></i><i></i><i></i><i></i><b>PIÈGE !</b>`;
+  mon.appendChild(b); setTimeout(() => b.remove(), 1300);
+  mon.classList.remove('trapped'); void mon.offsetWidth; mon.classList.add('trapped'); setTimeout(() => mon.classList.remove('trapped'), 900);
+}
+function missFx(card) { const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return; const n = document.createElement('span'); n.className = 'fnum miss'; n.textContent = 'Raté !'; fg.appendChild(n); setTimeout(() => n.remove(), 950); }
+
 /* ---------------------- Traque du Cra ---------------------- */
 function focusHtml(h) { const n = h.focus || 0; return `🔭 ${Array.from({ length: CRA_FOCUS_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`; }
 function reticleHtml(h) {
@@ -428,6 +446,11 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      if (h.cls === 'sram') {
+        const tf = h.fight.trapFx; if (tf && tf.n > +(scene.dataset.tr || 0)) { scene.dataset.tr = tf.n; trapBoom(card, tf); }
+        const vn = h.fight.vanishSeq || 0; if (vn > +(scene.dataset.vn || 0)) { scene.dataset.vn = vn; smokePuff(card.querySelector('[data-k="fighter"] .sprite'), true); }
+        const ms = h.fight.missSeq || 0; if (ms > +(scene.dataset.ms || 0)) { scene.dataset.ms = ms; missFx(card); }
+      }
       if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
@@ -461,6 +484,11 @@ function patchCombat() {
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    if (h.cls === 'sram') {
+      const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
+      const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="trap"]'); if (tr) tr.classList.toggle('armed', !!m && m.hp > 0 && h.fight.trap === i); });
+    }
     if (h.cls === 'cra') {
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);

@@ -168,6 +168,7 @@ function startFight(st, h, ev) {
     mons: group.map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }),
     tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {},
   };
+  if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   const names = group.map(m => MONSTERS[m].name);
   ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
@@ -192,7 +193,7 @@ function rollSpell(h, t, f, sp, monRes) {
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
   const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
-  if (h.cls === 'sram' && f && f.turn === 1 && sp.type !== 'heal') v *= 2;
+  if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
   if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
@@ -207,6 +208,7 @@ function heroTurn(st, h, t, ev) {
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
   const xel = h.cls === 'xelor';
+  const aliveBefore = f.mons.filter(m => m.hp > 0).length;
   if (xel) f.hpMark = h.hp;
   const rewind = xel && (f.grains || 0) >= 12;
   if (rewind) f.grains -= 12;
@@ -259,7 +261,12 @@ function heroTurn(st, h, t, ev) {
   if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
-  if (h.cls === 'sram' && f.turn === 1 && actions.length) pre += 'Embuscade ! ';
+  if (h.cls === 'sram') {
+    const wasInvis = f.invis; f.invis = false;
+    const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
+    if (wasInvis && actions.length) pre += 'Frappe de l’ombre ! ';
+    if (kills > 0 && sramVanish(f)) actions.push('💨 Disparition');
+  }
   ev.log(h, pre + (actions.length ? actions.join(' · ') : `${h.name} passe son tour.`), 'hero');
 }
 
@@ -310,9 +317,18 @@ function monsterTurn(st, h, t, m, ev) {
     m.hp = Math.max(0, m.hp - m.poison.dmg);
     line += `${def.name} subit ${m.poison.dmg} (poison). `;
     if (--m.poison.turns <= 0) m.poison = null;
-    if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.`, 'mon'); return; }
+    if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
+  if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
+    f.trap = -1;
+    const tr = rollSpell(h, t, f, SRAM_TRAP, 0);
+    m.hp = Math.max(0, m.hp - tr.v);
+    f.trapFx = { n: (f.trapFx ? f.trapFx.n : 0) + 1, i: f.mons.indexOf(m), v: tr.v };
+    ev.log(h, line + `🪤 ${def.name} déclenche le piège de ${h.name} : −${tr.v}${tr.crit ? ' CC' : ''} et perd son tour !${m.hp <= 0 && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'hero');
+    return;
+  }
+  if (h.cls === 'sram' && f.invis && Math.random() < 0.4) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
   if (Math.random() * 100 < t.dodgePct) { ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
@@ -327,6 +343,12 @@ function monsterTurn(st, h, t, m, ev) {
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
 }
+
+/* ---------------------- Ombre & Pièges du Sram ---------------------- */
+const SRAM_INVIS_DMG = 25;
+/* Une élimination rend le Sram invisible (s'il reste des ennemis) */
+function sramVanish(f) { if (!f.mons.some(m => m.hp > 0)) return false; f.invis = true; f.vanishSeq = (f.vanishSeq || 0) + 1; return true; }
+const SRAM_TRAP = { id: 'piege_sournois', name: 'Piège sournois', min: 9, max: 13, type: 'dmg' };
 
 /* ---------------------- Traque du Cra ----------------------
    Le joueur choisit une proie (f.mark). Chaque tir dessus donne de la

@@ -99,7 +99,7 @@ const CLASSES = {
   sram: {
     name: 'Sram', role: 'Assassin sournois', main: 'deg', elem: 'agi', hpMult: 0.9, color: '#6a5fb5',
     desc: 'Poisons et coups critiques. Rapporte plus de kamas.',
-    passive: { name: 'Embuscade', points: [['🗡️','Embuscade','Au premier tour de chaque combat, tous ses dégâts sont doublés.'],['🪙','Pickpocket','+25 % de kamas gagnés.']], desc: 'Au premier tour de chaque combat, tous ses dégâts sont doublés. +25 % de kamas gagnés.', stats: { kamas: 25 } },
+    passive: { name: 'Ombre & Pièges', points: [['👁️','Invisibilité','Il commence chaque combat invisible : les monstres ont 40 % de chance de le rater et ses coups infligent +25 % de dégâts. Il redevient visible à la fin de son tour.'],['💨','Disparition','Quand il achève un monstre (même avec son poison ou son piège), il disparaît dans un nuage de fumée et redevient invisible pour son tour suivant.'],['🪤','Piège sournois','Avant chaque combat, il cache un piège sous un ennemi au hasard. Quand cet ennemi attaque, le piège explose : il subit des dégâts et perd son tour.']], desc: 'Invisible en début de combat et après chaque élimination ; un piège caché sous un ennemi.' },
     spells: [
       { id: 'sournoiserie', name: 'Sournoiserie', lvl: 1, pa: 3, min: 7, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'poison_paralysant', name: 'Poison Paralysant', lvl: 6, pa: 2, min: 5, max: 7, stat: 'agi', type: 'poison', turns: 3, cd: 1 },
