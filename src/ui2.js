@@ -1091,7 +1091,7 @@ document.addEventListener('pointerup', () => setTimeout(() => { pointerDown = fa
 document.addEventListener('pointercancel', () => { pointerDown = false; }, true);
 
 /* ---------------------------- Compte joueur (sauvegarde cloud) ----------------------------
-   Fonction Netlify /api/account (voir netlify/functions/account.mjs). */
+   Fonction serveur /api/account (voir functions/api/account.js). */
 const ACC_URL = '/api/account';
 const ACC_KEY = 'amakna-account';
 const acc = { avatarAt: 0, name: '', token: '', at: 0, busy: false, msg: '', err: '' };
@@ -1193,7 +1193,7 @@ function accountCard() {
 }
 
 /* ---------------------------- Chat « Général » ----------------------------
-   Messages partagés via la fonction Netlify /api/chat (voir netlify/functions/chat.mjs).
+   Messages partagés via la fonction serveur /api/chat (voir functions/api/chat.js).
    Hors du site Netlify (aperçu Claude, fichier local), le chat s'affiche hors ligne. */
 const CHAT_URL = '/api/chat';
 const CHAT_CID = (() => { try { let c = sessionStorage.getItem('amakna-cid'); if (!c) { c = Math.random().toString(36).slice(2, 12); sessionStorage.setItem('amakna-cid', c); } return c; } catch (e) { return Math.random().toString(36).slice(2, 12); } })();
@@ -1253,7 +1253,7 @@ function renderChat() {
 let chatAt = 0;
 function chatLoop() {
   chatFetch(); chatAt = Date.now();
-  setInterval(() => { if (Date.now() - chatAt >= (chat.open ? 3000 : 5000)) { chatAt = Date.now(); chatFetch(); } }, 1000);
+  setInterval(() => { if (Date.now() - chatAt >= (chat.open ? 3000 : 8000)) { chatAt = Date.now(); chatFetch(); } }, 1000);
 }
 async function chatSend() {
   const msgEl = $('#chatmsg'); const nameEl = $('#chatname');

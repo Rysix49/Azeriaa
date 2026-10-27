@@ -32,18 +32,29 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
 })();
 
-/* Ruban « version de test » sur le site de la branche dev (adresses dev--… ou deploy-preview-…--…netlify.app) */
+/* Ruban « version de test » sur le site de la branche dev
+   (Cloudflare : dev.<projet>.pages.dev ou <hash>.<projet>.pages.dev · Netlify : dev--… / deploy-preview-…--…) */
 (function () {
-  if (!/^(dev|deploy-preview-\d+)--/.test(location.hostname)) return;
+  const h = location.hostname;
+  const cf = /^[^.]+\.[^.]+\.pages\.dev$/.test(h);
+  if (!cf && !/^(dev|deploy-preview-\d+)--/.test(h)) return;
   const el = document.createElement('div');
   el.className = 'dev-ribbon';
-  const m = location.hostname.match(/^deploy-preview-(\d+)--/);
-  el.innerHTML = '<span>Version de test · comptes et chat séparés du site public</span>'
-    + (m ? `<a class="dev-publish" href="https://github.com/Rysix49/Azeriaa/pull/${m[1]}" target="_blank" rel="noopener">🚀 Publier sur le site officiel</a>` : '');
+  el.innerHTML = '<span>Version de test · comptes et chat séparés du site public</span>';
   document.body.appendChild(el);
-  if (m) el.querySelector('a').addEventListener('click', () => {
-    const t = document.getElementById('toasts');
-    if (t) { const d = document.createElement('div'); d.className = 'toast quest'; d.textContent = 'Sur GitHub, clique sur « Merge pull request » puis « Confirm merge ». Le site officiel se met à jour en environ une minute.'; t.appendChild(d); setTimeout(() => d.remove(), 9000); }
-  });
   document.documentElement.classList.add('is-dev');
+  const addPublish = (num) => {
+    const a = document.createElement('a'); a.className = 'dev-publish'; a.target = '_blank'; a.rel = 'noopener';
+    a.href = 'https://github.com/Rysix49/Azeriaa/pull/' + num; a.textContent = '🚀 Publier sur le site officiel';
+    a.addEventListener('click', () => {
+      const t = document.getElementById('toasts');
+      if (t) { const d = document.createElement('div'); d.className = 'toast quest'; d.textContent = 'Sur GitHub, clique sur « Merge pull request » puis « Confirm merge ». Le site officiel se met à jour en environ une minute.'; t.appendChild(d); setTimeout(() => d.remove(), 9000); }
+    });
+    el.appendChild(a);
+  };
+  const m = h.match(/^deploy-preview-(\d+)--/);
+  if (m) return addPublish(m[1]);
+  // Cloudflare : on cherche la demande de fusion ouverte de la branche dev
+  fetch('https://api.github.com/repos/Rysix49/Azeriaa/pulls?state=open&head=Rysix49:dev', { headers: { accept: 'application/vnd.github+json' } })
+    .then(r => r.ok ? r.json() : []).then(list => { if (list && list[0]) addPublish(list[0].number); }).catch(() => {});
 })();
