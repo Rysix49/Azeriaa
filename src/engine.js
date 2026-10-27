@@ -129,6 +129,23 @@ function pickGroup(zone, h) {
 function tierOf(h) { return SUBZONES[(h.act && h.act.tier) || 0] || SUBZONES[0]; }
 function subName(place, act) { return act && act.type === 'zone' ? `${place.name} ${(act.tier || 0) + 1}` : place.name; }
 
+/* Historique récent des gains (5 min) pour calculer des taux « par heure » qui réagissent vite */
+function sessionEvent(h, xp, kamas, n) {
+  const s = h.session, now = Date.now();
+  (s.ev = s.ev || []).push([now, xp, kamas, n]);
+  while (s.ev.length && now - s.ev[0][0] > 300000) s.ev.shift();
+}
+const RATE_WINDOW_MS = 120000;
+/* Taux par heure sur les 2 dernières minutes (ou depuis le début si plus récent) */
+function sessionRates(h) {
+  const s = h.session; if (!s) return null;
+  const now = Date.now(), win = Math.max(1000, Math.min(RATE_WINDOW_MS, now - s.start));
+  let xp = 0, kamas = 0, n = 0;
+  for (const [t, x, k, c] of s.ev || []) if (now - t <= win) { xp += x; kamas += k; n += c; }
+  const f = 3600000 / win;
+  return { xp: xp * f, kamas: kamas * f, n: n * f };
+}
+
 function startFight(st, h, ev) {
   const place = findPlace(h.act.type, h.act.id);
   let group;
@@ -355,7 +372,7 @@ function resolveWin(st, h, ev) {
   xp = Math.round(xp);
   st.kamas += kamas; st.stats.kamasEarned += kamas; st.stats.fights++;
   for (const [rid, c] of Object.entries(loot)) addRes(st, rid, c);
-  if (h.session) { h.session.xp += xp; h.session.kamas += kamas; h.session.kills += n; }
+  if (h.session) { h.session.xp += xp; h.session.kamas += kamas; h.session.kills += n; sessionEvent(h, xp, kamas, n); }
   const lootTxt = Object.entries(loot).map(([r, c]) => `${c}× ${RESOURCES[r].name}`).join(', ');
   ev.log(h, `Victoire ! +${fmt(xp)} XP, +${fmt(kamas)} K${lootTxt ? ' · ' + lootTxt : ''}`, 'win');
   for (const g of gearLoot) ev.log(h, `Objet trouvé : ${ITEMS[g.id].name}${g.stasis ? ' (STASIFIÉ)' : ''} !`, 'boss');
@@ -410,7 +427,7 @@ function doHarvest(st, h, ev) {
   let up = false;
   while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; up = true; }
   st.stats.harvested = (st.stats.harvested || 0) + n;
-  if (h.session) { h.session.xp += gx; h.session.kills += n; }
+  if (h.session) { h.session.xp += gx; h.session.kills += n; sessionEvent(h, gx, 0, n); }
   ev.log(h, `${h.name} récolte ${n}× ${c.name} (+${gx} XP ${GATHER_JOBS[c.job].name}).`, 'win');
   if (up) ev.jobup && ev.jobup(c.job, job.lvl);
 }
