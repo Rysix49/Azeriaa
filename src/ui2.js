@@ -113,6 +113,7 @@ const CLASS_GLYPH = {
   eniripsa: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" fill="currentColor"/><path d="M12 10.5v6M9 13.5h6" stroke="var(--c)" stroke-width="2" stroke-linecap="round"/><path d="M4.7 12.2C2.6 12.4 1 10.9 1 8.8c1.3.9 2.6 1 3.6.7M4.9 14.6c-1.8.4-3.2-.5-3.6-2.1M19.3 12.2c2.1.2 3.7-1.3 3.7-3.4-1.3.9-2.6 1-3.6.7M19.1 14.6c1.8.4 3.2-.5 3.6-2.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".85"/>',
   sacrieur: '<path d="M12 2.8s6.3 7.2 6.3 11.4a6.3 6.3 0 0 1-12.6 0C5.7 10 12 2.8 12 2.8Z" fill="currentColor"/><path d="M9.3 12.5l2 3.5M12 11.5l1.4 4.8M14.7 12.5l-.6 3.6" stroke="var(--c)" stroke-width="1.5" stroke-linecap="round"/>',
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
+  xelor: '<path d="M6.5 3h11M6.5 21h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5c0 4.6 3.6 5.8 3.6 8.5S8 15.9 8 20.5h8c0-4.6-3.6-5.8-3.6-8.5S16 7.1 16 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 19.6c.6-1.9 1.5-2.6 2.4-2.6s1.8.7 2.4 2.6ZM10 6.2h4c-.5 1.4-1.2 2.1-2 2.6-.8-.5-1.5-1.2-2-2.6Z" fill="currentColor"/><circle cx="12" cy="13.4" r=".7" fill="currentColor"/>',
   sram: '<path d="M14.5 3.2A8.8 8.8 0 1 0 20.8 16 7 7 0 1 1 14.5 3.2Z" fill="currentColor"/><path d="M17.5 5.5 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19.2 3.8l1-1M16.3 4.3l3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
 };
 function emblem(cls, size) {
@@ -231,6 +232,7 @@ function renderCombat() {
   return `<div class="fights">${st.heroes.map(fightCard).join('')}</div>
     ${more ? `<div class="hint-band"><span>Ton groupe peut accueillir un héros de plus${st.kamas >= cost ? '.' : ` (${fmt(cost)} kamas).`}</span><button class="btn sm ${st.kamas >= cost ? 'gold' : ''}" data-act="recruitnav">Recruter un héros</button></div>` : ''}`;
 }
+function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
   const s = h.session; if (!s) return '';
@@ -259,7 +261,7 @@ function fightCard(h) {
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}" data-mon="${i}" data-hp="${m.hp}">
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small></div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -317,12 +319,14 @@ function patchCombat() {
       if (!isNaN(prev) && m.hp < prev) floatNum(el, '−' + fmt(prev - m.hp), 'dmg');
       el.dataset.hp = m.hp;
       el.classList.toggle('dead', m.hp <= 0);
+      el.classList.toggle('frozen', !!m.frozen && m.hp > 0);
       setBar(el, m.hp, m.max);
       el.querySelector('[data-k="mhp"]').textContent = fmt(m.hp);
     });
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
     if (h.act && h.act.type === 'harvest') {
@@ -454,7 +458,7 @@ function statsPanel(h) {
     const p = sp.type === 'buff' ? null : spellPower(h, t, null, sp);
     const eff = sp.type === 'buff' ? Object.entries(sp.buff).map(([k, v]) => `+${v} ${STAT_LABEL[k]}`).join(', ') + ` pendant ${sp.turns} tours`
       : `${sp.type === 'heal' ? 'Soigne' : 'Inflige'} ~${fmt(p.avg)}${sp.type === 'aoe' ? ' à tous les ennemis' : sp.type === 'poison' ? ` par tour pendant ${sp.turns} tours` : sp.type === 'drain' ? ' et vole la moitié en PV' : ''}`;
-    const lim = [sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
+    const lim = [sp.freeze ? `+${sp.freeze} % de chance de figer` : '', sp.grains ? `+${sp.grains} grains` : '', sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
     const locked = h.lvl < sp.lvl;
     return `<div class="spell${locked ? ' locked' : ''}"><span class="pa" title="Points d'action">${sp.pa}</span>
       <div><b>${sp.name}</b>${sp.stat && STAT_ELEM[sp.stat] ? ` <span class="elem" style="--c:${STAT_COLOR[sp.stat]}">${STAT_ELEM[sp.stat]}</span>` : ''}<div class="desc">${eff}${lim ? ' · ' + lim : ''}</div></div>

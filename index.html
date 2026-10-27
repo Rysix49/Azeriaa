@@ -828,6 +828,12 @@ label.btn { cursor: pointer; }
 .chat-players li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--win); box-shadow: 0 0 6px var(--win); flex: none; }
 .chat-players li small { color: var(--gold-2); font-size: 11px; }
 .cp-anon { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
+
+/* Xélor : sablier et ennemis figés */
+.vs .grains { margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #3f73c433; border: 1px solid #3f73c477; color: #cfe0ff !important; font-variant-numeric: tabular-nums; }
+.vs .grains.full { background: #3f73c4; color: #fff !important; box-shadow: 0 0 10px #6fa0ff; animation: pulse 1.2s ease-in-out infinite; }
+.mon.frozen .sprite { filter: drop-shadow(0 0 6px #8fd0ff) saturate(.4) brightness(1.15); }
+.mon.frozen .u-name::after { content: " ❄"; color: #9fd8ff; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -888,7 +894,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793117166';
+const BUILD_ID = '1793117960';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -986,6 +992,19 @@ const CLASSES = {
       { id: 'arnaque', name: 'Arnaque', lvl: 13, pa: 4, min: 15, max: 20, stat: 'agi', type: 'dmg', max_: 1 },
       { id: 'piege_masse', name: 'Piège de Masse', lvl: 24, pa: 4, min: 12, max: 16, stat: 'agi', type: 'aoe', max_: 1 },
       { id: 'attaque_mortelle', name: 'Attaque Mortelle', lvl: 38, pa: 6, min: 50, max: 65, stat: 'agi', type: 'dmg', cd: 3 },
+    ],
+  },
+  xelor: {
+    name: 'Xélor', role: 'Mage du temps', main: 'int', hpMult: 0.95, color: '#3f73c4',
+    desc: 'Accumule du temps à chaque sort, fige ses ennemis et rejoue des tours entiers.',
+    passive: { name: 'Sablier Temporel', desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : au début de son tour, le Xélor le vide et rejoue un tour complet, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
+    spells: [
+      { id: 'aiguille', name: 'Aiguille', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
+      { id: 'gelure', name: 'Gelure', lvl: 4, pa: 2, min: 3, max: 5, stat: 'int', type: 'dmg', freeze: 30, max_: 1 },
+      { id: 'poussiere', name: 'Poussière Temporelle', lvl: 10, pa: 3, min: 6, max: 9, stat: 'int', type: 'aoe', max_: 1 },
+      { id: 'momification', name: 'Momification', lvl: 18, pa: 2, type: 'buff', buff: { res: 20, pui: 15 }, turns: 2, cd: 5 },
+      { id: 'horloge', name: 'Horloge', lvl: 26, pa: 4, min: 18, max: 24, stat: 'int', type: 'dmg', grains: 3, max_: 1 },
+      { id: 'rayon_obscur', name: 'Rayon Obscur', lvl: 40, pa: 5, min: 30, max: 40, stat: 'int', type: 'dmg', cd: 2 },
     ],
   },
 };
@@ -1576,9 +1595,14 @@ function heroTurn(st, h, t, ev) {
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
+  const xel = h.cls === 'xelor';
+  if (xel) f.hpMark = h.hp;
+  const rewind = xel && (f.grains || 0) >= 12;
+  if (rewind) f.grains -= 12;
+  const actions = [];
+  const phase = (gainGrains) => {
   f.casts = {};
   let pa = t.pa;
-  const actions = [];
   for (let guard = 0; guard < 12; guard++) {
     const alive = f.mons.filter(m => m.hp > 0);
     if (!alive.length) break;
@@ -1609,7 +1633,11 @@ function heroTurn(st, h, t, ev) {
     f.casts[best.id] = (f.casts[best.id] || 0) + 1;
     if (best.cd) f.cds[best.id] = best.cd + 1;
     actions.push(castSpell(st, h, t, best, target, alive));
+    if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
+  };
+  phase(true);
+  if (rewind && f.mons.some(m => m.hp > 0)) { actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'sram' && f.turn === 1 && actions.length) pre += 'Embuscade ! ';
   ev.log(h, pre + (actions.length ? actions.join(' · ') : `${h.name} passe son tour.`), 'hero');
@@ -1628,8 +1656,15 @@ function castSpell(st, h, t, sp, target, alive) {
     const before = h.hp; h.hp = Math.min(t.maxHp, h.hp + v);
     return `${sp.name} +${h.hp - before} PV`;
   }
+  const xel = h.cls === 'xelor';
+  const distort = (m, r) => {
+    if (!xel) return '';
+    if (m.frozen) r.v = Math.round(r.v * 1.25);
+    if (m.hp - r.v > 0 && !m.frozen && Math.random() * 100 < 12 + (sp.freeze || 0)) { m.frozen = true; return '❄'; }
+    return '';
+  };
   if (sp.type === 'aoe') {
-    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); return tag(r); });
+    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
     return `${sp.name} → ${parts.join('/')}`;
   }
   const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
@@ -1637,8 +1672,9 @@ function castSpell(st, h, t, sp, target, alive) {
     target.poison = { dmg: r.v, turns: sp.turns };
     return `${sp.name} sur ${MONSTERS[target.mid].name} (${r.v}/tour)`;
   }
+  const fz = distort(target, r);
   target.hp = Math.max(0, target.hp - r.v);
-  let s = `${sp.name} ${tag(r)}`;
+  let s = `${sp.name} ${tag(r)}${fz ? ` ❄ ${MONSTERS[target.mid].name} figé` : ''}`;
   if (sp.type === 'drain') { const heal = Math.round(r.v / 2); h.hp = Math.min(t.maxHp, h.hp + heal); s += ` (+${heal} PV)`; }
   return s;
 }
@@ -1653,6 +1689,7 @@ function monsterTurn(st, h, t, m, ev) {
     if (--m.poison.turns <= 0) m.poison = null;
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.`, 'mon'); return; }
   }
+  if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
   if (Math.random() * 100 < t.dodgePct) { ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
@@ -1661,6 +1698,11 @@ function monsterTurn(st, h, t, m, ev) {
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
+    f.paradox = true; f.grains = 0;
+    h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
+    ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
+  }
 }
 
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
@@ -2325,6 +2367,7 @@ const CLASS_GLYPH = {
   eniripsa: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" fill="currentColor"/><path d="M12 10.5v6M9 13.5h6" stroke="var(--c)" stroke-width="2" stroke-linecap="round"/><path d="M4.7 12.2C2.6 12.4 1 10.9 1 8.8c1.3.9 2.6 1 3.6.7M4.9 14.6c-1.8.4-3.2-.5-3.6-2.1M19.3 12.2c2.1.2 3.7-1.3 3.7-3.4-1.3.9-2.6 1-3.6.7M19.1 14.6c1.8.4 3.2-.5 3.6-2.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".85"/>',
   sacrieur: '<path d="M12 2.8s6.3 7.2 6.3 11.4a6.3 6.3 0 0 1-12.6 0C5.7 10 12 2.8 12 2.8Z" fill="currentColor"/><path d="M9.3 12.5l2 3.5M12 11.5l1.4 4.8M14.7 12.5l-.6 3.6" stroke="var(--c)" stroke-width="1.5" stroke-linecap="round"/>',
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
+  xelor: '<path d="M6.5 3h11M6.5 21h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5c0 4.6 3.6 5.8 3.6 8.5S8 15.9 8 20.5h8c0-4.6-3.6-5.8-3.6-8.5S16 7.1 16 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 19.6c.6-1.9 1.5-2.6 2.4-2.6s1.8.7 2.4 2.6ZM10 6.2h4c-.5 1.4-1.2 2.1-2 2.6-.8-.5-1.5-1.2-2-2.6Z" fill="currentColor"/><circle cx="12" cy="13.4" r=".7" fill="currentColor"/>',
   sram: '<path d="M14.5 3.2A8.8 8.8 0 1 0 20.8 16 7 7 0 1 1 14.5 3.2Z" fill="currentColor"/><path d="M17.5 5.5 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19.2 3.8l1-1M16.3 4.3l3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
 };
 function emblem(cls, size) {
@@ -2443,6 +2486,7 @@ function renderCombat() {
   return `<div class="fights">${st.heroes.map(fightCard).join('')}</div>
     ${more ? `<div class="hint-band"><span>Ton groupe peut accueillir un héros de plus${st.kamas >= cost ? '.' : ` (${fmt(cost)} kamas).`}</span><button class="btn sm ${st.kamas >= cost ? 'gold' : ''}" data-act="recruitnav">Recruter un héros</button></div>` : ''}`;
 }
+function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
   const s = h.session; if (!s) return '';
@@ -2471,7 +2515,7 @@ function fightCard(h) {
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}" data-mon="${i}" data-hp="${m.hp}">
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small></div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -2529,12 +2573,14 @@ function patchCombat() {
       if (!isNaN(prev) && m.hp < prev) floatNum(el, '−' + fmt(prev - m.hp), 'dmg');
       el.dataset.hp = m.hp;
       el.classList.toggle('dead', m.hp <= 0);
+      el.classList.toggle('frozen', !!m.frozen && m.hp > 0);
       setBar(el, m.hp, m.max);
       el.querySelector('[data-k="mhp"]').textContent = fmt(m.hp);
     });
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
     if (h.act && h.act.type === 'harvest') {
@@ -2666,7 +2712,7 @@ function statsPanel(h) {
     const p = sp.type === 'buff' ? null : spellPower(h, t, null, sp);
     const eff = sp.type === 'buff' ? Object.entries(sp.buff).map(([k, v]) => `+${v} ${STAT_LABEL[k]}`).join(', ') + ` pendant ${sp.turns} tours`
       : `${sp.type === 'heal' ? 'Soigne' : 'Inflige'} ~${fmt(p.avg)}${sp.type === 'aoe' ? ' à tous les ennemis' : sp.type === 'poison' ? ` par tour pendant ${sp.turns} tours` : sp.type === 'drain' ? ' et vole la moitié en PV' : ''}`;
-    const lim = [sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
+    const lim = [sp.freeze ? `+${sp.freeze} % de chance de figer` : '', sp.grains ? `+${sp.grains} grains` : '', sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
     const locked = h.lvl < sp.lvl;
     return `<div class="spell${locked ? ' locked' : ''}"><span class="pa" title="Points d'action">${sp.pa}</span>
       <div><b>${sp.name}</b>${sp.stat && STAT_ELEM[sp.stat] ? ` <span class="elem" style="--c:${STAT_COLOR[sp.stat]}">${STAT_ELEM[sp.stat]}</span>` : ''}<div class="desc">${eff}${lim ? ' · ' + lim : ''}</div></div>

@@ -97,6 +97,19 @@ const CLASSES = {
       { id: 'attaque_mortelle', name: 'Attaque Mortelle', lvl: 38, pa: 6, min: 50, max: 65, stat: 'agi', type: 'dmg', cd: 3 },
     ],
   },
+  xelor: {
+    name: 'Xélor', role: 'Mage du temps', main: 'int', hpMult: 0.95, color: '#3f73c4',
+    desc: 'Accumule du temps à chaque sort, fige ses ennemis et rejoue des tours entiers.',
+    passive: { name: 'Sablier Temporel', desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : au début de son tour, le Xélor le vide et rejoue un tour complet, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
+    spells: [
+      { id: 'aiguille', name: 'Aiguille', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
+      { id: 'gelure', name: 'Gelure', lvl: 4, pa: 2, min: 3, max: 5, stat: 'int', type: 'dmg', freeze: 30, max_: 1 },
+      { id: 'poussiere', name: 'Poussière Temporelle', lvl: 10, pa: 3, min: 6, max: 9, stat: 'int', type: 'aoe', max_: 1 },
+      { id: 'momification', name: 'Momification', lvl: 18, pa: 2, type: 'buff', buff: { res: 20, pui: 15 }, turns: 2, cd: 5 },
+      { id: 'horloge', name: 'Horloge', lvl: 26, pa: 4, min: 18, max: 24, stat: 'int', type: 'dmg', grains: 3, max_: 1 },
+      { id: 'rayon_obscur', name: 'Rayon Obscur', lvl: 40, pa: 5, min: 30, max: 40, stat: 'int', type: 'dmg', cd: 2 },
+    ],
+  },
 };
 
 /* --------------------------------------------------------------------

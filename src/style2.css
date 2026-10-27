@@ -821,3 +821,9 @@ label.btn { cursor: pointer; }
 .chat-players li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--win); box-shadow: 0 0 6px var(--win); flex: none; }
 .chat-players li small { color: var(--gold-2); font-size: 11px; }
 .cp-anon { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
+
+/* Xélor : sablier et ennemis figés */
+.vs .grains { margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #3f73c433; border: 1px solid #3f73c477; color: #cfe0ff !important; font-variant-numeric: tabular-nums; }
+.vs .grains.full { background: #3f73c4; color: #fff !important; box-shadow: 0 0 10px #6fa0ff; animation: pulse 1.2s ease-in-out infinite; }
+.mon.frozen .sprite { filter: drop-shadow(0 0 6px #8fd0ff) saturate(.4) brightness(1.15); }
+.mon.frozen .u-name::after { content: " ❄"; color: #9fd8ff; }
