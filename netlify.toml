@@ -1,4 +1,7 @@
 [build]
+  # Le site est désormais hébergé sur Cloudflare Pages : Netlify ignore toutes les nouvelles versions
+  # (l'ancien site reste en ligne pour le rapatriement des comptes, sans consommer de crédits de déploiement).
+  ignore = "exit 0"
   publish = "."
   functions = "netlify/functions"
 
