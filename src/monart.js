@@ -85,3 +85,8 @@ function monSprite(mid, fallback) {
   const art = MON_ART[mid];
   return art || fallback;
 }
+/* Petite icône (listes, carte, butin) : dessin figé, sinon emoji */
+function monIcon(mid) {
+  const art = MON_ART[mid];
+  return art ? art.replace('class="ms ', 'class="ms ms-mini ') : MONSTERS[mid].icon;
+}

@@ -1145,3 +1145,9 @@ label.btn { cursor: pointer; }
 .mon.atk .ms .p-torso { transform-origin: 50% 60%; animation: mspuff .5s ease-out; }
 @keyframes mspuff { 0% { transform: none; } 20% { transform: scale(1.08); } 45% { transform: scale(.97); } 100% { transform: none; } }
 .mon.atk .ms .p-hop, .mon.hit .ms .p-hop, .mon.dead .ms .p-hop { animation: none; }
+
+/* Icône de monstre dessinée dans les listes */
+.ms-mini { width: 1.35em; height: 1.35em; display: inline-block; vertical-align: -.3em; overflow: visible; }
+.ms-mini *, .ms-mini { animation: none !important; }
+.ms-mini .p-feathers, .ms-mini .p-shadow { display: none; }
+.ms-mini { transform: scaleX(-1); }
