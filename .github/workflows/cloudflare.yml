@@ -1,0 +1,57 @@
+# Publication automatique sur Cloudflare Pages.
+# - branche main -> site officiel (https://<projet>.pages.dev)
+# - branche dev  -> site de test  (https://dev.<projet>.pages.dev)
+# Secrets GitHub requis : CLOUDFLARE_API_TOKEN (droits « Cloudflare Pages : Edit » et « D1 : Edit »)
+#                         CLOUDFLARE_ACCOUNT_ID
+# Au premier lancement, le projet Pages « azeriaa » et la base D1 « azeriaa » sont créés automatiquement.
+name: Cloudflare Pages
+on:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+concurrency:
+  group: cloudflare-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT: azeriaa
+      DB_NAME: azeriaa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Vérifier les secrets
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Ajoute les secrets CLOUDFLARE_API_TOKEN et CLOUDFLARE_ACCOUNT_ID (Settings > Secrets and variables > Actions)."; exit 1; fi
+      - name: Installer wrangler
+        run: npm i --no-save wrangler@4.154.0
+      - name: Construire le site
+        run: sh cf-build.sh
+      - name: Créer le projet et la base si besoin
+        run: |
+          npx wrangler pages project list --json 2>/dev/null | grep -q "\"$PROJECT\"" \
+            || npx wrangler pages project create "$PROJECT" --production-branch main
+          ID=$(npx wrangler d1 list --json | node -e "const l=JSON.parse(require('fs').readFileSync(0,'utf8'));const d=l.find(x=>x.name===process.env.DB_NAME);process.stdout.write(d?d.uuid:'')")
+          if [ -z "$ID" ]; then
+            npx wrangler d1 create "$DB_NAME"
+            ID=$(npx wrangler d1 list --json | node -e "const l=JSON.parse(require('fs').readFileSync(0,'utf8'));const d=l.find(x=>x.name===process.env.DB_NAME);process.stdout.write(d?d.uuid:'')")
+          fi
+          [ -n "$ID" ] || { echo "::error::Base D1 introuvable"; exit 1; }
+          cat > wrangler.toml <<TOML
+          name = "$PROJECT"
+          pages_build_output_dir = "dist"
+          compatibility_date = "2026-01-01"
+          [[d1_databases]]
+          binding = "DB"
+          database_name = "$DB_NAME"
+          database_id = "$ID"
+          TOML
+          sed -i 's/^ *//' wrangler.toml && cat wrangler.toml
+      - name: Publier
+        run: npx wrangler pages deploy dist --project-name "$PROJECT" --branch "${{ github.ref_name }}" --commit-dirty=true
