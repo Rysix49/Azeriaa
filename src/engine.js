@@ -3,7 +3,7 @@
    Aucune dépendance au DOM : tout est testable hors navigateur.
    ===================================================================== */
 
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2; // 2 : stats élémentaires fusionnées en Dégâts
 const STEP_MS = 550;            // durée d'une action de combat
 const REGEN_FULL_MS = 9000;    // temps pour récupérer 100 % des PV
 const DEATH_REST_MS = 20000;    // repos après une défaite
@@ -50,7 +50,7 @@ function newState() {
 function newHero(st, name, cls) {
   const h = {
     id: uid(), name, cls, lvl: 1, xp: 0, capital: 0, auto: CLASSES[cls].main,
-    base: { vit: 0, sag: 0, for: 0, int: 0, cha: 0, agi: 0 },
+    base: { vit: 0, sag: 0, deg: 0 },
     equip: {}, hp: 0, act: null, fight: null, wait: 0, restTotal: 0, resting: false,
     log: [], session: null,
   };
@@ -81,13 +81,13 @@ function setBonus(setId, count) {
 
 /* Statistiques totales d'un héros (base + équipement + panoplies + passif) */
 function heroTotals(st, h) {
-  const t = { vit: 0, sag: 0, for: 0, int: 0, cha: 0, agi: 0, pui: 0, res: 0, pp: 0, crit: 0, soin: 0, dmg: 0, pa: 0, kamas: 0 };
+  const t = { vit: 0, sag: 0, deg: 0, res: 0, pp: 0, crit: 0, soin: 0, dmg: 0, pa: 0, kamas: 0 };
   for (const s of STATS) t[s] += h.base[s];
   for (const slot of SLOTS) {
     const g = h.equip[slot] && gearById(st, h.equip[slot]);
     if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v;
   }
-  for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] += v;
+  for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] = (t[k] || 0) + v;
   if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const f = RESOURCES[h.food.id].food; if (f.speed) t.speed = (t.speed || 0) + f.speed; }
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
@@ -95,11 +95,11 @@ function heroTotals(st, h) {
   if (cl.passive && cl.passive.stats) for (const [k, v] of Object.entries(cl.passive.stats)) t[k] = (t[k] || 0) + v;
   t.maxHp = Math.round((50 + h.lvl * 6) * cl.hpMult + t.vit);
   t.pa = 6 + (h.lvl >= 100 ? 1 : 0) + t.pa;
-  t.critPct = clamp(3 + t.crit + t.agi / 25, 0, 50);
-  t.dodgePct = clamp(t.agi / 12 + (t.dodge || 0), 0, 35);
+  t.critPct = clamp(3 + t.crit, 0, 50);
+  t.dodgePct = clamp(t.dodge || 0, 0, 35);
   t.resPct = clamp(t.res, 0, 50);
-  t.ppTotal = 100 + t.pp + Math.floor(t.cha / 5);
-  t.xpBonus = t.sag + (t.xpPct || 0);
+  t.ppTotal = 100 + t.pp;
+  t.xpBonus = Math.round((t.sag * SAG_XP + (t.xpPct || 0)) * 10) / 10;
   return t;
 }
 
@@ -168,6 +168,7 @@ function startFight(st, h, ev) {
     mons: group.map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }),
     tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {},
   };
+  if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   const names = group.map(m => MONSTERS[m].name);
   ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
@@ -179,24 +180,23 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
   if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
-  if (h.cls === 'sacrieur') return Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100);
   return 0;
 }
 function spellPower(h, t, f, sp) {
-  const stat = sp.stat ? t[sp.stat] : 0;
-  const pui = t.pui + (f ? buffTotal(f, 'pui') : 0) + passivePui(h, t, f);
-  const scale = (1 + h.lvl * 0.045) * (1 + (stat + pui) / 100);
+  const deg = t.deg + (f ? buffTotal(f, 'deg') : 0) + passivePui(h, t, f);
+  const scale = (1 + h.lvl * 0.045) * (1 + deg / 100);
   return { scale, avg: ((sp.min + sp.max) / 2) * scale + t.dmg };
 }
 
 function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct;
+  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
-  if (h.cls === 'sram' && f && f.turn === 1 && sp.type !== 'heal') v *= 2;
+  if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
+  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }
@@ -208,6 +208,7 @@ function heroTurn(st, h, t, ev) {
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
   const xel = h.cls === 'xelor';
+  const aliveBefore = f.mons.filter(m => m.hp > 0).length;
   if (xel) f.hpMark = h.hp;
   const rewind = xel && (f.grains || 0) >= 12;
   if (rewind) f.grains -= 12;
@@ -215,6 +216,7 @@ function heroTurn(st, h, t, ev) {
   const phase = (gainGrains) => {
   f.casts = {};
   let pa = t.pa;
+  if (gainGrains) { f.turnCasts = 0; f.turnCrits = 0; }
   for (let guard = 0; guard < 12; guard++) {
     const alive = f.mons.filter(m => m.hp > 0);
     if (!alive.length) break;
@@ -222,7 +224,7 @@ function heroTurn(st, h, t, ev) {
       && (sp.max_ == null || (f.casts[sp.id] || 0) < sp.max_));
     if (!usable.length) break;
     const hpRatio = h.hp / t.maxHp;
-    const target = alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+    const target = h.cls === 'cra' ? craPrey(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
     let best = null, bestVal = -1;
     for (const sp of usable) {
       const { avg } = spellPower(h, t, f, sp);
@@ -237,6 +239,7 @@ function heroTurn(st, h, t, ev) {
         const totalHp = alive.reduce((s, m) => s + m.hp, 0);
         val = already ? 0 : totalHp > t.pa * 8 ? 9999 : 0;
       }
+      if (h.cls === 'cra' && sp.type === 'dmg' && (h.focus || 0) >= CRA_FOCUS_MAX) val = Math.max(val, 1) * 6; // garde le Tir Parfait pour la proie
       val = val / sp.pa;
       if (val > bestVal) { bestVal = val; best = sp; }
     }
@@ -245,7 +248,9 @@ function heroTurn(st, h, t, ev) {
     f.casts[best.id] = (f.casts[best.id] || 0) + 1;
     if (best.cd) f.cds[best.id] = best.cd + 1;
     const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
-    actions.push(castSpell(st, h, t, best, target, alive));
+    const line = castSpell(st, h, t, best, target, alive);
+    actions.push(line);
+    if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
     (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
     if (f.fx.length > 16) f.fx.shift();
@@ -255,7 +260,13 @@ function heroTurn(st, h, t, ev) {
   phase(true);
   if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
-  if (h.cls === 'sram' && f.turn === 1 && actions.length) pre += 'Embuscade ! ';
+  if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
+  if (h.cls === 'sram') {
+    const wasInvis = f.invis; f.invis = false;
+    const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
+    if (wasInvis && actions.length) pre += 'Frappe de l’ombre ! ';
+    if (kills > 0 && sramVanish(f)) actions.push('💨 Disparition');
+  }
   ev.log(h, pre + (actions.length ? actions.join(' · ') : `${h.name} passe son tour.`), 'hero');
 }
 
@@ -281,9 +292,12 @@ function castSpell(st, h, t, sp, target, alive) {
   };
   if (sp.type === 'aoe') {
     const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
+    if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
     return `${sp.name} → ${parts.join('/')}`;
   }
+  if (h.cls === 'cra' && sp.type === 'dmg' && f.mons.indexOf(target) === f.mark && (h.focus || 0) >= CRA_FOCUS_MAX) return perfectShot(h, t, f, sp, target);
   const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
+  if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
   if (sp.type === 'poison') {
     target.poison = { dmg: r.v, turns: sp.turns };
     return `${sp.name} sur ${MONSTERS[target.mid].name} (${r.v}/tour)`;
@@ -303,9 +317,18 @@ function monsterTurn(st, h, t, m, ev) {
     m.hp = Math.max(0, m.hp - m.poison.dmg);
     line += `${def.name} subit ${m.poison.dmg} (poison). `;
     if (--m.poison.turns <= 0) m.poison = null;
-    if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.`, 'mon'); return; }
+    if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
+  if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
+    f.trap = -1;
+    const tr = rollSpell(h, t, f, SRAM_TRAP, 0);
+    m.hp = Math.max(0, m.hp - tr.v);
+    f.trapFx = { n: (f.trapFx ? f.trapFx.n : 0) + 1, i: f.mons.indexOf(m), v: tr.v };
+    ev.log(h, line + `🪤 ${def.name} déclenche le piège de ${h.name} : −${tr.v}${tr.crit ? ' CC' : ''} et perd son tour !${m.hp <= 0 && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'hero');
+    return;
+  }
+  if (h.cls === 'sram' && f.invis && Math.random() < 0.3) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
   if (Math.random() * 100 < t.dodgePct) { ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
@@ -319,6 +342,86 @@ function monsterTurn(st, h, t, m, ev) {
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Ombre & Pièges du Sram ---------------------- */
+const SRAM_INVIS_DMG = 15;
+/* Une élimination rend le Sram invisible (s'il reste des ennemis) */
+function sramVanish(f) { if (!f.mons.some(m => m.hp > 0)) return false; f.invis = true; f.vanishSeq = (f.vanishSeq || 0) + 1; return true; }
+const SRAM_TRAP = { id: 'piege_sournois', name: 'Piège sournois', min: 9, max: 13, type: 'dmg' };
+
+/* ---------------------- Traque du Cra ----------------------
+   Le joueur choisit une proie (f.mark). Chaque tir dessus donne de la
+   Concentration (h.focus). À 5, le prochain tir est un Tir Parfait qui transperce. */
+const CRA_FOCUS_MAX = 5, CRA_FOCUS_CRIT = 6;
+function craPrey(f, alive) {
+  const cur = f.mons[f.mark];
+  if (cur && cur.hp > 0) return cur;
+  const t = alive.reduce((a, b) => (b.hp < a.hp ? b : a)); // la traque continue
+  f.mark = f.mons.indexOf(t);
+  return t;
+}
+function setPrey(h, idx) {
+  const f = h.fight; if (!f || h.cls !== 'cra') return false;
+  const m = f.mons[idx]; if (!m || m.hp <= 0 || f.mark === idx) return false;
+  f.mark = idx; h.focus = 0; f.manual = true;
+  return true;
+}
+function perfectShot(h, t, f, sp, target) {
+  const { scale } = spellPower(h, t, f, sp);
+  let v = (rnd(sp.min, sp.max) * scale + t.dmg) * 3;
+  if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+  v = Math.max(1, Math.round(v));
+  const ti = f.mons.indexOf(target);
+  const over = Math.max(0, v - target.hp);
+  target.hp = Math.max(0, target.hp - v);
+  let pierce = null, s = `🏹 TIR PARFAIT ! ${sp.name} ${v} CC`;
+  if (over > 0) {
+    const next = f.mons.filter(m => m.hp > 0).sort((a, b) => a.hp - b.hp)[0];
+    if (next) { const pv = Math.max(1, Math.round(over)); next.hp = Math.max(0, next.hp - pv); pierce = { i: f.mons.indexOf(next), v: pv }; s += ` → transperce ${MONSTERS[next.mid].name} (${pv})`; }
+  }
+  h.focus = 0;
+  f.perfectSeq = (f.perfectSeq || 0) + 1;
+  f.perfect = { n: f.perfectSeq, t: ti, v, pierce };
+  return s;
+}
+
+/* ---------------------- Colère de Iop (jauge de Fureur) ----------------------
+   Chaque tour où le Iop attaque remplit sa jauge (+ bonus par coup critique).
+   La jauge persiste entre les combats. Pleine, le joueur déclenche l'attaque
+   à la main : une épée colossale frappe tous les ennemis. */
+const FURY_MAX = 300;
+const FURY_PER_TURN = 4, FURY_PER_CRIT = 3;
+function gainFury(h, casts, crits, nMons = 1) {
+  const before = h.fury || 0;
+  h.fury = Math.min(FURY_MAX, before + (casts ? FURY_PER_TURN * (1 + nMons) / 3 : 0) + crits * FURY_PER_CRIT);
+}
+function furyReady(h) { return h.cls === 'iop' && (h.fury || 0) >= FURY_MAX; }
+const COLERE_SPELL = { id: 'colere_ult', name: 'Colère de Iop', min: 140, max: 180, type: 'aoe' };
+/* Déclenche l'attaque. Retourne les dégâts infligés (ou null si impossible) */
+function unleashFury(st, h, ev) {
+  const f = h.fight;
+  if (!furyReady(h) || !f) return null;
+  const alive = f.mons.filter(m => m.hp > 0);
+  if (!alive.length) return null;
+  const t = heroTotals(st, h);
+  f.rage = 5; // la colère porte la Rage au maximum
+  const { scale } = spellPower(h, t, f, COLERE_SPELL);
+  const hits = f.mons.map(m => {
+    if (m.hp <= 0) return null;
+    const crit = Math.random() * 100 < t.critPct + 25;
+    let v = rnd(COLERE_SPELL.min, COLERE_SPELL.max) * scale + t.dmg;
+    if (crit) v *= 1.5;
+    if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+    v = Math.max(1, Math.round(v)); // ignore les résistances
+    m.hp = Math.max(0, m.hp - v);
+    return { v, crit };
+  });
+  h.fury = 0;
+  h.furyCount = (h.furyCount || 0) + 1;
+  f.ult = (f.ult || 0) + 1;
+  ev.log(h, `⚔️ COLÈRE DE IOP ! ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}`, 'boss');
+  return hits;
 }
 
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
@@ -650,15 +753,37 @@ function migrate(obj) {
   for (const j of [...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)]) if (!st.jobs[j]) st.jobs[j] = { lvl: 1, xp: 0 };
   for (const h of st.heroes) {
     h.log = h.log || []; h.hequip = h.hequip || {};
+    // v8 : Force/Intelligence/Chance/Agilité fusionnées en Dégâts → points de capital remboursés
+    const ob = h.base || {};
+    if ((obj.v || 1) < 2 || OLD_ELEM_STATS.some(k => k in ob)) {
+      let cap = 0; for (const [k, v] of Object.entries(ob)) cap += v * (k === 'sag' ? 3 : 1);
+      h.base = { vit: 0, sag: 0, deg: 0 }; h.capital = (h.capital || 0) + cap;
+      if (OLD_ELEM_STATS.includes(h.auto)) h.auto = 'deg';
+      if (h.auto) autoAllocate(h);
+    }
+    if (h.fight && h.fight.buffs) for (const b of h.fight.buffs) if (b.stats && 'pui' in b.stats) b.stats = convertOldStats(b.stats);
     // contenu supprimé entre versions : on nettoie
     if (h.act && !findPlace(h.act.type, h.act.id)) setActivity(st, h, null);
     if (h.fight && h.fight.mons.some(m => !MONSTERS[m.mid])) h.fight = null;
   }
   st.gear = st.gear.filter(g => ITEMS[g.id]);
+  for (const g of st.gear) migrateGear(g, (obj.v || 1) < 2);
   for (const k of Object.keys(st.res)) if (!RESOURCES[k]) delete st.res[k];
   st.v = SAVE_VERSION;
   return st;
 }
+/* Convertit un objet d'une ancienne version (stats élémentaires, sans prospection) */
+function migrateGear(g, old) {
+  const def = ITEMS[g.id];
+  if (old || Object.keys(g.stats).some(k => OLD_ELEM_STATS.includes(k) || k === 'pui')) g.stats = convertOldStats(g.stats);
+  const q = Math.max(0, Math.min(1, itemQualityRaw(g, def)));
+  for (const [k, [a, b]] of Object.entries(def.stats)) {
+    if (g.stats[k] === undefined) g.stats[k] = g.stasis ? b * 2 : Math.round(a + (b - a) * q);
+    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(b, g.stats[k]));
+  }
+  for (const k of Object.keys(g.stats)) if (!(k in def.stats)) delete g.stats[k];
+}
+function itemQualityRaw(g, def) { let tot = 0, n = 0; for (const [k, [a, b]] of Object.entries(def.stats)) if (g.stats[k] !== undefined) { tot += b === a ? 1 : (g.stats[k] - a) / (b - a); n++; } return n ? tot / n : 0.5; }
 function exportSave(st) { return btoa(unescape(encodeURIComponent(serialize(st)))); }
 function importSave(str) { return migrate(JSON.parse(decodeURIComponent(escape(atob(str.trim()))))); }
 

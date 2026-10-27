@@ -5,15 +5,26 @@
    d'ajouter des entrées : le moteur et l'interface s'adaptent seuls.
    ===================================================================== */
 
-const STATS = ['vit', 'sag', 'for', 'int', 'cha', 'agi'];
+const STATS = ['vit', 'sag', 'deg'];
+/* Sagesse : chaque point donne +0,5 % d'XP */
+const SAG_XP = 0.5;
+/* Anciennes caractéristiques élémentaires (Force, Intelligence, Chance, Agilité)
+   fusionnées en une seule : Dégâts. Sert à migrer les anciennes sauvegardes. */
+const OLD_ELEM_STATS = ['for', 'int', 'cha', 'agi'];
+function convertOldStats(o) {
+  const out = {}; let pui = 0; const el = [];
+  for (const [k, v] of Object.entries(o)) { if (OLD_ELEM_STATS.includes(k)) el.push(v); else if (k === 'pui') pui += v; else if (k === 'sag') out.sag = (out.sag || 0) + v * 2; else out[k] = (out[k] || 0) + v; }
+  if (el.length || pui) { const m = el.length ? Math.max(...el) : 0; out.deg = pui + m + Math.round((el.reduce((a, b) => a + b, 0) - m) * 0.3); }
+  return out;
+}
 const STAT_LABEL = {
-  vit: 'Vitalité', sag: 'Sagesse', for: 'Force', int: 'Intelligence', cha: 'Chance', agi: 'Agilité',
-  pui: 'Puissance', res: '% Résistance', pp: 'Prospection', crit: '% Critique', soin: 'Soins', dmg: 'Dommages', pa: 'PA',
+  vit: 'Vitalité', sag: 'Sagesse', deg: 'Dégâts', res: '% Résistance', pp: 'Prospection', crit: '% Critique', soin: 'Soins', dmg: 'Dommages fixes', pa: 'PA',
 };
-const STAT_SHORT = { vit: 'Vit', sag: 'Sag', for: 'For', int: 'Int', cha: 'Cha', agi: 'Agi', pui: 'Pui', res: 'Rés', pp: 'PP', crit: 'Crit', soin: 'Soin', dmg: 'Dom', pa: 'PA' };
+const STAT_SHORT = { vit: 'Vit', sag: 'Sag', deg: 'Dég', res: 'Rés', pp: 'PP', crit: 'Crit', soin: 'Soin', dmg: 'Dom', pa: 'PA' };
+/* Élément des sorts : purement visuel, tous utilisent la stat Dégâts */
 const STAT_ELEM = { for: 'Terre', int: 'Feu', cha: 'Eau', agi: 'Air' };
 /* Coût en points de capital pour +1 dans la caractéristique */
-const STAT_COST = { vit: 1, sag: 3, for: 1, int: 1, cha: 1, agi: 1 };
+const STAT_COST = { vit: 1, sag: 1, deg: 1 };
 const CAPITAL_PER_LEVEL = 5;
 const MAX_LEVEL = 200;
 
@@ -25,21 +36,21 @@ const MAX_LEVEL = 200;
    -------------------------------------------------------------------- */
 const CLASSES = {
   iop: {
-    name: 'Iop', role: 'Guerrier impétueux', main: 'for', hpMult: 1.1, color: '#d0533f',
+    name: 'Iop', role: 'Guerrier impétueux', main: 'deg', elem: 'for', hpMult: 1.1, color: '#d0533f',
     desc: 'Frappe fort et sans détour. Ses sorts de zone nettoient les groupes.',
-    passive: { name: 'Rage Croissante', points: [['🔥','Rage Croissante','Chaque tour où il attaque : +12 Puissance jusqu’à la fin du combat.'],['📈','Cumul','5 cumuls maximum, soit +60 Puissance.']], desc: 'Chaque tour où il attaque, le Iop gagne +12 Puissance jusqu’à la fin du combat (max 5 cumuls, soit +60).' },
+    passive: { name: 'Rage Croissante · Colère de Iop', points: [['🔥','Rage Croissante','Chaque tour où il attaque : +12 Dégâts jusqu’à la fin du combat (5 cumuls max, +60).'],['😡','Jauge de Fureur','Chaque tour où il attaque remplit la jauge (+4, et +3 par coup critique). Elle se garde d’un combat à l’autre (quelques minutes de combat pour la remplir).'],['⚔️','Colère de Iop','Jauge pleine : clique sur l’épée au-dessus du Iop pour faire tomber une lame colossale sur tous les ennemis. Ignore les résistances, +25 % de critique, Rage portée au max.']], desc: 'Chaque tour où il attaque, le Iop gagne +12 Dégâts jusqu’à la fin du combat (max 5 cumuls, soit +60 Dégâts).' },
     spells: [
       { id: 'pression', name: 'Pression', lvl: 1, pa: 3, min: 7, max: 11, stat: 'for', type: 'dmg', max_: 2 },
-      { id: 'compulsion', name: 'Compulsion', lvl: 4, pa: 2, type: 'buff', buff: { pui: 40 }, turns: 3, cd: 5 },
+      { id: 'compulsion', name: 'Compulsion', lvl: 4, pa: 2, type: 'buff', buff: { deg: 40 }, turns: 3, cd: 5 },
       { id: 'epee_divine', name: 'Épée Divine', lvl: 9, pa: 3, min: 8, max: 12, stat: 'for', type: 'aoe', max_: 1 },
-      { id: 'colere', name: 'Colère de Iop', lvl: 20, pa: 6, min: 38, max: 52, stat: 'for', type: 'dmg', cd: 3 },
+      { id: 'colere', name: 'Épée du Destin', lvl: 20, pa: 6, min: 38, max: 52, stat: 'for', type: 'dmg', cd: 3 },
       { id: 'epee_celeste', name: 'Épée Céleste', lvl: 35, pa: 4, min: 16, max: 22, stat: 'for', type: 'aoe', max_: 1 },
     ],
   },
   cra: {
-    name: 'Cra', role: 'Archère précise', main: 'agi', hpMult: 0.95, color: '#5c9a45',
+    name: 'Cra', role: 'Archère précise', main: 'deg', elem: 'agi', hpMult: 0.95, color: '#5c9a45',
     desc: 'Tire de loin, empoisonne et esquive. Critiques fréquents.',
-    passive: { name: 'Œil de Lynx', points: [['🎯','Précision','+5 % de coups critiques.'],['💥','Tir mortel','Ses critiques infligent ×1,8 au lieu de ×1,5.']], desc: '+5 % de coups critiques. Ses critiques infligent ×1,8 au lieu de ×1,5.', stats: { crit: 5 } },
+    passive: { name: 'Traque · Tir Parfait', points: [['🎯','Proie marquée','Clique sur un monstre pour en faire sa proie : ses sorts à cible unique la visent en priorité. Sans choix de ta part, elle traque le plus faible.'],['🔭','Concentration','Chaque sort qui touche la proie ajoute 1 point de Concentration (max 5) : +6 % de critique par point. Elle se garde même quand la proie meurt ou qu’un nouveau combat commence… mais changer de proie toi-même la remet à zéro.'],['🏹','Tir Parfait','À 5 de Concentration, le tir suivant sur la proie est un critique garanti ×3 qui ignore les résistances. Les dégâts en trop transpercent la proie et touchent l’ennemi suivant.'],['🦅','Œil de Lynx','+5 % de critique ; ses critiques infligent ×1,8 au lieu de ×1,5.']], desc: 'Marque une proie, accumule la Concentration et décoche un Tir Parfait qui transperce.', stats: { crit: 5 } },
     spells: [
       { id: 'fleche_magique', name: 'Flèche Magique', lvl: 1, pa: 3, min: 6, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'fleche_empoisonnee', name: 'Flèche Empoisonnée', lvl: 5, pa: 2, min: 4, max: 6, stat: 'agi', type: 'poison', turns: 3, cd: 2 },
@@ -49,63 +60,63 @@ const CLASSES = {
     ],
   },
   eniripsa: {
-    name: 'Eniripsa', role: 'Soigneuse', main: 'int', hpMult: 0.95, color: '#c96fa8',
+    name: 'Eniripsa', role: 'Soigneuse', main: 'deg', elem: 'int', hpMult: 0.95, color: '#c96fa8',
     desc: 'Ses mots blessent et soignent. Très résistante sur la durée.',
     passive: { name: 'Souffle Vital', points: [['💗','Souffle Vital','Régénère 4 % de ses PV max au début de chaque tour.'],['✨','Soins renforcés','Ses soins sont augmentés de 25 %.']], desc: 'Régénère 4 % de ses PV max au début de chaque tour. Ses soins sont augmentés de 25 %.' },
     spells: [
       { id: 'mot_blessant', name: 'Mot Blessant', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
       { id: 'mot_soignant', name: 'Mot Soignant', lvl: 1, pa: 3, min: 10, max: 14, stat: 'int', type: 'heal', max_: 1 },
-      { id: 'mot_stimulant', name: 'Mot Stimulant', lvl: 8, pa: 2, type: 'buff', buff: { pui: 30, res: 10 }, turns: 3, cd: 5 },
+      { id: 'mot_stimulant', name: 'Mot Stimulant', lvl: 8, pa: 2, type: 'buff', buff: { deg: 30, res: 10 }, turns: 3, cd: 5 },
       { id: 'mot_interdit', name: 'Mot Interdit', lvl: 15, pa: 4, min: 15, max: 20, stat: 'int', type: 'dmg', max_: 1 },
       { id: 'mot_regeneration', name: 'Mot de Régénération', lvl: 30, pa: 4, min: 30, max: 40, stat: 'int', type: 'heal', cd: 3 },
       { id: 'mot_tourmente', name: 'Mot Tourmenté', lvl: 45, pa: 4, min: 14, max: 18, stat: 'int', type: 'aoe', max_: 1 },
     ],
   },
   sacrieur: {
-    name: 'Sacrieur', role: 'Berserker endurant', main: 'for', hpMult: 1.35, color: '#a32f2f',
+    name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
-    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 Puissance par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, il frappe avec +70 Puissance.']], desc: 'Gagne +1 Puissance par % de PV manquant. À 30 % de vie, il frappe avec +70 Puissance.' },
+    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 % de dégâts finaux par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, ses dégâts sont multipliés par 1,7.']], desc: '+1 % de dégâts finaux par % de PV manquant.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
-      { id: 'chatiment', name: 'Châtiment Forcé', lvl: 10, pa: 2, type: 'buff', buff: { pui: 50 }, turns: 2, cd: 4 },
+      { id: 'chatiment', name: 'Châtiment Forcé', lvl: 10, pa: 2, type: 'buff', buff: { deg: 50 }, turns: 2, cd: 4 },
       { id: 'fureur', name: 'Fureur', lvl: 18, pa: 4, min: 20, max: 28, stat: 'for', type: 'dmg', max_: 1 },
       { id: 'douleur_cuisante', name: 'Douleur Cuisante', lvl: 32, pa: 4, min: 13, max: 18, stat: 'for', type: 'aoe', max_: 1 },
     ],
   },
   enutrof: {
-    name: 'Enutrof', role: 'Chercheur de trésors', main: 'cha', hpMult: 1.1, color: '#c9962e',
+    name: 'Enutrof', role: 'Chercheur de trésors', main: 'deg', elem: 'cha', hpMult: 1.1, color: '#c9962e',
     desc: 'Trouve plus de butin et de kamas que quiconque.',
     passive: { name: 'Flair du Trésor', points: [['🔎','Prospection','+40 Prospection.'],['💰','Double butin','12 % de chance qu’un monstre lâche ses ressources en double.']], desc: '+40 Prospection. 12 % de chance qu’un monstre vaincu lâche ses ressources en double.', stats: { pp: 40 } },
     spells: [
       { id: 'lancer_pieces', name: 'Lancer de Pièces', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
       { id: 'pelle_animee', name: 'Pelle Animée', lvl: 6, pa: 4, min: 15, max: 20, stat: 'cha', type: 'dmg', max_: 1 },
       { id: 'pelle_fantomatique', name: 'Pelle Fantomatique', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
-      { id: 'fortune', name: 'Coffre Animé', lvl: 22, pa: 2, type: 'buff', buff: { pui: 35, res: 8 }, turns: 3, cd: 5 },
+      { id: 'fortune', name: 'Coffre Animé', lvl: 22, pa: 2, type: 'buff', buff: { deg: 35, res: 8 }, turns: 3, cd: 5 },
       { id: 'pelle_jugement', name: 'Pelle du Jugement', lvl: 36, pa: 5, min: 34, max: 44, stat: 'cha', type: 'dmg', cd: 2 },
     ],
   },
   sram: {
-    name: 'Sram', role: 'Assassin sournois', main: 'agi', hpMult: 0.9, color: '#6a5fb5',
+    name: 'Sram', role: 'Assassin sournois', main: 'deg', elem: 'agi', hpMult: 0.9, color: '#6a5fb5',
     desc: 'Poisons et coups critiques. Rapporte plus de kamas.',
-    passive: { name: 'Embuscade', points: [['🗡️','Embuscade','Au premier tour de chaque combat, tous ses dégâts sont doublés.'],['🪙','Pickpocket','+25 % de kamas gagnés.']], desc: 'Au premier tour de chaque combat, tous ses dégâts sont doublés. +25 % de kamas gagnés.', stats: { kamas: 25 } },
+    passive: { name: 'Ombre & Pièges', points: [['👁️','Invisibilité','Il commence chaque combat invisible : les monstres ont 30 % de chance de le rater et ses coups infligent +15 % de dégâts. Il redevient visible à la fin de son tour.'],['💨','Disparition','Quand il achève un monstre (même avec son poison ou son piège), il disparaît dans un nuage de fumée et redevient invisible pour son tour suivant.'],['🪤','Piège sournois','Avant chaque combat, il cache un piège sous un ennemi au hasard. Quand cet ennemi attaque, le piège explose : il subit des dégâts et perd son tour.']], desc: 'Invisible en début de combat et après chaque élimination ; un piège caché sous un ennemi.' },
     spells: [
-      { id: 'sournoiserie', name: 'Sournoiserie', lvl: 1, pa: 3, min: 7, max: 10, stat: 'agi', type: 'dmg', max_: 2 },
+      { id: 'sournoiserie', name: 'Sournoiserie', lvl: 1, pa: 3, min: 6, max: 9, stat: 'agi', type: 'dmg', max_: 2 },
       { id: 'poison_paralysant', name: 'Poison Paralysant', lvl: 6, pa: 2, min: 5, max: 7, stat: 'agi', type: 'poison', turns: 3, cd: 1 },
-      { id: 'arnaque', name: 'Arnaque', lvl: 13, pa: 4, min: 15, max: 20, stat: 'agi', type: 'dmg', max_: 1 },
+      { id: 'arnaque', name: 'Arnaque', lvl: 13, pa: 4, min: 13, max: 18, stat: 'agi', type: 'dmg', max_: 1 },
       { id: 'piege_masse', name: 'Piège de Masse', lvl: 24, pa: 4, min: 12, max: 16, stat: 'agi', type: 'aoe', max_: 1 },
       { id: 'attaque_mortelle', name: 'Attaque Mortelle', lvl: 38, pa: 6, min: 50, max: 65, stat: 'agi', type: 'dmg', cd: 3 },
     ],
   },
   xelor: {
-    name: 'Xélor', role: 'Mage du temps', main: 'int', hpMult: 0.95, color: '#3f73c4',
+    name: 'Xélor', role: 'Mage du temps', main: 'deg', elem: 'int', hpMult: 0.95, color: '#3f73c4',
     desc: 'Accumule du temps à chaque sort, fige ses ennemis et rejoue des tours entiers.',
     passive: { name: 'Sablier Temporel', points: [['⏳','Grains du temps','Chaque PA dépensé ajoute 1 grain au sablier (12 max).'],['🔁','Rembobinage','Sablier plein : il le vide et rejoue un tour complet, sans regagner de grains.'],['❄️','Distorsion','12 % de chance de figer la cible : elle passe sa prochaine attaque.'],['🎯','Temps arrêté','Une cible figée subit +25 % de dégâts.'],['🌀','Paradoxe','Une fois par combat : s’il tombe à 0 PV avec 6 grains ou plus, il revient aux PV du début de son tour (30 % minimum).']], desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : au début de son tour, le Xélor le vide et rejoue un tour complet, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
     spells: [
       { id: 'aiguille', name: 'Aiguille', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
       { id: 'gelure', name: 'Gelure', lvl: 4, pa: 2, min: 3, max: 5, stat: 'int', type: 'dmg', freeze: 30, max_: 1 },
       { id: 'poussiere', name: 'Poussière Temporelle', lvl: 10, pa: 3, min: 6, max: 9, stat: 'int', type: 'aoe', max_: 1 },
-      { id: 'momification', name: 'Momification', lvl: 18, pa: 2, type: 'buff', buff: { res: 20, pui: 15 }, turns: 2, cd: 5 },
+      { id: 'momification', name: 'Momification', lvl: 18, pa: 2, type: 'buff', buff: { res: 20, deg: 15 }, turns: 2, cd: 5 },
       { id: 'horloge', name: 'Horloge', lvl: 26, pa: 4, min: 18, max: 24, stat: 'int', type: 'dmg', grains: 3, max_: 1 },
       { id: 'rayon_obscur', name: 'Rayon Obscur', lvl: 40, pa: 5, min: 30, max: 40, stat: 'int', type: 'dmg', cd: 2 },
     ],
@@ -235,12 +246,12 @@ const SLOT_LABEL = { coiffe: 'Coiffe', cape: 'Cape', amulette: 'Amulette', annea
 const SLOT_ICON = { relique: '🔮', outil: '🪓', gants: '🧤', sac: '👝', coiffe: '🎩', cape: '🧥', amulette: '📿', anneau: '💍', ceinture: '🎗️', bottes: '👢', arme: '🗡️' };
 
 const SETS = {
-  aventurier: { name: "Panoplie de l'Aventurier", bonus: { 2: { vit: 10 }, 4: { vit: 20, sag: 10 }, 6: { vit: 30, sag: 15, pui: 20 } } },
-  bouftou:    { name: 'Panoplie du Bouftou', bonus: { 2: { vit: 20 }, 3: { vit: 30, for: 15 }, 4: { vit: 40, for: 20, pui: 20, res: 5 } } },
-  abraknyde:  { name: 'Panoplie Abraknyde', bonus: { 2: { sag: 10 }, 3: { sag: 15, pui: 20 }, 4: { sag: 20, pui: 30, res: 5 } } },
-  bwork:      { name: 'Panoplie du Bwork', bonus: { 2: { for: 20 }, 3: { for: 30, vit: 50 }, 4: { for: 40, vit: 80, pui: 40 } } },
-  koalak:     { name: 'Panoplie Koalak', bonus: { 2: { agi: 25 }, 3: { agi: 35, pui: 40, crit: 3 } } },
-  chafer:     { name: 'Panoplie du Chafer', bonus: { 2: { vit: 80 }, 3: { vit: 120, pui: 50, res: 8 } } },
+  aventurier: { name: "Panoplie de l'Aventurier", bonus: { 2: { vit: 10 }, 4: { vit: 20, sag: 20 }, 6: { deg: 20, vit: 30, sag: 30 } } },
+  bouftou:    { name: 'Panoplie du Bouftou', bonus: { 2: { vit: 20 }, 3: { deg: 15, vit: 30 }, 4: { deg: 40, vit: 40, res: 5 } } },
+  abraknyde:  { name: 'Panoplie Abraknyde', bonus: { 2: { sag: 20 }, 3: { deg: 20, sag: 30 }, 4: { deg: 30, sag: 40, res: 5 } } },
+  bwork:      { name: 'Panoplie du Bwork', bonus: { 2: { deg: 20 }, 3: { deg: 30, vit: 50 }, 4: { deg: 80, vit: 80 } } },
+  koalak:     { name: 'Panoplie Koalak', bonus: { 2: { deg: 25 }, 3: { deg: 75, crit: 3 } } },
+  chafer:     { name: 'Panoplie du Chafer', bonus: { 2: { vit: 80 }, 3: { deg: 50, vit: 120, res: 8 } } },
 };
 
 /* Équipement de récolte : emplacements séparés, bonus aux métiers de récolte.
@@ -255,7 +266,7 @@ Object.assign(STAT_SHORT, { rxp: '% XP récolte', rqty: '% Qté', rspd: '% Vites
    RELIQUES — un seul emplacement par héros, effets uniques et puissants.
    Elles ne se fabriquent pas : drop extrêmement rare (voir RELIC_DROPS).
    -------------------------------------------------------------------- */
-Object.assign(STAT_LABEL, { kamas: '% Kamas gagnés', xpPct: '% XP gagnée', dmgPct: '% Dégâts', dodge: '% Esquive', regen: '% PV régénérés / tour', speed: '% Vitesse de combat' });
+Object.assign(STAT_LABEL, { kamas: '% Kamas gagnés', xpPct: '% XP gagnée', dmgPct: '% Dégâts finaux', dodge: '% Esquive', regen: '% PV régénérés / tour', speed: '% Vitesse de combat' });
 Object.assign(STAT_SHORT, { kamas: '% Kamas', xpPct: '% XP', dmgPct: '% Dégâts', dodge: '% Esquive', regen: '% Régén.', speed: '% Vitesse combat' });
 
 const ITEMS = {
@@ -264,8 +275,8 @@ const ITEMS = {
   relique_bouftou:  { name: "Toison d'Or du Bouftou Royal", slot: 'relique', lvl: 15, relic: true, stats: { xpPct: [15, 20], vit: [20, 40] } },
   relique_abra:     { name: "Graine d'Abraknyde Millénaire", slot: 'relique', lvl: 20, relic: true, stats: { regen: [2, 3], vit: [30, 50] } },
   relique_craq:     { name: 'Noyau de Craqueleur', slot: 'relique', lvl: 35, relic: true, stats: { res: [6, 10], vit: [40, 60] } },
-  relique_bworkette:{ name: 'Cœur de Bworkette', slot: 'relique', lvl: 45, relic: true, stats: { dmgPct: [12, 18], pui: [10, 20] } },
-  relique_kanigrou: { name: 'Sablier du Kanigrou', slot: 'relique', lvl: 55, relic: true, stats: { speed: [15, 25], agi: [15, 25] } },
+  relique_bworkette:{ name: 'Cœur de Bworkette', slot: 'relique', lvl: 45, relic: true, stats: { deg: [10, 20], dmgPct: [12, 18] } },
+  relique_kanigrou: { name: 'Sablier du Kanigrou', slot: 'relique', lvl: 55, relic: true, stats: { deg: [15, 25], speed: [15, 25] } },
   relique_chafer:   { name: 'Lanterne des Âmes', slot: 'relique', lvl: 70, relic: true, stats: { kamas: [30, 50], pp: [30, 50], xpPct: [5, 10] } },
 
   /* Récolte */
@@ -279,49 +290,49 @@ const ITEMS = {
 
   /* Niveau 1 — Aventurier */
   coiffe_aventurier:   { icon: '🧢', name: "Coiffe de l'Aventurier", slot: 'coiffe', lvl: 1, set: 'aventurier', stats: { vit: [5, 12] } },
-  cape_aventurier:     { icon: '🧣', name: "Cape de l'Aventurier", slot: 'cape', lvl: 1, set: 'aventurier', stats: { sag: [1, 4], agi: [2, 5] } },
-  amulette_aventurier: { icon: '📿', name: "Amulette de l'Aventurier", slot: 'amulette', lvl: 1, set: 'aventurier', stats: { int: [3, 6], vit: [3, 6] } },
-  anneau_aventurier:   { icon: '💍', name: "Anneau de l'Aventurier", slot: 'anneau', lvl: 1, set: 'aventurier', stats: { cha: [3, 6], for: [2, 4] } },
-  bottes_aventurier:   { icon: '👢', name: "Bottes de l'Aventurier", slot: 'bottes', lvl: 1, set: 'aventurier', stats: { agi: [2, 5], vit: [3, 6] } },
-  ceinture_aventurier: { icon: '🎗️', name: "Ceinture de l'Aventurier", slot: 'ceinture', lvl: 1, set: 'aventurier', stats: { for: [3, 6], int: [2, 4] } },
-  baton_debutant:      { icon: '🪄', name: 'Bâton du Débutant', slot: 'arme', lvl: 3, stats: { pui: [5, 10], int: [2, 5] } },
-  epee_boisaille:      { icon: '🗡️', name: 'Épée de Boisaille', slot: 'arme', lvl: 3, stats: { pui: [5, 10], for: [2, 5] } },
+  cape_aventurier:     { icon: '🧣', name: "Cape de l'Aventurier", slot: 'cape', lvl: 1, set: 'aventurier', stats: { deg: [2, 5], sag: [2, 8] } },
+  amulette_aventurier: { icon: '📿', name: "Amulette de l'Aventurier", slot: 'amulette', lvl: 1, set: 'aventurier', stats: { deg: [3, 6], vit: [3, 6] } },
+  anneau_aventurier:   { icon: '💍', name: "Anneau de l'Aventurier", slot: 'anneau', lvl: 1, set: 'aventurier', stats: { deg: [4, 7], pp: [4, 7] } },
+  bottes_aventurier:   { icon: '👢', name: "Bottes de l'Aventurier", slot: 'bottes', lvl: 1, set: 'aventurier', stats: { deg: [2, 5], vit: [3, 6] } },
+  ceinture_aventurier: { icon: '🎗️', name: "Ceinture de l'Aventurier", slot: 'ceinture', lvl: 1, set: 'aventurier', stats: { deg: [4, 7] } },
+  baton_debutant:      { icon: '🪄', name: 'Bâton du Débutant', slot: 'arme', lvl: 3, stats: { deg: [7, 15] } },
+  epee_boisaille:      { icon: '🗡️', name: 'Épée de Boisaille', slot: 'arme', lvl: 3, stats: { deg: [7, 15] } },
 
   /* Niveau 10-20 */
-  coiffe_bouftou:      { icon: '🎩', name: 'Coiffe du Bouftou', slot: 'coiffe', lvl: 10, set: 'bouftou', stats: { vit: [20, 35], for: [5, 10] } },
-  cape_bouftou:        { icon: '🧥', name: 'Cape du Bouftou', slot: 'cape', lvl: 10, set: 'bouftou', stats: { vit: [15, 25], sag: [3, 6] } },
-  amulette_bouftou:    { icon: '🧿', name: 'Amulette du Bouftou', slot: 'amulette', lvl: 15, set: 'bouftou', stats: { vit: [20, 30], for: [8, 14], pp: [5, 10] } },
-  marteau_bouftou:     { icon: '🔨', name: 'Marteau du Bouftou', slot: 'arme', lvl: 18, set: 'bouftou', stats: { pui: [15, 25], for: [10, 18], vit: [10, 20] } },
-  bottes_moskito:      { icon: '🥾', name: 'Bottes Moskito', slot: 'bottes', lvl: 12, stats: { agi: [8, 14], vit: [8, 14] } },
-  anneau_arakne:       { icon: '💠', name: "Anneau d'Arakne", slot: 'anneau', lvl: 14, stats: { int: [6, 12], cha: [6, 12] } },
-  ceinture_champ:      { icon: '🌾', name: 'Ceinture Champêtre', slot: 'ceinture', lvl: 16, stats: { vit: [15, 25], sag: [5, 10] } },
-  arc_moskito:         { icon: '🏹', name: 'Arc Moskito', slot: 'arme', lvl: 15, stats: { pui: [12, 20], agi: [10, 16] } },
-  pelle_champ:         { icon: '⛏️', name: 'Pelle des Champs', slot: 'arme', lvl: 15, stats: { pui: [12, 20], cha: [10, 16], pp: [5, 10] } },
+  coiffe_bouftou:      { icon: '🎩', name: 'Coiffe du Bouftou', slot: 'coiffe', lvl: 10, set: 'bouftou', stats: { deg: [5, 10], vit: [20, 35] } },
+  cape_bouftou:        { icon: '🧥', name: 'Cape du Bouftou', slot: 'cape', lvl: 10, set: 'bouftou', stats: { vit: [15, 25], sag: [6, 12] } },
+  amulette_bouftou:    { icon: '🧿', name: 'Amulette du Bouftou', slot: 'amulette', lvl: 15, set: 'bouftou', stats: { deg: [8, 14], vit: [20, 30], pp: [8, 14] } },
+  marteau_bouftou:     { icon: '🔨', name: 'Marteau du Bouftou', slot: 'arme', lvl: 18, set: 'bouftou', stats: { deg: [25, 43], vit: [10, 20] } },
+  bottes_moskito:      { icon: '🥾', name: 'Bottes Moskito', slot: 'bottes', lvl: 12, stats: { deg: [8, 14], vit: [8, 14], dodge: [1, 3] } },
+  anneau_arakne:       { icon: '💠', name: "Anneau d'Arakne", slot: 'anneau', lvl: 14, stats: { deg: [8, 16], pp: [8, 13] } },
+  ceinture_champ:      { icon: '🌾', name: 'Ceinture Champêtre', slot: 'ceinture', lvl: 16, stats: { vit: [15, 25], sag: [10, 20] } },
+  arc_moskito:         { icon: '🏹', name: 'Arc Moskito', slot: 'arme', lvl: 15, stats: { deg: [22, 36], crit: [1, 2] } },
+  pelle_champ:         { icon: '⛏️', name: 'Pelle des Champs', slot: 'arme', lvl: 15, stats: { deg: [22, 36], pp: [8, 14] } },
 
   /* Niveau 25-35 */
-  baton_abraknyde:     { icon: '🌿', name: 'Bâton Abraknyde', slot: 'arme', lvl: 25, set: 'abraknyde', stats: { pui: [20, 30], int: [15, 25] } },
-  cape_abraknyde:      { icon: '🍃', name: 'Cape Abraknyde', slot: 'cape', lvl: 25, set: 'abraknyde', stats: { vit: [25, 40], sag: [6, 12] } },
-  anneau_ecurouille:   { icon: '🌰', name: "Anneau d'Écurouille", slot: 'anneau', lvl: 25, set: 'abraknyde', stats: { agi: [12, 20], cha: [8, 12] } },
-  bottes_sanglier:     { icon: '🐾', name: 'Bottes du Sanglier', slot: 'bottes', lvl: 30, set: 'abraknyde', stats: { for: [15, 25], res: [2, 4], vit: [10, 20] } },
-  coiffe_prespic:      { icon: '👒', name: 'Coiffe Prespic', slot: 'coiffe', lvl: 28, stats: { vit: [30, 45], agi: [10, 15], res: [1, 3] } },
+  baton_abraknyde:     { icon: '🌿', name: 'Bâton Abraknyde', slot: 'arme', lvl: 25, set: 'abraknyde', stats: { deg: [35, 55] } },
+  cape_abraknyde:      { icon: '🍃', name: 'Cape Abraknyde', slot: 'cape', lvl: 25, set: 'abraknyde', stats: { vit: [25, 40], sag: [12, 24] } },
+  anneau_ecurouille:   { icon: '🌰', name: "Anneau d'Écurouille", slot: 'anneau', lvl: 25, set: 'abraknyde', stats: { deg: [14, 24], pp: [11, 19] } },
+  bottes_sanglier:     { icon: '🐾', name: 'Bottes du Sanglier', slot: 'bottes', lvl: 30, set: 'abraknyde', stats: { deg: [15, 25], res: [2, 4], vit: [10, 20] } },
+  coiffe_prespic:      { icon: '👒', name: 'Coiffe Prespic', slot: 'coiffe', lvl: 28, stats: { deg: [10, 15], vit: [30, 45], res: [1, 3], pp: [12, 20] } },
 
   /* Niveau 40-55 */
-  hache_bwork:         { icon: '🪓', name: 'Hache du Bwork', slot: 'arme', lvl: 45, set: 'bwork', stats: { pui: [30, 45], for: [30, 45], crit: [1, 3] } },
-  casque_bwork:        { icon: '⛑️', name: 'Casque du Bwork', slot: 'coiffe', lvl: 42, set: 'bwork', stats: { vit: [45, 65], for: [15, 25] } },
-  ceinture_bwork:      { icon: '⛓️', name: 'Ceinture du Bwork', slot: 'ceinture', lvl: 42, set: 'bwork', stats: { vit: [30, 45], pui: [10, 15] } },
-  amulette_craqueleur: { icon: '🪬', name: 'Amulette du Craqueleur', slot: 'amulette', lvl: 40, set: 'bwork', stats: { vit: [50, 80], res: [3, 5] } },
-  cape_kwak:           { icon: '🧊', name: 'Cape Kwakwa', slot: 'cape', lvl: 35, stats: { cha: [20, 30], agi: [15, 20], int: [15, 20] } },
-  bottes_scara:        { icon: '🩴', name: 'Bottes Scarafeuille', slot: 'bottes', lvl: 38, stats: { vit: [30, 45], res: [3, 5], sag: [5, 10] } },
+  hache_bwork:         { icon: '🪓', name: 'Hache du Bwork', slot: 'arme', lvl: 45, set: 'bwork', stats: { deg: [60, 90], crit: [1, 3] } },
+  casque_bwork:        { icon: '⛑️', name: 'Casque du Bwork', slot: 'coiffe', lvl: 42, set: 'bwork', stats: { deg: [15, 25], vit: [45, 65] } },
+  ceinture_bwork:      { icon: '⛓️', name: 'Ceinture du Bwork', slot: 'ceinture', lvl: 42, set: 'bwork', stats: { deg: [10, 15], vit: [30, 45] } },
+  amulette_craqueleur: { icon: '🪬', name: 'Amulette du Craqueleur', slot: 'amulette', lvl: 40, set: 'bwork', stats: { vit: [50, 80], res: [3, 5], pp: [15, 26] } },
+  cape_kwak:           { icon: '🧊', name: 'Cape Kwakwa', slot: 'cape', lvl: 35, stats: { deg: [29, 42], pp: [14, 24] } },
+  bottes_scara:        { icon: '🩴', name: 'Bottes Scarafeuille', slot: 'bottes', lvl: 38, stats: { vit: [30, 45], res: [3, 5], sag: [10, 20] } },
 
   /* Niveau 55-70 */
-  coiffe_koalak:       { icon: '🎓', name: 'Coiffe Koalak', slot: 'coiffe', lvl: 55, set: 'koalak', stats: { vit: [60, 90], agi: [20, 30] } },
-  bottes_kanigrou:     { icon: '🦶', name: 'Bottes Kanigrou', slot: 'bottes', lvl: 60, set: 'koalak', stats: { agi: [30, 40], pui: [10, 15], vit: [30, 45] } },
-  anneau_mufafah:      { icon: '🔶', name: 'Anneau Mufafah', slot: 'anneau', lvl: 65, set: 'koalak', stats: { for: [25, 35], int: [25, 35], cha: [15, 25] } },
+  coiffe_koalak:       { icon: '🎓', name: 'Coiffe Koalak', slot: 'coiffe', lvl: 55, set: 'koalak', stats: { deg: [20, 30], vit: [60, 90], pp: [20, 34] } },
+  bottes_kanigrou:     { icon: '🦶', name: 'Bottes Kanigrou', slot: 'bottes', lvl: 60, set: 'koalak', stats: { deg: [40, 55], vit: [30, 45], dodge: [3, 5] } },
+  anneau_mufafah:      { icon: '🔶', name: 'Anneau Mufafah', slot: 'anneau', lvl: 65, set: 'koalak', stats: { deg: [37, 53], pp: [23, 39] } },
 
   /* Niveau 75-100 */
-  cape_chafer:         { icon: '🦇', name: 'Cape du Chafer', slot: 'cape', lvl: 75, set: 'chafer', stats: { vit: [90, 130], sag: [15, 25] } },
-  ceinture_ecto:       { icon: '🌀', name: 'Ceinture Ectoplasmique', slot: 'ceinture', lvl: 85, set: 'chafer', stats: { for: [15, 25], int: [15, 25], cha: [15, 25], agi: [15, 25] } },
-  epee_chafer:         { icon: '⚔️', name: 'Épée du Chafer', slot: 'arme', lvl: 90, set: 'chafer', stats: { pui: [40, 55], for: [30, 40], agi: [20, 30], crit: [3, 5] } },
+  cape_chafer:         { icon: '🦇', name: 'Cape du Chafer', slot: 'cape', lvl: 75, set: 'chafer', stats: { vit: [90, 130], sag: [30, 50], pp: [26, 44] } },
+  ceinture_ecto:       { icon: '🌀', name: 'Ceinture Ectoplasmique', slot: 'ceinture', lvl: 85, set: 'chafer', stats: { deg: [29, 48], pp: [29, 49] } },
+  epee_chafer:         { icon: '⚔️', name: 'Épée du Chafer', slot: 'arme', lvl: 90, set: 'chafer', stats: { deg: [76, 104], crit: [3, 5] } },
 };
 
 /* --------------------------------------------------------------------

@@ -14,7 +14,8 @@ const VIEWS = [
   ['ateliers', 'Ateliers', 'Transforme tes ressources en équipements.'],
   ['options', 'Options', 'Sauvegarde, statistiques et choix de l’interface.'],
 ];
-const STAT_COLOR = { xpPct: 'var(--xp)', dmgPct: 'var(--hp)', dodge: 'var(--air)', regen: 'var(--win)', speed: 'var(--gold-2)', kamas: 'var(--gold-2)', rxp: 'var(--xp)', rqty: 'var(--win)', rspd: 'var(--gold-2)', vit: 'var(--vit)', sag: 'var(--sag)', for: 'var(--terre)', int: 'var(--feu)', cha: 'var(--eau)', agi: 'var(--air)', pui: 'var(--gold-2)', crit: 'var(--hp)', pp: 'var(--eau)', res: 'var(--muted)', soin: 'var(--win)', dmg: 'var(--fg)', pa: 'var(--eau)' };
+const STAT_HINT = { vit: '1 pt = +1 PV', sag: '1 pt = +0,5 % XP', deg: '1 pt = +1 % dégâts et soins' };
+const STAT_COLOR = { xpPct: 'var(--xp)', dmgPct: 'var(--hp)', dodge: 'var(--air)', regen: 'var(--win)', speed: 'var(--gold-2)', kamas: 'var(--gold-2)', rxp: 'var(--xp)', rqty: 'var(--win)', rspd: 'var(--gold-2)', vit: 'var(--vit)', sag: 'var(--sag)', deg: 'var(--hp)', for: 'var(--terre)', int: 'var(--feu)', cha: 'var(--eau)', agi: 'var(--air)', crit: 'var(--hp)', pp: 'var(--eau)', res: 'var(--muted)', soin: 'var(--win)', dmg: 'var(--fg)', pa: 'var(--eau)' };
 
 /* Ambiance des scènes : [ciel, sol] par région */
 const THEME = {
@@ -263,10 +264,12 @@ function fightCard(h) {
   } else {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
-      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}" data-mon="${i}" data-hp="${m.hp}">
+      const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
+      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+        ${cra ? reticleHtml(h) : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -278,9 +281,11 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
-        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}">
+        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
+          ${h.cls === 'iop' ? furyGauge(h) : ''}
+          ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
           <div class="sprite">${emblem(h.cls, 'big')}</div></div>
         ${stage}
       </div>
@@ -291,6 +296,120 @@ function fightCard(h) {
       <div class="rates" data-k="rates">${fightRates(h)}</div>
     </footer>
   </article>`;
+}
+/* ---------------------- Ombre & Pièges du Sram ---------------------- */
+const TRAP_SVG = `<svg viewBox="0 0 40 16"><ellipse cx="20" cy="10" rx="17" ry="5" fill="#1a0f2a" stroke="#9b7bff" stroke-width="1.2"/><path d="M8 10l3-6 3 6M16 10l4-8 4 8M26 10l3-6 3 6" fill="#c8b8ff" stroke="#3a2a6a" stroke-width=".8"/><circle cx="20" cy="10" r="1.6" fill="#ff5ad8"/></svg>`;
+function smokePuff(el, big) {
+  if (!el) return;
+  for (let i = 0; i < (big ? 12 : 7); i++) { const s = document.createElement('span'); s.className = 'smoke';
+    const a = Math.random() * Math.PI * 2, r = 18 + Math.random() * (big ? 34 : 22);
+    s.style.cssText = `--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r * .6 - 12).toFixed(0)}px;--s:${(16 + Math.random() * 18).toFixed(0)}px;animation-delay:${(Math.random() * 120).toFixed(0)}ms`;
+    el.appendChild(s); setTimeout(() => s.remove(), 1100); }
+}
+function trapBoom(card, fx) {
+  const mon = card.querySelector(`[data-mon="${fx.i}"]`); if (!mon) return;
+  const b = document.createElement('div'); b.className = 'trap-boom';
+  b.innerHTML = `<i></i><i></i><i></i><i></i><i></i><i></i><i></i><b>PIÈGE !</b>`;
+  mon.appendChild(b); setTimeout(() => b.remove(), 1300);
+  mon.classList.remove('trapped'); void mon.offsetWidth; mon.classList.add('trapped'); setTimeout(() => mon.classList.remove('trapped'), 900);
+}
+function missFx(card) { const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return; const n = document.createElement('span'); n.className = 'fnum miss'; n.textContent = 'Raté !'; fg.appendChild(n); setTimeout(() => n.remove(), 950); }
+
+/* ---------------------- Traque du Cra ---------------------- */
+function focusHtml(h) { const n = h.focus || 0; return `🔭 ${Array.from({ length: CRA_FOCUS_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`; }
+function reticleHtml(h) {
+  const n = h.focus || 0; let segs = '';
+  for (let i = 0; i < CRA_FOCUS_MAX; i++) { const a0 = -90 + i * 72 + 6, a1 = a0 + 60, r = 26, p = a => [32 + r * Math.cos(a * Math.PI / 180), 32 + r * Math.sin(a * Math.PI / 180)].map(x => x.toFixed(1)).join(' ');
+    segs += `<path class="seg${i < n ? ' on' : ''}" d="M${p(a0)} A${r} ${r} 0 0 1 ${p(a1)}"/>`; }
+  return `<svg class="reticle${n >= CRA_FOCUS_MAX ? ' ready' : ''}" data-k="ret" viewBox="0 0 64 64" aria-hidden="true">${segs}<path class="cross" d="M32 2v10M32 52v10M2 32h10M52 32h10"/><circle class="dot" cx="32" cy="32" r="2"/></svg>`;
+}
+function playPerfect(card, p) {
+  const scene = card.querySelector('.scene'); if (!scene) return;
+  const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
+  if (!hero || !tgt) return;
+  const a = relPos(hero, scene), b = relPos(tgt, scene);
+  const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
+  const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
+  const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
+  const ov = document.createElement('div'); ov.className = 'perfect';
+  ov.style.cssText = `--ax:${a.x}px;--ay:${a.y}px;--bx:${b.x}px;--by:${b.y}px;--ang:${ang}deg;--len:${len}px;--hit:${hit}`;
+  ov.innerHTML = `<div class="pf-dim"></div>
+    <div class="pf-scope"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="30" class="in"/><path d="M50 0v38M50 62v38M0 50h38M62 50h38"/><path class="tick" d="M50 20v6M50 74v6M20 50h6M74 50h6"/></svg></div>
+    <div class="pf-title">TIR PARFAIT</div>
+    <div class="pf-shot"><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>
+    <div class="pf-burst" style="left:var(--bx);top:var(--by)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`;
+  scene.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const num = (el, txt, cls, delay) => setTimeout(() => { if (!el) return; const n = document.createElement('span'); n.className = 'pf-num ' + cls; n.textContent = txt; el.parentElement.appendChild(n); setTimeout(() => n.remove(), 1500); }, delay);
+  num(tgt, '−' + fmt(p.v), 'main', 760);
+  if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', 860);
+  setTimeout(() => { scene.classList.add('pf-kick'); setTimeout(() => scene.classList.remove('pf-kick'), 350); }, 740);
+  setTimeout(() => ov.remove(), 1900);
+}
+/* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
+const FURY_ANIM = {};
+const COLERE_ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="cfb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient></defs><path d="M16 2 L19 6 L19 20 L13 20 L13 6 Z" fill="url(#cfb)" stroke="#5a1408" stroke-width="1.2"/><path d="M16 4 L16 19" stroke="#e8a52a" stroke-width="1"/><path d="M8 20 Q16 23 24 20 L24 22.5 Q16 25.5 8 22.5 Z" fill="#ffb62e" stroke="#5a1408" stroke-width="1.1"/><rect x="14.4" y="23" width="3.2" height="5" rx="1" fill="#7a2410" stroke="#3a0c04" stroke-width=".8"/><circle cx="16" cy="29.3" r="1.9" fill="#ff3b22" stroke="#3a0c04" stroke-width=".8"/></svg>`;
+function furyGauge(h) {
+  const p = clamp((h.fury || 0) / FURY_MAX, 0, 1);
+  return `<div class="fury${p >= 1 ? ' full' : ''}" data-k="fury" title="Jauge de Fureur : ${Math.floor(h.fury || 0)} / ${FURY_MAX}"><span class="fury-fill" style="--p:${p.toFixed(3)}"></span><span class="fury-lbl">${p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'}</span></div>`;
+}
+const COLERE_SWORD = `<svg class="cl-sword-svg" viewBox="0 0 120 400" aria-hidden="true"><defs>
+  <linearGradient id="clBlade" x1="0" x2="1"><stop offset="0" stop-color="#9fb4c8"/><stop offset=".45" stop-color="#ffffff"/><stop offset=".55" stop-color="#e9f3ff"/><stop offset="1" stop-color="#6f849a"/></linearGradient>
+  <linearGradient id="clGold" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff2b0"/><stop offset=".5" stop-color="#f2b233"/><stop offset="1" stop-color="#9a5a0e"/></linearGradient>
+  <radialGradient id="clGem"><stop offset="0" stop-color="#ffd0c0"/><stop offset=".4" stop-color="#ff3b22"/><stop offset="1" stop-color="#6a0a02"/></radialGradient>
+  <filter id="clGlow" x="-50%" y="-10%" width="200%" height="120%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <g filter="url(#clGlow)">
+    <rect x="52" y="6" width="16" height="44" rx="5" fill="#5a1a0c" stroke="#2a0802" stroke-width="2"/>
+    <path d="M52 14h16M52 24h16M52 34h16M52 44h16" stroke="#a8401c" stroke-width="2"/>
+    <circle cx="60" cy="6" r="9" fill="url(#clGold)" stroke="#3a1c04" stroke-width="2"/><circle cx="60" cy="6" r="4" fill="url(#clGem)"/>
+    <path d="M6 58 Q30 44 60 52 Q90 44 114 58 L108 68 Q84 60 60 66 Q36 60 12 68 Z" fill="url(#clGold)" stroke="#3a1c04" stroke-width="2.4"/>
+    <circle cx="60" cy="60" r="8" fill="url(#clGem)" stroke="#3a1c04" stroke-width="2"/>
+    <path d="M40 68 L80 68 L76 350 L60 396 L44 350 Z" fill="url(#clBlade)" stroke="#2c3a4a" stroke-width="2.4"/>
+    <path d="M60 72 L60 372" stroke="#8aa0b8" stroke-width="3"/><path d="M57 80 L57 340" stroke="#ffffffaa" stroke-width="1.5"/>
+    <path d="M46 120 L52 112 M74 160 L68 152 M48 230 L54 222" stroke="#ff5a2a" stroke-width="2.5" opacity=".8"/>
+  </g></svg>`;
+function relPos(el, scene) { const a = el.getBoundingClientRect(), b = scene.getBoundingClientRect(); return { x: a.left - b.left + a.width / 2, y: a.top - b.top + a.height / 2, w: b.width, h: b.height }; }
+function playColere(card, h, done) {
+  const scene = card.querySelector('.scene'); const hero = card.querySelector('[data-k="fighter"]');
+  if (!scene || !hero) { done(); return; }
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = reduced ? { title: 0, drop: 150, impact: 300, end: 900 } : { title: 380, drop: 900, impact: 1350, end: 2700 };
+  const mons = [...card.querySelectorAll('.unit.mon:not(.dead)')];
+  const hp = relPos(hero.querySelector('.sprite') || hero, scene);
+  const foes = mons.length ? mons.map(m => relPos(m.querySelector('.sprite') || m, scene)) : [{ x: hp.w * .72, y: hp.h * .6 }];
+  const cx = foes.reduce((s, p) => s + p.x, 0) / foes.length, gy = Math.max(...foes.map(p => p.y)) + 18;
+  const ov = document.createElement('div'); ov.className = 'colere'; ov.style.setProperty('--hx', hp.x + 'px'); ov.style.setProperty('--hy', hp.y + 'px'); ov.style.setProperty('--cx', cx + 'px'); ov.style.setProperty('--gy', gy + 'px');
+  let parts = '';
+  for (let i = 0; i < 16; i++) { const a = Math.random() * Math.PI * 2, r = 70 + Math.random() * 60; parts += `<i class="cl-in" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r * .7).toFixed(0)}px;--d:${(Math.random() * 380).toFixed(0)}ms"></i>`; }
+  let embers = '';
+  for (let i = 0; i < 26; i++) { const a = -Math.PI * (0.05 + Math.random() * 0.9), r = 60 + Math.random() * 150; embers += `<i class="cl-ember" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r).toFixed(0)}px;--s:${(3 + Math.random() * 5).toFixed(1)}px;--d:${(Math.random() * 120).toFixed(0)}ms"></i>`; }
+  let rocks = '';
+  for (let i = 0; i < 10; i++) { const a = -Math.PI * (0.1 + Math.random() * 0.8), r = 40 + Math.random() * 90; rocks += `<i class="cl-rock" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r).toFixed(0)}px;--r:${(Math.random() * 720 - 360).toFixed(0)}deg"></i>`; }
+  ov.innerHTML = `<div class="cl-dark"></div>
+    <div class="cl-aura"><svg class="cl-rune" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="34" class="r2"/><path d="M50 6 L58 50 L50 94 L42 50 Z M6 50 L50 42 L94 50 L50 58 Z" class="r3"/></svg>${parts}</div>
+    <div class="cl-title"><span>COLÈRE</span><b>DE IOP</b></div>
+    <div class="cl-beam"></div>
+    <div class="cl-sword">${COLERE_SWORD}</div>
+    <div class="cl-impact"><div class="cl-wave"></div><div class="cl-wave w2"></div><div class="cl-wave w3"></div>
+      <svg class="cl-crack" viewBox="-100 -20 200 40"><path d="M0 0 L-30 6 L-52 2 L-80 10 M0 0 L26 8 L48 3 L84 11 M0 0 L-14 14 M0 0 L12 16 L22 14 M-30 6 L-38 16 M48 3 L56 -6"/></svg>
+      ${embers}${rocks}</div>
+    <div class="cl-flash"></div>`;
+  scene.appendChild(ov);
+  scene.classList.add('cl-on'); hero.classList.add('cl-charge');
+  requestAnimationFrame(() => ov.classList.add('s1'));
+  setTimeout(() => ov.classList.add('s2'), T.title);
+  setTimeout(() => ov.classList.add('s3'), T.drop);
+  setTimeout(() => {
+    ov.classList.add('s4'); scene.classList.add('cl-shake');
+    hero.classList.remove('cl-charge'); hero.classList.add('cl-release');
+    const hits = done();
+    if (hits) mons.forEach(m => { const i = +m.dataset.mon; const x = hits[i]; if (!x) return;
+      const n = document.createElement('span'); n.className = 'cl-num' + (x.crit ? ' crit' : ''); n.textContent = '−' + fmt(x.v); m.appendChild(n); setTimeout(() => n.remove(), 1700);
+      m.classList.add('cl-hit'); setTimeout(() => m.classList.remove('cl-hit'), 900); });
+  }, T.impact);
+  setTimeout(() => scene.classList.remove('cl-shake'), T.impact + 520);
+  setTimeout(() => { ov.classList.add('s5'); }, T.end - 450);
+  setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-release'); }, T.end);
 }
 function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
 function floatNum(el, txt, cls) {
@@ -327,6 +446,12 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      if (h.cls === 'sram') {
+        const tf = h.fight.trapFx; if (tf && tf.n > +(scene.dataset.tr || 0)) { scene.dataset.tr = tf.n; trapBoom(card, tf); }
+        const vn = h.fight.vanishSeq || 0; if (vn > +(scene.dataset.vn || 0)) { scene.dataset.vn = vn; smokePuff(card.querySelector('[data-k="fighter"] .sprite'), true); }
+        const ms = h.fight.missSeq || 0; if (ms > +(scene.dataset.ms || 0)) { scene.dataset.ms = ms; missFx(card); }
+      }
+      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
@@ -359,6 +484,18 @@ function patchCombat() {
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    if (h.cls === 'sram') {
+      const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
+      const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="trap"]'); if (tr) tr.classList.toggle('armed', !!m && m.hp > 0 && h.fight.trap === i); });
+    }
+    if (h.cls === 'cra') {
+      const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
+        const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
+    }
+    const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
+    const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
@@ -381,7 +518,7 @@ function renderRecruit(first) {
   return `<section class="panel recruit">
     <div><h2 class="display big-title">${first ? 'Bienvenue dans le Monde des Douze' : 'Recruter un héros'}</h2>
       <p class="sub" style="margin:4px 0 0">${first ? 'Choisis la classe de ton premier héros. Il combattra seul dans les zones que tu choisis, tant que le jeu est ouvert.' : `Héros ${st.heroes.length + 1} sur ${RECRUIT_COST.length}. Chaque héros a sa propre activité et son propre équipement.`}</p></div>
-    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">${STAT_ELEM[k.main] || ''} · ${STAT_LABEL[k.main]}</span></button>`).join('')}</div>
+    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">Élément ${STAT_ELEM[k.elem] || '—'}</span></button>`).join('')}</div>
     <div class="recruit-detail" style="--c:${c.color}">
       ${emblem(ui.recruitCls, 'xl')}
       <div class="rd-main"><h3 class="display">${c.name} <small>${c.role}</small></h3><p>${c.desc}</p>
@@ -420,7 +557,7 @@ function slotTile(h, slot) {
   return `<button class="slot-t ${g ? qClass(g) : 'empty'}${sel ? ' sel' : ''}" data-act="pickslot" data-slot="${slot}" aria-pressed="${sel}" title="${g ? esc(ITEMS[g.id].name) : SLOT_LABEL[slot] + ' : vide'}">${g ? itemIcon(g.id) : `<span class="ph">${ic}</span>`}<span class="st-l">${SLOT_LABEL[slot]}</span></button>`;
 }
 /* Valeur globale d'un objet pour trier ses exemplaires (somme des stats, stasifié en tête) */
-function gearScore(g) { if (!g) return 0; return Object.entries(g.stats).reduce((s, [k, v]) => s + v * (k === 'vit' ? .5 : ['pui', 'res', 'crit', 'pp'].includes(k) ? 1.5 : 1), 0) + (g.stasis ? 1e6 : 0); }
+function gearScore(g) { if (!g) return 0; return Object.entries(g.stats).reduce((s, [k, v]) => s + v * (k === 'vit' ? .5 : k === 'sag' ? .6 : ['res', 'crit', 'dodge'].includes(k) ? 3 : k === 'pp' ? .8 : 1), 0) + (g.stasis ? 1e6 : 0); }
 function compareTarget(h, g) {
   const sl = slotsFor(ITEMS[g.id].slot);
   const slot = ui.slot && sl.includes(ui.slot) ? ui.slot : sl.find(s => !h.equip[s]) || sl[0];
@@ -508,11 +645,11 @@ function combatGear(h) {
 function statsPanel(h) {
   const t = heroTotals(st, h); const c = CLASSES[h.cls];
   const rows = STATS.map(s => { const bonus = t[s] - h.base[s]; const off = h.capital < STAT_COST[s] ? 'disabled' : '';
-    return `<div class="srow"><span class="dot" style="--c:${STAT_COLOR[s]}"></span><span class="sname">${STAT_LABEL[s]}${STAT_ELEM[s] ? `<small>${STAT_ELEM[s]}</small>` : ''}${STAT_COST[s] > 1 ? `<small>${STAT_COST[s]} pts</small>` : ''}</span>
+    return `<div class="srow"><span class="dot" style="--c:${STAT_COLOR[s]}"></span><span class="sname">${STAT_LABEL[s]}<small>${STAT_HINT[s]}</small>${STAT_COST[s] > 1 ? `<small>${STAT_COST[s]} pts</small>` : ''}</span>
       <span class="sval num"><b>${t[s]}</b>${bonus ? `<small>${h.base[s]} + ${bonus} équip.</small>` : ''}</span>
       <span class="sbtns"><button class="btn sm" data-act="alloc" data-stat="${s}" data-n="1" ${off} aria-label="+1 ${STAT_LABEL[s]}">+1</button><button class="btn sm" data-act="alloc" data-stat="${s}" data-n="10" ${off} aria-label="+10 ${STAT_LABEL[s]}">+10</button></span></div>`; }).join('');
-  const cs = [['Points de vie', fmt(t.maxHp)], ['PA', t.pa], ['Puissance', t.pui], ['Critique', t.critPct.toFixed(1).replace('.', ',') + ' %'], ['Esquive', t.dodgePct.toFixed(1).replace('.', ',') + ' %'],
-    ['Résistance', t.resPct + ' %'], ['Prospection', t.ppTotal], ['Bonus XP', '+' + t.xpBonus + ' %'], ...(t.kamas ? [['Bonus kamas', '+' + t.kamas + ' %']] : []), ...(t.dmgPct ? [['Dégâts', '+' + t.dmgPct + ' %']] : []), ...(t.speed ? [['Vitesse combat', '+' + t.speed + ' %']] : []), ...(t.regen ? [['Régén. / tour', t.regen + ' %']] : [])];
+  const cs = [['Points de vie', fmt(t.maxHp)], ['PA', t.pa], ['Dégâts', '+' + t.deg + ' %'], ['Critique', t.critPct.toFixed(1).replace('.', ',') + ' %'], ['Esquive', t.dodgePct.toFixed(1).replace('.', ',') + ' %'],
+    ['Résistance', t.resPct + ' %'], ['Prospection', t.ppTotal], ['Bonus XP', '+' + t.xpBonus + ' %'], ...(t.kamas ? [['Bonus kamas', '+' + t.kamas + ' %']] : []), ...(t.dmgPct ? [['Dégâts finaux', '+' + t.dmgPct + ' %']] : []), ...(t.speed ? [['Vitesse combat', '+' + t.speed + ' %']] : []), ...(t.regen ? [['Régén. / tour', t.regen + ' %']] : [])];
   const spells = spellsOf(h).map(sp => {
     const p = sp.type === 'buff' ? null : spellPower(h, t, null, sp);
     const eff = sp.type === 'buff' ? Object.entries(sp.buff).map(([k, v]) => `+${v} ${STAT_LABEL[k]}`).join(', ') + ` pendant ${sp.turns} tours`
@@ -806,7 +943,7 @@ function render(force) {
   const now = Date.now();
   if (force) { renderMain(true); lastSlow = now; return; }
   if (ui.view === 'combat' && st.heroes.length) {
-    if (combatSig() !== ui.lastSig) renderMain(); else patchCombat();
+    if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) renderMain(); else patchCombat();
   } else if (now - lastSlow > 1500 && ui.view !== 'options') {
     renderMain(); lastSlow = now;
   }
@@ -826,6 +963,24 @@ const ACTIONS = {
   gorecipe(d) { ui.view = 'ateliers'; ui.job = d.job; ui.rtab = d.h === '1' ? 'recolte' : 'combat'; scrollTop(); },
   send(d) { const h = heroById(d.hero); setActivity(st, h, d.type, d.id, +d.t || 0); toast(`${h.name} part pour ${placeName(h.act)}.`); },
   stop(d) { const h = heroById(d.hero); setActivity(st, h, null); },
+  cramark(d) {
+    const h = heroById(d.hero); if (!h) return 'keep';
+    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
+    patchCombat(); return 'keep';
+  },
+  iopfury(d) {
+    const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true;
+    const btn = card.querySelector('[data-k="furybtn"]'); if (btn) btn.hidden = true;
+    playColere(card, h, () => {
+      const hits = unleashFury(st, h, liveEv);
+      patchCombat(); saveGame();
+      return hits;
+    });
+    setTimeout(() => { delete FURY_ANIM[h.id]; h.wait = Math.max(h.wait, 600); }, 2800);
+    return 'keep';
+  },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
   alloc(d) { allocate(selHero(), d.stat, +d.n); },
   resetstats() { resetStats(st, selHero()); selHero().auto = ''; },
@@ -920,7 +1075,7 @@ document.addEventListener('click', e => {
   if (r !== 'keep') { saveGame(); render(true); }
 });
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act]')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act], [role="button"][data-act]')) { e.preventDefault(); e.target.click(); }
 });
 document.addEventListener('change', e => {
   const el = e.target;
@@ -1143,7 +1298,7 @@ function showAway(s) {
 function loop() {
   const now = Date.now(); let dt = now - st.lastTick; st.lastTick = now;
   if (dt < 0) dt = 0;
-  if (dt <= 15000) for (const h of st.heroes) tickHero(st, h, dt, liveEv);
+  if (dt <= 15000) for (const h of st.heroes) if (!FURY_ANIM[h.id]) tickHero(st, h, dt, liveEv); // le temps se fige pendant la Colère de Iop
   else offline(dt); // onglet en veille : rattrapage, 20 min maximum
   render();
 }
