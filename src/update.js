@@ -6,6 +6,8 @@
    ===================================================================== */
 (function () {
   let shown = false;
+  // Site de test (Cloudflare dev.<projet>.pages.dev, ou ancien Netlify dev--/deploy-preview-)
+  const DEV = /^[^.]+\.[^.]+\.pages\.dev$/.test(location.hostname) || /^(dev|deploy-preview-\d+)--/.test(location.hostname);
   async function check() {
     if (shown) return;
     try {
@@ -20,7 +22,10 @@
     const el = document.createElement('div');
     el.className = 'update-band';
     el.setAttribute('role', 'status');
-    el.innerHTML = '<span><b>Nouvelle version disponible.</b> Recharge la page pour en profiter, ta partie est conservée.</span><button type="button">Recharger la page</button>';
+    el.innerHTML = DEV
+      ? '<span><b>🧪 Nouveauté publiée sur le site de test !</b> Recharge ton jeu (dev) pour la tester, ta partie est conservée.</span><button type="button">Recharger (dev)</button>'
+      : '<span><b>Nouvelle version disponible.</b> Recharge la page pour en profiter, ta partie est conservée.</span><button type="button">Recharger la page</button>';
+    if (DEV) el.classList.add('is-dev-update');
     el.querySelector('button').addEventListener('click', () => {
       try { window.__game && window.__game.st && localStorage.setItem('amakna-idle-save-v1', serialize(window.__game.st)); } catch (e) {}
       location.reload();
@@ -28,7 +33,7 @@
     document.body.appendChild(el);
   }
   setTimeout(check, 5000);
-  setInterval(check, 60000);
+  setInterval(check, DEV ? 15000 : 60000); // le site de test vérifie plus souvent
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
 })();
 
