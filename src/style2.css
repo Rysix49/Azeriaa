@@ -1151,3 +1151,34 @@ label.btn { cursor: pointer; }
 .ms-mini *, .ms-mini { animation: none !important; }
 .ms-mini .p-feathers, .ms-mini .p-shadow { display: none; }
 .ms-mini { transform: scaleX(-1); }
+
+/* --- Animations non-oiseaux --- */
+/* Mâchoire / gueule (bouftou, sanglier, mufafah…) */
+.ms .p-jaw { transform-origin: 50% 0%; }
+.mon.atk .ms .p-jaw { animation: msbite .5s ease-in-out; }
+@keyframes msbite { 25% { transform: rotate(20deg); } 55% { transform: rotate(-3deg); } }
+/* Bras / arme (bwork, chafer…) */
+.ms .p-limb { transform-origin: 20% 40%; animation: mslimbidle 2.4s ease-in-out infinite; }
+@keyframes mslimbidle { 50% { transform: rotate(3deg); } }
+.mon.atk .ms .p-limb { animation: msswing .5s ease-in-out; }
+@keyframes msswing { 20% { transform: rotate(-30deg); } 50% { transform: rotate(22deg); } }
+/* Antennes (larve, moskito…) */
+.ms .p-antenna { transform-origin: 50% 100%; animation: msantenna 2.2s ease-in-out infinite; }
+@keyframes msantenna { 50% { transform: rotate(10deg); } }
+/* Feuilles / pétales (pissenlit, abraknyde…) */
+.ms .p-leaves { transform-origin: 50% 100%; animation: msleaves 2.6s ease-in-out infinite; }
+@keyframes msleaves { 25% { transform: rotate(4deg); } 75% { transform: rotate(-4deg); } }
+/* Gelée : wobble spécial */
+.ms-gelee .p-body { animation: msjelly 1.8s ease-in-out infinite; }
+@keyframes msjelly { 25% { transform: scaleX(1.1) scaleY(.92) translateY(1px); } 75% { transform: scaleX(.93) scaleY(1.07); } }
+/* Fantôme : flotte */
+.ms-fantome .p-hop { animation: msfloat 3s ease-in-out infinite; }
+@keyframes msfloat { 50% { transform: translateY(-8px); } }
+.mon.atk .ms-fantome .p-hop, .mon.hit .ms-fantome .p-hop, .mon.dead .ms-fantome .p-hop { animation: none; }
+/* Piquants (prespic) */
+.ms .p-quills { transform-origin: 50% 100%; }
+.mon.atk .ms .p-quills { animation: msbristle .5s ease-out; }
+@keyframes msbristle { 30% { transform: scale(1.15, 1.12); } }
+/* Lueur (craqueleur, fantôme) */
+.ms .p-glow { animation: msglow 2s ease-in-out infinite; }
+@keyframes msglow { 50% { opacity: .7; } }
