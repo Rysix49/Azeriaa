@@ -1095,6 +1095,44 @@ label.btn { cursor: pointer; }
 
 .update-band.is-dev-update { top: calc(38px + env(safe-area-inset-top, 0px)); background: linear-gradient(90deg, #2c5419, #3f7a22); border-color: #93cf5f; color: #f0ffe0; }
 .update-band.is-dev-update button { background: #93cf5f; color: #12230a; }
+
+/* ===================== Sprites monstres (dessins originaux) ===================== */
+.mon .sprite.has-art { font-size: 0; }
+.mon .sprite.has-art .ms { width: 58px; height: 58px; display: block; overflow: visible; }
+.mon.boss .sprite.has-art .ms { width: 76px; height: 76px; }
+.ms * { transform-box: fill-box; }
+.ms .p-body { transform-origin: 50% 100%; animation: msbreath 1.6s ease-in-out infinite; }
+.ms .p-tuft { transform-origin: 50% 100%; animation: mstuft 1.6s ease-in-out infinite; }
+.ms .p-wing { transform-origin: 80% 20%; animation: mswing 1.6s ease-in-out infinite; }
+.ms .p-tail { transform-origin: 100% 60%; animation: mstail 2.4s ease-in-out infinite; }
+.ms .p-eye { transform-origin: 50% 50%; animation: msblink 4.2s infinite; }
+.ms .p-beak { transform-origin: 0% 50%; }
+@keyframes msbreath { 50% { transform: translateY(1.5px) scale(1.03, .96); } }
+@keyframes mstuft { 50% { transform: rotate(-7deg); } }
+@keyframes mswing { 50% { transform: rotate(-9deg); } }
+@keyframes mstail { 50% { transform: rotate(8deg); } }
+@keyframes msblink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+/* Attaque : élan, coup de bec, ailes battantes */
+.mon.atk .sprite.has-art .ms { animation: msatk .5s cubic-bezier(.3, 0, .2, 1); }
+.mon.atk .ms .p-wing { animation: msflap .12s linear 4; }
+.mon.atk .ms .p-beak { animation: mspeck .5s ease-in-out; }
+.mon.atk .ms .p-tuft { animation: mstuftup .5s ease-out; }
+@keyframes msatk { 0% { transform: none; } 25% { transform: translateX(-6px) rotate(-6deg) scale(.95, 1.05); } 55% { transform: translateX(16px) rotate(8deg); } 100% { transform: none; } }
+@keyframes msflap { 50% { transform: rotate(-38deg); } }
+@keyframes mspeck { 40% { transform: scaleX(1.25); } 55% { transform: scaleX(.9) rotate(-8deg); } }
+@keyframes mstuftup { 30% { transform: rotate(10deg) scaleY(1.2); } }
+/* Coup reçu : écrasement + flash */
+.mon.hit .sprite.has-art { animation: none; }
+.mon.hit .sprite.has-art .ms { animation: mshit .3s ease-out; }
+@keyframes mshit { 0% { transform: translateX(0); filter: brightness(2.4) saturate(.2); } 30% { transform: translateX(-7px) scale(1.08, .88); } 100% { transform: none; filter: none; } }
+.mon.hit .ms .p-eye { animation: none; transform: scaleY(.15); }
+/* Mort : bascule, plumes qui s'envolent */
+.mon.dead .sprite.has-art { opacity: 1; transform: scaleX(-1); filter: none; }
+.mon.dead .sprite.has-art .ms { animation: msdie .7s ease-in forwards; }
+.mon.dead .ms * { animation-play-state: paused; }
+.mon.dead .ms .p-eye { transform: scaleY(.12); }
+@keyframes msdie { 0% { transform: none; opacity: 1; } 35% { transform: translateY(-8px) rotate(-12deg); } 100% { transform: translateY(8px) rotate(-95deg) scale(.85); opacity: .3; filter: grayscale(1); } }
+@media (prefers-reduced-motion: reduce) { .ms *, .mon .ms { animation: none !important; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1155,7 +1193,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793136704';
+const BUILD_ID = '1793139197';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -1980,6 +2018,7 @@ function monsterTurn(st, h, t, m, ev) {
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
+  f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
     f.trap = -1;
     const tr = rollSpell(h, t, f, SRAM_TRAP, 0);
@@ -2587,6 +2626,46 @@ function itemArt(id) {
   return (_artCache[id] = `<svg class="iart" viewBox="0 0 32 32" aria-hidden="true">${artShape(...a)}</svg>`);
 }
 /* =====================================================================
+   AMAKNA IDLE — SPRITES ANIMÉS DES MONSTRES (dessins originaux)
+   MON_ART[id] = SVG du monstre, dessiné tourné vers la DROITE
+   (la scène le retourne pour qu'il fasse face au héros).
+   Les parties portent des classes animées en CSS (style2.css, « Sprites monstres ») :
+   repos (respiration, clignement), .atk (attaque), .hit (coup reçu), .dead (mort).
+   Sans dessin, le monstre garde son emoji.
+   ===================================================================== */
+const MON_ART = {
+  // Emplacement « Tofu » : petit oiseau rond bleu nuit, ventre crème, huppe de trois plumes orange
+  tofu: `<svg class="ms ms-tofu" viewBox="0 0 64 64" aria-hidden="true">
+    <defs>
+      <radialGradient id="tfBody" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#5b7fc7"/><stop offset=".65" stop-color="#34528f"/><stop offset="1" stop-color="#1f3264"/></radialGradient>
+      <radialGradient id="tfBelly" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#fff6df"/><stop offset="1" stop-color="#e6d3a8"/></radialGradient>
+      <linearGradient id="tfTuft" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e2541f"/><stop offset="1" stop-color="#ffb347"/></linearGradient>
+    </defs>
+    <g class="p-legs" stroke="#c8641c" stroke-width="2.4" stroke-linecap="round" fill="none">
+      <path d="M26 51 L25 58 M25 58 l-3 1.5 M25 58 l2.5 1.6"/><path d="M37 51 L38 58 M38 58 l-2.6 1.6 M38 58 l3 1.4"/>
+    </g>
+    <g class="p-body">
+      <path class="p-tail" d="M13 36 Q4 34 3 27 Q9 31 15 30 Q8 26 8 20 Q14 27 19 29 Z" fill="#2a4380" stroke="#13204a" stroke-width="1.4" stroke-linejoin="round"/>
+      <ellipse cx="32" cy="36" rx="19" ry="17" fill="url(#tfBody)" stroke="#13204a" stroke-width="1.8"/>
+      <ellipse cx="35" cy="41" rx="11" ry="10" fill="url(#tfBelly)"/>
+      <path d="M31 39 q2 2 4 0 M34 44 q2 2 4 0 M29 44 q1.6 1.6 3.4 0" stroke="#d6bf8c" stroke-width="1" fill="none"/>
+      <g class="p-tuft" fill="url(#tfTuft)" stroke="#8a2f0c" stroke-width="1.1" stroke-linejoin="round">
+        <path d="M33 21 Q30 11 24 8 Q30 9 34 19 Z"/><path d="M35 20 Q35 9 38 4 Q38.5 11 37.5 20 Z"/><path d="M37 21 Q41 12 47 10 Q42 14 39.5 21.5 Z"/>
+      </g>
+      <path class="p-wing" d="M24 33 Q15 37 17 46 Q22 45 27 40 Z" fill="#26407c" stroke="#13204a" stroke-width="1.5" stroke-linejoin="round"/>
+      <g class="p-eye"><ellipse cx="42" cy="31" rx="4.2" ry="4.6" fill="#fff"/><circle cx="43.2" cy="31.4" r="2.5" fill="#1a1020"/><circle cx="44" cy="30.4" r=".9" fill="#fff"/></g>
+      <path d="M38.5 26.5 q3.5 -2 7 -.3" stroke="#13204a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <path class="p-beak" d="M49 33 L58 35.5 L49 38.5 Q47.5 35.7 49 33 Z" fill="#f29a2e" stroke="#8a4a0c" stroke-width="1.2" stroke-linejoin="round"/>
+      <circle cx="44" cy="38" r="2.2" fill="#ff8a8a" opacity=".45"/>
+    </g>
+  </svg>`,
+};
+/* Sprite à afficher : dessin s il existe, sinon emoji */
+function monSprite(mid, fallback) {
+  const art = MON_ART[mid];
+  return art || fallback;
+}
+/* =====================================================================
    AMAKNA IDLE — FORMAT D'AFFICHAGE
    ===================================================================== */
 /* Format d'affichage : auto (selon l'écran), mobile (téléphone) ou pc */
@@ -3163,7 +3242,7 @@ function fightCard(h) {
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
-        <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
+        <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
     stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
@@ -3176,7 +3255,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -3341,6 +3420,7 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
       if (h.cls === 'sram') {
         const tf = h.fight.trapFx; if (tf && tf.n > +(scene.dataset.tr || 0)) { scene.dataset.tr = tf.n; trapBoom(card, tf); }
         const vn = h.fight.vanishSeq || 0; if (vn > +(scene.dataset.vn || 0)) { scene.dataset.vn = vn; smokePuff(card.querySelector('[data-k="fighter"] .sprite'), true); }

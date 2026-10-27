@@ -1087,3 +1087,41 @@ label.btn { cursor: pointer; }
 
 .update-band.is-dev-update { top: calc(38px + env(safe-area-inset-top, 0px)); background: linear-gradient(90deg, #2c5419, #3f7a22); border-color: #93cf5f; color: #f0ffe0; }
 .update-band.is-dev-update button { background: #93cf5f; color: #12230a; }
+
+/* ===================== Sprites monstres (dessins originaux) ===================== */
+.mon .sprite.has-art { font-size: 0; }
+.mon .sprite.has-art .ms { width: 58px; height: 58px; display: block; overflow: visible; }
+.mon.boss .sprite.has-art .ms { width: 76px; height: 76px; }
+.ms * { transform-box: fill-box; }
+.ms .p-body { transform-origin: 50% 100%; animation: msbreath 1.6s ease-in-out infinite; }
+.ms .p-tuft { transform-origin: 50% 100%; animation: mstuft 1.6s ease-in-out infinite; }
+.ms .p-wing { transform-origin: 80% 20%; animation: mswing 1.6s ease-in-out infinite; }
+.ms .p-tail { transform-origin: 100% 60%; animation: mstail 2.4s ease-in-out infinite; }
+.ms .p-eye { transform-origin: 50% 50%; animation: msblink 4.2s infinite; }
+.ms .p-beak { transform-origin: 0% 50%; }
+@keyframes msbreath { 50% { transform: translateY(1.5px) scale(1.03, .96); } }
+@keyframes mstuft { 50% { transform: rotate(-7deg); } }
+@keyframes mswing { 50% { transform: rotate(-9deg); } }
+@keyframes mstail { 50% { transform: rotate(8deg); } }
+@keyframes msblink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+/* Attaque : élan, coup de bec, ailes battantes */
+.mon.atk .sprite.has-art .ms { animation: msatk .5s cubic-bezier(.3, 0, .2, 1); }
+.mon.atk .ms .p-wing { animation: msflap .12s linear 4; }
+.mon.atk .ms .p-beak { animation: mspeck .5s ease-in-out; }
+.mon.atk .ms .p-tuft { animation: mstuftup .5s ease-out; }
+@keyframes msatk { 0% { transform: none; } 25% { transform: translateX(-6px) rotate(-6deg) scale(.95, 1.05); } 55% { transform: translateX(16px) rotate(8deg); } 100% { transform: none; } }
+@keyframes msflap { 50% { transform: rotate(-38deg); } }
+@keyframes mspeck { 40% { transform: scaleX(1.25); } 55% { transform: scaleX(.9) rotate(-8deg); } }
+@keyframes mstuftup { 30% { transform: rotate(10deg) scaleY(1.2); } }
+/* Coup reçu : écrasement + flash */
+.mon.hit .sprite.has-art { animation: none; }
+.mon.hit .sprite.has-art .ms { animation: mshit .3s ease-out; }
+@keyframes mshit { 0% { transform: translateX(0); filter: brightness(2.4) saturate(.2); } 30% { transform: translateX(-7px) scale(1.08, .88); } 100% { transform: none; filter: none; } }
+.mon.hit .ms .p-eye { animation: none; transform: scaleY(.15); }
+/* Mort : bascule, plumes qui s'envolent */
+.mon.dead .sprite.has-art { opacity: 1; transform: scaleX(-1); filter: none; }
+.mon.dead .sprite.has-art .ms { animation: msdie .7s ease-in forwards; }
+.mon.dead .ms * { animation-play-state: paused; }
+.mon.dead .ms .p-eye { transform: scaleY(.12); }
+@keyframes msdie { 0% { transform: none; opacity: 1; } 35% { transform: translateY(-8px) rotate(-12deg); } 100% { transform: translateY(8px) rotate(-95deg) scale(.85); opacity: .3; filter: grayscale(1); } }
+@media (prefers-reduced-motion: reduce) { .ms *, .mon .ms { animation: none !important; } }

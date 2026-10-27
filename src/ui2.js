@@ -268,7 +268,7 @@ function fightCard(h) {
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
-        <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
+        <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
     stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
@@ -281,7 +281,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -446,6 +446,7 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
       if (h.cls === 'sram') {
         const tf = h.fight.trapFx; if (tf && tf.n > +(scene.dataset.tr || 0)) { scene.dataset.tr = tf.n; trapBoom(card, tf); }
         const vn = h.fight.vanishSeq || 0; if (vn > +(scene.dataset.vn || 0)) { scene.dataset.vn = vn; smokePuff(card.querySelector('[data-k="fighter"] .sprite'), true); }

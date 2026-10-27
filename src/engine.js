@@ -320,6 +320,7 @@ function monsterTurn(st, h, t, m, ev) {
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
+  f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
     f.trap = -1;
     const tr = rollSpell(h, t, f, SRAM_TRAP, 0);
