@@ -731,7 +731,11 @@ button.use:hover { border-color: var(--line-2); }
   border: 1px solid #b9800f; background: linear-gradient(180deg, #f8d77c, #e5a52a); color: var(--gold-ink); box-shadow: 0 2px 0 #6e4a07, 0 10px 24px #000a;
 }
 .chat-open .chat-fab { display: none; }
-.chat-badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--hp); color: #fff; font-style: normal; font-size: 11px; font-weight: 900; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--bg); }
+.chat-badge { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--hp); color: #fff; font-style: normal; font-size: 12.5px; font-weight: 900; display: inline-grid; place-items: center; box-shadow: 0 0 0 2px #fff6, 0 2px 6px #0008; font-variant-numeric: tabular-nums; }
+.chat-badge.pop { animation: badgepop .35s ease-out; }
+@keyframes badgepop { 40% { transform: scale(1.35); } }
+.chat-fab.has-new { animation: fabglow 1.6s ease-in-out infinite; }
+@keyframes fabglow { 50% { box-shadow: 0 2px 0 #6e4a07, 0 0 0 4px #e0533f66, 0 10px 24px #000a; } }
 .chat-panel {
   position: fixed; z-index: 56; right: max(20px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   width: min(380px, calc(100vw - 40px)); height: min(520px, calc(100vh - 120px)); display: flex; flex-direction: column;

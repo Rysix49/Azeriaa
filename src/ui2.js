@@ -992,7 +992,11 @@ function renderChat() {
   st.textContent = chat.ok === null ? 'Connexion…' : chat.ok ? `En ligne · ${chat.online || 1} joueur${(chat.online || 1) > 1 ? 's' : ''}` : 'Hors ligne';
   st.title = chat.ok ? 'Joueurs ayant le jeu ouvert en ce moment' : '';
   st.className = 'chat-st ' + (chat.ok ? 'on' : chat.ok === false ? 'off' : '');
-  const badge = $('#chatbadge'); badge.hidden = !chat.unread; badge.textContent = chat.unread > 99 ? '99+' : chat.unread;
+  const badge = $('#chatbadge'); const n = chat.unread > 99 ? '99+' : String(chat.unread);
+  badge.hidden = !chat.unread; if (badge.textContent !== n) { badge.textContent = n; badge.classList.remove('pop'); void badge.offsetWidth; badge.classList.add('pop'); }
+  $('.chat-fab').classList.toggle('has-new', !!chat.unread);
+  $('.chat-fab').setAttribute('aria-label', chat.unread ? `Ouvrir le chat Général, ${n} nouveau${chat.unread > 1 ? 'x' : ''} message${chat.unread > 1 ? 's' : ''}` : 'Ouvrir le chat Général');
+  document.title = chat.unread ? `(${n}) Amakna Idle` : 'Amakna Idle';
   const nb = $('#chatnamebox'); nb.hidden = !!chatName();
   const list = $('#chatlist');
   const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
@@ -1010,7 +1014,7 @@ function renderChat() {
 let chatAt = 0;
 function chatLoop() {
   chatFetch(); chatAt = Date.now();
-  setInterval(() => { if (Date.now() - chatAt >= (chat.open ? 3000 : 15000)) { chatAt = Date.now(); chatFetch(); } }, 1000);
+  setInterval(() => { if (Date.now() - chatAt >= (chat.open ? 3000 : 5000)) { chatAt = Date.now(); chatFetch(); } }, 1000);
 }
 async function chatSend() {
   const msgEl = $('#chatmsg'); const nameEl = $('#chatname');
