@@ -212,12 +212,14 @@ pissenlit: `<svg class="ms ms-pissenlit" viewBox="0 0 128 128" aria-hidden="true
     <g>
       <!-- pétales -->
       <g fill="url(#pdY)" stroke="#b09020" stroke-width="1.2">
-        <ellipse cx="64" cy="30" rx="7" ry="14" transform="rotate(0 64 40)"/>
-        <ellipse cx="64" cy="30" rx="7" ry="14" transform="rotate(30 64 40)"/>
-        <ellipse cx="64" cy="30" rx="7" ry="14" transform="rotate(60 64 40)"/>
-        <ellipse cx="64" cy="30" rx="7" ry="14" transform="rotate(90 64 40)"/>
-        <ellipse cx="64" cy="30" rx="7" ry="14" transform="rotate(120 64 40)"/>
-        <ellipse cx="64" cy="30" rx="7" ry="14" transform="rotate(150 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(0 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(45 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(90 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(135 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(180 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(225 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(270 64 40)"/>
+        <ellipse cx="64" cy="28" rx="7" ry="13" transform="rotate(315 64 40)"/>
       </g>
       <!-- centre (visage) -->
       <circle cx="64" cy="40" r="14" fill="#8a5010" stroke="#5a3008" stroke-width="2"/>
