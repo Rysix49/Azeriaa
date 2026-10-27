@@ -1087,3 +1087,98 @@ label.btn { cursor: pointer; }
 
 .update-band.is-dev-update { top: calc(38px + env(safe-area-inset-top, 0px)); background: linear-gradient(90deg, #2c5419, #3f7a22); border-color: #93cf5f; color: #f0ffe0; }
 .update-band.is-dev-update button { background: #93cf5f; color: #12230a; }
+
+/* ===================== Sprites monstres (dessins originaux) ===================== */
+.mon .sprite.has-art { font-size: 0; }
+.mon .sprite.has-art .ms { width: 70px; height: 70px; display: block; overflow: visible; }
+.mon.boss .sprite.has-art .ms { width: 76px; height: 76px; }
+.ms * { transform-box: fill-box; }
+.ms .p-body { transform-origin: 50% 100%; animation: msbreath 1.6s ease-in-out infinite; }
+.ms .p-tuft { transform-origin: 50% 100%; animation: mstuft 1.6s ease-in-out infinite; }
+.ms .p-wing { transform-origin: 80% 20%; animation: mswing 1.6s ease-in-out infinite; }
+.ms .p-tail { transform-origin: 100% 60%; animation: mstail 2.4s ease-in-out infinite; }
+.ms .p-eye { transform-origin: 50% 50%; animation: msblink 4.2s infinite; }
+.ms .p-beak { transform-origin: 0% 50%; }
+.ms .p-brow { transform-origin: 50% 100%; }
+.ms .p-shadow { transform-origin: 50% 50%; animation: msshadow 1.6s ease-in-out infinite; }
+@keyframes msshadow { 50% { transform: scaleX(1.06); } }
+.mon.atk .ms .p-brow { animation: msbrow .5s ease-out; }
+@keyframes msbrow { 30%, 70% { transform: translateY(3px) rotate(8deg); } }
+@keyframes msbreath { 50% { transform: translateY(1.5px) scale(1.03, .96); } }
+@keyframes mstuft { 50% { transform: rotate(-7deg); } }
+@keyframes mswing { 50% { transform: rotate(-9deg); } }
+@keyframes mstail { 50% { transform: rotate(8deg); } }
+@keyframes msblink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+/* Attaque : élan, coup de bec, ailes battantes */
+.mon.atk .sprite.has-art .ms { animation: msatk .5s cubic-bezier(.3, 0, .2, 1); }
+.mon.atk .ms .p-wing { animation: msflap .12s linear 4; }
+.mon.atk .ms .p-beak { animation: mspeck .5s ease-in-out; }
+.mon.atk .ms .p-tuft { animation: mstuftup .5s ease-out; }
+@keyframes msatk { 0% { transform: none; } 25% { transform: translateX(-6px) rotate(-6deg) scale(.95, 1.05); } 55% { transform: translateX(16px) rotate(8deg); } 100% { transform: none; } }
+@keyframes msflap { 50% { transform: rotate(-38deg); } }
+@keyframes mspeck { 40% { transform: scaleX(1.25); } 55% { transform: scaleX(.9) rotate(-8deg); } }
+@keyframes mstuftup { 30% { transform: rotate(10deg) scaleY(1.2); } }
+/* Coup reçu : écrasement + flash */
+.mon.hit .sprite.has-art { animation: none; }
+.mon.hit .sprite.has-art .ms { animation: mshit .3s ease-out; }
+@keyframes mshit { 0% { transform: translateX(0); filter: brightness(2.4) saturate(.2); } 30% { transform: translateX(-7px) scale(1.08, .88); } 100% { transform: none; filter: none; } }
+.mon.hit .ms .p-eye { animation: none; transform: scaleY(.15); }
+/* Mort : bascule, plumes qui s'envolent */
+.mon.dead .sprite.has-art { opacity: 1; transform: scaleX(-1); filter: none; }
+.mon.dead .sprite.has-art .ms { animation: msdie .7s ease-in forwards; }
+.mon.dead .ms * { animation-play-state: paused; }
+.mon.dead .ms .p-eye { transform: scaleY(.12); }
+@keyframes msdie { 0% { transform: none; opacity: 1; } 35% { transform: translateY(-8px) rotate(-12deg); } 100% { transform: translateY(8px) rotate(-95deg) scale(.85); opacity: .3; filter: grayscale(1); } }
+@media (prefers-reduced-motion: reduce) { .ms *, .mon .ms { animation: none !important; } }
+
+/* Sprite v3 : sauts, gonflement avant l'attaque, plumes qui volent au coup reçu */
+.ms .p-hop { transform-origin: 50% 100%; animation: mshop 3.2s ease-in-out infinite; }
+@keyframes mshop { 0%, 70%, 100% { transform: none; } 76% { transform: scale(1.04, .94); } 82% { transform: translateY(-7px) scale(.97, 1.04); } 88% { transform: none; } 92% { transform: scale(1.03, .96); } }
+.ms .p-feathers { opacity: 0; }
+.ms .p-feathers path { transform-box: fill-box; transform-origin: 50% 50%; }
+.mon.hit .ms .p-feathers { animation: msfeathers .7s ease-out; }
+.mon.hit .ms .p-feathers path:nth-child(1) { animation: msf1 .7s ease-out; } .mon.hit .ms .p-feathers path:nth-child(2) { animation: msf2 .7s ease-out; }
+.mon.hit .ms .p-feathers path:nth-child(3) { animation: msf3 .7s ease-out; } .mon.hit .ms .p-feathers path:nth-child(4) { animation: msf4 .7s ease-out; }
+@keyframes msfeathers { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes msf1 { to { transform: translate(-22px, -24px) rotate(-160deg); } } @keyframes msf2 { to { transform: translate(18px, -20px) rotate(140deg); } }
+@keyframes msf3 { to { transform: translate(-26px, 8px) rotate(-90deg); } } @keyframes msf4 { to { transform: translate(10px, -34px) rotate(200deg); } }
+.mon.atk .ms .p-torso { transform-origin: 50% 60%; animation: mspuff .5s ease-out; }
+@keyframes mspuff { 0% { transform: none; } 20% { transform: scale(1.08); } 45% { transform: scale(.97); } 100% { transform: none; } }
+.mon.atk .ms .p-hop, .mon.hit .ms .p-hop, .mon.dead .ms .p-hop { animation: none; }
+
+/* Icône de monstre dessinée dans les listes */
+.ms-mini { width: 1.35em; height: 1.35em; display: inline-block; vertical-align: -.3em; overflow: visible; }
+.ms-mini *, .ms-mini { animation: none !important; }
+.ms-mini .p-feathers, .ms-mini .p-shadow { display: none; }
+.ms-mini { transform: scaleX(-1); }
+
+/* --- Animations non-oiseaux --- */
+/* Mâchoire / gueule (bouftou, sanglier, mufafah…) */
+.ms .p-jaw { transform-origin: 50% 0%; }
+.mon.atk .ms .p-jaw { animation: msbite .5s ease-in-out; }
+@keyframes msbite { 25% { transform: rotate(20deg); } 55% { transform: rotate(-3deg); } }
+/* Bras / arme (bwork, chafer…) */
+.ms .p-limb { transform-origin: 20% 40%; animation: mslimbidle 2.4s ease-in-out infinite; }
+@keyframes mslimbidle { 50% { transform: rotate(3deg); } }
+.mon.atk .ms .p-limb { animation: msswing .5s ease-in-out; }
+@keyframes msswing { 20% { transform: rotate(-30deg); } 50% { transform: rotate(22deg); } }
+/* Antennes (larve, moskito…) */
+.ms .p-antenna { transform-origin: 50% 100%; animation: msantenna 2.2s ease-in-out infinite; }
+@keyframes msantenna { 50% { transform: rotate(10deg); } }
+/* Feuilles / pétales (pissenlit, abraknyde…) */
+.ms .p-leaves { transform-origin: 50% 100%; animation: msleaves 2.6s ease-in-out infinite; }
+@keyframes msleaves { 25% { transform: rotate(4deg); } 75% { transform: rotate(-4deg); } }
+/* Gelée : wobble spécial */
+.ms-gelee .p-body { animation: msjelly 1.8s ease-in-out infinite; }
+@keyframes msjelly { 25% { transform: scaleX(1.1) scaleY(.92) translateY(1px); } 75% { transform: scaleX(.93) scaleY(1.07); } }
+/* Fantôme : flotte */
+.ms-fantome .p-hop { animation: msfloat 3s ease-in-out infinite; }
+@keyframes msfloat { 50% { transform: translateY(-8px); } }
+.mon.atk .ms-fantome .p-hop, .mon.hit .ms-fantome .p-hop, .mon.dead .ms-fantome .p-hop { animation: none; }
+/* Piquants (prespic) */
+.ms .p-quills { transform-origin: 50% 100%; }
+.mon.atk .ms .p-quills { animation: msbristle .5s ease-out; }
+@keyframes msbristle { 30% { transform: scale(1.15, 1.12); } }
+/* Lueur (craqueleur, fantôme) */
+.ms .p-glow { animation: msglow 2s ease-in-out infinite; }
+@keyframes msglow { 50% { opacity: .7; } }

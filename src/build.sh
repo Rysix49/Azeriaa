@@ -20,7 +20,7 @@ echo '<div class="toasts" id="toasts" aria-live="polite"></div>'
 echo '<div class="modal-back" id="modal" hidden></div>'
 echo '<script>'
 echo "const BUILD_ID = '$BUILD_ID';"
-cat data.js engine.js art.js skin.js update.js
+cat data.js engine.js art.js monart.js skin.js update.js
 echo '(function () {'
 cat spellfx.js ui2.js
 echo '})();'
