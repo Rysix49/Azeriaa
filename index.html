@@ -873,7 +873,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793110383';
+const BUILD_ID = '1793110753';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2154,9 +2154,9 @@ applyLayout(LAYOUT);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
 })();
 
-/* Ruban « version de test » sur le site de la branche dev (adresse dev--…netlify.app) */
+/* Ruban « version de test » sur le site de la branche dev (adresses dev--… ou deploy-preview-…--…netlify.app) */
 (function () {
-  if (!/^dev--/.test(location.hostname)) return;
+  if (!/^(dev|deploy-preview-\d+)--/.test(location.hostname)) return;
   const el = document.createElement('div');
   el.className = 'dev-ribbon';
   el.textContent = 'Version de test · les comptes et le chat sont séparés du site public';
