@@ -113,6 +113,7 @@ const CLASS_GLYPH = {
   eniripsa: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" fill="currentColor"/><path d="M12 10.5v6M9 13.5h6" stroke="var(--c)" stroke-width="2" stroke-linecap="round"/><path d="M4.7 12.2C2.6 12.4 1 10.9 1 8.8c1.3.9 2.6 1 3.6.7M4.9 14.6c-1.8.4-3.2-.5-3.6-2.1M19.3 12.2c2.1.2 3.7-1.3 3.7-3.4-1.3.9-2.6 1-3.6.7M19.1 14.6c1.8.4 3.2-.5 3.6-2.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".85"/>',
   sacrieur: '<path d="M12 2.8s6.3 7.2 6.3 11.4a6.3 6.3 0 0 1-12.6 0C5.7 10 12 2.8 12 2.8Z" fill="currentColor"/><path d="M9.3 12.5l2 3.5M12 11.5l1.4 4.8M14.7 12.5l-.6 3.6" stroke="var(--c)" stroke-width="1.5" stroke-linecap="round"/>',
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
+  xelor: '<path d="M6.5 3h11M6.5 21h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5c0 4.6 3.6 5.8 3.6 8.5S8 15.9 8 20.5h8c0-4.6-3.6-5.8-3.6-8.5S16 7.1 16 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 19.6c.6-1.9 1.5-2.6 2.4-2.6s1.8.7 2.4 2.6ZM10 6.2h4c-.5 1.4-1.2 2.1-2 2.6-.8-.5-1.5-1.2-2-2.6Z" fill="currentColor"/><circle cx="12" cy="13.4" r=".7" fill="currentColor"/>',
   sram: '<path d="M14.5 3.2A8.8 8.8 0 1 0 20.8 16 7 7 0 1 1 14.5 3.2Z" fill="currentColor"/><path d="M17.5 5.5 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19.2 3.8l1-1M16.3 4.3l3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
 };
 function emblem(cls, size) {
@@ -231,6 +232,12 @@ function renderCombat() {
   return `<div class="fights">${st.heroes.map(fightCard).join('')}</div>
     ${more ? `<div class="hint-band"><span>Ton groupe peut accueillir un héros de plus${st.kamas >= cost ? '.' : ` (${fmt(cost)} kamas).`}</span><button class="btn sm ${st.kamas >= cost ? 'gold' : ''}" data-act="recruitnav">Recruter un héros</button></div>` : ''}`;
 }
+function passiveHtml(c) {
+  const p = c.passive;
+  const body = p.points ? `<ul class="pv-list">${p.points.map(([ic, t, d]) => `<li><span class="pv-ic" aria-hidden="true">${ic}</span><div><b>${t}</b><span>${d}</span></div></li>`).join('')}</ul>` : `<span>${p.desc}</span>`;
+  return `<div class="passive" style="--c:${c.color}"><span class="label">Passif · ${p.name}</span>${body}</div>`;
+}
+function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
   const s = h.session; if (!s) return '';
@@ -259,7 +266,7 @@ function fightCard(h) {
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}" data-mon="${i}" data-hp="${m.hp}">
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite" aria-hidden="true">${d.icon}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small></div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -271,7 +278,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}">
+      <div class="scene${harvest ? ' harvest' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           <div class="sprite">${emblem(h.cls, 'big')}</div></div>
@@ -291,12 +298,39 @@ function floatNum(el, txt, cls) {
   el.appendChild(f); setTimeout(() => f.remove(), 950);
   if (cls === 'dmg') { el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 300); }
 }
+/* Effets visuels des passifs (Xélor) posés par-dessus la scène */
+function sceneFx(scene, kind, text) {
+  if (!scene) return;
+  const fx = document.createElement('div'); fx.className = 'fx fx-' + kind;
+  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">⏳</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
+  scene.appendChild(fx);
+  scene.classList.remove('fx-' + kind + '-on'); void scene.offsetWidth; scene.classList.add('fx-' + kind + '-on');
+  setTimeout(() => { fx.remove(); scene.classList.remove('fx-' + kind + '-on'); }, 1500);
+}
+function iceBurst(el) {
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('span'); s.className = 'ice'; s.textContent = '❄';
+    const a = (i / 6) * Math.PI * 2; s.style.setProperty('--dx', Math.cos(a) * 34 + 'px'); s.style.setProperty('--dy', Math.sin(a) * 26 - 10 + 'px');
+    el.appendChild(s); setTimeout(() => s.remove(), 800);
+  }
+  el.classList.remove('freeze-pop'); void el.offsetWidth; el.classList.add('freeze-pop');
+}
 function patchCombat() {
   for (const h of st.heroes) {
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) continue;
     const t = heroTotals(st, h); const hp = displayHp(st, h);
     const q = k => card.querySelector(`[data-k="${k}"]`);
     const [sc, stxt] = statusOf(h);
+    const scene = card.querySelector('.scene');
+    if (h.fight && scene) {
+      const seen = +(scene.dataset.fx || 0);
+      const fresh = (h.fight.fx || []).filter(c => c.n > seen);
+      if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
+      const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
+      if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
+      if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
+      scene.dataset.rw = rw; scene.dataset.px = px;
+    }
     const s1 = q('status'); if (s1) { if (s1.textContent !== stxt) s1.textContent = stxt; s1.className = 'status ' + sc; }
     const fg = q('fighter');
     if (fg) {
@@ -317,12 +351,15 @@ function patchCombat() {
       if (!isNaN(prev) && m.hp < prev) floatNum(el, '−' + fmt(prev - m.hp), 'dmg');
       el.dataset.hp = m.hp;
       el.classList.toggle('dead', m.hp <= 0);
+      if (m.frozen && m.hp > 0 && !el.classList.contains('frozen')) iceBurst(el);
+      el.classList.toggle('frozen', !!m.frozen && m.hp > 0);
       setBar(el, m.hp, m.max);
       el.querySelector('[data-k="mhp"]').textContent = fmt(m.hp);
     });
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
     if (h.act && h.act.type === 'harvest') {
@@ -348,7 +385,7 @@ function renderRecruit(first) {
     <div class="recruit-detail" style="--c:${c.color}">
       ${emblem(ui.recruitCls, 'xl')}
       <div class="rd-main"><h3 class="display">${c.name} <small>${c.role}</small></h3><p>${c.desc}</p>
-        <div class="passive" style="--c:${c.color}"><span class="label">Passif · ${c.passive.name}</span><span>${c.passive.desc}</span></div>
+        ${passiveHtml(c)}
         <div class="rd-spells">${c.spells.map(sp => `<span class="chip">${sp.name} <small>niv. ${sp.lvl}</small></span>`).join('')}</div>
       </div>
     </div>
@@ -454,7 +491,7 @@ function statsPanel(h) {
     const p = sp.type === 'buff' ? null : spellPower(h, t, null, sp);
     const eff = sp.type === 'buff' ? Object.entries(sp.buff).map(([k, v]) => `+${v} ${STAT_LABEL[k]}`).join(', ') + ` pendant ${sp.turns} tours`
       : `${sp.type === 'heal' ? 'Soigne' : 'Inflige'} ~${fmt(p.avg)}${sp.type === 'aoe' ? ' à tous les ennemis' : sp.type === 'poison' ? ` par tour pendant ${sp.turns} tours` : sp.type === 'drain' ? ' et vole la moitié en PV' : ''}`;
-    const lim = [sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
+    const lim = [sp.freeze ? `+${sp.freeze} % de chance de figer` : '', sp.grains ? `+${sp.grains} grains` : '', sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
     const locked = h.lvl < sp.lvl;
     return `<div class="spell${locked ? ' locked' : ''}"><span class="pa" title="Points d'action">${sp.pa}</span>
       <div><b>${sp.name}</b>${sp.stat && STAT_ELEM[sp.stat] ? ` <span class="elem" style="--c:${STAT_COLOR[sp.stat]}">${STAT_ELEM[sp.stat]}</span>` : ''}<div class="desc">${eff}${lim ? ' · ' + lim : ''}</div></div>
@@ -467,7 +504,7 @@ function statsPanel(h) {
     <div class="stat-rows">${rows}</div>
     <p class="hint">Chaque niveau donne ${CAPITAL_PER_LEVEL} points. En mode auto, ils sont placés dans la caractéristique choisie.</p>
     <div class="cstats">${cs.map(([l, v]) => `<div class="cs"><small>${l}</small><b class="num">${v}</b></div>`).join('')}</div>
-    <div class="passive" style="--c:${c.color}"><span class="label">Passif · ${c.passive.name}</span><span>${c.passive.desc}</span></div>
+    ${passiveHtml(c)}
     ${h.food ? `<div class="food-on"><span class="fo-ic">${RESOURCES[h.food.id].icon}</span><div><b>${RESOURCES[h.food.id].name}</b><small>${RESOURCES[h.food.id].food.desc} · encore ${mmss(h.food.left)}</small></div></div>`
       : Object.keys(st.res).some(id => RESOURCES[id].food && st.res[id] > 0) ? `<div class="food-off"><span class="sub">Aucun repas actif.</span>${Object.keys(st.res).filter(id => RESOURCES[id].food && st.res[id] > 0).map(id => `<button class="btn sm gold" data-act="eat" data-id="${id}" data-hero="${h.id}">${RESOURCES[id].icon} Manger ${RESOURCES[id].name} (${st.res[id]})</button>`).join('')}</div>` : ''}
     <div class="panel-h"><h3 class="display">Sorts</h3><span class="sub">${spellsOf(h).filter(sp => h.lvl >= sp.lvl).length}/${spellsOf(h).length} appris</span></div>
@@ -1092,6 +1129,6 @@ function start(data) {
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
   window.addEventListener('pagehide', saveGame);
   window.claude?.hot?.snapshot?.(() => ({ save: serialize(st) }));
-  window.__game = { get st() { return st; }, ui, liveEv, render }; // accès de débogage (console)
+  window.__game = { get st() { return st; }, ui, liveEv, render, fx: playSpellFx }; // accès de débogage (console)
 }
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});

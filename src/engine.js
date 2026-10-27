@@ -207,9 +207,14 @@ function heroTurn(st, h, t, ev) {
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
+  const xel = h.cls === 'xelor';
+  if (xel) f.hpMark = h.hp;
+  const rewind = xel && (f.grains || 0) >= 12;
+  if (rewind) f.grains -= 12;
+  const actions = [];
+  const phase = (gainGrains) => {
   f.casts = {};
   let pa = t.pa;
-  const actions = [];
   for (let guard = 0; guard < 12; guard++) {
     const alive = f.mons.filter(m => m.hp > 0);
     if (!alive.length) break;
@@ -239,8 +244,16 @@ function heroTurn(st, h, t, ev) {
     pa -= best.pa;
     f.casts[best.id] = (f.casts[best.id] || 0) + 1;
     if (best.cd) f.cds[best.id] = best.cd + 1;
+    const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
     actions.push(castSpell(st, h, t, best, target, alive));
+    f.fxSeq = (f.fxSeq || 0) + 1;
+    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
+    if (f.fx.length > 16) f.fx.shift();
+    if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
+  };
+  phase(true);
+  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'sram' && f.turn === 1 && actions.length) pre += 'Embuscade ! ';
   ev.log(h, pre + (actions.length ? actions.join(' · ') : `${h.name} passe son tour.`), 'hero');
@@ -259,8 +272,15 @@ function castSpell(st, h, t, sp, target, alive) {
     const before = h.hp; h.hp = Math.min(t.maxHp, h.hp + v);
     return `${sp.name} +${h.hp - before} PV`;
   }
+  const xel = h.cls === 'xelor';
+  const distort = (m, r) => {
+    if (!xel) return '';
+    if (m.frozen) r.v = Math.round(r.v * 1.25);
+    if (m.hp - r.v > 0 && !m.frozen && Math.random() * 100 < 12 + (sp.freeze || 0)) { m.frozen = true; return '❄'; }
+    return '';
+  };
   if (sp.type === 'aoe') {
-    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); return tag(r); });
+    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
     return `${sp.name} → ${parts.join('/')}`;
   }
   const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
@@ -268,8 +288,9 @@ function castSpell(st, h, t, sp, target, alive) {
     target.poison = { dmg: r.v, turns: sp.turns };
     return `${sp.name} sur ${MONSTERS[target.mid].name} (${r.v}/tour)`;
   }
+  const fz = distort(target, r);
   target.hp = Math.max(0, target.hp - r.v);
-  let s = `${sp.name} ${tag(r)}`;
+  let s = `${sp.name} ${tag(r)}${fz ? ` ❄ ${MONSTERS[target.mid].name} figé` : ''}`;
   if (sp.type === 'drain') { const heal = Math.round(r.v / 2); h.hp = Math.min(t.maxHp, h.hp + heal); s += ` (+${heal} PV)`; }
   return s;
 }
@@ -284,6 +305,7 @@ function monsterTurn(st, h, t, m, ev) {
     if (--m.poison.turns <= 0) m.poison = null;
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.`, 'mon'); return; }
   }
+  if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
   if (Math.random() * 100 < t.dodgePct) { ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
@@ -292,6 +314,11 @@ function monsterTurn(st, h, t, m, ev) {
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
+    f.paradox = true; f.grains = 0;
+    h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
+    ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
+  }
 }
 
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
