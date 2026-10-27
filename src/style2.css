@@ -1090,7 +1090,7 @@ label.btn { cursor: pointer; }
 
 /* ===================== Sprites monstres (dessins originaux) ===================== */
 .mon .sprite.has-art { font-size: 0; }
-.mon .sprite.has-art .ms { width: 58px; height: 58px; display: block; overflow: visible; }
+.mon .sprite.has-art .ms { width: 64px; height: 64px; display: block; overflow: visible; }
 .mon.boss .sprite.has-art .ms { width: 76px; height: 76px; }
 .ms * { transform-box: fill-box; }
 .ms .p-body { transform-origin: 50% 100%; animation: msbreath 1.6s ease-in-out infinite; }
@@ -1099,6 +1099,11 @@ label.btn { cursor: pointer; }
 .ms .p-tail { transform-origin: 100% 60%; animation: mstail 2.4s ease-in-out infinite; }
 .ms .p-eye { transform-origin: 50% 50%; animation: msblink 4.2s infinite; }
 .ms .p-beak { transform-origin: 0% 50%; }
+.ms .p-brow { transform-origin: 50% 100%; }
+.ms .p-shadow { transform-origin: 50% 50%; animation: msshadow 1.6s ease-in-out infinite; }
+@keyframes msshadow { 50% { transform: scaleX(1.06); } }
+.mon.atk .ms .p-brow { animation: msbrow .5s ease-out; }
+@keyframes msbrow { 30%, 70% { transform: translateY(3px) rotate(8deg); } }
 @keyframes msbreath { 50% { transform: translateY(1.5px) scale(1.03, .96); } }
 @keyframes mstuft { 50% { transform: rotate(-7deg); } }
 @keyframes mswing { 50% { transform: rotate(-9deg); } }
