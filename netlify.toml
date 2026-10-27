@@ -6,6 +6,6 @@
 # (mise à jour à chaque nouvelle demande de fusion dev -> main : deploy-preview-<numéro>)
 [[redirects]]
   from = "/test"
-  to = "https://deploy-preview-2--azeriaa.netlify.app/"
+  to = "https://deploy-preview-3--azeriaa.netlify.app/"
   status = 302
   force = true

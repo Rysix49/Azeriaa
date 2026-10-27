@@ -1,5 +1,5 @@
 // Chat « Général » d'Amakna Idle : messages stockés dans Netlify Blobs.
-// GET  /api/chat?since=<timestamp>&cid=<id joueur>  -> { messages: [...], online: <joueurs en ligne> }
+// GET  /api/chat?since=<timestamp>&cid=<id joueur>&n=<pseudo>  -> { messages, online, players: [pseudos], anonymous }
 // POST /api/chat { n: pseudo, x: texte, c: classe, token? } -> { ok, message }
 // Un pseudo qui appartient à un compte exige le jeton de ce compte ; le message porte alors sa photo (av).
 import { getStore } from "@netlify/blobs";
@@ -21,14 +21,17 @@ export default async (req, context) => {
     const url = new URL(req.url);
     const since = Number(url.searchParams.get("since") || 0);
     const cid = String(url.searchParams.get("cid") || "").slice(0, 40);
-    // Présence : chaque joueur signale sa présence à chaque lecture du chat
+    const who = String(url.searchParams.get("n") || "").replace(/\s+/g, " ").trim().slice(0, 20);
+    // Présence : chaque joueur signale sa présence (et son pseudo s'il en a un) à chaque lecture du chat
     const now = Date.now();
     const presence = (await store.get("presence", { type: "json" })) || {};
-    if (cid) presence[cid] = now;
-    for (const [k, t] of Object.entries(presence)) if (now - t > 45000) delete presence[k];
+    if (cid) presence[cid] = { t: now, n: who };
+    for (const [k, v] of Object.entries(presence)) { const t = typeof v === "number" ? v : v.t; if (now - t > 45000) delete presence[k]; }
     if (cid) await store.setJSON("presence", presence);
+    const names = [...new Set(Object.values(presence).map((v) => (typeof v === "object" && v.n) || "").filter(Boolean))].sort((a, b) => a.localeCompare(b, "fr"));
+    const anonymous = Object.values(presence).filter((v) => !(typeof v === "object" && v.n)).length;
     const list = (await store.get(KEY, { type: "json" })) || [];
-    return Response.json({ messages: list.filter((m) => m.t > since).slice(-100), online: Object.keys(presence).length }, { headers: { "cache-control": "no-store" } });
+    return Response.json({ messages: list.filter((m) => m.t > since).slice(-100), online: Object.keys(presence).length, players: names, anonymous }, { headers: { "cache-control": "no-store" } });
   }
   if (req.method === "POST") {
     let body;
