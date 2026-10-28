@@ -3113,6 +3113,10 @@ label.btn { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .sk-n.can .sk-ico, .sk-oi, .sk-open.has .sk-op { animation: none !important; } }
 .sk-dh small b { display: inline; font-size: inherit; font-family: inherit; font-weight: 900; }
 .sk-gate span { left: auto; right: 0; padding: 0 0 0 8px; }
+
+.sk-per { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; margin: 0 0 8px; padding: 5px 10px; border-radius: 9px; font-size: 12px; font-weight: 800; background: #00000040; border: 1px dashed color-mix(in srgb, var(--bc) 55%, transparent); color: var(--muted); }
+.sk-card .sk-per { margin: 2px 0 0; }
+.sk-per i { font-style: normal; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -3210,7 +3214,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793229054';
+const BUILD_ID = '1793229241';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3883,6 +3887,7 @@ const SKILL_STAT = {
 };
 const SKILL_BRANCHES = [
   { id: 'guerrier', name: 'Voie du Guerrier', icon: '⚔️', col: '#e0533f', text: 'Frapper plus fort, plus souvent, plus juste.',
+    per: { dmgPct: 0.3 },
     mile: [[6, { dmgPct: 4 }], [12, { crit: 4, critDmg: 15 }], [18, { dmgPct: 8 }]],
     nodes: [
       ['a1', 'Poigne de Fer', '💪', 5, { deg: 3 }, 0, 1, [], 1],
@@ -3895,6 +3900,7 @@ const SKILL_BRANCHES = [
       ['a8', 'Colère des Dieux', '⚡', 1, { pa: 1, crit: 5, dmgPct: 5 }, 5, 1, ['a7'], 3],
     ] },
   { id: 'rempart', name: 'Voie du Rempart', icon: '🛡️', col: '#55a8ea', text: 'Encaisser, esquiver, se relever.',
+    per: { hpPct: 0.4 },
     mile: [[6, { hpPct: 4 }], [12, { res: 3, dodge: 2 }], [18, { hpPct: 8, regen: 0.5 }]],
     nodes: [
       ['b1', 'Constitution', '❤️', 5, { vit: 25 }, 0, 1, [], 1],
@@ -3907,6 +3913,7 @@ const SKILL_BRANCHES = [
       ['b8', 'Inébranlable', '🗿', 1, { hpPct: 18, res: 5, regen: 1.5 }, 5, 1, ['b7'], 3],
     ] },
   { id: 'vent', name: 'Voie du Vent', icon: '🌪️', col: '#74c552', text: 'La vitesse avant tout : jouer avant les autres.',
+    per: { speed: 0.5 },
     mile: [[6, { speed: 8 }], [12, { crit: 3, dodge: 3 }], [18, { speed: 12, dmgPct: 4 }]],
     nodes: [
       ['c1', 'Pas Léger', '👟', 5, { speed: 3 }, 0, 1, [], 1],
@@ -3919,6 +3926,7 @@ const SKILL_BRANCHES = [
       ['c8', 'Maître du Temps', '⏳', 1, { speed: 25, dodge: 4, critDmg: 15 }, 5, 1, ['c7'], 3],
     ] },
   { id: 'marchand', name: 'Voie du Marchand', icon: '💰', col: '#e8aa2e', text: 'Kamas, butin et savoir : tout se monnaie.',
+    per: { kamas: 0.5 },
     mile: [[6, { kamas: 6 }], [12, { pp: 20, xpPct: 5 }], [18, { kamas: 12, xpPct: 8 }]],
     nodes: [
       ['d1', 'Bourse Pleine', '👛', 5, { kamas: 4 }, 0, 1, [], 1],
@@ -3931,6 +3939,7 @@ const SKILL_BRANCHES = [
       ['d8', "Roi d'Astrub", '👑', 1, { kamas: 30, xpPct: 15, pp: 30 }, 5, 1, ['d7'], 3],
     ] },
   { id: 'paysan', name: 'Voie des Champs', icon: '🌾', col: '#9cba52', text: 'La terre donne plus à qui sait la cueillir.',
+    per: { rspd: 0.6 },
     mile: [[6, { rspd: 10 }], [12, { rqty: 10, rxp: 10 }], [18, { rmir: 3, rspd: 15 }]],
     nodes: [
       ['e1', 'Doigts de Fée', '🤲', 5, { rspd: 4 }, 0, 1, [], 1],
@@ -3943,6 +3952,7 @@ const SKILL_BRANCHES = [
       ['e8', 'Avatar des Moissons', '🌻', 1, { rmir: 5, rspd: 30, rqty: 20 }, 5, 1, ['e7'], 3],
     ] },
   { id: 'gourmet', name: 'Voie du Gourmet', icon: '🍞', col: '#f08a6a', text: 'Les repas deviennent plus forts et durent plus longtemps.',
+    per: { foodPow: 0.6 },
     mile: [[6, { foodPow: 10 }], [12, { foodDur: 20, hpPct: 3 }], [18, { foodPow: 20, dmgPct: 3 }]],
     nodes: [
       ['f1', 'Palais Fin', '👅', 5, { foodPow: 4 }, 0, 1, [], 1],
@@ -5133,7 +5143,7 @@ function skillTotals(h) {
   const t = {}, rk = h.skills; if (!rk) return t;
   const bs = {}; let tot = 0;
   for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!n || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
-  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
+  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const k in b.per) t[k] = (t[k] || 0) + b.per[k] * sp; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
   for (const [at, fx] of SKILL_GLOBAL) if (tot >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k];
   return t;
 }
@@ -9152,11 +9162,11 @@ function skMilestones(h, b) {
 function skOverview(h, sk, spent) {
   const cards = SKILL_BRANCHES.map(b => { const sp = skillBranchSpent(h, b.id), maxp = b.nodes.reduce((a, n) => a + n[3] * n[8], 0), keyed = (h.skills && h.skills[b.nodes[7][0]]) > 0;
     return `<button class="sk-card${keyed ? ' keyed' : ''}" data-act="skbranch" data-v="${b.id}" style="--bc:${b.col}"><span class="sk-cico">${b.icon}</span><b class="display">${b.name}</b><small>${b.text}</small>
-      <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span>${skMilestones(h, b)}</button>`; }).join('');
+      <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span><span class="sk-per">✦ Par point : ${skStatLine(b.per)}</span>${skMilestones(h, b)}</button>`; }).join('');
   const tot = Object.entries(sk).filter(([k]) => SKILL_STAT[k]).sort((a, b) => Object.keys(SKILL_STAT).indexOf(a[0]) - Object.keys(SKILL_STAT).indexOf(b[0]));
   const glob = `<div class="sk-glob"><h4 class="at-h">Seuils de puissance <small>(points dépensés au total : ${spent})</small></h4><div class="sk-mile">${SKILL_GLOBAL.map(([at, fx]) => `<div class="${spent >= at ? 'on' : ''}"><span class="sk-mn num">${at}</span><div><small>${spent >= at ? 'Actif' : `${spent}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div></div>`;
   return `<div class="sk-grid">${cards}</div>${glob}<div class="sk-tot"><h4 class="at-h">Bonus de l’arbre</h4>${tot.length ? `<div class="sk-tl">${tot.map(([k, v]) => `<span style="--c:${STAT_COLOR[k] || 'var(--gold-2)'}">${skillFmt(k, v)}</span>`).join('')}</div>` : '<p class="sub">Aucun point dépensé pour l’instant. Choisis une voie !</p>'}</div>
-    <p class="hint">Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Chaque voie s’ouvre ligne par ligne : plus tu y mets de points, plus les lignes hautes se débloquent. Les <b>paliers</b> d’une voie (6, 12, 18 points) et les <b>seuils de puissance</b> donnent des bonus supplémentaires.</p>`;
+    <p class="hint">Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Chaque voie s’ouvre ligne par ligne : plus tu y mets de points, plus les lignes hautes se débloquent. Chaque point dépensé donne aussi un <b>petit bonus de voie</b>. Les <b>paliers</b> d’une voie (6, 12, 18 points) et les <b>seuils de puissance</b> donnent des bonus supplémentaires.</p>`;
 }
 function skBranch(h, b, just) {
   if (!ui.skSel || !SKILL_NODE[ui.skSel] || SKILL_NODE[ui.skSel].branch !== b.id) { const first = b.nodes.find(n => skillCheck(h, n[0]) === null) || b.nodes[0]; ui.skSel = first[0]; }
@@ -9176,6 +9186,7 @@ function skBranch(h, b, just) {
     <button class="btn gold sk-buy" data-act="skbuy" data-id="${sel.id}" ${s.can ? '' : 'disabled'}>${s.max ? 'Rang maximal' : s.can ? `Apprendre · ${sel.cost} pt${sel.cost > 1 ? 's' : ''}` : 'Indisponible'}</button>
     ${!s.can && !s.max ? `<small class="sk-why">${esc(s.err)}</small>` : ''}</div>`;
   return `<div class="sk-wrap" style="--bc:${b.col}"><div class="sk-treew"><div class="sk-bhead"><span class="sk-bico">${b.icon}</span><div><b class="display">${b.name}</b><small>${b.text}</small></div><span class="sk-bp num">${skillBranchSpent(h, b.id)} pts</span></div>
+      <div class="sk-per">✦ Chaque point dépensé dans la voie : ${skStatLine(b.per)} <span class="sub">· actuellement ${skStatLine(b.per, skillBranchSpent(h, b.id))}</span></div>
       <div class="sk-tree" style="grid-template-rows:repeat(${rows},${SK_ROW_H}px)"><svg class="sk-lines" viewBox="0 0 ${W} ${rows * SK_ROW_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>${gates}${nodes}</div></div>
     <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie</h4>${skMilestones(h, b)}</div></aside></div>`;
 }

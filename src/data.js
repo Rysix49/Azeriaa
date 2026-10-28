@@ -670,6 +670,7 @@ const SKILL_STAT = {
 };
 const SKILL_BRANCHES = [
   { id: 'guerrier', name: 'Voie du Guerrier', icon: '⚔️', col: '#e0533f', text: 'Frapper plus fort, plus souvent, plus juste.',
+    per: { dmgPct: 0.3 },
     mile: [[6, { dmgPct: 4 }], [12, { crit: 4, critDmg: 15 }], [18, { dmgPct: 8 }]],
     nodes: [
       ['a1', 'Poigne de Fer', '💪', 5, { deg: 3 }, 0, 1, [], 1],
@@ -682,6 +683,7 @@ const SKILL_BRANCHES = [
       ['a8', 'Colère des Dieux', '⚡', 1, { pa: 1, crit: 5, dmgPct: 5 }, 5, 1, ['a7'], 3],
     ] },
   { id: 'rempart', name: 'Voie du Rempart', icon: '🛡️', col: '#55a8ea', text: 'Encaisser, esquiver, se relever.',
+    per: { hpPct: 0.4 },
     mile: [[6, { hpPct: 4 }], [12, { res: 3, dodge: 2 }], [18, { hpPct: 8, regen: 0.5 }]],
     nodes: [
       ['b1', 'Constitution', '❤️', 5, { vit: 25 }, 0, 1, [], 1],
@@ -694,6 +696,7 @@ const SKILL_BRANCHES = [
       ['b8', 'Inébranlable', '🗿', 1, { hpPct: 18, res: 5, regen: 1.5 }, 5, 1, ['b7'], 3],
     ] },
   { id: 'vent', name: 'Voie du Vent', icon: '🌪️', col: '#74c552', text: 'La vitesse avant tout : jouer avant les autres.',
+    per: { speed: 0.5 },
     mile: [[6, { speed: 8 }], [12, { crit: 3, dodge: 3 }], [18, { speed: 12, dmgPct: 4 }]],
     nodes: [
       ['c1', 'Pas Léger', '👟', 5, { speed: 3 }, 0, 1, [], 1],
@@ -706,6 +709,7 @@ const SKILL_BRANCHES = [
       ['c8', 'Maître du Temps', '⏳', 1, { speed: 25, dodge: 4, critDmg: 15 }, 5, 1, ['c7'], 3],
     ] },
   { id: 'marchand', name: 'Voie du Marchand', icon: '💰', col: '#e8aa2e', text: 'Kamas, butin et savoir : tout se monnaie.',
+    per: { kamas: 0.5 },
     mile: [[6, { kamas: 6 }], [12, { pp: 20, xpPct: 5 }], [18, { kamas: 12, xpPct: 8 }]],
     nodes: [
       ['d1', 'Bourse Pleine', '👛', 5, { kamas: 4 }, 0, 1, [], 1],
@@ -718,6 +722,7 @@ const SKILL_BRANCHES = [
       ['d8', "Roi d'Astrub", '👑', 1, { kamas: 30, xpPct: 15, pp: 30 }, 5, 1, ['d7'], 3],
     ] },
   { id: 'paysan', name: 'Voie des Champs', icon: '🌾', col: '#9cba52', text: 'La terre donne plus à qui sait la cueillir.',
+    per: { rspd: 0.6 },
     mile: [[6, { rspd: 10 }], [12, { rqty: 10, rxp: 10 }], [18, { rmir: 3, rspd: 15 }]],
     nodes: [
       ['e1', 'Doigts de Fée', '🤲', 5, { rspd: 4 }, 0, 1, [], 1],
@@ -730,6 +735,7 @@ const SKILL_BRANCHES = [
       ['e8', 'Avatar des Moissons', '🌻', 1, { rmir: 5, rspd: 30, rqty: 20 }, 5, 1, ['e7'], 3],
     ] },
   { id: 'gourmet', name: 'Voie du Gourmet', icon: '🍞', col: '#f08a6a', text: 'Les repas deviennent plus forts et durent plus longtemps.',
+    per: { foodPow: 0.6 },
     mile: [[6, { foodPow: 10 }], [12, { foodDur: 20, hpPct: 3 }], [18, { foodPow: 20, dmgPct: 3 }]],
     nodes: [
       ['f1', 'Palais Fin', '👅', 5, { foodPow: 4 }, 0, 1, [], 1],

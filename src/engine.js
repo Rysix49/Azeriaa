@@ -1172,7 +1172,7 @@ function skillTotals(h) {
   const t = {}, rk = h.skills; if (!rk) return t;
   const bs = {}; let tot = 0;
   for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!n || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
-  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
+  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const k in b.per) t[k] = (t[k] || 0) + b.per[k] * sp; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
   for (const [at, fx] of SKILL_GLOBAL) if (tot >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k];
   return t;
 }

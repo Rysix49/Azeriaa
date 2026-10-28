@@ -31,11 +31,11 @@ function skMilestones(h, b) {
 function skOverview(h, sk, spent) {
   const cards = SKILL_BRANCHES.map(b => { const sp = skillBranchSpent(h, b.id), maxp = b.nodes.reduce((a, n) => a + n[3] * n[8], 0), keyed = (h.skills && h.skills[b.nodes[7][0]]) > 0;
     return `<button class="sk-card${keyed ? ' keyed' : ''}" data-act="skbranch" data-v="${b.id}" style="--bc:${b.col}"><span class="sk-cico">${b.icon}</span><b class="display">${b.name}</b><small>${b.text}</small>
-      <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span>${skMilestones(h, b)}</button>`; }).join('');
+      <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span><span class="sk-per">✦ Par point : ${skStatLine(b.per)}</span>${skMilestones(h, b)}</button>`; }).join('');
   const tot = Object.entries(sk).filter(([k]) => SKILL_STAT[k]).sort((a, b) => Object.keys(SKILL_STAT).indexOf(a[0]) - Object.keys(SKILL_STAT).indexOf(b[0]));
   const glob = `<div class="sk-glob"><h4 class="at-h">Seuils de puissance <small>(points dépensés au total : ${spent})</small></h4><div class="sk-mile">${SKILL_GLOBAL.map(([at, fx]) => `<div class="${spent >= at ? 'on' : ''}"><span class="sk-mn num">${at}</span><div><small>${spent >= at ? 'Actif' : `${spent}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div></div>`;
   return `<div class="sk-grid">${cards}</div>${glob}<div class="sk-tot"><h4 class="at-h">Bonus de l’arbre</h4>${tot.length ? `<div class="sk-tl">${tot.map(([k, v]) => `<span style="--c:${STAT_COLOR[k] || 'var(--gold-2)'}">${skillFmt(k, v)}</span>`).join('')}</div>` : '<p class="sub">Aucun point dépensé pour l’instant. Choisis une voie !</p>'}</div>
-    <p class="hint">Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Chaque voie s’ouvre ligne par ligne : plus tu y mets de points, plus les lignes hautes se débloquent. Les <b>paliers</b> d’une voie (6, 12, 18 points) et les <b>seuils de puissance</b> donnent des bonus supplémentaires.</p>`;
+    <p class="hint">Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Chaque voie s’ouvre ligne par ligne : plus tu y mets de points, plus les lignes hautes se débloquent. Chaque point dépensé donne aussi un <b>petit bonus de voie</b>. Les <b>paliers</b> d’une voie (6, 12, 18 points) et les <b>seuils de puissance</b> donnent des bonus supplémentaires.</p>`;
 }
 function skBranch(h, b, just) {
   if (!ui.skSel || !SKILL_NODE[ui.skSel] || SKILL_NODE[ui.skSel].branch !== b.id) { const first = b.nodes.find(n => skillCheck(h, n[0]) === null) || b.nodes[0]; ui.skSel = first[0]; }
@@ -55,6 +55,7 @@ function skBranch(h, b, just) {
     <button class="btn gold sk-buy" data-act="skbuy" data-id="${sel.id}" ${s.can ? '' : 'disabled'}>${s.max ? 'Rang maximal' : s.can ? `Apprendre · ${sel.cost} pt${sel.cost > 1 ? 's' : ''}` : 'Indisponible'}</button>
     ${!s.can && !s.max ? `<small class="sk-why">${esc(s.err)}</small>` : ''}</div>`;
   return `<div class="sk-wrap" style="--bc:${b.col}"><div class="sk-treew"><div class="sk-bhead"><span class="sk-bico">${b.icon}</span><div><b class="display">${b.name}</b><small>${b.text}</small></div><span class="sk-bp num">${skillBranchSpent(h, b.id)} pts</span></div>
+      <div class="sk-per">✦ Chaque point dépensé dans la voie : ${skStatLine(b.per)} <span class="sub">· actuellement ${skStatLine(b.per, skillBranchSpent(h, b.id))}</span></div>
       <div class="sk-tree" style="grid-template-rows:repeat(${rows},${SK_ROW_H}px)"><svg class="sk-lines" viewBox="0 0 ${W} ${rows * SK_ROW_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>${gates}${nodes}</div></div>
     <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie</h4>${skMilestones(h, b)}</div></aside></div>`;
 }

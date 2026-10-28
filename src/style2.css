@@ -3105,3 +3105,7 @@ label.btn { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .sk-n.can .sk-ico, .sk-oi, .sk-open.has .sk-op { animation: none !important; } }
 .sk-dh small b { display: inline; font-size: inherit; font-family: inherit; font-weight: 900; }
 .sk-gate span { left: auto; right: 0; padding: 0 0 0 8px; }
+
+.sk-per { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; margin: 0 0 8px; padding: 5px 10px; border-radius: 9px; font-size: 12px; font-weight: 800; background: #00000040; border: 1px dashed color-mix(in srgb, var(--bc) 55%, transparent); color: var(--muted); }
+.sk-card .sk-per { margin: 2px 0 0; }
+.sk-per i { font-style: normal; }
