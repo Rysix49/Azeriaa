@@ -274,7 +274,7 @@ function bloodGauge(h) {
 }
 function fervHtml(h) { const n = h.fight ? Math.min(ZOB_FERV_MAX, h.fight.ferv || 1) : 0; return `🎭 ${'●'.repeat(n)}${'○'.repeat(ZOB_FERV_MAX - n)}`; }
 const ZOB_TIPS = { rire: 'Masque Rieur : +12 % de dégâts (+4 % par point de Ferveur).', larme: 'Masque Pleureur : −10 % de dégâts subis et un peu de soin à chaque tour (+4 % par point de Ferveur).', farce: 'Masque Farceur : 15 % de chances de lancer un sort offensif deux fois (+4 % par point de Ferveur).' };
-function zobMasks(h) { return `<div class="zmasks" data-k="zmasks" role="group" aria-label="Masque porté">${Object.entries(ZOB_MASKS).map(([id, m]) => `<button class="zmask${zobMask(h) === id ? ' on' : ''}" data-act="zmask" data-hero="${h.id}" data-mask="${id}" title="${m.name} — ${ZOB_TIPS[id]} Changer de masque en combat déclenche une Rupture." aria-label="${m.name}" aria-pressed="${zobMask(h) === id}">${m.icon}</button>`).join('')}</div>`; }
+function zobMasks(h) { return `<div class="zmasks" data-k="zmasks" role="group" aria-label="Masque porté">${Object.entries(ZOB_MASKS).map(([id, m]) => `<button class="zmask${zobMask(h) === id ? ' on' : ''}" data-act="zmask" data-hero="${h.id}" data-mask="${id}" aria-label="${m.name}" aria-pressed="${zobMask(h) === id}">${m.icon}</button>`).join('')}</div>`; }
 /* Rupture : des éclats du masque brisé filent vers chaque ennemi */
 function zobShards(card) {
   const scene = card.querySelector('.scene'), sp = card.querySelector('[data-k="fighter"] .sprite'); if (!scene || !sp || !FX_OK()) return;
@@ -1631,6 +1631,28 @@ const ACTIONS = {
   resetcancel() { ui.resetStep = 0; },
   reset() { st = newState(); ui.resetStep = 0; ui.hero = null; ui.view = 'combat'; ui._psig = ''; saveGame(); toast('Nouvelle partie.'); },
 };
+/* Appui long sur un bouton de masque : affiche ses effets (sans changer de masque) */
+(function () {
+  let timer = null, pop = null, held = false;
+  const hide = () => { clearTimeout(timer); timer = null; if (pop) { pop.remove(); pop = null; } };
+  const show = btn => {
+    const h = heroById(btn.dataset.hero); if (!h) return; const id = btn.dataset.mask, m = ZOB_MASKS[id], fv = h.fight ? h.fight.ferv || 1 : 1;
+    const fx = { rire: `+${ZOB_RIRE_DMG + ZOB_FERV_STEP * fv} % de dégâts`, larme: `−${ZOB_LARME_DEF + ZOB_FERV_STEP * fv} % de dégâts subis, +${(ZOB_LARME_HEAL * fv).toFixed(1).replace('.0', '')} % de PV max par tour`, farce: `${ZOB_FARCE_CHANCE + ZOB_FERV_STEP * fv} % de chances de lancer un sort offensif deux fois` }[id];
+    pop = document.createElement('div'); pop.className = 'zmask-pop'; pop.setAttribute('role', 'tooltip');
+    pop.innerHTML = `<b>${m.icon} ${m.name}</b><span class="now">${fx}</span><small>Base : ${ZOB_TIPS[id].split(' : ')[1]}<br>Ferveur actuelle : ${fv}/${ZOB_FERV_MAX} (+${ZOB_FERV_STEP} % d’effet par point).</small><small class="rp">Changer de masque en combat déclenche une Rupture : la Ferveur explose sur tous les ennemis.</small>`;
+    document.body.appendChild(pop);
+    const r = btn.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+    pop.style.left = Math.max(8, Math.min(innerWidth - pw - 8, r.left + r.width / 2 - pw / 2)) + 'px';
+    pop.style.top = (r.top - ph - 10 < 8 ? r.bottom + 10 : r.top - ph - 10) + 'px';
+  };
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest && e.target.closest('.zmask'); if (!b) return;
+    held = false; hide(); timer = setTimeout(() => { held = true; show(b); }, 380);
+  });
+  ['pointerup', 'pointercancel', 'pointerleave', 'scroll'].forEach(t => document.addEventListener(t, () => { hide(); }, true));
+  document.addEventListener('click', e => { if (held && e.target.closest && e.target.closest('.zmask')) { e.stopPropagation(); e.preventDefault(); } held = false; }, true); // l'appui long ne change pas de masque
+  document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('.zmask')) e.preventDefault(); });
+})();
 document.addEventListener('click', e => {
   ui.click = { x: e.clientX, y: e.clientY };
   const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
