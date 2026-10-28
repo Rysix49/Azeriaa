@@ -485,6 +485,35 @@ RECIPES.push({ out: 'pain_ble', job: 'boulanger', lvl: 1, ing: { ble: 100 } });
 
 
 /* --------------------------------------------------------------------
+   MAÎTRISE DES RECETTES — plus tu fabriques une recette, mieux tu la maîtrises :
+   jet minimal garanti (floor) et chance de Jet Parfait (perf = tous les jets au maximum)
+   -------------------------------------------------------------------- */
+const MASTERY_RANKS = [
+  { name: 'Novice',       at: 0,   floor: 0,    perf: 0 },
+  { name: 'Apprenti',     at: 5,   floor: 0.10, perf: 0.01 },
+  { name: 'Compagnon',    at: 20,  floor: 0.25, perf: 0.02 },
+  { name: 'Maître',       at: 60,  floor: 0.40, perf: 0.04 },
+  { name: 'Grand Maître', at: 150, floor: 0.55, perf: 0.07 },
+];
+
+/* --------------------------------------------------------------------
+   FORGEMAGIE — le Forgemage brise les objets en runes (Brisage) et s'en sert pour
+   améliorer d'autres objets (Forgemagie). step : points gagnés par rune.
+   Un jet peut dépasser son maximum de 30 % (Surjet), mais les chances chutent.
+   -------------------------------------------------------------------- */
+JOBS.forgemage = { name: 'Forgemage', makes: 'Brisage et forgemagie' };
+const RUNES = {
+  vit:  { name: 'Vitalité',    icon: '❤️', step: 4, col: '#e8605a' },
+  sag:  { name: 'Sagesse',     icon: '🔮', step: 2, col: '#b58aff' },
+  deg:  { name: 'Dégâts',      icon: '⚔️', step: 2, col: '#ff9a4a' },
+  pp:   { name: 'Prospection', icon: '🍀', step: 2, col: '#5ee0a0' },
+  crit: { name: 'Critique',    icon: '🎯', step: 1, col: '#ff6a8a' },
+  res:  { name: 'Résistance',  icon: '🛡️', step: 1, col: '#8ec4f4' },
+};
+for (const [k, r] of Object.entries(RUNES)) RESOURCES['rune_' + k] = { name: 'Rune ' + r.name, icon: r.icon, value: 12 * r.step, rune: k };
+const FM_OVER = 1.3;
+
+/* --------------------------------------------------------------------
    DROPS D'ÉQUIPEMENT (très rares) — monstre -> objets, dans le thème de sa zone
    Chance de base par monstre vaincu (modifiée par la prospection).
    -------------------------------------------------------------------- */

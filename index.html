@@ -2648,6 +2648,160 @@ label.btn { cursor: pointer; }
 .zb-overlay .sfx.zb-rain { width: 2px; height: 28px; }
 /* ===== fin Zobal : attaques ===== */
 /* ===== fin Zobal ===== */
+
+/* ===================== Ateliers : forge, maîtrise, forgemagie ===================== */
+.at-job { flex-direction: row !important; align-items: center; gap: 10px !important; }
+.at-job .jr-body { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+.at-ico { width: 38px; height: 38px; flex: none; display: grid; place-items: center; font-size: 21px; border-radius: 10px; background: radial-gradient(circle at 35% 30%, #ffffff18, #00000055); border: 1px solid var(--line-2); }
+.at-job[aria-pressed="true"] .at-ico { border-color: var(--gold); box-shadow: 0 0 12px #e8aa2e55; }
+.at-job .ready-n { position: absolute; top: 5px; left: 36px; right: auto; transform: scale(.85); }
+.at-banner { position: relative; display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line-2); overflow: hidden;
+  background: radial-gradient(ellipse at 8% 50%, #e8841a33, transparent 55%), linear-gradient(135deg, #2a1d12, #14110c 70%); }
+.at-banner::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, #ffffff05 0 2px, transparent 2px 9px); pointer-events: none; }
+.at-bmain { display: flex; flex-direction: column; gap: 5px; min-width: 0; position: relative; z-index: 1; }
+.at-bmain h3 { margin: 0; }
+.at-bmain small.sub { font-style: italic; color: var(--muted); }
+.at-bstat { text-align: center; position: relative; z-index: 1; padding: 6px 12px; border-radius: 10px; background: #00000040; border: 1px solid var(--line); }
+.at-bstat b { display: block; font-family: var(--f-display); font-size: 24px; color: var(--gold-2); line-height: 1; }
+.at-bstat small { color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; }
+.at-emblem { position: relative; width: 74px; height: 74px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #5a3a1a, #1e130a); border: 2px solid #b9800f; box-shadow: 0 0 22px #e8841a55, inset 0 0 14px #000a; z-index: 1; }
+.at-emblem > span { font-size: 34px; position: relative; z-index: 2; filter: drop-shadow(0 2px 3px #000a); animation: at-bob 3.2s ease-in-out infinite; }
+@keyframes at-bob { 50% { transform: translateY(-3px) rotate(-4deg); } }
+.at-emblem .ember { position: absolute; left: 50%; bottom: 8px; width: 4px; height: 4px; border-radius: 50%; background: #ffb02e; box-shadow: 0 0 6px #ff8a1a; opacity: 0; animation: at-ember 2.6s ease-out infinite; }
+.at-emblem .ember:nth-child(2) { margin-left: -16px; animation-delay: .5s; } .at-emblem .ember:nth-child(3) { margin-left: 14px; animation-delay: 1.1s; }
+.at-emblem .ember:nth-child(4) { margin-left: -6px; animation-delay: 1.6s; } .at-emblem .ember:nth-child(5) { margin-left: 22px; animation-delay: 2.1s; } .at-emblem .ember:nth-child(6) { margin-left: -24px; animation-delay: .9s; }
+@keyframes at-ember { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-60px) scale(.2); opacity: 0; } }
+.at-forgemage .at-banner { background: radial-gradient(ellipse at 8% 50%, #7a4ae044, transparent 55%), linear-gradient(135deg, #1f1630, #100c1a 70%); }
+.at-forgemage .at-emblem { border-color: #8a5ae8; box-shadow: 0 0 22px #8a5ae866, inset 0 0 14px #000a; background: radial-gradient(circle at 40% 35%, #3a2a5a, #140c24); }
+.at-forgemage .at-emblem .ember { background: #c9a0ff; box-shadow: 0 0 6px #a070ff; }
+.at-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.at-chips button { border: 1px solid var(--line-2); background: #00000030; color: var(--muted); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 800; }
+.at-chips button:hover { color: var(--fg); border-color: var(--gold); }
+.at-chips button[aria-pressed="true"] { background: #e8aa2e22; border-color: var(--gold); color: var(--gold-2); }
+.at-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+.rcard { position: relative; display: flex; flex-direction: column; gap: 9px; padding: 13px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, #ffffff07, #ffffff02); }
+.rcard.ready { border-color: #93cf5f66; background: linear-gradient(180deg, #93cf5f12, #ffffff02 60%); }
+.rcard.master { box-shadow: 0 0 0 1px #f6cd6a33, 0 0 18px #e8aa2e1c; }
+.rcard.master::before { content: ""; position: absolute; top: 0; right: 0; width: 46px; height: 46px; border-radius: 0 14px 0 100%; background: linear-gradient(225deg, #f6cd6a55, transparent 70%); pointer-events: none; }
+.rcard.locked { opacity: .5; }
+.rc-top { display: flex; gap: 11px; align-items: center; }
+.rc-top .tile { width: 54px; height: 54px; flex: none; }
+.rc-name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rc-name b { font-size: 14.5px; line-height: 1.2; }
+.rcard .rr-stats { display: flex; flex-wrap: wrap; gap: 4px; }
+.rc-mast { display: flex; flex-direction: column; gap: 5px; padding: 8px 10px; border-radius: 10px; background: #00000030; border: 1px solid #ffffff0a; }
+.rc-mhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mrank { display: inline-flex; align-items: center; gap: 7px; font-weight: 900; font-size: 12px; color: var(--muted); }
+.mrank .pips { display: inline-flex; gap: 3px; }
+.mrank .pips i { width: 8px; height: 8px; transform: rotate(45deg); border: 1px solid #ffffff30; background: #00000050; }
+.mrank .pips i.on { background: linear-gradient(135deg, #fff3b0, #e8aa2e); border-color: #b9800f; box-shadow: 0 0 5px #e8aa2e99; }
+.mrank.m1 { color: #b8e08a; } .mrank.m2 { color: #8ec4f4; } .mrank.m3 { color: #c58aff; } .mrank.m4 { color: var(--gold-2); text-shadow: 0 0 8px #e8aa2e88; }
+.bar.mast > i { background: linear-gradient(90deg, #b9800f, #f6cd6a); }
+.bar.thin { height: 6px; }
+.rc-perks { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: var(--muted); }
+.rc-perks b { color: var(--fg); }
+.rc-perks .nx { color: var(--dim); } .rc-perks .nx.gold { color: var(--gold-2); font-weight: 800; }
+.rcard .rr-ing { display: flex; flex-wrap: wrap; gap: 5px; }
+.rcard .rr-act { display: flex; align-items: center; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+/* Forge : résultat d'une fabrication */
+.forge { position: fixed; left: 0; right: 0; top: 12vh; z-index: 8000; display: flex; justify-content: center; pointer-events: none; animation: fg-in .25s ease-out; }
+.forge.out { animation: fg-out .3s ease-in forwards; }
+@keyframes fg-in { from { opacity: 0; transform: translateY(-14px); } }
+@keyframes fg-out { to { opacity: 0; transform: translateY(-10px) scale(.96); } }
+.forge-card { pointer-events: auto; width: min(92vw, 360px); border-radius: 18px; border: 2px solid #b9800f; background: radial-gradient(ellipse at 50% 0%, #4a3016, #1a120a 75%); box-shadow: 0 14px 50px #000c, 0 0 0 1px #000, inset 0 1px 0 #ffffff22; overflow: hidden; cursor: pointer; }
+.fg-stage { position: relative; height: 128px; overflow: hidden; background: radial-gradient(ellipse at 50% 100%, #ff8a1a44, transparent 65%); }
+.fg-wait { position: absolute; left: 0; right: 0; bottom: -150px; text-align: center; color: var(--muted); font-style: italic; font-size: 12px; animation: fg-wait 1s both; }
+@keyframes fg-wait { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+.fg-glow { position: absolute; left: 50%; bottom: 8px; width: 150px; height: 60px; transform: translateX(-50%); background: radial-gradient(ellipse, #ff9a2a99, transparent 70%); animation: fg-glow 1.1s ease-out both; }
+@keyframes fg-glow { 0% { opacity: .2; } 70% { opacity: 1; } 100% { opacity: .6; } }
+.fg-anvil { position: absolute; left: 50%; bottom: 6px; width: 128px; transform: translateX(-50%); filter: drop-shadow(0 4px 4px #000a); }
+.fg-work { position: absolute; left: 50%; bottom: 52px; font-size: 30px; transform: translateX(-50%); z-index: 2; animation: fg-work 1.1s both; }
+.fg-work.big .iart, .fg-work.big svg { width: 44px; height: 44px; }
+@keyframes fg-work { 0%, 18% { transform: translateX(-50%) scale(1); } 24% { transform: translateX(-50%) scale(1.15, .8); } 36% { transform: translateX(-50%) scale(1); } 58% { transform: translateX(-50%) scale(1.15, .8); } 70% { transform: translateX(-50%) scale(1); } 92% { transform: translateX(-50%) scale(1.3, .7); filter: brightness(2); } 100% { transform: translateX(-50%) scale(0); opacity: 0; } }
+.fg-hammer { position: absolute; left: 50%; bottom: 66px; margin-left: 6px; font-size: 38px; transform-origin: 85% 90%; z-index: 3; animation: fg-hammer 1.1s ease-in both; }
+@keyframes fg-hammer {
+  0% { transform: rotate(-70deg) translateY(-14px); opacity: 0; } 8% { opacity: 1; } 16% { transform: rotate(10deg); } 22% { transform: rotate(-20deg); }
+  34% { transform: rotate(-75deg) translateY(-12px); } 48% { transform: rotate(10deg); } 54% { transform: rotate(-20deg); }
+  68% { transform: rotate(-80deg) translateY(-16px); } 82% { transform: rotate(14deg) scale(1.1); } 90% { transform: rotate(-30deg); opacity: 1; } 100% { transform: rotate(-80deg) translateY(-30px); opacity: 0; } }
+.fg-sp { position: absolute; left: 50%; bottom: 62px; width: 5px; height: 5px; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px var(--c); opacity: 0; z-index: 4; animation: fg-sp .5s ease-out var(--t) forwards; }
+@keyframes fg-sp { 0% { transform: translate(0, 0) scale(1.4); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
+.fg-flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 70%, #fff, #ffd24a 40%, transparent 75%); opacity: 0; opacity: 0; animation: fg-flash .5s ease-out 1s forwards; z-index: 5; }
+@keyframes fg-flash { 0% { opacity: .95; } 100% { opacity: 0; } }
+.fg-reveal { position: relative; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 4px 16px 15px; text-align: center; animation: fg-rev .5s cubic-bezier(.2, 1.3, .4, 1) 1s both; }
+@keyframes fg-rev { from { opacity: 0; transform: translateY(14px) scale(.85); } }
+.fg-item { width: 62px; height: 62px; display: grid; place-items: center; border-radius: 14px; border: 2px solid var(--qc, #b9800f); background: radial-gradient(circle at 35% 30%, #ffffff22, #00000066); box-shadow: 0 0 20px color-mix(in srgb, var(--qc, #e8aa2e) 55%, transparent); margin-top: -34px; z-index: 6; position: relative; }
+.fg-anvil { animation: fg-anv 1.1s both; }
+@keyframes fg-anv { 80% { opacity: 1; } 100% { opacity: .35; } }
+.fg-item .iart { width: 44px; height: 44px; } .fg-emo { font-size: 32px; }
+.fg-name { font-family: var(--f-display); font-size: 19px; font-weight: 700; line-height: 1.15; }
+.fg-jet { display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center; }
+.fg-bar { width: 78%; height: 9px; border-radius: 5px; background: #00000070; overflow: hidden; border: 1px solid #00000066; }
+.fg-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #8f8c78, #ddd5bd 45%, #f6cd6a); animation: fg-fill .9s ease-out 1.35s forwards; }
+@keyframes fg-fill { to { width: var(--w); } }
+.fg-jet em { font-style: normal; font-weight: 900; color: var(--gold-2); font-size: 15px; }
+.fg-jet.is-perf .fg-bar i { background: linear-gradient(90deg, #ffd24a, #fff3b0, #ffd24a); box-shadow: 0 0 10px #ffd24a; }
+.fg-stats { font-size: 12px; } .fg-stats i { font-style: normal; font-weight: 800; margin: 0 3px; }
+.fg-all { color: var(--muted); font-size: 11px; }
+.fg-foot { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+.fg-rank { font-size: 11.5px; font-weight: 900; padding: 3px 10px; border-radius: 999px; background: #f6cd6a22; border: 1px solid #f6cd6a88; color: var(--gold-2); animation: fg-pulse 1s ease-in-out infinite; }
+@keyframes fg-pulse { 50% { box-shadow: 0 0 12px #f6cd6a88; } }
+.fg-banner { position: absolute; left: 0; right: 0; top: -118px; z-index: 8; font-family: var(--f-display); font-weight: 700; letter-spacing: .12em; font-size: 15px; color: #fff3b0; text-shadow: 0 0 12px #ffb02e, 0 2px 0 #7a2a00; animation: fg-shine 1.4s linear infinite; }
+@keyframes fg-shine { 50% { filter: brightness(1.5); } }
+.forge.is-perfect .forge-card { border-color: #ffd24a; box-shadow: 0 14px 60px #000c, 0 0 40px #ffb02e88; }
+.forge.is-perfect .fg-item { animation: fg-pop .7s ease-out 1.05s both; }
+@keyframes fg-pop { 40% { transform: scale(1.3); } }
+.fg-conf { position: absolute; left: 50%; bottom: 56px; width: 6px; height: 10px; background: var(--c); opacity: 0; z-index: 7; animation: fg-conf 1s ease-out forwards; }
+@keyframes fg-conf { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
+.forge.multi .fg-hammer, .forge.multi .fg-work { animation-duration: .8s; }
+.fg-runes { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.fg-rune, .fm-pred span { font-weight: 900; padding: 3px 9px; border-radius: 8px; background: color-mix(in srgb, var(--c) 18%, #000a); border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); font-size: 13px; }
+.forge.breaking .fg-hammer { animation-name: fg-hammer; }
+/* Forgemage */
+.fm-runes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.fm-rune { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 4px; border-radius: 11px; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--c) 22%, transparent), #00000040 75%); }
+.fm-rune .ri { font-size: 20px; filter: drop-shadow(0 0 6px var(--c)); } .fm-rune b { font-size: 16px; } .fm-rune small { color: var(--muted); font-size: 10px; }
+.fm-main { display: flex; flex-direction: column; gap: 14px; }
+@media (min-width: 901px) { .at-split { grid-template-columns: 218px minmax(0, 1fr); } }
+.rcard .rr-act { flex-direction: row; justify-content: flex-start; }
+.at-h { margin: 0 0 6px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.fm-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; max-height: 228px; overflow-y: auto; padding-right: 3px; }
+.fm-it { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: 10px; border: 1px solid var(--line); background: #ffffff04; text-align: left; color: var(--fg); }
+.fm-it:hover { border-color: var(--line-2); } .fm-it.on { border-color: #8a5ae8; background: linear-gradient(90deg, #8a5ae822, transparent); }
+.fm-it .tile { width: 40px; height: 40px; flex: none; } .fm-itn { display: flex; flex-direction: column; min-width: 0; flex: 1; } .fm-itn b { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .fm-itn small { color: var(--muted); font-size: 11px; }
+.fm-bench { display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 14px; border: 1px solid #8a5ae855; background: radial-gradient(ellipse at 50% 0%, #8a5ae81c, transparent 60%), #00000030; }
+.empty-bench { align-items: center; text-align: center; padding: 34px 22px; color: var(--muted); }
+.empty-bench p { margin: 0; max-width: 46ch; font-size: 13px; } .empty-bench b.display { color: var(--fg); font-size: 20px; }
+.fm-anvil { font-size: 44px; animation: at-bob 3s ease-in-out infinite; filter: drop-shadow(0 0 14px #8a5ae8); }
+.fm-bh { display: flex; gap: 13px; align-items: center; } .fm-bh .tile.big { width: 66px; height: 66px; } .fm-bh b.display { font-size: 20px; }
+.fm-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.fm-rows { display: flex; flex-direction: column; gap: 9px; }
+.fm-row { display: grid; grid-template-columns: 118px minmax(0, 1fr) 138px; gap: 12px; align-items: center; padding: 9px 10px; border-radius: 11px; background: #00000030; border: 1px solid #ffffff08; }
+.fm-row.over { border-color: #e8605a55; background: linear-gradient(90deg, #e8605a12, #00000030 55%); }
+.fm-lab { display: flex; flex-direction: column; gap: 1px; font-weight: 800; font-size: 12.5px; } .fm-lab b { font-size: 20px; font-family: var(--f-display); line-height: 1.1; } .fm-lab small { color: var(--dim); font-size: 10.5px; font-weight: 700; }
+.fm-lab sup { font-family: var(--f-body); font-size: 9px; color: #ff8a7a; margin-left: 4px; text-transform: uppercase; letter-spacing: .05em; }
+.fm-track { position: relative; height: 14px; border-radius: 7px; background: #00000070; border: 1px solid #00000080; overflow: hidden; }
+.fm-track .rng { position: absolute; top: 0; bottom: 0; background: #ffffff10; }
+.fm-track .ov { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, #e8605a30 0 4px, transparent 4px 8px); }
+.fm-track .fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, #000), var(--c)); border-radius: 6px; transition: width .4s; box-shadow: 0 0 8px color-mix(in srgb, var(--c) 60%, transparent); }
+.fm-track .mk { position: absolute; top: -1px; bottom: -1px; width: 2px; background: #fff; opacity: .85; }
+.fm-act { display: flex; flex-direction: column; align-items: stretch; gap: 3px; }
+.fm-go { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.fm-ch { font-size: 10.5px; padding: 1px 6px; border-radius: 6px; background: #00000055; } .fm-ch.hi { color: #1c4a0a; background: #b8e08acc; } .fm-ch.mid { color: #4a3300; background: #f6cd6acc; } .fm-ch.lo { color: #4a0e08; background: #ff8a7acc; }
+.fm-break { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 10px; border-top: 1px dashed var(--line-2); }
+.fm-pred { display: flex; flex-wrap: wrap; gap: 6px; }
+.fm-log { list-style: none; margin: 0; padding: 8px 10px; border-radius: 10px; background: #00000040; display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.fm-log li.ok { color: var(--win); } .fm-log li.crit { color: var(--gold-2); font-weight: 800; } .fm-log li.fail { color: var(--muted); } .fm-log li.cfail { color: #ff8a7a; font-weight: 800; }
+.fm-float { position: fixed; z-index: 8100; pointer-events: none; font-family: var(--f-display); font-weight: 700; font-size: 20px; text-align: center; line-height: 1.1; text-shadow: 0 2px 0 #000a; }
+.fm-float.ok { color: #b8e08a; } .fm-float.crit { color: #fff3b0; font-size: 24px; text-shadow: 0 0 14px #ffb02e, 0 2px 0 #7a2a00; } .fm-float.fail { color: #b9b6a4; } .fm-float.cfail { color: #ff8a7a; font-size: 22px; }
+.fm-spark { position: fixed; z-index: 8100; width: 6px; height: 6px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); pointer-events: none; }
+@media (max-width: 900px) {
+  .at-banner { grid-template-columns: 58px minmax(0, 1fr); gap: 12px; } .at-emblem { width: 58px; height: 58px; } .at-emblem > span { font-size: 28px; } .at-bstat { display: none; }
+  .at-grid { grid-template-columns: 1fr; }
+  .fm-main { grid-template-columns: 1fr; } .fm-list { max-height: 240px; }
+  .fm-row { grid-template-columns: 1fr 112px; } .fm-track { grid-column: 1 / -1; order: 3; } .fm-runes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .at-job { flex: 0 0 200px !important; }
+}
+/* ===== fin Ateliers ===== */
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -2704,6 +2858,17 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .jp-machine { top: 6px; }
 :root[data-layout="mobile"] .hs { width: 78px; height: 78px; }
 :root[data-layout="mobile"] .archi-btn small { display: none; }
+:root[data-layout="mobile"] .at-banner { grid-template-columns: 58px minmax(0, 1fr); gap: 12px; }
+:root[data-layout="mobile"] .at-emblem { width: 58px; height: 58px; }
+:root[data-layout="mobile"] .at-emblem > span { font-size: 28px; }
+:root[data-layout="mobile"] .at-bstat { display: none; }
+:root[data-layout="mobile"] .at-grid { grid-template-columns: 1fr; }
+:root[data-layout="mobile"] .fm-main { grid-template-columns: 1fr; }
+:root[data-layout="mobile"] .fm-list { max-height: 240px; }
+:root[data-layout="mobile"] .fm-row { grid-template-columns: 1fr 112px; }
+:root[data-layout="mobile"] .fm-track { grid-column: 1 / -1; order: 3; }
+:root[data-layout="mobile"] .fm-runes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+:root[data-layout="mobile"] .at-job { flex: 0 0 200px !important; }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -2712,7 +2877,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793217539';
+const BUILD_ID = '1793218506';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3200,6 +3365,35 @@ RECIPES.push({ out: 'pain_ble', job: 'boulanger', lvl: 1, ing: { ble: 100 } });
 
 
 /* --------------------------------------------------------------------
+   MAÎTRISE DES RECETTES — plus tu fabriques une recette, mieux tu la maîtrises :
+   jet minimal garanti (floor) et chance de Jet Parfait (perf = tous les jets au maximum)
+   -------------------------------------------------------------------- */
+const MASTERY_RANKS = [
+  { name: 'Novice',       at: 0,   floor: 0,    perf: 0 },
+  { name: 'Apprenti',     at: 5,   floor: 0.10, perf: 0.01 },
+  { name: 'Compagnon',    at: 20,  floor: 0.25, perf: 0.02 },
+  { name: 'Maître',       at: 60,  floor: 0.40, perf: 0.04 },
+  { name: 'Grand Maître', at: 150, floor: 0.55, perf: 0.07 },
+];
+
+/* --------------------------------------------------------------------
+   FORGEMAGIE — le Forgemage brise les objets en runes (Brisage) et s'en sert pour
+   améliorer d'autres objets (Forgemagie). step : points gagnés par rune.
+   Un jet peut dépasser son maximum de 30 % (Surjet), mais les chances chutent.
+   -------------------------------------------------------------------- */
+JOBS.forgemage = { name: 'Forgemage', makes: 'Brisage et forgemagie' };
+const RUNES = {
+  vit:  { name: 'Vitalité',    icon: '❤️', step: 4, col: '#e8605a' },
+  sag:  { name: 'Sagesse',     icon: '🔮', step: 2, col: '#b58aff' },
+  deg:  { name: 'Dégâts',      icon: '⚔️', step: 2, col: '#ff9a4a' },
+  pp:   { name: 'Prospection', icon: '🍀', step: 2, col: '#5ee0a0' },
+  crit: { name: 'Critique',    icon: '🎯', step: 1, col: '#ff6a8a' },
+  res:  { name: 'Résistance',  icon: '🛡️', step: 1, col: '#8ec4f4' },
+};
+for (const [k, r] of Object.entries(RUNES)) RESOURCES['rune_' + k] = { name: 'Rune ' + r.name, icon: r.icon, value: 12 * r.step, rune: k };
+const FM_OVER = 1.3;
+
+/* --------------------------------------------------------------------
    DROPS D'ÉQUIPEMENT (très rares) — monstre -> objets, dans le thème de sa zone
    Chance de base par monstre vaincu (modifiée par la prospection).
    -------------------------------------------------------------------- */
@@ -3302,6 +3496,7 @@ function newState() {
     kamas: 200,
     archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
+    mastery: {},            // recette (id de l'objet) -> nombre de fabrications
     gear: [],               // instances d'équipement : { uid, id, stats }
     jobs: Object.fromEntries([...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)].map(j => [j, { lvl: 1, xp: 0 }])),
     heroes: [],
@@ -4157,10 +4352,20 @@ function maxCraftable(st, r) {
   if (st.jobs[r.job].lvl < r.lvl) return 0;
   return Math.min(...Object.entries(r.ing).map(([id, n]) => Math.floor((st.res[id] || 0) / n)));
 }
-function rollItem(id) {
+function rollItem(id, floor = 0, perfect = false) {
   const def = ITEMS[id]; const stats = {};
-  for (const [k, [a, b]] of Object.entries(def.stats)) stats[k] = irnd(a, b);
+  for (const [k, [a, b]] of Object.entries(def.stats)) stats[k] = perfect ? b : Math.round(a + (b - a) * (floor + (1 - floor) * Math.random()));
   return { uid: uid(), id, stats };
+}
+function masteryOf(st, out) {
+  const n = (st.mastery && st.mastery[out]) || 0; let i = 0;
+  MASTERY_RANKS.forEach((r, k) => { if (n >= r.at) i = k; });
+  return { n, i, rank: MASTERY_RANKS[i], next: MASTERY_RANKS[i + 1] || null };
+}
+function gainJobXp(st, jobId, xp) {
+  const job = st.jobs[jobId]; job.xp += xp; let lvUp = false;
+  while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; lvUp = true; }
+  return lvUp;
 }
 function rollStasis(id) {
   const def = ITEMS[id]; const stats = {};
@@ -4179,14 +4384,63 @@ function craft(st, r) {
   const job = st.jobs[r.job];
   const ingCount = Object.values(r.ing).reduce((a, b) => a + b, 0);
   const xp = Math.round((10 + ingCount * 3) * (1 + r.lvl / 10) * (job.lvl - r.lvl > 20 ? 0.3 : 1));
-  job.xp += xp;
-  let lvUp = false;
-  while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; lvUp = true; }
+  const lvUp = gainJobXp(st, r.job, xp);
   st.stats.crafted++;
-  let result;
+  const m0 = masteryOf(st, r.out); st.mastery = st.mastery || {}; st.mastery[r.out] = m0.n + 1;
+  const m1 = masteryOf(st, r.out), rankUp = m1.i > m0.i ? m1.rank : null;
+  let result, perfect = false;
   if (RESOURCES[r.out]) { addRes(st, r.out, 1); result = { res: r.out }; }
-  else { const g = rollItem(r.out); st.gear.push(g); result = { gear: g }; }
-  return { ...result, xp, lvUp };
+  else { perfect = Math.random() < m0.rank.perf; const g = rollItem(r.out, m0.rank.floor, perfect); st.gear.push(g); result = { gear: g }; }
+  return { ...result, xp, lvUp, perfect, rankUp };
+}
+
+/* ---------- Forgemage : Brisage (objet -> runes) et Forgemagie (runes -> jets) ---------- */
+function forgeable(g) { const d = ITEMS[g.id]; return !!d && !d.relic && !d.harvest; }
+function brisageRunes(g) { // moyenne des runes obtenues par stat (avant aléa)
+  const d = ITEMS[g.id], out = {};
+  for (const [k, v] of Object.entries(g.stats)) if (RUNES[k]) out[k] = v / RUNES[k].step * 0.55;
+  return out;
+}
+function brisage(st, uid) {
+  const g = gearById(st, uid); if (!g || !forgeable(g)) return 'Cet objet ne peut pas être brisé.';
+  if (equippedBy(st, uid)) return 'Déséquipe l’objet avant de le briser.';
+  const lvl = st.jobs.forgemage.lvl, got = {}; let tot = 0;
+  for (const [k, avg] of Object.entries(brisageRunes(g))) { const n = Math.max(0, Math.round(avg * (0.7 + Math.random() * 0.6) * (1 + lvl * 0.005))); if (n) { got[k] = n; tot += n; } }
+  if (!tot) { const top = Object.keys(brisageRunes(g)).sort((a, b) => g.stats[b] / RUNES[b].step - g.stats[a] / RUNES[a].step)[0]; if (top) got[top] = 1; }
+  st.gear = st.gear.filter(x => x.uid !== uid);
+  for (const [k, n] of Object.entries(got)) addRes(st, 'rune_' + k, n);
+  const xp = Math.round(6 + ITEMS[g.id].lvl * 1.6), lvUp = gainJobXp(st, 'forgemage', xp);
+  return { id: g.id, runes: got, xp, lvUp, stasis: !!g.stasis };
+}
+function forgeInfo(st, g, k) {
+  const d = ITEMS[g.id], r = RUNES[k], rg = d.stats[k];
+  if (!r || !rg) return { ok: false, why: 'Pas de rune pour cette caractéristique.' };
+  const [a, b] = rg, cur = g.stats[k], cap = Math.max(b, Math.floor(b * FM_OVER)), gain = Math.min(r.step, cap - cur);
+  const have = st.res['rune_' + k] || 0, cost = Math.round(5 + d.lvl * 2);
+  if (gain < 1) return { ok: false, why: 'Surjet maximal atteint.', cur, a, b, cap, step: r.step, have, cost, gain: 0, chance: 0 };
+  const frac = (cur + gain - b) / Math.max(1, cap - b);
+  const base = frac <= 0 ? 0.85 : 0.55 - 0.47 * Math.min(1, frac);
+  const chance = Math.min(0.95, base + Math.min(0.12, st.jobs.forgemage.lvl * 0.0012));
+  return { ok: have >= 1 && st.kamas >= cost, why: have < 1 ? 'Il te faut une rune.' : st.kamas < cost ? 'Kamas insuffisants.' : '', cur, a, b, cap, step: r.step, have, cost, gain, chance, over: frac > 0 };
+}
+function forgemagie(st, uid, k) {
+  const g = gearById(st, uid); if (!g || !forgeable(g)) return null;
+  const inf = forgeInfo(st, g, k); if (!inf.ok) return { err: inf.why };
+  st.res['rune_' + k] -= 1; if (!st.res['rune_' + k]) delete st.res['rune_' + k];
+  st.kamas -= inf.cost;
+  const xp = Math.round(4 + ITEMS[g.id].lvl * 0.8); const lvUp = gainJobXp(st, 'forgemage', xp);
+  let kind, lost = null, gain = 0;
+  if (Math.random() < inf.chance) {
+    const crit = !inf.over && Math.random() < 0.12; gain = Math.min(crit ? inf.step * 2 : inf.step, inf.cap - inf.cur);
+    g.stats[k] += gain; g.fm = true; kind = crit ? 'crit' : 'ok';
+  } else {
+    kind = 'fail';
+    if (inf.over && Math.random() < 0.4) {
+      const cands = Object.keys(g.stats).filter(o => o !== k && g.stats[o] > ITEMS[g.id].stats[o][0]);
+      if (cands.length) { const o = cands[irnd(0, cands.length - 1)], n = Math.min(g.stats[o] - ITEMS[g.id].stats[o][0], Math.max(1, Math.ceil(g.stats[o] * 0.08))); g.stats[o] -= n; g.fm = true; lost = { k: o, n }; kind = 'cfail'; }
+    }
+  }
+  return { kind, k, gain, lost, xp, lvUp, chance: inf.chance, g };
 }
 
 function itemValue(g) { const d = ITEMS[g.id]; return Math.round((20 + d.lvl * d.lvl * 1.5) * (0.6 + itemQuality(g) * 0.8) * (g.stasis ? 10 : 1)); }
@@ -4281,6 +4535,7 @@ function migrate(obj) {
   const st = Object.assign(base, obj);
   st.stats = Object.assign(newState().stats, obj.stats || {});
   for (const j of [...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)]) if (!st.jobs[j]) st.jobs[j] = { lvl: 1, xp: 0 };
+  st.mastery = st.mastery || {};
   st.heroes = st.heroes.filter(h => CLASSES[h.cls]); // classe supprimée (Eniripsa) : le héros disparaît de la sauvegarde
   for (const h of st.heroes) {
     h.log = h.log || []; h.hequip = h.hequip || {};
@@ -4310,7 +4565,7 @@ function migrateGear(g, old) {
   const q = Math.max(0, Math.min(1, itemQualityRaw(g, def)));
   for (const [k, [a, b]] of Object.entries(def.stats)) {
     if (g.stats[k] === undefined) g.stats[k] = g.stasis ? b * 2 : Math.round(a + (b - a) * q);
-    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(b, g.stats[k]));
+    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(g.fm ? Math.max(b, Math.floor(b * FM_OVER)) : b, g.stats[k]));
   }
   for (const k of Object.keys(g.stats)) if (!(k in def.stats)) delete g.stats[k];
 }
@@ -7781,6 +8036,179 @@ function hasHeroArt(cls) { return !!HERO_ART[cls]; }
 /* Sprite de combat : dessin si la classe en a un, sinon emblème rond */
 function heroSprite(cls) { return HERO_ART[cls] || emblem(cls, 'big'); }
 /* =====================================================================
+   ATELIERS — fabrication à la forge, Maîtrise des recettes, Forgemagie
+   (placé avant ui2.js dans la compilation : tout est lu à l'appel)
+   ===================================================================== */
+const JOB_ICON = { tailleur: '🧵', bijoutier: '💍', cordonnier: '👢', forgeron: '⚒️', bricoleur: '🔧', boulanger: '🥖', forgemage: '🔮' };
+const JOB_LORE = {
+  tailleur: 'Aiguille, laine et patience : le Tailleur habille les aventuriers d’Amakna.',
+  bijoutier: 'Gemmes et métaux précieux. Chaque bijou porte son petit secret.',
+  cordonnier: 'Cuir tanné, semelles solides. On ne court pas loin sans bonnes bottes.',
+  forgeron: 'Le marteau chante sur l’enclume : armes, outils, et un peu de poésie.',
+  bricoleur: 'Clefs, serrures et mécanismes. Le Bricoleur ouvre les donjons.',
+  boulanger: 'Le pain du matin donne des ailes… et de la vitesse au combat.',
+  forgemage: 'Il brise les objets en runes, puis les runes redonnent de la puissance. Gare au surjet !',
+};
+const RUNE_STAT_LABEL = { vit: 'Vitalité', sag: 'Sagesse', deg: 'Dégâts', pp: 'Prospection', crit: '% Critique', res: '% Résistance' };
+
+/* ---------------------------- Vue ---------------------------- */
+function renderAteliers() {
+  if (!JOBS[ui.job]) ui.job = 'tailleur';
+  const jobs = Object.entries(JOBS).map(([id, j]) => {
+    const s = st.jobs[id];
+    const ready = id === 'forgemage' ? 0 : RECIPES.filter(r => r.job === id && canCraft(st, r)).length;
+    return `<button class="jrow at-job" data-act="job" data-v="${id}" aria-pressed="${ui.job === id}"><span class="at-ico">${JOB_ICON[id]}</span><span class="jr-body"><span class="jr-top"><b>${j.name}</b><span class="lvl">Niv. ${s.lvl}</span></span><small>${j.makes}</small>${bar('job thin', s.xp, jobXpToNext(s.lvl))}</span>${ready ? `<i class="ready-n" title="Recettes fabricables">${ready}</i>` : ''}</button>`;
+  }).join('');
+  return `<div class="split at-split"><aside class="joblist">${jobs}</aside><section class="panel at-panel at-${ui.job}">${atBanner(ui.job)}${ui.job === 'forgemage' ? atForgemage() : atRecipes()}</section></div>`;
+}
+function atBanner(id) {
+  const s = st.jobs[id];
+  const made = id === 'forgemage' ? (st.stats.forged || 0) + (st.stats.broken || 0) : RECIPES.filter(r => r.job === id).reduce((a, r) => a + ((st.mastery || {})[r.out] || 0), 0);
+  return `<div class="at-banner"><div class="at-emblem"><span>${JOB_ICON[id]}</span>${'<i class="ember"></i>'.repeat(6)}</div>
+    <div class="at-bmain"><h3 class="display">${JOBS[id].name} <span class="lvl">Niv. ${s.lvl}</span></h3><small class="sub">${JOB_LORE[id]}</small>${bar('job', s.xp, jobXpToNext(s.lvl))}<span class="sub num">${fmt(s.xp)} / ${fmt(jobXpToNext(s.lvl))} XP</span></div>
+    <div class="at-bstat"><b class="num">${fmt(made)}</b><small>${id === 'forgemage' ? 'opérations' : 'fabrications'}</small></div></div>`;
+}
+function atRankPips(i) { return Array.from({ length: MASTERY_RANKS.length - 1 }, (_, k) => `<i class="${k < i ? 'on' : ''}"></i>`).join(''); }
+function atRecipes() {
+  const isH = r => !!(ITEMS[r.out] && ITEMS[r.out].harvest);
+  const js = st.jobs[ui.job];
+  const nH = RECIPES.filter(r => r.job === ui.job && isH(r)).length, nC = RECIPES.filter(r => r.job === ui.job && !isH(r)).length;
+  if (ui.rtab === 'recolte' && !nH) ui.rtab = 'combat';
+  let base = RECIPES.map((r, i) => [r, i]).filter(([r]) => r.job === ui.job && (ui.rtab === 'recolte' ? isH(r) : !isH(r)));
+  const slots = [...new Set(base.map(([r]) => ITEMS[r.out] ? ITEMS[r.out].slot : null).filter(Boolean))];
+  if (ui.rslot && !slots.includes(ui.rslot)) ui.rslot = '';
+  let list = base.filter(([r]) => !ui.rslot || (ITEMS[r.out] && ITEMS[r.out].slot === ui.rslot));
+  if (ui.onlyCraft) list = list.filter(([r]) => canCraft(st, r));
+  list.sort((a, b) => (a[0].lvl > js.lvl) - (b[0].lvl > js.lvl) || a[0].lvl - b[0].lvl);
+  const cards = list.map(([r, i]) => atCard(r, i, js)).join('');
+  const chips = slots.length > 1 ? `<div class="at-chips"><button data-act="rslot" data-v="" aria-pressed="${!ui.rslot}">Tout</button>${slots.map(s => `<button data-act="rslot" data-v="${s}" aria-pressed="${ui.rslot === s}">${(HARVEST_SLOT_LABEL[s] || SLOT_LABEL[s === 'anneau' ? 'anneau1' : s] || s)}</button>`).join('')}</div>` : '';
+  return `<div class="tools-row"><div class="seg"><button data-act="rtab" data-v="combat" aria-pressed="${ui.rtab !== 'recolte'}">Équipements de combat · ${nC}</button><button data-act="rtab" data-v="recolte" aria-pressed="${ui.rtab === 'recolte'}" ${nH ? '' : 'disabled'}>Métiers de récolte · ${nH}</button></div>
+    <button class="toggle" data-act="onlycraft" aria-pressed="${!!ui.onlyCraft}"><span class="tg" aria-hidden="true"></span>Seulement fabricables</button></div>${chips}
+    <div class="at-grid">${cards || `<div class="empty sm">${ui.onlyCraft ? 'Aucune recette fabricable avec ton stock actuel.' : 'Aucune recette ici pour ce métier.'}</div>`}</div>
+    <p class="hint">Plus tu fabriques une recette, mieux tu la maîtrises : jet minimal garanti et chance de <b>Jet Parfait</b>. Les objets en double peuvent être brisés en runes chez le Forgemage.</p>`;
+}
+function atCard(r, i, js) {
+  const locked = js.lvl < r.lvl, max = maxCraftable(st, r), isRes = !!RESOURCES[r.out], d = isRes ? RESOURCES[r.out] : ITEMS[r.out];
+  const m = masteryOf(st, r.out);
+  const meta = isRes ? `${d.food ? `Consommable · ${d.food.desc}` : 'Clef de donjon'} · en stock : ${st.res[r.out] || 0}` : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]} · Paysan ${d.lvl}` : `${SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot]} · niveau ${d.lvl}${d.set ? ' · ' + SETS[d.set].name : ''}`;
+  const prog = m.next ? (m.n - m.rank.at) / (m.next.at - m.rank.at) : 1;
+  const mast = isRes ? `<div class="rc-mast"><span class="sub">Fabriqués : <b class="num">${fmt(m.n)}</b></span></div>`
+    : `<div class="rc-mast"><div class="rc-mhead"><span class="mrank m${m.i}"><span class="pips">${atRankPips(m.i)}</span>${m.rank.name}</span><small class="sub num">${m.next ? `${m.n} / ${m.next.at}` : `${m.n} fabriqués`}</small></div>
+        <div class="bar mast thin"><i style="width:${(prog * 100).toFixed(0)}%"></i></div>
+        <div class="rc-perks"><span title="Chaque jet est au moins à ce pourcentage de sa fourchette">Jet ≥ <b>${Math.round(m.rank.floor * 100)} %</b></span><span title="Chance que tous les jets soient au maximum">Parfait <b>${Math.round(m.rank.perf * 100)} %</b></span>${m.next ? `<span class="nx">→ ${m.next.name} : jet ≥ ${Math.round(m.next.floor * 100)} %</span>` : '<span class="nx gold">Rang maximal</span>'}</div></div>`;
+  const stats = isRes ? '' : `<div class="rr-stats">${Object.entries(d.stats).map(([k, [a, b]]) => `<span style="--c:${STAT_COLOR[k]}">${a === b ? a : `${a}–${b}`} ${STAT_SHORT[k] || k}</span>`).join('')}</div>`;
+  const ings = Object.entries(r.ing).map(([id, n]) => { const have = st.res[id] || 0; return `<span class="ing ${have >= n ? 'ok' : 'no'}" title="${RESOURCES[id].name}">${RESOURCES[id].icon}<span class="ing-n">${RESOURCES[id].name}</span><b class="num">${fmt(have)}</b>/${n}</span>`; }).join('');
+  return `<article class="rcard${locked ? ' locked' : ''}${max > 0 && !locked ? ' ready' : ''}${m.i >= 3 && !isRes ? ' master' : ''}">
+    <header class="rc-top"><div class="tile${isRes ? ' res' : ''}">${isRes ? `<span class="t-emo">${d.icon}</span>` : itemIcon(r.out)}</div><div class="rc-name"><b>${esc(d.name)}</b><small class="sub">${meta}</small></div></header>
+    ${stats}${locked ? '' : mast}<div class="rr-ing">${ings}</div>
+    <footer class="rr-act">${locked ? `<span class="lockt">🔒 ${JOBS[r.job].name} niveau ${r.lvl} requis</span>` : `<button class="btn sm gold" data-act="craft" data-i="${i}" data-n="1" ${max < 1 ? 'disabled' : ''}>🔨 Fabriquer</button><button class="btn sm" data-act="craft" data-i="${i}" data-n="10" ${max < 2 ? 'disabled' : ''}>×${Math.min(10, Math.max(max, 2))}</button>${max > 0 ? `<small class="sub">${max} possible${max > 1 ? 's' : ''}</small>` : ''}`}</footer></article>`;
+}
+
+/* ---------------------------- La forge : résultat d'une fabrication ---------------------------- */
+function atCraft(d) {
+  const r = RECIPES[+d.i]; const n = Math.min(+d.n, maxCraftable(st, r)); let last, lv = false, xp = 0; const made = [];
+  for (let i = 0; i < n; i++) { last = craft(st, r); if (!last) break; xp += last.xp; lv = lv || last.lvUp; made.push(last); }
+  if (!last) return;
+  forgeShow(r, made, xp);
+  if (lv) toast(`${JOBS[r.job].name} passe niveau ${st.jobs[r.job].lvl} !`, 'lvl');
+}
+function forgeShow(r, made, xp) {
+  const old = document.getElementById('forge'); if (old) old.remove();
+  const isRes = !!RESOURCES[r.out], gs = made.map(m => m.gear).filter(Boolean), n = made.length;
+  const perfect = made.some(m => m.perfect), rank = made.map(m => m.rankUp).filter(Boolean).pop();
+  const best = gs.length ? gs.reduce((a, b) => (itemQuality(b) > itemQuality(a) ? b : a)) : null;
+  const q = best ? Math.round(itemQuality(best) * 100) : 0;
+  const sparks = [0, 1, 2].map(s => Array.from({ length: 8 }, (_, k) => { const a = -Math.PI * (.08 + Math.random() * .84), dd = 34 + Math.random() * 46; return `<i class="fg-sp" style="--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd).toFixed(0)}px;--t:${(.18 + s * .34 + Math.random() * .04).toFixed(2)}s;--c:${['#ffd24a', '#ff9a2a', '#fff3b0', '#ff6a2a'][k % 4]}"></i>`; }).join('')).join('');
+  const reveal = isRes
+    ? `<div class="fg-item res"><span class="fg-emo">${RESOURCES[r.out].icon}</span></div><b class="fg-name">${n > 1 ? n + '× ' : ''}${esc(RESOURCES[r.out].name)}</b>`
+    : `<div class="fg-item ${qClass(best)}">${itemIcon(best.id)}</div><b class="fg-name">${gs.length > 1 ? gs.length + '× ' : ''}${esc(ITEMS[best.id].name)}</b>
+       <div class="fg-jet ${perfect ? 'is-perf' : ''}"><span class="fg-bar"><i style="--w:${Math.min(100, q)}%"></i></span><em>${gs.length > 1 ? 'Meilleur jet' : 'Jet'} ${q} %</em></div>
+       <div class="fg-stats">${Object.entries(best.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k]}">+${v} ${STAT_SHORT[k]}</i>`).join(' ')}</div>
+       ${gs.length > 1 ? `<small class="fg-all">Jets : ${gs.map(g => Math.round(itemQuality(g) * 100) + ' %').join(' · ')}</small>` : ''}`;
+  const el = document.createElement('div'); el.id = 'forge'; el.className = 'forge' + (perfect ? ' is-perfect' : '') + (n > 1 ? ' multi' : '');
+  el.innerHTML = `<div class="forge-card" role="status">
+    <div class="fg-stage"><div class="fg-glow"></div><div class="fg-anvil"><svg viewBox="0 0 120 56" aria-hidden="true"><path d="M8 14h86c8 0 14 4 18 10-8 2-16 2-24 4l-6 8h10v12H36V36h10l-8-8c-12 0-24-2-30-10Z" fill="#59606c"/><path d="M8 14h86c8 0 14 4 18 10-6 1-12 2-18 2H14c-3-3-5-7-6-12Z" fill="#8c95a3"/><path d="M36 48h46v8H36z" fill="#3a3f48"/></svg></div>
+      <div class="fg-work">${JOB_ICON[r.job]}</div><div class="fg-hammer">🔨</div>${sparks}<div class="fg-flash"></div><div class="fg-wait">Fabrication…</div></div>
+    <div class="fg-reveal">${perfect ? '<div class="fg-banner">✦ JET PARFAIT ✦</div>' : ''}${reveal}
+      <div class="fg-foot"><span class="pop-xp">+${xp} XP ${JOB_ICON[r.job]}</span>${rank ? `<span class="fg-rank m${masteryOf(st, r.out).i}">Maîtrise : ${rank.name} !</span>` : ''}</div></div></div>`;
+  document.body.appendChild(el);
+  if (perfect) for (let i = 0; i < 26; i++) { const c = document.createElement('i'); c.className = 'fg-conf'; const a = Math.random() * 6.28, dd = 60 + Math.random() * 140; c.style.cssText = `--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd - 40).toFixed(0)}px;--c:${['#ffd24a', '#fff3b0', '#ff9a2a', '#ffe27a'][i % 4]};--r:${Math.round(Math.random() * 720)}deg;animation-delay:${(1.05 + Math.random() * .25).toFixed(2)}s`; el.querySelector('.fg-stage').appendChild(c); }
+  const kill = () => { el.classList.add('out'); setTimeout(() => el.remove(), 320); };
+  el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, perfect || rank ? 5600 : 4200);
+}
+
+/* ---------------------------- Forgemage ---------------------------- */
+function atFloat(x, y, html, cls) {
+  const e = document.createElement('div'); e.className = 'fm-float ' + (cls || ''); e.innerHTML = html; e.style.left = x + 'px'; e.style.top = y + 'px'; document.body.appendChild(e);
+  if (e.animate) { const a = e.animate([{ transform: 'translate(-50%,-50%) scale(.5)', opacity: 0 }, { transform: 'translate(-50%,-130%) scale(1.15)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-260%) scale(1)', opacity: 0 }], { duration: 1500, easing: 'ease-out' }); a.onfinish = () => e.remove(); } else setTimeout(() => e.remove(), 1200);
+}
+function atBurst(x, y, col, n, d0) {
+  for (let i = 0; i < n; i++) { const e = document.createElement('i'); e.className = 'fm-spark'; e.style.cssText = `left:${x}px;top:${y}px;--c:${col}`; document.body.appendChild(e); const a = Math.random() * 6.28, d = d0 * (.5 + Math.random() * .7);
+    if (e.animate) { const an = e.animate([{ transform: 'translate(-50%,-50%) scale(1.6)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d}px)) scale(.2)`, opacity: 0 }], { duration: 600 + Math.random() * 300, easing: 'cubic-bezier(.1,.7,.4,1)' }); an.onfinish = () => e.remove(); } else setTimeout(() => e.remove(), 600); }
+}
+function atForgemage() {
+  const fm = st.jobs.forgemage;
+  const runes = Object.entries(RUNES).map(([k, r]) => `<div class="fm-rune" style="--c:${r.col}" title="+${r.step} ${RUNE_STAT_LABEL[k]} par rune"><span class="ri">${r.icon}</span><b class="num">${fmt(st.res['rune_' + k] || 0)}</b><small>${r.name}</small></div>`).join('');
+  const bag = st.gear.filter(forgeable).sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl || itemQuality(b) - itemQuality(a));
+  if (ui.fmSel && !gearById(st, ui.fmSel)) ui.fmSel = null;
+  const sel = ui.fmSel && gearById(st, ui.fmSel);
+  const list = bag.length ? bag.slice(0, 80).map(g => { const d = ITEMS[g.id], by = equippedBy(st, g.uid); return `<button class="fm-it${sel && sel.uid === g.uid ? ' on' : ''}" data-act="fmsel" data-uid="${g.uid}"><div class="tile ${qClass(g)}">${itemIcon(g.id)}</div><span class="fm-itn"><b>${esc(d.name)}</b><small>Niv. ${d.lvl}${by ? ' · équipé' : ''}${g.fm ? ' · forgé' : ''}</small></span>${qualityTag(g)}</button>`; }).join('') : `<div class="empty sm">Ton sac ne contient aucun équipement à travailler.<br>Fabrique-en dans les autres ateliers ou trouve-en en combat.</div>`;
+  return `<div class="fm-runes">${runes}</div>
+    <div class="fm-main"><div class="fm-bag"><h4 class="at-h">Sac · ${bag.length}</h4><div class="fm-list">${list}</div></div>
+    <div class="fm-bench-w">${sel ? atBench(sel, fm) : `<div class="fm-bench empty-bench"><div class="fm-anvil">🔮</div><b class="display">L’établi du Forgemage</b><p>Choisis un objet dans ton sac. Tu pourras le <b>forger</b> avec des runes pour augmenter ses jets (au-delà du maximum, mais les risques augmentent), ou le <b>briser</b> pour récupérer des runes.</p></div>`}</div></div>
+    <p class="hint">Niveau de Forgemage : +${Math.min(12, (fm.lvl * 0.12)).toFixed(1).replace('.', ',')} % de réussite et +${(fm.lvl * 0.5).toFixed(1).replace('.', ',')} % de runes au brisage.</p>`;
+}
+function atBench(g, fm) {
+  const d = ITEMS[g.id], by = equippedBy(st, g.uid);
+  const rows = Object.entries(d.stats).map(([k, [a, b]]) => {
+    const inf = forgeInfo(st, g, k), r = RUNES[k], cap = Math.max(b, Math.floor(b * FM_OVER)), cur = g.stats[k], col = STAT_COLOR[k] || 'var(--fg)';
+    const pc = v => (Math.max(0, Math.min(1, v / cap)) * 100).toFixed(1);
+    const track = `<div class="fm-track"><i class="rng" style="left:${pc(a)}%;width:${(pc(b) - pc(a)).toFixed(1)}%"></i><i class="ov" style="left:${pc(b)}%;right:0"></i><i class="fill" style="width:${pc(cur)}%;--c:${col}"></i><u class="mk" style="left:${pc(b)}%"></u></div>`;
+    const btn = r ? `<button class="btn sm gold fm-go" data-act="fmforge" data-k="${k}" ${inf.ok ? '' : 'disabled'} title="${inf.ok ? '' : esc(inf.why)}">${r.icon} +${inf.gain || r.step}<span class="fm-ch ${inf.chance >= .6 ? 'hi' : inf.chance >= .3 ? 'mid' : 'lo'}">${Math.round((inf.chance || 0) * 100)} %</span></button>` : '<span class="sub">—</span>';
+    return `<div class="fm-row${cur > b ? ' over' : ''}"><div class="fm-lab"><span style="color:${col}">${STAT_LABEL[k] || k}</span><b class="num">${cur}${cur > b ? '<sup>Surjet</sup>' : ''}</b><small>${a}–${b}</small></div>${track}<div class="fm-act">${btn}${r ? `<small class="sub">${inf.have} rune${inf.have > 1 ? 's' : ''} · ${fmt(inf.cost)} k</small>` : ''}</div></div>`;
+  }).join('');
+  const avg = brisageRunes(g), mul = 1 + fm.lvl * 0.005;
+  const pred = Object.entries(avg).map(([k, v]) => `<span style="--c:${RUNES[k].col}">${RUNES[k].icon} ${Math.max(0, Math.round(v * .7 * mul))}–${Math.max(1, Math.round(v * 1.3 * mul))}</span>`).join('');
+  const conf = ui.fmConfirm === g.uid;
+  const log = (ui.fmLog || []).slice(-6).reverse().map(l => `<li class="${l[0]}">${l[1]}</li>`).join('');
+  return `<div class="fm-bench"><header class="fm-bh"><div class="tile big ${qClass(g)}">${itemIcon(g.id)}</div><div><b class="display">${esc(d.name)}</b><div class="fm-tags">${qualityTag(g)}<span class="qtag">Niv. ${d.lvl}</span>${by ? `<span class="qtag">Équipé : ${esc(by.name)}</span>` : ''}${g.fm ? '<span class="qtag q-high">Forgé</span>' : ''}</div></div></header>
+    <div class="fm-rows">${rows}</div>
+    <div class="fm-break"><div><h4 class="at-h">Brisage</h4><div class="fm-pred">${pred || '<span class="sub">Aucune rune</span>'}</div></div>
+      <button class="btn ${conf ? 'danger' : ''}" data-act="fmbreak" data-uid="${g.uid}" ${by ? 'disabled title="Déséquipe l’objet d’abord"' : ''}>${conf ? 'Confirmer : briser !' : '💥 Briser l’objet'}</button></div>
+    ${log ? `<ul class="fm-log">${log}</ul>` : ''}</div>`;
+}
+function atForge(d) {
+  const g = gearById(st, ui.fmSel); if (!g) return;
+  const out = forgemagie(st, g.uid, d.k); if (!out) return;
+  const bn = document.querySelector('.fm-bench'), rc = bn ? bn.getBoundingClientRect() : null, cx = rc ? rc.left + rc.width / 2 : innerWidth / 2, cy = rc ? rc.top + 70 : innerHeight / 2;
+  ui.fmLog = ui.fmLog || [];
+  if (out.err) { toast(out.err, 'warn'); return; }
+  st.stats.forged = (st.stats.forged || 0) + 1;
+  const lab = STAT_LABEL[out.k] || out.k, col = RUNES[out.k].col;
+  if (out.kind === 'crit') { ui.fmLog.push(['crit', `✨ Réussite critique ! +${out.gain} ${lab}`]); atBurst(cx, cy, '#ffe27a', 34, 90); atFloat(cx, cy, `RÉUSSITE CRITIQUE<br>+${out.gain} ${lab}`, 'crit'); }
+  else if (out.kind === 'ok') { ui.fmLog.push(['ok', `+${out.gain} ${lab}`]); atBurst(cx, cy, col, 18, 60); atFloat(cx, cy, `+${out.gain} ${lab}`, 'ok'); }
+  else if (out.kind === 'cfail') { ui.fmLog.push(['cfail', `Échec critique : ${lab} inchangé, −${out.lost.n} ${STAT_LABEL[out.lost.k] || out.lost.k}`]); atBurst(cx, cy, '#e8605a', 22, 60); atFloat(cx, cy, `ÉCHEC CRITIQUE<br>−${out.lost.n} ${STAT_LABEL[out.lost.k] || out.lost.k}`, 'cfail'); }
+  else { ui.fmLog.push(['fail', `Échec : la rune se brise.`]); atBurst(cx, cy, '#8f8c78', 10, 40); atFloat(cx, cy, 'Échec', 'fail'); }
+  if (bn && bn.animate) bn.animate(out.kind === 'fail' || out.kind === 'cfail' ? [{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }] : [{ filter: 'brightness(1)' }, { filter: 'brightness(1.5)' }, { filter: 'brightness(1)' }], { duration: 380 });
+  if (out.lvUp) toast(`Forgemage passe niveau ${st.jobs.forgemage.lvl} !`, 'lvl');
+}
+function atBreak(d) {
+  if (ui.fmConfirm !== d.uid) { ui.fmConfirm = d.uid; return; }
+  ui.fmConfirm = null;
+  const res = brisage(st, d.uid); if (typeof res === 'string') { toast(res, 'warn'); return; }
+  st.stats.broken = (st.stats.broken || 0) + 1;
+  ui.fmSel = null; ui.fmLog = [];
+  const it = ITEMS[res.id], chips = Object.entries(res.runes).map(([k, n]) => `<span class="fg-rune" style="--c:${RUNES[k].col}">${RUNES[k].icon} +${n}</span>`).join('');
+  const old = document.getElementById('forge'); if (old) old.remove();
+  const el = document.createElement('div'); el.id = 'forge'; el.className = 'forge breaking';
+  el.innerHTML = `<div class="forge-card"><div class="fg-stage"><div class="fg-glow"></div><div class="fg-work big">${itemIcon(res.id)}</div><div class="fg-hammer">🔨</div><div class="fg-flash"></div>${Array.from({ length: 16 }, (_, k) => { const a = k / 16 * 6.28, dd = 40 + Math.random() * 60; return `<i class="fg-sp" style="--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd - 10).toFixed(0)}px;--t:.32s;--c:${Object.values(RUNES)[k % 6].col}"></i>`; }).join('')}</div>
+    <div class="fg-reveal"><b class="fg-name">${esc(it.name)} brisé</b><div class="fg-runes">${chips || '<span class="sub">Aucune rune…</span>'}</div><div class="fg-foot"><span class="pop-xp">+${res.xp} XP 🔮</span></div></div></div>`;
+  document.body.appendChild(el);
+  const kill = () => { el.classList.add('out'); setTimeout(() => el.remove(), 320); };
+  el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, 4200);
+  if (res.lvUp) toast(`Forgemage passe niveau ${st.jobs.forgemage.lvl} !`, 'lvl');
+}
+/* =====================================================================
    AMAKNA IDLE — INTERFACE v2
    Barre latérale (navigation + groupe), scènes de combat, poupée
    d'équipement, inventaire en cases avec inspecteur.
@@ -7868,28 +8296,6 @@ function toast(text, cls = '') {
   while (box.children.length > 4) box.firstChild.remove();
   setTimeout(() => el.remove(), 4500);
 }
-function craftPop(r, made, xp) {
-  const { x, y } = ui.click || { x: innerWidth / 2, y: innerHeight / 2 };
-  let html;
-  if (RESOURCES[r.out]) html = `<b>${RESOURCES[r.out].icon} ${made.length > 1 ? made.length + '× ' : ''}${esc(RESOURCES[r.out].name)}</b>`;
-  else {
-    const gs = made.map(m => m.gear).filter(Boolean);
-    const best = gs.reduce((a, b) => (itemQuality(b) > itemQuality(a) ? b : a));
-    const q = Math.round(itemQuality(best) * 100);
-    html = `<b>${itemIcon(best.id)} ${gs.length > 1 ? gs.length + '× ' : ''}${esc(ITEMS[best.id].name)}</b>
-      <span class="pop-q ${qClass(best)}">${gs.length > 1 ? 'Meilleur jet' : 'Jet'} ${q} %</span>
-      <span class="pop-stats">${Object.entries(best.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k]}">+${v} ${STAT_SHORT[k]}</i>`).join(' ')}</span>`;
-    if (gs.length > 1) html += `<span class="pop-stats">Jets : ${gs.map(g => Math.round(itemQuality(g) * 100) + ' %').join(', ')}</span>`;
-  }
-  html += `<span class="pop-xp">+${xp} XP</span>`;
-  const el = document.createElement('div'); el.className = 'craft-pop'; el.innerHTML = html;
-  document.body.appendChild(el);
-  const w = el.offsetWidth, h = el.offsetHeight;
-  el.style.left = clamp(x - w / 2, 8, innerWidth - w - 8) + 'px';
-  el.style.top = clamp(y - h - 14, 8, innerHeight - h - 8) + 'px';
-  setTimeout(() => el.remove(), 2600);
-}
-
 /* ---------------------------- Petits composants ---------------------------- */
 const CLASS_GLYPH = {
   iop: '<path d="M19.5 3.5 20.5 4.5 11 14 9.5 14.5 10 13Z" fill="currentColor"/><path d="M19.5 3.5 21 3 20.5 4.5" fill="currentColor"/><path d="M7 11.5l5.5 5.5M9.8 14.2 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="4.3" cy="19.7" r="1.4" fill="currentColor"/>',
@@ -9177,39 +9583,6 @@ function renderRecolte() {
     <div class="crop-rows">${rows}</div></section></div>`;
 }
 
-/* ---------------------------- Vue : Ateliers ---------------------------- */
-function renderAteliers() {
-  if (!JOBS[ui.job]) ui.job = 'tailleur';
-  const isH = r => !!(ITEMS[r.out] && ITEMS[r.out].harvest);
-  const jobs = Object.entries(JOBS).map(([id, j]) => { const s = st.jobs[id]; const ready = RECIPES.filter(r => r.job === id && canCraft(st, r)).length;
-    return `<button class="jrow" data-act="job" data-v="${id}" aria-pressed="${ui.job === id}"><span class="jr-top"><b>${j.name}</b><span class="lvl">Niv. ${s.lvl}</span></span><small>${j.makes}</small>${bar('job thin', s.xp, jobXpToNext(s.lvl))}${ready ? `<i class="ready-n" title="Recettes fabricables">${ready}</i>` : ''}</button>`; }).join('');
-  const js = st.jobs[ui.job];
-  const nH = RECIPES.filter(r => r.job === ui.job && isH(r)).length, nC = RECIPES.filter(r => r.job === ui.job && !isH(r)).length;
-  if (ui.rtab === 'recolte' && !nH) ui.rtab = 'combat';
-  let list = RECIPES.map((r, i) => [r, i]).filter(([r]) => r.job === ui.job && (ui.rtab === 'recolte' ? isH(r) : !isH(r)));
-  if (ui.onlyCraft) list = list.filter(([r]) => canCraft(st, r));
-  const rows = list.map(([r, i]) => {
-    const locked = js.lvl < r.lvl; const max = maxCraftable(st, r);
-    const isRes = !!RESOURCES[r.out]; const d = isRes ? RESOURCES[r.out] : ITEMS[r.out];
-    const meta = isRes ? `${d.food ? `Consommable · ${d.food.desc}` : 'Clef de donjon'} · en stock : ${st.res[r.out] || 0}` : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]} · Paysan ${d.lvl}` : `${SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot]} · niveau ${d.lvl}${d.set ? ' · ' + SETS[d.set].name : ''}`;
-    return `<article class="rrow${locked ? ' locked' : ''}${max > 0 && !locked ? ' ready' : ''}">
-      <div class="tile${isRes ? ' res' : ''}">${isRes ? `<span class="t-emo">${d.icon}</span>` : itemIcon(r.out)}</div>
-      <div class="rr-main"><b>${esc(d.name)}</b><small class="sub">${meta}</small>${isRes ? '' : `<div class="rr-stats">${Object.entries(d.stats).map(([k, [a, b]]) => `<span style="--c:${STAT_COLOR[k]}">${a === b ? a : `${a}–${b}`} ${STAT_SHORT[k]}</span>`).join('')}</div>`}</div>
-      <div class="rr-ing">${Object.entries(r.ing).map(([id, n]) => { const have = st.res[id] || 0; return `<span class="ing ${have >= n ? 'ok' : 'no'}" title="${RESOURCES[id].name}">${RESOURCES[id].icon}<span class="ing-n">${RESOURCES[id].name}</span><b class="num">${fmt(have)}</b>/${n}</span>`; }).join('')}</div>
-      <div class="rr-act">${locked ? `<span class="lockt">🔒 ${JOBS[r.job].name} ${r.lvl}</span>` : `<button class="btn sm gold" data-act="craft" data-i="${i}" data-n="1" ${max < 1 ? 'disabled' : ''}>Fabriquer</button>
-        <button class="btn sm" data-act="craft" data-i="${i}" data-n="10" ${max < 2 ? 'disabled' : ''}>×${Math.min(10, Math.max(max, 2))}</button>`}
-        ${!locked && max > 0 ? `<small class="sub">${max} possible${max > 1 ? 's' : ''}</small>` : ''}</div>
-    </article>`;
-  }).join('');
-  return `<div class="split"><aside class="joblist">${jobs}</aside><section class="panel">
-    <div class="panel-h"><h3 class="display">${JOBS[ui.job].name} <span class="lvl">Niv. ${js.lvl}</span></h3><span class="sub num">${fmt(js.xp)} / ${fmt(jobXpToNext(js.lvl))} XP</span></div>
-    ${bar('job', js.xp, jobXpToNext(js.lvl))}
-    <div class="tools-row"><div class="seg"><button data-act="rtab" data-v="combat" aria-pressed="${ui.rtab !== 'recolte'}">Équipements de combat · ${nC}</button><button data-act="rtab" data-v="recolte" aria-pressed="${ui.rtab === 'recolte'}" ${nH ? '' : 'disabled'}>Métiers de récolte · ${nH}</button></div>
-      <button class="toggle" data-act="onlycraft" aria-pressed="${!!ui.onlyCraft}"><span class="tg" aria-hidden="true"></span>Seulement fabricables</button></div>
-    <div class="recipes">${rows || `<div class="empty sm">${ui.onlyCraft ? 'Aucune recette fabricable avec ton stock actuel.' : 'Aucune recette ici pour ce métier.'}</div>`}</div>
-    <p class="hint">Chaque objet reçoit un jet aléatoire dans sa fourchette. Le métier gagne de l’expérience à chaque fabrication.</p></section></div>`;
-}
-
 /* ---------------------------- Vue : Options ---------------------------- */
 function renderOptions() {
   const s = st.stats;
@@ -9362,18 +9735,15 @@ const ACTIONS = {
   sellask(d) { ui.sellUid = d.uid; },
   sellcancel() { ui.sellUid = null; },
   sellgear(d) { const k = sellGear(st, d.uid); ui.sellUid = null; if (ui.sel && ui.sel.uid === d.uid) ui.sel = null; if (k) toast(`Vendu pour ${fmt(k)} kamas`); },
-  job(d) { ui.job = d.v; },
+  job(d) { ui.job = d.v; ui.rslot = ''; ui.fmConfirm = null; },
   rtab(d) { ui.rtab = d.v; },
   onlycraft() { ui.onlyCraft = !ui.onlyCraft; },
   gjob(d) { ui.gjob = d.v; },
-  craft(d) {
-    const r = RECIPES[+d.i]; const n = Math.min(+d.n, maxCraftable(st, r)); let last, lv = false, xp = 0;
-    const made = [];
-    for (let i = 0; i < n; i++) { last = craft(st, r); if (!last) break; xp += last.xp; lv = lv || last.lvUp; made.push(last); }
-    if (!last) return;
-    craftPop(r, made, xp);
-    if (lv) toast(`${JOBS[r.job].name} passe niveau ${st.jobs[r.job].lvl} !`, 'lvl');
-  },
+  craft(d) { atCraft(d); },
+  rslot(d) { ui.rslot = d.v || ''; },
+  fmsel(d) { ui.fmSel = d.uid; ui.fmConfirm = null; ui.fmLog = []; },
+  fmforge(d) { atForge(d); },
+  fmbreak(d) { atBreak(d); },
   eat(d) { const h = heroById(d.hero); const err = eat(st, h, d.id); if (err) toast(err, 'warn'); else toast(`${h.name} mange ${RESOURCES[d.id].name} : ${RESOURCES[d.id].food.desc}.`, 'quest'); },
   closeaway() { const b = $('#modal'); b.hidden = true; b.innerHTML = ''; return 'keep'; },
   layout(d) { applyLayout(d.v); ui._psig = ''; scrollTop(); },

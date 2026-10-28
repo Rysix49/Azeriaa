@@ -86,28 +86,6 @@ function toast(text, cls = '') {
   while (box.children.length > 4) box.firstChild.remove();
   setTimeout(() => el.remove(), 4500);
 }
-function craftPop(r, made, xp) {
-  const { x, y } = ui.click || { x: innerWidth / 2, y: innerHeight / 2 };
-  let html;
-  if (RESOURCES[r.out]) html = `<b>${RESOURCES[r.out].icon} ${made.length > 1 ? made.length + '× ' : ''}${esc(RESOURCES[r.out].name)}</b>`;
-  else {
-    const gs = made.map(m => m.gear).filter(Boolean);
-    const best = gs.reduce((a, b) => (itemQuality(b) > itemQuality(a) ? b : a));
-    const q = Math.round(itemQuality(best) * 100);
-    html = `<b>${itemIcon(best.id)} ${gs.length > 1 ? gs.length + '× ' : ''}${esc(ITEMS[best.id].name)}</b>
-      <span class="pop-q ${qClass(best)}">${gs.length > 1 ? 'Meilleur jet' : 'Jet'} ${q} %</span>
-      <span class="pop-stats">${Object.entries(best.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k]}">+${v} ${STAT_SHORT[k]}</i>`).join(' ')}</span>`;
-    if (gs.length > 1) html += `<span class="pop-stats">Jets : ${gs.map(g => Math.round(itemQuality(g) * 100) + ' %').join(', ')}</span>`;
-  }
-  html += `<span class="pop-xp">+${xp} XP</span>`;
-  const el = document.createElement('div'); el.className = 'craft-pop'; el.innerHTML = html;
-  document.body.appendChild(el);
-  const w = el.offsetWidth, h = el.offsetHeight;
-  el.style.left = clamp(x - w / 2, 8, innerWidth - w - 8) + 'px';
-  el.style.top = clamp(y - h - 14, 8, innerHeight - h - 8) + 'px';
-  setTimeout(() => el.remove(), 2600);
-}
-
 /* ---------------------------- Petits composants ---------------------------- */
 const CLASS_GLYPH = {
   iop: '<path d="M19.5 3.5 20.5 4.5 11 14 9.5 14.5 10 13Z" fill="currentColor"/><path d="M19.5 3.5 21 3 20.5 4.5" fill="currentColor"/><path d="M7 11.5l5.5 5.5M9.8 14.2 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="4.3" cy="19.7" r="1.4" fill="currentColor"/>',
@@ -1395,39 +1373,6 @@ function renderRecolte() {
     <div class="crop-rows">${rows}</div></section></div>`;
 }
 
-/* ---------------------------- Vue : Ateliers ---------------------------- */
-function renderAteliers() {
-  if (!JOBS[ui.job]) ui.job = 'tailleur';
-  const isH = r => !!(ITEMS[r.out] && ITEMS[r.out].harvest);
-  const jobs = Object.entries(JOBS).map(([id, j]) => { const s = st.jobs[id]; const ready = RECIPES.filter(r => r.job === id && canCraft(st, r)).length;
-    return `<button class="jrow" data-act="job" data-v="${id}" aria-pressed="${ui.job === id}"><span class="jr-top"><b>${j.name}</b><span class="lvl">Niv. ${s.lvl}</span></span><small>${j.makes}</small>${bar('job thin', s.xp, jobXpToNext(s.lvl))}${ready ? `<i class="ready-n" title="Recettes fabricables">${ready}</i>` : ''}</button>`; }).join('');
-  const js = st.jobs[ui.job];
-  const nH = RECIPES.filter(r => r.job === ui.job && isH(r)).length, nC = RECIPES.filter(r => r.job === ui.job && !isH(r)).length;
-  if (ui.rtab === 'recolte' && !nH) ui.rtab = 'combat';
-  let list = RECIPES.map((r, i) => [r, i]).filter(([r]) => r.job === ui.job && (ui.rtab === 'recolte' ? isH(r) : !isH(r)));
-  if (ui.onlyCraft) list = list.filter(([r]) => canCraft(st, r));
-  const rows = list.map(([r, i]) => {
-    const locked = js.lvl < r.lvl; const max = maxCraftable(st, r);
-    const isRes = !!RESOURCES[r.out]; const d = isRes ? RESOURCES[r.out] : ITEMS[r.out];
-    const meta = isRes ? `${d.food ? `Consommable · ${d.food.desc}` : 'Clef de donjon'} · en stock : ${st.res[r.out] || 0}` : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]} · Paysan ${d.lvl}` : `${SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot]} · niveau ${d.lvl}${d.set ? ' · ' + SETS[d.set].name : ''}`;
-    return `<article class="rrow${locked ? ' locked' : ''}${max > 0 && !locked ? ' ready' : ''}">
-      <div class="tile${isRes ? ' res' : ''}">${isRes ? `<span class="t-emo">${d.icon}</span>` : itemIcon(r.out)}</div>
-      <div class="rr-main"><b>${esc(d.name)}</b><small class="sub">${meta}</small>${isRes ? '' : `<div class="rr-stats">${Object.entries(d.stats).map(([k, [a, b]]) => `<span style="--c:${STAT_COLOR[k]}">${a === b ? a : `${a}–${b}`} ${STAT_SHORT[k]}</span>`).join('')}</div>`}</div>
-      <div class="rr-ing">${Object.entries(r.ing).map(([id, n]) => { const have = st.res[id] || 0; return `<span class="ing ${have >= n ? 'ok' : 'no'}" title="${RESOURCES[id].name}">${RESOURCES[id].icon}<span class="ing-n">${RESOURCES[id].name}</span><b class="num">${fmt(have)}</b>/${n}</span>`; }).join('')}</div>
-      <div class="rr-act">${locked ? `<span class="lockt">🔒 ${JOBS[r.job].name} ${r.lvl}</span>` : `<button class="btn sm gold" data-act="craft" data-i="${i}" data-n="1" ${max < 1 ? 'disabled' : ''}>Fabriquer</button>
-        <button class="btn sm" data-act="craft" data-i="${i}" data-n="10" ${max < 2 ? 'disabled' : ''}>×${Math.min(10, Math.max(max, 2))}</button>`}
-        ${!locked && max > 0 ? `<small class="sub">${max} possible${max > 1 ? 's' : ''}</small>` : ''}</div>
-    </article>`;
-  }).join('');
-  return `<div class="split"><aside class="joblist">${jobs}</aside><section class="panel">
-    <div class="panel-h"><h3 class="display">${JOBS[ui.job].name} <span class="lvl">Niv. ${js.lvl}</span></h3><span class="sub num">${fmt(js.xp)} / ${fmt(jobXpToNext(js.lvl))} XP</span></div>
-    ${bar('job', js.xp, jobXpToNext(js.lvl))}
-    <div class="tools-row"><div class="seg"><button data-act="rtab" data-v="combat" aria-pressed="${ui.rtab !== 'recolte'}">Équipements de combat · ${nC}</button><button data-act="rtab" data-v="recolte" aria-pressed="${ui.rtab === 'recolte'}" ${nH ? '' : 'disabled'}>Métiers de récolte · ${nH}</button></div>
-      <button class="toggle" data-act="onlycraft" aria-pressed="${!!ui.onlyCraft}"><span class="tg" aria-hidden="true"></span>Seulement fabricables</button></div>
-    <div class="recipes">${rows || `<div class="empty sm">${ui.onlyCraft ? 'Aucune recette fabricable avec ton stock actuel.' : 'Aucune recette ici pour ce métier.'}</div>`}</div>
-    <p class="hint">Chaque objet reçoit un jet aléatoire dans sa fourchette. Le métier gagne de l’expérience à chaque fabrication.</p></section></div>`;
-}
-
 /* ---------------------------- Vue : Options ---------------------------- */
 function renderOptions() {
   const s = st.stats;
@@ -1580,18 +1525,15 @@ const ACTIONS = {
   sellask(d) { ui.sellUid = d.uid; },
   sellcancel() { ui.sellUid = null; },
   sellgear(d) { const k = sellGear(st, d.uid); ui.sellUid = null; if (ui.sel && ui.sel.uid === d.uid) ui.sel = null; if (k) toast(`Vendu pour ${fmt(k)} kamas`); },
-  job(d) { ui.job = d.v; },
+  job(d) { ui.job = d.v; ui.rslot = ''; ui.fmConfirm = null; },
   rtab(d) { ui.rtab = d.v; },
   onlycraft() { ui.onlyCraft = !ui.onlyCraft; },
   gjob(d) { ui.gjob = d.v; },
-  craft(d) {
-    const r = RECIPES[+d.i]; const n = Math.min(+d.n, maxCraftable(st, r)); let last, lv = false, xp = 0;
-    const made = [];
-    for (let i = 0; i < n; i++) { last = craft(st, r); if (!last) break; xp += last.xp; lv = lv || last.lvUp; made.push(last); }
-    if (!last) return;
-    craftPop(r, made, xp);
-    if (lv) toast(`${JOBS[r.job].name} passe niveau ${st.jobs[r.job].lvl} !`, 'lvl');
-  },
+  craft(d) { atCraft(d); },
+  rslot(d) { ui.rslot = d.v || ''; },
+  fmsel(d) { ui.fmSel = d.uid; ui.fmConfirm = null; ui.fmLog = []; },
+  fmforge(d) { atForge(d); },
+  fmbreak(d) { atBreak(d); },
   eat(d) { const h = heroById(d.hero); const err = eat(st, h, d.id); if (err) toast(err, 'warn'); else toast(`${h.name} mange ${RESOURCES[d.id].name} : ${RESOURCES[d.id].food.desc}.`, 'quest'); },
   closeaway() { const b = $('#modal'); b.hidden = true; b.innerHTML = ''; return 'keep'; },
   layout(d) { applyLayout(d.v); ui._psig = ''; scrollTop(); },

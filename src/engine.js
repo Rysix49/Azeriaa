@@ -38,6 +38,7 @@ function newState() {
     kamas: 200,
     archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
+    mastery: {},            // recette (id de l'objet) -> nombre de fabrications
     gear: [],               // instances d'équipement : { uid, id, stats }
     jobs: Object.fromEntries([...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)].map(j => [j, { lvl: 1, xp: 0 }])),
     heroes: [],
@@ -893,10 +894,20 @@ function maxCraftable(st, r) {
   if (st.jobs[r.job].lvl < r.lvl) return 0;
   return Math.min(...Object.entries(r.ing).map(([id, n]) => Math.floor((st.res[id] || 0) / n)));
 }
-function rollItem(id) {
+function rollItem(id, floor = 0, perfect = false) {
   const def = ITEMS[id]; const stats = {};
-  for (const [k, [a, b]] of Object.entries(def.stats)) stats[k] = irnd(a, b);
+  for (const [k, [a, b]] of Object.entries(def.stats)) stats[k] = perfect ? b : Math.round(a + (b - a) * (floor + (1 - floor) * Math.random()));
   return { uid: uid(), id, stats };
+}
+function masteryOf(st, out) {
+  const n = (st.mastery && st.mastery[out]) || 0; let i = 0;
+  MASTERY_RANKS.forEach((r, k) => { if (n >= r.at) i = k; });
+  return { n, i, rank: MASTERY_RANKS[i], next: MASTERY_RANKS[i + 1] || null };
+}
+function gainJobXp(st, jobId, xp) {
+  const job = st.jobs[jobId]; job.xp += xp; let lvUp = false;
+  while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; lvUp = true; }
+  return lvUp;
 }
 function rollStasis(id) {
   const def = ITEMS[id]; const stats = {};
@@ -915,14 +926,63 @@ function craft(st, r) {
   const job = st.jobs[r.job];
   const ingCount = Object.values(r.ing).reduce((a, b) => a + b, 0);
   const xp = Math.round((10 + ingCount * 3) * (1 + r.lvl / 10) * (job.lvl - r.lvl > 20 ? 0.3 : 1));
-  job.xp += xp;
-  let lvUp = false;
-  while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; lvUp = true; }
+  const lvUp = gainJobXp(st, r.job, xp);
   st.stats.crafted++;
-  let result;
+  const m0 = masteryOf(st, r.out); st.mastery = st.mastery || {}; st.mastery[r.out] = m0.n + 1;
+  const m1 = masteryOf(st, r.out), rankUp = m1.i > m0.i ? m1.rank : null;
+  let result, perfect = false;
   if (RESOURCES[r.out]) { addRes(st, r.out, 1); result = { res: r.out }; }
-  else { const g = rollItem(r.out); st.gear.push(g); result = { gear: g }; }
-  return { ...result, xp, lvUp };
+  else { perfect = Math.random() < m0.rank.perf; const g = rollItem(r.out, m0.rank.floor, perfect); st.gear.push(g); result = { gear: g }; }
+  return { ...result, xp, lvUp, perfect, rankUp };
+}
+
+/* ---------- Forgemage : Brisage (objet -> runes) et Forgemagie (runes -> jets) ---------- */
+function forgeable(g) { const d = ITEMS[g.id]; return !!d && !d.relic && !d.harvest; }
+function brisageRunes(g) { // moyenne des runes obtenues par stat (avant aléa)
+  const d = ITEMS[g.id], out = {};
+  for (const [k, v] of Object.entries(g.stats)) if (RUNES[k]) out[k] = v / RUNES[k].step * 0.55;
+  return out;
+}
+function brisage(st, uid) {
+  const g = gearById(st, uid); if (!g || !forgeable(g)) return 'Cet objet ne peut pas être brisé.';
+  if (equippedBy(st, uid)) return 'Déséquipe l’objet avant de le briser.';
+  const lvl = st.jobs.forgemage.lvl, got = {}; let tot = 0;
+  for (const [k, avg] of Object.entries(brisageRunes(g))) { const n = Math.max(0, Math.round(avg * (0.7 + Math.random() * 0.6) * (1 + lvl * 0.005))); if (n) { got[k] = n; tot += n; } }
+  if (!tot) { const top = Object.keys(brisageRunes(g)).sort((a, b) => g.stats[b] / RUNES[b].step - g.stats[a] / RUNES[a].step)[0]; if (top) got[top] = 1; }
+  st.gear = st.gear.filter(x => x.uid !== uid);
+  for (const [k, n] of Object.entries(got)) addRes(st, 'rune_' + k, n);
+  const xp = Math.round(6 + ITEMS[g.id].lvl * 1.6), lvUp = gainJobXp(st, 'forgemage', xp);
+  return { id: g.id, runes: got, xp, lvUp, stasis: !!g.stasis };
+}
+function forgeInfo(st, g, k) {
+  const d = ITEMS[g.id], r = RUNES[k], rg = d.stats[k];
+  if (!r || !rg) return { ok: false, why: 'Pas de rune pour cette caractéristique.' };
+  const [a, b] = rg, cur = g.stats[k], cap = Math.max(b, Math.floor(b * FM_OVER)), gain = Math.min(r.step, cap - cur);
+  const have = st.res['rune_' + k] || 0, cost = Math.round(5 + d.lvl * 2);
+  if (gain < 1) return { ok: false, why: 'Surjet maximal atteint.', cur, a, b, cap, step: r.step, have, cost, gain: 0, chance: 0 };
+  const frac = (cur + gain - b) / Math.max(1, cap - b);
+  const base = frac <= 0 ? 0.85 : 0.55 - 0.47 * Math.min(1, frac);
+  const chance = Math.min(0.95, base + Math.min(0.12, st.jobs.forgemage.lvl * 0.0012));
+  return { ok: have >= 1 && st.kamas >= cost, why: have < 1 ? 'Il te faut une rune.' : st.kamas < cost ? 'Kamas insuffisants.' : '', cur, a, b, cap, step: r.step, have, cost, gain, chance, over: frac > 0 };
+}
+function forgemagie(st, uid, k) {
+  const g = gearById(st, uid); if (!g || !forgeable(g)) return null;
+  const inf = forgeInfo(st, g, k); if (!inf.ok) return { err: inf.why };
+  st.res['rune_' + k] -= 1; if (!st.res['rune_' + k]) delete st.res['rune_' + k];
+  st.kamas -= inf.cost;
+  const xp = Math.round(4 + ITEMS[g.id].lvl * 0.8); const lvUp = gainJobXp(st, 'forgemage', xp);
+  let kind, lost = null, gain = 0;
+  if (Math.random() < inf.chance) {
+    const crit = !inf.over && Math.random() < 0.12; gain = Math.min(crit ? inf.step * 2 : inf.step, inf.cap - inf.cur);
+    g.stats[k] += gain; g.fm = true; kind = crit ? 'crit' : 'ok';
+  } else {
+    kind = 'fail';
+    if (inf.over && Math.random() < 0.4) {
+      const cands = Object.keys(g.stats).filter(o => o !== k && g.stats[o] > ITEMS[g.id].stats[o][0]);
+      if (cands.length) { const o = cands[irnd(0, cands.length - 1)], n = Math.min(g.stats[o] - ITEMS[g.id].stats[o][0], Math.max(1, Math.ceil(g.stats[o] * 0.08))); g.stats[o] -= n; g.fm = true; lost = { k: o, n }; kind = 'cfail'; }
+    }
+  }
+  return { kind, k, gain, lost, xp, lvUp, chance: inf.chance, g };
 }
 
 function itemValue(g) { const d = ITEMS[g.id]; return Math.round((20 + d.lvl * d.lvl * 1.5) * (0.6 + itemQuality(g) * 0.8) * (g.stasis ? 10 : 1)); }
@@ -1017,6 +1077,7 @@ function migrate(obj) {
   const st = Object.assign(base, obj);
   st.stats = Object.assign(newState().stats, obj.stats || {});
   for (const j of [...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)]) if (!st.jobs[j]) st.jobs[j] = { lvl: 1, xp: 0 };
+  st.mastery = st.mastery || {};
   st.heroes = st.heroes.filter(h => CLASSES[h.cls]); // classe supprimée (Eniripsa) : le héros disparaît de la sauvegarde
   for (const h of st.heroes) {
     h.log = h.log || []; h.hequip = h.hequip || {};
@@ -1046,7 +1107,7 @@ function migrateGear(g, old) {
   const q = Math.max(0, Math.min(1, itemQualityRaw(g, def)));
   for (const [k, [a, b]] of Object.entries(def.stats)) {
     if (g.stats[k] === undefined) g.stats[k] = g.stasis ? b * 2 : Math.round(a + (b - a) * q);
-    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(b, g.stats[k]));
+    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(g.fm ? Math.max(b, Math.floor(b * FM_OVER)) : b, g.stats[k]));
   }
   for (const k of Object.keys(g.stats)) if (!(k in def.stats)) delete g.stats[k];
 }
