@@ -29,6 +29,15 @@ enutrof: `<svg class="hs hs-enutrof" viewBox="0 0 128 128" aria-hidden="true">
   <ellipse class="p-shadow" cx="62" cy="119" rx="34" ry="5.5" fill="#000" opacity=".32"/>
   <g class="p-hop">
 
+  <!-- jambes et bottes -->
+  <g stroke="#2a1606" stroke-width="2" stroke-linejoin="round">
+    <path d="M50 102 h13 v8 q6 1 6 5 q0 4.5 -6 4.5 h-18 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#ehBoot)"/>
+    <path d="M69 102 h13 v8 q6 1 6 5 q0 4.5 -6 4.5 h-18 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#ehBoot)"/>
+    <path d="M50 104 h13 M69 104 h13" stroke="#e0b25a" stroke-width="2.4"/>
+    <path d="M44 117 h24 M64 117 h24" stroke="#1a0f06" stroke-width="2"/>
+  </g>
+
+  <g class="p-torso">
   <!-- sac de kamas sur le dos -->
   <g class="p-bag" stroke="#2a1606" stroke-width="2" stroke-linejoin="round">
     <path d="M44 66 Q38 58 33 62" fill="none" stroke="#4a2e12" stroke-width="3.4" stroke-linecap="round"/>
@@ -40,14 +49,6 @@ enutrof: `<svg class="hs hs-enutrof" viewBox="0 0 128 128" aria-hidden="true">
     <circle cx="36" cy="82" r="6.4" fill="none" stroke="#a8680a" stroke-width="1.2"/>
     <path d="M33.4 82h5.2M36 79.4v5.2" stroke="#8a5408" stroke-width="1.6" stroke-linecap="round"/>
     <path d="M24 74 Q23 86 27 96" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
-  </g>
-
-  <!-- jambes et bottes -->
-  <g stroke="#2a1606" stroke-width="2" stroke-linejoin="round">
-    <path d="M50 102 h13 v8 q6 1 6 5 q0 4.5 -6 4.5 h-18 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#ehBoot)"/>
-    <path d="M69 102 h13 v8 q6 1 6 5 q0 4.5 -6 4.5 h-18 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#ehBoot)"/>
-    <path d="M50 104 h13 M69 104 h13" stroke="#e0b25a" stroke-width="2.4"/>
-    <path d="M44 117 h24 M64 117 h24" stroke="#1a0f06" stroke-width="2"/>
   </g>
 
   <g class="p-body">
@@ -82,6 +83,7 @@ enutrof: `<svg class="hs hs-enutrof" viewBox="0 0 128 128" aria-hidden="true">
     <path d="M89.6 74.4 h6.6 M89.4 77.6 h6.8" stroke="#a8683c" stroke-width="1"/>
   </g>
 
+  <g class="p-face">
   <!-- tête -->
   <g class="p-head">
     <circle cx="44" cy="47" r="4.4" fill="url(#ehSkin)" stroke="#2a1606" stroke-width="1.8"/>
@@ -108,8 +110,8 @@ enutrof: `<svg class="hs hs-enutrof" viewBox="0 0 128 128" aria-hidden="true">
 
   <!-- barbe et moustache de morse -->
   <g class="p-beard" stroke="#2a1606" stroke-width="1.8" stroke-linejoin="round">
-    <path d="M45 52 Q41 72 54 86 Q64 94 74 86 Q86 72 83 53 Q74 66 64 66 Q54 66 45 52Z" fill="url(#ehBeard)"/>
-    <path d="M52 70 Q56 78 60 84 M64 70 V90 M76 70 Q72 78 68 84" fill="none" stroke="#b8b8c8" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M43 45 Q38 70 53 87 Q64 96 75 87 Q90 70 85 46 Q83 58 76 62 Q64 66 52 62 Q45 58 43 45Z" fill="url(#ehBeard)"/>
+    <path d="M51 68 Q55 78 60 85 M64 68 V91 M77 68 Q73 78 68 85" fill="none" stroke="#b8b8c8" stroke-width="1.2" stroke-linecap="round"/>
     <path d="M54 55 Q58 50 66 54 Q76 50 89 52 Q93 56 89 60 Q85 56 78 58 Q70 62 64 60 Q56 60 54 55Z" fill="url(#ehBeard)"/>
     <path d="M90 52 Q95 52 94 58 Q92 62 89 60" fill="url(#ehBeard)"/>
     <path d="M56 56 Q62 58 70 55 M70 56 Q80 55 86 57" fill="none" stroke="#b8b8c8" stroke-width="1" stroke-linecap="round"/>
@@ -128,6 +130,8 @@ enutrof: `<svg class="hs hs-enutrof" viewBox="0 0 128 128" aria-hidden="true">
     <path d="M54.4 22.5h3.2M56 20.9v3.2" stroke="#8a5408" stroke-width="1.1" stroke-linecap="round"/>
     <path class="p-glint" d="M56 14.6 57.2 21 63 22.5 57.2 24 56 30.4 54.8 24 49 22.5 54.8 21Z" fill="#fff" stroke="none"/>
   </g></g>
+  </g>
+  </g>
   </g>
 </svg>`,
 };

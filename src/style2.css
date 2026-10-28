@@ -1277,33 +1277,41 @@ label.btn { cursor: pointer; }
 .hero .sprite.has-art::after { display: none; }
 .hs { width: 108px; height: 108px; display: block; overflow: visible; filter: drop-shadow(0 2px 2px #0007); }
 .hs * { transform-box: fill-box; }
-.hs .p-body { transform-origin: 50% 100%; animation: msbreath 2.2s ease-in-out infinite; }
-.hs .p-head, .hs .p-hat { transform-origin: 50% 100%; animation: hsbob 2.2s ease-in-out infinite; }
-.hs .p-beard { transform-origin: 50% 0%; animation: hsbeard 3s ease-in-out infinite; }
-.hs .p-bag { transform-origin: 75% 10%; animation: hsbag 2.6s ease-in-out infinite; }
-.hs .p-shovel { transform-origin: 50% 42%; animation: hssway 3.2s ease-in-out infinite; }
+/* Repos : tout le haut du corps respire d'un bloc, la tête, la barbe et le chapeau suivent ensemble */
+.hs .p-torso { transform-origin: 50% 100%; animation: hstorso 2.4s ease-in-out infinite; }
+.hs .p-face { transform-origin: 50% 62%; animation: hsface 2.4s ease-in-out infinite; }
+.hs .p-beard { transform-origin: 50% 0%; animation: hsbeard 3.2s ease-in-out infinite; }
+.hs .p-bag { transform-origin: 75% 10%; animation: hsbag 2.8s ease-in-out infinite; }
+.hs .p-shovel { transform-origin: 50% 42%; animation: hssway 3.4s ease-in-out infinite; }
 .hs .p-eye { transform-origin: 50% 50%; animation: msblink 4.6s infinite; }
 .hs .p-brow { transform-origin: 50% 100%; }
-.hs .p-shadow { transform-origin: 50% 50%; animation: msshadow 2.2s ease-in-out infinite; }
+.hs .p-shadow { transform-origin: 50% 50%; animation: msshadow 2.4s ease-in-out infinite; }
 .hs .p-glint { transform-origin: 50% 50%; animation: hsglint 2.8s ease-in-out infinite; }
-@keyframes hsbob { 50% { transform: translateY(1.6px) rotate(-.8deg); } }
-@keyframes hsbeard { 50% { transform: rotate(1.6deg) scaleY(1.02); } }
-@keyframes hsbag { 50% { transform: rotate(2deg) translateY(1px); } }
-@keyframes hssway { 50% { transform: rotate(-2deg); } }
+@keyframes hstorso { 50% { transform: translateY(1.2px) scale(1.012, .988); } }
+@keyframes hsface { 50% { transform: translateY(.8px) rotate(-.6deg); } }
+@keyframes hsbeard { 50% { transform: rotate(1.2deg); } }
+@keyframes hsbag { 50% { transform: rotate(1.6deg); } }
+@keyframes hssway { 50% { transform: rotate(-1.2deg); } }
 @keyframes hsglint { 0%, 55%, 100% { transform: scale(.2) rotate(0); opacity: 0; } 70% { transform: scale(1) rotate(45deg); opacity: 1; } 85% { transform: scale(.4) rotate(90deg); opacity: .5; } }
-/* Attaque : le coup de pelle (armement, frappe, retour) */
-.hero.atk .hs .p-shovel { animation: hsswing .55s cubic-bezier(.3, 0, .2, 1); }
-.hero.atk .hs .p-body { animation: hslean .55s ease-in-out; }
-.hero.atk .hs .p-brow { animation: msbrow .55s ease-out; }
-@keyframes hsswing { 0% { transform: rotate(0); } 28% { transform: rotate(30deg); } 56% { transform: rotate(-82deg); } 100% { transform: rotate(0); } }
-@keyframes hslean { 28% { transform: rotate(-3deg); } 56% { transform: rotate(6deg) translateX(3px); } }
+/* Attaque : armement, frappe, rebond, retour. Le corps, la tête, la barbe et le sac suivent avec un léger retard */
+.hero.atk .hs .p-torso { animation: hsa-torso .52s cubic-bezier(.45, 0, .25, 1); }
+.hero.atk .hs .p-shovel { animation: hsa-shovel .52s cubic-bezier(.45, 0, .25, 1); }
+.hero.atk .hs .p-face { animation: hsa-face .52s cubic-bezier(.45, 0, .25, 1); }
+.hero.atk .hs .p-beard { animation: hsa-beard .52s ease-out; }
+.hero.atk .hs .p-bag { animation: hsa-bag .52s ease-out; }
+.hero.atk .hs .p-brow { animation: msbrow .52s ease-out; }
+@keyframes hsa-shovel { 0% { transform: rotate(0); } 24% { transform: rotate(24deg); } 50% { transform: rotate(-84deg); } 62% { transform: rotate(-92deg); } 82% { transform: rotate(-12deg); } 100% { transform: rotate(0); } }
+@keyframes hsa-torso { 0% { transform: none; } 24% { transform: translateX(-2px) rotate(-3deg); } 50% { transform: translateX(5px) rotate(5deg) scale(1.02, .98); } 64% { transform: translateX(4px) rotate(4deg); } 100% { transform: none; } }
+@keyframes hsa-face { 0% { transform: none; } 24% { transform: rotate(-3deg); } 50% { transform: rotate(4deg) translateY(1px); } 100% { transform: none; } }
+@keyframes hsa-beard { 0% { transform: rotate(0); } 24% { transform: rotate(4deg); } 55% { transform: rotate(-9deg); } 78% { transform: rotate(3deg); } 100% { transform: rotate(0); } }
+@keyframes hsa-bag { 0% { transform: rotate(0); } 24% { transform: rotate(-3deg); } 55% { transform: rotate(5deg); } 80% { transform: rotate(-1.5deg); } 100% { transform: rotate(0); } }
 /* Soutien (buff, soin) : la pelle se lève, la pièce du chapeau brille */
-.hero.cheer .hs .p-shovel { animation: hsraise .65s ease-in-out; }
-.hero.cheer .hs .p-glint { animation: hsglintnow .65s ease-out; }
-.hero.cheer .hs .p-body { animation: hshop .65s ease-out; }
-@keyframes hsraise { 40% { transform: rotate(-24deg) translateY(-5px); } }
+.hero.cheer .hs .p-shovel { animation: hsraise .6s cubic-bezier(.45, 0, .25, 1); }
+.hero.cheer .hs .p-glint { animation: hsglintnow .6s ease-out; }
+.hero.cheer .hs .p-torso { animation: hshop .6s cubic-bezier(.3, .6, .4, 1); }
+@keyframes hsraise { 0% { transform: rotate(0); } 40% { transform: rotate(-22deg) translateY(-5px); } 100% { transform: rotate(0); } }
 @keyframes hsglintnow { 0% { transform: scale(.2); opacity: 0; } 40% { transform: scale(1.5) rotate(60deg); opacity: 1; } 100% { transform: scale(.3) rotate(120deg); opacity: 0; } }
-@keyframes hshop { 35% { transform: translateY(-7px) scale(.98, 1.03); } }
+@keyframes hshop { 0%, 100% { transform: none; } 35% { transform: translateY(-6px) scale(.985, 1.025); } 70% { transform: translateY(1px) scale(1.02, .98); } }
 /* Coup reçu et défaite */
 .hero.hit .sprite.has-art { animation: none; }
 .hero.hit .hs { animation: mshit .3s ease-out; }

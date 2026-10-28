@@ -216,12 +216,23 @@ const FX_KIND = {
   },
 };
 
+/* Geste du personnage : un seul à la fois ; si un sort arrive en plein mouvement, le suivant s'enchaîne juste après (pas de saccade) */
+function heroGesture(unit, k) {
+  if (unit._gBusy) { unit._gNext = k; return; }
+  unit._gBusy = true; unit.classList.remove('atk', 'cheer'); void unit.offsetWidth; unit.classList.add(k);
+  setTimeout(() => {
+    unit.classList.remove(k); unit._gBusy = false;
+    const n = unit._gNext; unit._gNext = null;
+    if (n) requestAnimationFrame(() => heroGesture(unit, n));
+  }, k === 'atk' ? 520 : 600);
+}
+
 /* Joue l'animation d'un sort dans la carte de combat d'un héros */
 function playSpellFx(card, cast) {
   if (!FX_OK()) return;
   const scene = card.querySelector('.scene'); if (!scene) return;
   const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
-  if (heroUnit) { const k = ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]) ? 'cheer' : 'atk'; heroUnit.classList.remove('atk', 'cheer'); void heroUnit.offsetWidth; heroUnit.classList.add(k); setTimeout(() => heroUnit.classList.remove(k), 650); }
+  if (heroUnit) heroGesture(heroUnit, ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]) ? 'cheer' : 'atk');
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
   const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
   const from = fxPos(scene, heroSprite); if (!from) return;
