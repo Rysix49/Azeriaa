@@ -571,6 +571,7 @@ function patchCombat() {
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    if (h.cls === 'iop') { const sp = fg && fg.querySelector('.sprite'); if (sp) sp.style.setProperty('--rage', clamp(((h.fight && h.fight.rage) || 0) / 5 + (furyReady(h) ? .25 : 0), 0, 1).toFixed(2)); } // l'aura de flammes grandit avec la Rage
     if (h.cls === 'sram') {
       const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
       const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;

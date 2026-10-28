@@ -1351,3 +1351,43 @@ label.btn { cursor: pointer; }
 .hs .sp:nth-child(4) { --dx: 20px; --dy: -36px; } .hs .sp:nth-child(5) { --dx: -28px; --dy: -12px; } .hs .sp:nth-child(6) { --dx: 30px; --dy: -14px; } .hs .sp:nth-child(7) { --dx: 0px; --dy: -34px; }
 @keyframes jpspill { 0% { opacity: 0; transform: translate(0, 0) scale(.3); } 12% { opacity: 1; } 55% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1) rotate(200deg); } 100% { opacity: 0; transform: translate(calc(var(--dx) * 1.25), calc(var(--dy) + 50px)) scale(.9) rotate(420deg); } }
 @media (prefers-reduced-motion: reduce) { .hero.jp-pose .hs, .hero.jp-pose .hs *, .hero.jp-pose .sprite.has-art::before { animation: none !important; } }
+
+/* ===================== Iop : cheveux de flammes, cape, grande épée, aura de Rage ===================== */
+.hs-iop .p-cape { transform-origin: 90% 10%; animation: ipcape 2.2s ease-in-out infinite; }
+.hs-iop .p-tails { transform-origin: 100% 40%; animation: iptails 1.5s ease-in-out infinite; }
+.hs-iop .p-hair { transform-origin: 50% 100%; animation: iphair 1.3s ease-in-out infinite; }
+.hs-iop .p-sword { transform-origin: 50% 85%; animation: ipsword 3.2s ease-in-out infinite; }
+.hs-iop .p-sun { transform-origin: 50% 50%; animation: ipsun 3s ease-in-out infinite; }
+.hs-iop .p-flame { transform-origin: 50% 85%; opacity: var(--rage, 0); transition: opacity .5s; animation: ipflame 1s ease-in-out infinite; }
+.hs-iop .p-edge { opacity: calc(.2 + var(--rage, 0) * .8); }
+@keyframes ipcape { 50% { transform: rotate(-3.5deg) skewY(1.2deg); } }
+@keyframes iptails { 50% { transform: rotate(5deg) translateY(1px); } }
+@keyframes iphair { 33% { transform: scale(1.015, 1.045) rotate(.6deg); } 66% { transform: scale(.995, .985) rotate(-.7deg); } }
+@keyframes ipsword { 50% { transform: rotate(-1.6deg); } }
+@keyframes ipsun { 50% { transform: scale(1.06); filter: brightness(1.15); } }
+@keyframes ipflame { 40% { transform: scale(1.04, 1.07); } 70% { transform: scale(.98, 1.02); } }
+/* Attaque : grand coup d'épée par-dessus l'épaule, croissant de lumière, cape et cheveux fouettés */
+.hero.atk .hs-iop .p-sword { animation: ipa-sword .55s cubic-bezier(.45, 0, .2, 1); }
+.hero.atk .hs-iop .p-torso { animation: ipa-torso .55s cubic-bezier(.45, 0, .2, 1); }
+.hero.atk .hs-iop .p-face { animation: ipa-face .55s cubic-bezier(.45, 0, .2, 1); }
+.hero.atk .hs-iop .p-cape { animation: ipa-cape .55s ease-out; }
+.hero.atk .hs-iop .p-hair { animation: ipa-hair .55s ease-out; }
+.hero.atk .hs-iop .p-tails { animation: ipa-tails .55s ease-out; }
+.hero.atk .hs-iop .p-slash { animation: ipa-slash .55s ease-out; }
+.hero.atk .hs-iop .p-flame { animation: none; transform: scale(1.08, 1.12); }
+@keyframes ipa-sword { 0% { transform: rotate(0); } 22% { transform: rotate(-60deg); } 46% { transform: rotate(112deg); } 56% { transform: rotate(124deg); } 80% { transform: rotate(26deg); } 100% { transform: rotate(0); } }
+@keyframes ipa-torso { 0% { transform: none; } 22% { transform: translateX(-3px) rotate(-5deg); } 46% { transform: translateX(8px) rotate(8deg) scale(1.03, .97); } 58% { transform: translateX(7px) rotate(7deg); } 100% { transform: none; } }
+@keyframes ipa-face { 0%, 100% { transform: none; } 22% { transform: rotate(-4deg) translateY(1px); } 46% { transform: rotate(6deg) translateX(2px); } }
+@keyframes ipa-cape { 0% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 50% { transform: rotate(11deg) skewY(3deg); } 80% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes ipa-hair { 0% { transform: none; } 25% { transform: rotate(-3deg) scale(1.03, 1.08); } 50% { transform: rotate(5deg) scale(.96, .95); } 100% { transform: none; } }
+@keyframes ipa-tails { 0% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 50% { transform: rotate(14deg) scaleX(1.12); } 100% { transform: rotate(0); } }
+@keyframes ipa-slash { 0%, 40% { opacity: 0; transform: scale(.6) rotate(-14deg); } 52% { opacity: .95; transform: scale(1.02) rotate(0); } 100% { opacity: 0; transform: scale(1.12) rotate(10deg); } }
+/* Soutien : l'épée se brandit */
+.hero.cheer .hs-iop .p-sword { animation: ipraise .6s cubic-bezier(.45, 0, .25, 1); }
+@keyframes ipraise { 0% { transform: rotate(0); } 40% { transform: rotate(-16deg) translateY(-6px); filter: drop-shadow(0 0 6px #ffb02e); } 100% { transform: rotate(0); } }
+/* Colère de Iop : l'épée se lève, puis s'abat */
+.hero.cl-charge .hs-iop .p-sword { animation: none; transform: rotate(-22deg) translateY(-4px); filter: drop-shadow(0 0 7px #ffb02e) drop-shadow(0 0 14px #ff4a1a); }
+.hero.cl-charge .hs-iop .p-flame { opacity: 1; animation: ipflame .35s ease-in-out infinite; }
+.hero.cl-release .hs-iop .p-sword { animation: ipa-sword .5s cubic-bezier(.45, 0, .2, 1); }
+.hero.cl-release .hs-iop .p-slash { animation: ipa-slash .5s ease-out; }
+@media (prefers-reduced-motion: reduce) { .hs-iop *, .hero .hs-iop { animation: none !important; } }
