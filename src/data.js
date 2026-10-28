@@ -671,7 +671,7 @@ const SKILL_STAT = {
 const SKILL_BRANCHES = [
   { id: 'guerrier', name: 'Voie du Guerrier', icon: '⚔️', col: '#e0533f', text: 'Frapper plus fort, plus souvent, plus juste.',
     per: { dmgPct: 0.3 },
-    mile: [[6, { dmgPct: 4 }], [12, { crit: 4, critDmg: 15 }], [18, { dmgPct: 8 }]],
+    mile: [[3, { dmgPct: 2 }], [6, { crit: 3, dmg: 5 }], [9, { deg: 5 }], [12, { critDmg: 15, dmgPct: 3 }], [15, { speed: 5 }], [18, { dmgPct: 5, crit: 3 }], [21, { deg: 8 }], [24, { critDmg: 20, dmg: 10 }], [27, { dmgPct: 6 }], [30, { crit: 5, dmgPct: 5 }], [33, { dmgPct: 10, critDmg: 25, speed: 10 }]],
     nodes: [
       ['a1', 'Poigne de Fer', '💪', 5, { deg: 3 }, 0, 1, [], 1],
       ['a2', 'Lames Affûtées', '🗡️', 5, { dmg: 3 }, 1, 0, ['a1'], 1],
@@ -684,7 +684,7 @@ const SKILL_BRANCHES = [
     ] },
   { id: 'rempart', name: 'Voie du Rempart', icon: '🛡️', col: '#55a8ea', text: 'Encaisser, esquiver, se relever.',
     per: { hpPct: 0.4 },
-    mile: [[6, { hpPct: 4 }], [12, { res: 3, dodge: 2 }], [18, { hpPct: 8, regen: 0.5 }]],
+    mile: [[3, { vit: 40 }], [6, { res: 2 }], [9, { hpPct: 4 }], [12, { dodge: 2, regen: 0.3 }], [15, { vit: 60 }], [18, { hpPct: 5, res: 2 }], [21, { soin: 10 }], [24, { res: 3, dodge: 3 }], [27, { hpPct: 6 }], [30, { regen: 0.8, soin: 15 }], [33, { hpPct: 10, res: 4, dodge: 3 }]],
     nodes: [
       ['b1', 'Constitution', '❤️', 5, { vit: 25 }, 0, 1, [], 1],
       ['b2', 'Peau de Pierre', '🪨', 5, { res: 1 }, 1, 0, ['b1'], 1],
@@ -697,7 +697,7 @@ const SKILL_BRANCHES = [
     ] },
   { id: 'vent', name: 'Voie du Vent', icon: '🌪️', col: '#74c552', text: 'La vitesse avant tout : jouer avant les autres.',
     per: { speed: 0.5 },
-    mile: [[6, { speed: 8 }], [12, { crit: 3, dodge: 3 }], [18, { speed: 12, dmgPct: 4 }]],
+    mile: [[3, { speed: 5 }], [6, { dodge: 2 }], [9, { crit: 2 }], [12, { speed: 8, pp: 10 }], [15, { dodge: 2 }], [18, { dmgPct: 4, speed: 6 }], [21, { crit: 3 }], [24, { speed: 10, critDmg: 10 }], [27, { dodge: 3 }], [30, { dmgPct: 5, crit: 3 }], [33, { speed: 15, dodge: 4, dmgPct: 5 }]],
     nodes: [
       ['c1', 'Pas Léger', '👟', 5, { speed: 3 }, 0, 1, [], 1],
       ['c2', 'Réflexes', '⚡', 5, { dodge: 1 }, 1, 0, ['c1'], 1],
@@ -710,7 +710,7 @@ const SKILL_BRANCHES = [
     ] },
   { id: 'marchand', name: 'Voie du Marchand', icon: '💰', col: '#e8aa2e', text: 'Kamas, butin et savoir : tout se monnaie.',
     per: { kamas: 0.5 },
-    mile: [[6, { kamas: 6 }], [12, { pp: 20, xpPct: 5 }], [18, { kamas: 12, xpPct: 8 }]],
+    mile: [[3, { kamas: 5 }], [6, { pp: 15 }], [9, { xpPct: 4 }], [12, { kamas: 8, pp: 10 }], [15, { xpPct: 4 }], [18, { pp: 25, kamas: 6 }], [21, { kamas: 8 }], [24, { xpPct: 8, pp: 15 }], [27, { kamas: 10 }], [30, { xpPct: 8, pp: 25 }], [33, { kamas: 20, xpPct: 10, pp: 30 }]],
     nodes: [
       ['d1', 'Bourse Pleine', '👛', 5, { kamas: 4 }, 0, 1, [], 1],
       ['d2', 'Flair', '👃', 5, { pp: 8 }, 1, 0, ['d1'], 1],
@@ -723,7 +723,7 @@ const SKILL_BRANCHES = [
     ] },
   { id: 'paysan', name: 'Voie des Champs', icon: '🌾', col: '#9cba52', text: 'La terre donne plus à qui sait la cueillir.',
     per: { rspd: 0.6 },
-    mile: [[6, { rspd: 10 }], [12, { rqty: 10, rxp: 10 }], [18, { rmir: 3, rspd: 15 }]],
+    mile: [[3, { rspd: 6 }], [6, { rxp: 8 }], [9, { rqty: 6 }], [12, { rspd: 8, rmir: 0.5 }], [15, { rxp: 8 }], [18, { rqty: 8, rmir: 0.5 }], [21, { rspd: 10 }], [24, { rxp: 12, rqty: 8 }], [27, { rmir: 1 }], [30, { rspd: 12, rqty: 10 }], [33, { rmir: 2, rxp: 15, rspd: 15 }]],
     nodes: [
       ['e1', 'Doigts de Fée', '🤲', 5, { rspd: 4 }, 0, 1, [], 1],
       ['e2', 'Bonne Graine', '🌱', 5, { rqty: 4 }, 1, 0, ['e1'], 1],
@@ -736,7 +736,7 @@ const SKILL_BRANCHES = [
     ] },
   { id: 'gourmet', name: 'Voie du Gourmet', icon: '🍞', col: '#f08a6a', text: 'Les repas deviennent plus forts et durent plus longtemps.',
     per: { foodPow: 0.6 },
-    mile: [[6, { foodPow: 10 }], [12, { foodDur: 20, hpPct: 3 }], [18, { foodPow: 20, dmgPct: 3 }]],
+    mile: [[3, { foodPow: 5 }], [6, { foodDur: 10 }], [9, { hpPct: 2 }], [12, { foodPow: 8, vit: 40 }], [15, { foodDur: 12 }], [18, { foodPow: 8, dmgPct: 2 }], [21, { hpPct: 3 }], [24, { foodDur: 15, foodPow: 8 }], [27, { regen: 0.4 }], [30, { foodPow: 10, dmgPct: 3 }], [33, { foodPow: 20, foodDur: 25, hpPct: 5 }]],
     nodes: [
       ['f1', 'Palais Fin', '👅', 5, { foodPow: 4 }, 0, 1, [], 1],
       ['f2', 'Gros Appétit', '🍽️', 5, { foodDur: 6 }, 1, 0, ['f1'], 1],

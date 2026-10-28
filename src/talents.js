@@ -24,18 +24,19 @@ function renderTalents() {
   const tabs = `<div class="sk-tabs"><button data-act="skbranch" data-v="all" aria-pressed="${bid === 'all'}"><span>🌳</span>Vue d’ensemble</button>${SKILL_BRANCHES.map(b => `<button data-act="skbranch" data-v="${b.id}" aria-pressed="${bid === b.id}" style="--bc:${b.col}"><span>${b.icon}</span>${b.name.replace('Voie du ', '').replace('Voie des ', '')}<em class="num">${skillBranchSpent(h, b.id)}</em></button>`).join('')}</div>`;
   return `<div class="sk">${head}${tabs}${bid === 'all' ? skOverview(h, sk, spent) : skBranch(h, SKILL_BRANCHES.find(b => b.id === bid), just)}</div>`;
 }
-function skMilestones(h, b) {
-  const sp = skillBranchSpent(h, b.id);
-  return `<div class="sk-mile">${b.mile.map(([at, fx]) => `<div class="${sp >= at ? 'on' : ''}"><span class="sk-mn num">${at}</span><div><small>${sp >= at ? 'Actif' : `${sp}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div>`;
+function skMilestones(h, b, compact) {
+  const sp = skillBranchSpent(h, b.id), done = b.mile.filter(([at]) => sp >= at).length;
+  if (compact) { const nx = b.mile.find(([at]) => sp < at); return `<div class="sk-mile sk-mc"><div class="${done ? 'on' : ''}"><span class="sk-mn num">${done}</span><div><small>Paliers actifs sur ${b.mile.length}</small>${done ? 'Tous les bonus cumulés' : 'Aucun pour l’instant'}</div></div>${nx ? `<div><span class="sk-mn num">${nx[0]}</span><div><small>Prochain · ${sp}/${nx[0]} points</small>${skStatLine(nx[1])}</div></div>` : '<div class="on"><span class="sk-mn">★</span><div><small>Voie complète</small>Tous les paliers sont actifs</div></div>'}</div>`; }
+  return `<div class="sk-mile">${b.mile.map(([at, fx]) => `<div class="${sp >= at ? 'on' : ''}${at % 6 === 0 ? ' maj' : ''}"><span class="sk-mn num">${at}</span><div><small>${sp >= at ? 'Actif' : `${sp}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div>`;
 }
 function skOverview(h, sk, spent) {
   const cards = SKILL_BRANCHES.map(b => { const sp = skillBranchSpent(h, b.id), maxp = b.nodes.reduce((a, n) => a + n[3] * n[8], 0), keyed = (h.skills && h.skills[b.nodes[7][0]]) > 0;
     return `<button class="sk-card${keyed ? ' keyed' : ''}" data-act="skbranch" data-v="${b.id}" style="--bc:${b.col}"><span class="sk-cico">${b.icon}</span><b class="display">${b.name}</b><small>${b.text}</small>
-      <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span><span class="sk-per">✦ Par point : ${skStatLine(b.per)}</span>${skMilestones(h, b)}</button>`; }).join('');
+      <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span><span class="sk-per">✦ Par point : ${skStatLine(b.per)}</span>${skMilestones(h, b, true)}</button>`; }).join('');
   const tot = Object.entries(sk).filter(([k]) => SKILL_STAT[k]).sort((a, b) => Object.keys(SKILL_STAT).indexOf(a[0]) - Object.keys(SKILL_STAT).indexOf(b[0]));
   const glob = `<div class="sk-glob"><h4 class="at-h">Seuils de puissance <small>(points dépensés au total : ${spent})</small></h4><div class="sk-mile">${SKILL_GLOBAL.map(([at, fx]) => `<div class="${spent >= at ? 'on' : ''}"><span class="sk-mn num">${at}</span><div><small>${spent >= at ? 'Actif' : `${spent}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div></div>`;
   return `<div class="sk-grid">${cards}</div>${glob}<div class="sk-tot"><h4 class="at-h">Bonus de l’arbre</h4>${tot.length ? `<div class="sk-tl">${tot.map(([k, v]) => `<span style="--c:${STAT_COLOR[k] || 'var(--gold-2)'}">${skillFmt(k, v)}</span>`).join('')}</div>` : '<p class="sub">Aucun point dépensé pour l’instant. Choisis une voie !</p>'}</div>
-    <p class="hint">Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Chaque voie s’ouvre ligne par ligne : plus tu y mets de points, plus les lignes hautes se débloquent. Chaque point dépensé donne aussi un <b>petit bonus de voie</b>. Les <b>paliers</b> d’une voie (6, 12, 18 points) et les <b>seuils de puissance</b> donnent des bonus supplémentaires.</p>`;
+    <p class="hint">Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Chaque voie s’ouvre ligne par ligne : plus tu y mets de points, plus les lignes hautes se débloquent. Chaque point dépensé donne aussi un <b>petit bonus de voie</b>. Un <b>palier</b> de voie s’active tous les 3 points dépensés dedans (11 par voie) et les <b>seuils de puissance</b> donnent des bonus supplémentaires.</p>`;
 }
 function skBranch(h, b, just) {
   if (!ui.skSel || !SKILL_NODE[ui.skSel] || SKILL_NODE[ui.skSel].branch !== b.id) { const first = b.nodes.find(n => skillCheck(h, n[0]) === null) || b.nodes[0]; ui.skSel = first[0]; }
@@ -57,5 +58,5 @@ function skBranch(h, b, just) {
   return `<div class="sk-wrap" style="--bc:${b.col}"><div class="sk-treew"><div class="sk-bhead"><span class="sk-bico">${b.icon}</span><div><b class="display">${b.name}</b><small>${b.text}</small></div><span class="sk-bp num">${skillBranchSpent(h, b.id)} pts</span></div>
       <div class="sk-per">✦ Chaque point dépensé dans la voie : ${skStatLine(b.per)} <span class="sub">· actuellement ${skStatLine(b.per, skillBranchSpent(h, b.id))}</span></div>
       <div class="sk-tree" style="grid-template-rows:repeat(${rows},${SK_ROW_H}px)"><svg class="sk-lines" viewBox="0 0 ${W} ${rows * SK_ROW_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>${gates}${nodes}</div></div>
-    <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie</h4>${skMilestones(h, b)}</div></aside></div>`;
+    <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie <small>(tous les 3 points)</small></h4>${skMilestones(h, b)}</div></aside></div>`;
 }
