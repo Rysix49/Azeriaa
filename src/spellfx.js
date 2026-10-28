@@ -67,7 +67,8 @@ const FX_OK = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: 
 function fxPos(scene, el) {
   if (!scene || !el) return null;
   const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect();
-  return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2 };
+  const k = s.width && scene.offsetWidth ? scene.offsetWidth / s.width : 1; // la scène est dézoomée (CSS zoom) : les rectangles écran sont ramenés à ses propres pixels
+  return { x: (r.left - s.left + r.width / 2) * k, y: (r.top - s.top + r.height / 2) * k };
 }
 function fxEl(scene, cls, x, y, html = '', style = '') {
   const e = document.createElement('div');
@@ -356,7 +357,7 @@ function playSpellFx(card, cast) {
     if (!scene.isConnected) return;
     const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
     const from = fxPos(scene, heroSprite); if (!from) return;
-    if (isCra) { const r = heroSprite.getBoundingClientRect(); from.x += r.width * .39; from.y += r.height * .06; } // la flèche part de la corde, pas du centre du sprite
+    if (isCra) { from.x += heroSprite.offsetWidth * .39; from.y += heroSprite.offsetHeight * .06; } // la flèche part de la corde, pas du centre du sprite
     const tos = cast.t.map(i => fxPos(scene, card.querySelector(`[data-mon="${i}"] .sprite`))).filter(Boolean);
     const kind = FX_KIND[fx[0]] || FX_KIND.proj;
     if (!tos.length && !support) return;

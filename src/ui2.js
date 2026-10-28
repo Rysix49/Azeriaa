@@ -430,7 +430,7 @@ function playPerfect(card, p) {
   const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
   if (!hero || !tgt) return;
   const a = relPos(hero, scene), b = relPos(tgt, scene);
-  if (hero.querySelector('.hs-cra')) { const r = hero.getBoundingClientRect(); a.x += r.width * .39; a.y += r.height * .06; }
+  if (hero.querySelector('.hs-cra')) { a.x += hero.offsetWidth * .39; a.y += hero.offsetHeight * .06; }
   const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
   const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
   const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
@@ -472,7 +472,7 @@ const COLERE_SWORD = `<svg class="cl-sword-svg" viewBox="0 0 120 400" aria-hidde
     <path d="M60 72 L60 372" stroke="#8aa0b8" stroke-width="3"/><path d="M57 80 L57 340" stroke="#ffffffaa" stroke-width="1.5"/>
     <path d="M46 120 L52 112 M74 160 L68 152 M48 230 L54 222" stroke="#ff5a2a" stroke-width="2.5" opacity=".8"/>
   </g></svg>`;
-function relPos(el, scene) { const a = el.getBoundingClientRect(), b = scene.getBoundingClientRect(); return { x: a.left - b.left + a.width / 2, y: a.top - b.top + a.height / 2, w: b.width, h: b.height }; }
+function relPos(el, scene) { const a = el.getBoundingClientRect(), b = scene.getBoundingClientRect(), k = b.width && scene.offsetWidth ? scene.offsetWidth / b.width : 1; /* scène dézoomée : retour à ses pixels */ return { x: (a.left - b.left + a.width / 2) * k, y: (a.top - b.top + a.height / 2) * k, w: b.width * k, h: b.height * k }; }
 function playColere(card, h, done) {
   const scene = card.querySelector('.scene'); const hero = card.querySelector('[data-k="fighter"]');
   if (!scene || !hero) { done(); return; }
@@ -510,7 +510,7 @@ function playColere(card, h, done) {
     if (!svg || reduced) return;
     const gh = setInterval(() => {
       const r = sp.getBoundingClientRect(), b = scene.getBoundingClientRect(); const g = document.createElement('div'); g.className = 'cl-ghost';
-      g.style.cssText = `left:${r.left - b.left}px;top:${r.top - b.top}px;width:${r.width}px;height:${r.height}px`;
+      const k = b.width && scene.offsetWidth ? scene.offsetWidth / b.width : 1; g.style.cssText = `left:${(r.left - b.left) * k}px;top:${(r.top - b.top) * k}px;width:${r.width * k}px;height:${r.height * k}px`;
       const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 600);
     }, 70);
     setTimeout(() => clearInterval(gh), T.impact - T.leap + 120);
