@@ -76,6 +76,7 @@ const liveEv = {
   jobup(j, lv) { toast(`${GATHER_JOBS[j].name} passe niveau ${lv} !`, 'lvl'); },
   foodEnd(h) { toast(`L’effet du repas de ${h.name} est terminé.`, 'warn'); },
   stopped(h, why) { toast(`${h.name} s'arrête : ${why}.`, 'warn'); },
+  archiFound(h, mid) { toast(`👹 Archimonstre repéré : ${MONSTERS[mid].name} ! Bouton en haut à droite.`, 'quest'); },
   defeat() {},
 };
 function toast(text, cls = '') {
@@ -175,6 +176,7 @@ function shell() {
       <div class="tb-title" id="tbtitle"></div>
       <div class="wallet" id="wallet"></div>
     </header>
+    <div class="archibar" id="archibar" hidden></div>
     <main id="main"></main>
     <footer class="foot">Jeu de fan non officiel et gratuit, inspiré de l'univers de Dofus. Dofus et tous les noms associés appartiennent à Ankama Games. Aucune image du jeu original n'est utilisée.</footer>
   </div>
@@ -201,6 +203,9 @@ function updateChrome() {
     ${acc.token ? `<button class="wchip acc-chip hide-sm" data-act="goaccount" title="Compte connecté">${avatarHtml(acc.name, acc.avatarAt, 'sm')}<b>${esc(acc.name)}</b></button>` : ''}
     <span class="wchip hide-sm" title="Monstres vaincus"><small>Vaincus</small><b class="num">${fmt(st.stats.totalKills)}</b></span>`;
   if (w !== ui._wallet) { $('#wallet').innerHTML = w; ui._wallet = w; }
+  const ar = st.archi && MONSTERS[st.archi.mid], arq = !!(ar && st.heroes.some(x => x.nextArchi || (x.fight && x.fight.archi))), arf = !!(ar && st.heroes.some(x => x.fight && x.fight.archi)), ab = $('#archibar');
+  const ah = ar ? `<button class="wchip archi-btn${arq ? ' queued' : ''}" data-act="archifight" title="${esc(ar.name)}"><span class="ab-ic">👹</span><b>${arf ? 'Combat contre l’archimonstre…' : arq ? 'Archimonstre au prochain combat…' : 'Combattre l’archimonstre'}</b><small>${esc(ar.name)}</small></button>` : '';
+  if (ab && ah !== ui._arch) { ab.innerHTML = ah; ab.hidden = !ah; ui._arch = ah; }
   renderParty();
 }
 function renderParty() {
@@ -278,7 +283,7 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
@@ -955,7 +960,7 @@ function resInspector(id) {
   const r = RESOURCES[id]; const n = st.res[id];
   const uses = RECIPES.filter(rc => rc.ing[id]).map(rc => { const o = RESOURCES[rc.out] || ITEMS[rc.out];
     return `<button class="use" data-act="gorecipe" data-job="${rc.job}" data-h="${ITEMS[rc.out] && ITEMS[rc.out].harvest ? 1 : 0}">${RESOURCES[rc.out] ? o.icon : itemIcon(rc.out)}<span>${o.name}</span><small>${JOBS[rc.job].name} ${rc.lvl} · ×${rc.ing[id]}</small></button>`; });
-  const from = Object.entries(MONSTERS).filter(([, m]) => m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
+  const from = Object.entries(MONSTERS).filter(([, m]) => !m.archi && m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
   const crop = CROPS.find(c => c.id === id);
   return `<div class="insp-head"><div class="tile lg res"><span class="t-emo">${r.icon}</span></div><div class="ih-t"><b class="display">${r.name}</b><small>${r.key ? 'Clef de donjon' : r.food ? 'Consommable' : r.crop ? 'Céréale' : r.rare ? 'Ressource rare' : 'Ressource'}</small><span class="qty num">×${fmt(n)}</span></div></div>
     <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Valeur du stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
@@ -1090,6 +1095,14 @@ const ACTIONS = {
     const h = heroById(d.hero); if (!h) return 'keep';
     if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
     patchCombat(); return 'keep';
+  },
+  archifight() {
+    const a = st.archi; if (!a) return;
+    if (st.heroes.some(x => x.nextArchi || (x.fight && x.fight.archi))) return;
+    const inZone = x => x.act && x.act.type === 'zone' && x.act.id === a.zone;
+    const h = [heroById(a.hero), ...st.heroes].find(x => x && inZone(x));
+    if (!h) { const z = findPlace('zone', a.zone); toast(`Envoie un héros dans ${z ? z.name : 'la zone de l’archimonstre'} pour le combattre.`, 'warn'); return; }
+    h.nextArchi = a.mid; toast(`${h.name} affrontera ${MONSTERS[a.mid].name} dès son prochain combat !`, 'quest'); saveGame();
   },
   iopfury(d) {
     const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';

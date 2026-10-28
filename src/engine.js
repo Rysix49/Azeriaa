@@ -27,7 +27,8 @@ function monsterStats(mid) {
   const avg = (2.5 + l * 0.8 + l * l * 0.003) * (m.dm || 1);
   const xp = Math.round((10 + l * 6 + l * l * 1.9) * (m.hpm || 1) * (m.boss ? 1.5 : 1));
   const kamas = [Math.round(l * 1.5 + 2), Math.round(l * 3 + 6)].map(k => m.boss ? k * 8 : k);
-  return (_monCache[mid] = { hp, dmin: Math.max(1, Math.round(avg * 0.8)), dmax: Math.round(avg * 1.2), xp, kamas, res: m.res || 0 });
+  const mu = m.mult || 1, rw = m.archi ? ARCHI_REWARD : 1; // archimonstre : PV et dégâts ×2, XP et kamas ×6
+  return (_monCache[mid] = { hp: hp * mu, dmin: Math.max(1, Math.round(avg * 0.8 * mu)), dmax: Math.round(avg * 1.2 * mu), xp: xp * rw, kamas: kamas.map(k => k * rw), res: m.res || 0 });
 }
 
 /* ---------------------------- État ---------------------------- */
@@ -35,6 +36,7 @@ function newState() {
   return {
     v: SAVE_VERSION,
     kamas: 200,
+    archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
     gear: [],               // instances d'équipement : { uid, id, stats }
     jobs: Object.fromEntries([...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)].map(j => [j, { lvl: 1, xp: 0 }])),
@@ -110,7 +112,7 @@ function spellUnlocked(h, sp) { return h.lvl >= sp.lvl; }
 function findPlace(type, id) { return type === 'dungeon' ? DUNGEONS.find(d => d.id === id) : type === 'harvest' ? CROPS.find(c => c.id === id) : ZONES.find(z => z.id === id); }
 
 function setActivity(st, h, type, id, tier = 0) {
-  h.fight = null; h.resting = false; h.wait = 0; h.restTotal = 0;
+  h.fight = null; h.resting = false; h.wait = 0; h.restTotal = 0; h.nextArchi = null;
   h.hp = heroTotals(st, h).maxHp;
   h.act = type ? { type, id, room: 0, tier: type === 'zone' ? clamp(+tier || 0, 0, SUBZONES.length - 1) : 0 } : null;
   h.session = type ? { start: Date.now(), xp: 0, kamas: 0, kills: 0, runs: 0 } : null;
@@ -162,7 +164,9 @@ function startFight(st, h, ev) {
     }
     group = h.act.room < place.rooms.length ? place.rooms[h.act.room] : place.boss;
   } else {
-    group = pickGroup(place, h);
+    if (h.nextArchi && h.act.type === 'zone' && MONSTERS[h.nextArchi]) group = [h.nextArchi];
+    else group = pickGroup(place, h);
+    h.nextArchi = null;
   }
   h.fight = {
     mons: group.map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }),
@@ -171,7 +175,8 @@ function startFight(st, h, ev) {
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   const names = group.map(m => MONSTERS[m].name);
-  ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
+  if (group.length === 1 && MONSTERS[group[0]].archi) { h.fight.archi = true; ev.log(h, `👹 ARCHIMONSTRE ! ${h.name} affronte ${names[0]}.`, 'boss'); }
+  else ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
 }
 
@@ -570,12 +575,13 @@ function resolveWin(st, h, ev) {
     xp += ms.xp * pen;
     const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
     kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
-    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (chest && Math.random() < 0.35 ? 2 : 1);
-    for (const [rid, rc] of (RELIC_DROPS[m.mid] || [])) if (Math.random() < rc * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
+    const ab = def.archi ? 3 : 1; // archimonstre : ressources ×3 (et en double), équipement bien plus fréquent
+    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * ab * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (def.archi ? 2 : chest && Math.random() < 0.35 ? 2 : 1);
+    for (const [rid, rc] of (RELIC_DROPS[def.base || m.mid] || [])) if (Math.random() < rc * (def.archi ? 20 : 1) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(rid); st.gear.push(g); gearLoot.push(g);
     }
-    const gd = GEAR_DROPS[m.mid];
-    if (gd && Math.random() < (def.boss ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
+    const gd = GEAR_DROPS[def.base || m.mid];
+    if (gd && Math.random() < (def.boss || def.archi ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(gd[irnd(0, gd.length - 1)]); st.gear.push(g); gearLoot.push(g);
       st.stats.gearDropped = (st.stats.gearDropped || 0) + 1;
     }
@@ -595,6 +601,11 @@ function resolveWin(st, h, ev) {
   if (h.session) { h.session.xp += xp; h.session.kamas += kamas; h.session.kills += n; sessionEvent(h, xp, kamas, n); }
   const lootTxt = Object.entries(loot).map(([r, c]) => `${c}× ${RESOURCES[r].name}`).join(', ');
   ev.log(h, `Victoire ! +${fmt(xp)} XP, +${fmt(kamas)} K${lootTxt ? ' · ' + lootTxt : ''}`, 'win');
+  if (f.archi) { st.archi = null; st.stats.archis = (st.stats.archis || 0) + 1; ev.log(h, `🏆 ${MONSTERS[f.mons[0].mid].name} est vaincu !`, 'boss'); }
+  else if (h.act.type === 'zone' && !st.archi && ARCHIS[h.act.id] && Math.random() < ARCHI_RATE) { // 1 % : un archimonstre est repéré
+    st.archi = { zone: h.act.id, mid: ARCHIS[h.act.id], hero: h.id };
+    ev.log(h, `👹 Un archimonstre est repéré : ${MONSTERS[ARCHIS[h.act.id]].name} !`, 'boss'); ev.archiFound && ev.archiFound(h, ARCHIS[h.act.id]);
+  }
   for (const g of gearLoot) ev.log(h, `Objet trouvé : ${ITEMS[g.id].name}${g.stasis ? ' (STASIFIÉ)' : ''} !`, 'boss');
   ev.reward && ev.reward(h, xp, kamas, loot, gearLoot);
   gainXp(st, h, xp, ev);
@@ -617,7 +628,7 @@ function resolveWin(st, h, ev) {
 
 function resolveLose(st, h, ev) {
   st.stats.deaths++;
-  ev.log(h, `${h.name} est vaincu et doit se reposer.`, 'lose');
+  ev.log(h, `${h.name} est vaincu et doit se reposer.${h.fight && h.fight.archi ? ' L’archimonstre t’attend toujours.' : ''}`, 'lose');
   ev.defeat && ev.defeat(h);
   h.fight = null; h.hp = 0;
   if (h.act.type === 'dungeon') {

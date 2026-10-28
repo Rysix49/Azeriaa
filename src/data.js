@@ -251,6 +251,16 @@ const SUBZONES = [
   { hp: 8, dmg: 3.375, drop: 8 },
 ];
 
+/* Archimonstres : un par région, le meilleur monstre de la zone en version ×2 (PV et dégâts), récompenses bien plus grosses.
+   1 % de chance d'en repérer un à la fin de chaque combat de zone ; un bouton apparaît alors en haut à droite pour le combattre. */
+const ARCHI_RATE = 0.01, ARCHI_MULT = 2, ARCHI_REWARD = 6;
+const ARCHI_NAMES = { incarnam: 'Pissenlit Séculaire', astrub: 'Champ Champ Colossal', abraknydes: 'Sanglier Roi des Bois', cania: 'Bwork Chef de Guerre', koalaks: 'Mufafah Alpha', sidimote: 'Seigneur Chafer' };
+const ARCHIS = {}; // id de zone → id de l'archimonstre
+for (const z of ZONES) {
+  const best = z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
+  const mid = 'archi_' + z.id; ARCHIS[z.id] = mid;
+  MONSTERS[mid] = { ...MONSTERS[best], name: ARCHI_NAMES[z.id] || ('Archi-' + MONSTERS[best].name), archi: true, base: best, mult: ARCHI_MULT };
+}
 const DUNGEONS = [
   { id: 'dj_bouftou', name: 'Donjon des Bouftous', region: 'Astrub', lvl: [14, 25], key: 'clef_bouftou',
     rooms: [['bouftou', 'bouftou', 'boufton_blanc'], ['boufton_blanc', 'boufton_blanc', 'bouftou_chef'], ['bouftou_chef', 'bouftou_chef', 'boufton_blanc']],

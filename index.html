@@ -1550,6 +1550,23 @@ label.btn { cursor: pointer; }
 /* bouton « meilleur équipement » sous les emplacements */
 .best-row { display: flex; justify-content: center; margin: 10px 0 4px; }
 .best-btn { font-weight: 900; letter-spacing: .02em; padding: 9px 18px; box-shadow: 0 0 14px #ffd24a40; }
+
+/* ===================== Archimonstres ===================== */
+.archi-btn { cursor: pointer; border-color: #ff7a3a; background: linear-gradient(180deg, #5a1a10, #2e0c08); color: #ffe1c8; font-weight: 800; animation: archipulse 1.4s ease-in-out infinite; }
+.archi-btn b { font-size: 13px; color: #ffe1c8; }
+.archi-btn .ab-ic { font-size: 16px; filter: drop-shadow(0 0 4px #ff7a3a); }
+.archi-btn.queued { animation: none; background: #2a2118; border-color: #c9962e; }
+@keyframes archipulse { 50% { box-shadow: 0 0 14px #ff5a2a, 0 0 4px #ffd24a; transform: scale(1.04); } }
+.unit.mon.archi .sprite { scale: 1.3; filter: drop-shadow(0 0 8px #ffb02e) drop-shadow(0 0 16px #ff4a1a); transform-origin: 50% 100%; }
+.unit.mon.archi .u-name { color: #ffd24a; text-shadow: 0 0 8px #ff7a1e; }
+.unit.mon.archi .u-name::before { content: "👑 "; }
+.unit.mon.archi.dead .sprite { filter: grayscale(1); }
+@media (prefers-reduced-motion: reduce) { .archi-btn { animation: none; } }
+
+.archibar { display: flex; justify-content: flex-end; padding: 8px 16px 0; }
+.archibar[hidden] { display: none; }
+.archi-btn small { color: #ffd24a; font-size: 11.5px; font-weight: 800; }
+@media (max-width: 560px) { .archi-btn small { display: none; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1605,6 +1622,7 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .jp-title span { font-size: 34px; }
 :root[data-layout="mobile"] .jp-machine { top: 6px; }
 :root[data-layout="mobile"] .hs { width: 78px; height: 78px; }
+:root[data-layout="mobile"] .archi-btn small { display: none; }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -1613,7 +1631,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793186798';
+const BUILD_ID = '1793187231';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -1867,6 +1885,16 @@ const SUBZONES = [
   { hp: 8, dmg: 3.375, drop: 8 },
 ];
 
+/* Archimonstres : un par région, le meilleur monstre de la zone en version ×2 (PV et dégâts), récompenses bien plus grosses.
+   1 % de chance d'en repérer un à la fin de chaque combat de zone ; un bouton apparaît alors en haut à droite pour le combattre. */
+const ARCHI_RATE = 0.01, ARCHI_MULT = 2, ARCHI_REWARD = 6;
+const ARCHI_NAMES = { incarnam: 'Pissenlit Séculaire', astrub: 'Champ Champ Colossal', abraknydes: 'Sanglier Roi des Bois', cania: 'Bwork Chef de Guerre', koalaks: 'Mufafah Alpha', sidimote: 'Seigneur Chafer' };
+const ARCHIS = {}; // id de zone → id de l'archimonstre
+for (const z of ZONES) {
+  const best = z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
+  const mid = 'archi_' + z.id; ARCHIS[z.id] = mid;
+  MONSTERS[mid] = { ...MONSTERS[best], name: ARCHI_NAMES[z.id] || ('Archi-' + MONSTERS[best].name), archi: true, base: best, mult: ARCHI_MULT };
+}
 const DUNGEONS = [
   { id: 'dj_bouftou', name: 'Donjon des Bouftous', region: 'Astrub', lvl: [14, 25], key: 'clef_bouftou',
     rooms: [['bouftou', 'bouftou', 'boufton_blanc'], ['boufton_blanc', 'boufton_blanc', 'bouftou_chef'], ['bouftou_chef', 'bouftou_chef', 'boufton_blanc']],
@@ -2170,7 +2198,8 @@ function monsterStats(mid) {
   const avg = (2.5 + l * 0.8 + l * l * 0.003) * (m.dm || 1);
   const xp = Math.round((10 + l * 6 + l * l * 1.9) * (m.hpm || 1) * (m.boss ? 1.5 : 1));
   const kamas = [Math.round(l * 1.5 + 2), Math.round(l * 3 + 6)].map(k => m.boss ? k * 8 : k);
-  return (_monCache[mid] = { hp, dmin: Math.max(1, Math.round(avg * 0.8)), dmax: Math.round(avg * 1.2), xp, kamas, res: m.res || 0 });
+  const mu = m.mult || 1, rw = m.archi ? ARCHI_REWARD : 1; // archimonstre : PV et dégâts ×2, XP et kamas ×6
+  return (_monCache[mid] = { hp: hp * mu, dmin: Math.max(1, Math.round(avg * 0.8 * mu)), dmax: Math.round(avg * 1.2 * mu), xp: xp * rw, kamas: kamas.map(k => k * rw), res: m.res || 0 });
 }
 
 /* ---------------------------- État ---------------------------- */
@@ -2178,6 +2207,7 @@ function newState() {
   return {
     v: SAVE_VERSION,
     kamas: 200,
+    archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
     gear: [],               // instances d'équipement : { uid, id, stats }
     jobs: Object.fromEntries([...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)].map(j => [j, { lvl: 1, xp: 0 }])),
@@ -2253,7 +2283,7 @@ function spellUnlocked(h, sp) { return h.lvl >= sp.lvl; }
 function findPlace(type, id) { return type === 'dungeon' ? DUNGEONS.find(d => d.id === id) : type === 'harvest' ? CROPS.find(c => c.id === id) : ZONES.find(z => z.id === id); }
 
 function setActivity(st, h, type, id, tier = 0) {
-  h.fight = null; h.resting = false; h.wait = 0; h.restTotal = 0;
+  h.fight = null; h.resting = false; h.wait = 0; h.restTotal = 0; h.nextArchi = null;
   h.hp = heroTotals(st, h).maxHp;
   h.act = type ? { type, id, room: 0, tier: type === 'zone' ? clamp(+tier || 0, 0, SUBZONES.length - 1) : 0 } : null;
   h.session = type ? { start: Date.now(), xp: 0, kamas: 0, kills: 0, runs: 0 } : null;
@@ -2305,7 +2335,9 @@ function startFight(st, h, ev) {
     }
     group = h.act.room < place.rooms.length ? place.rooms[h.act.room] : place.boss;
   } else {
-    group = pickGroup(place, h);
+    if (h.nextArchi && h.act.type === 'zone' && MONSTERS[h.nextArchi]) group = [h.nextArchi];
+    else group = pickGroup(place, h);
+    h.nextArchi = null;
   }
   h.fight = {
     mons: group.map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }),
@@ -2314,7 +2346,8 @@ function startFight(st, h, ev) {
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   const names = group.map(m => MONSTERS[m].name);
-  ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
+  if (group.length === 1 && MONSTERS[group[0]].archi) { h.fight.archi = true; ev.log(h, `👹 ARCHIMONSTRE ! ${h.name} affronte ${names[0]}.`, 'boss'); }
+  else ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
 }
 
@@ -2713,12 +2746,13 @@ function resolveWin(st, h, ev) {
     xp += ms.xp * pen;
     const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
     kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
-    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (chest && Math.random() < 0.35 ? 2 : 1);
-    for (const [rid, rc] of (RELIC_DROPS[m.mid] || [])) if (Math.random() < rc * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
+    const ab = def.archi ? 3 : 1; // archimonstre : ressources ×3 (et en double), équipement bien plus fréquent
+    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * ab * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (def.archi ? 2 : chest && Math.random() < 0.35 ? 2 : 1);
+    for (const [rid, rc] of (RELIC_DROPS[def.base || m.mid] || [])) if (Math.random() < rc * (def.archi ? 20 : 1) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(rid); st.gear.push(g); gearLoot.push(g);
     }
-    const gd = GEAR_DROPS[m.mid];
-    if (gd && Math.random() < (def.boss ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
+    const gd = GEAR_DROPS[def.base || m.mid];
+    if (gd && Math.random() < (def.boss || def.archi ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(gd[irnd(0, gd.length - 1)]); st.gear.push(g); gearLoot.push(g);
       st.stats.gearDropped = (st.stats.gearDropped || 0) + 1;
     }
@@ -2738,6 +2772,11 @@ function resolveWin(st, h, ev) {
   if (h.session) { h.session.xp += xp; h.session.kamas += kamas; h.session.kills += n; sessionEvent(h, xp, kamas, n); }
   const lootTxt = Object.entries(loot).map(([r, c]) => `${c}× ${RESOURCES[r].name}`).join(', ');
   ev.log(h, `Victoire ! +${fmt(xp)} XP, +${fmt(kamas)} K${lootTxt ? ' · ' + lootTxt : ''}`, 'win');
+  if (f.archi) { st.archi = null; st.stats.archis = (st.stats.archis || 0) + 1; ev.log(h, `🏆 ${MONSTERS[f.mons[0].mid].name} est vaincu !`, 'boss'); }
+  else if (h.act.type === 'zone' && !st.archi && ARCHIS[h.act.id] && Math.random() < ARCHI_RATE) { // 1 % : un archimonstre est repéré
+    st.archi = { zone: h.act.id, mid: ARCHIS[h.act.id], hero: h.id };
+    ev.log(h, `👹 Un archimonstre est repéré : ${MONSTERS[ARCHIS[h.act.id]].name} !`, 'boss'); ev.archiFound && ev.archiFound(h, ARCHIS[h.act.id]);
+  }
   for (const g of gearLoot) ev.log(h, `Objet trouvé : ${ITEMS[g.id].name}${g.stasis ? ' (STASIFIÉ)' : ''} !`, 'boss');
   ev.reward && ev.reward(h, xp, kamas, loot, gearLoot);
   gainXp(st, h, xp, ev);
@@ -2760,7 +2799,7 @@ function resolveWin(st, h, ev) {
 
 function resolveLose(st, h, ev) {
   st.stats.deaths++;
-  ev.log(h, `${h.name} est vaincu et doit se reposer.`, 'lose');
+  ev.log(h, `${h.name} est vaincu et doit se reposer.${h.fight && h.fight.archi ? ' L’archimonstre t’attend toujours.' : ''}`, 'lose');
   ev.defeat && ev.defeat(h);
   h.fight = null; h.hp = 0;
   if (h.act.type === 'dungeon') {
@@ -4668,6 +4707,8 @@ bworkette: `<svg class="ms ms-bworkette" viewBox="0 0 128 128" aria-hidden="true
 </svg>`,
 
 };
+/* Les archimonstres reprennent le dessin de leur modèle (agrandi et nimbé d'or en CSS) */
+for (const [mid, m] of Object.entries(MONSTERS)) if (m.archi && MON_ART[m.base]) MON_ART[mid] = MON_ART[m.base];
 /* Sprite à afficher : dessin s'il existe, sinon emoji */
 function monSprite(mid, fallback) {
   const art = MON_ART[mid];
@@ -5544,6 +5585,7 @@ const liveEv = {
   jobup(j, lv) { toast(`${GATHER_JOBS[j].name} passe niveau ${lv} !`, 'lvl'); },
   foodEnd(h) { toast(`L’effet du repas de ${h.name} est terminé.`, 'warn'); },
   stopped(h, why) { toast(`${h.name} s'arrête : ${why}.`, 'warn'); },
+  archiFound(h, mid) { toast(`👹 Archimonstre repéré : ${MONSTERS[mid].name} ! Bouton en haut à droite.`, 'quest'); },
   defeat() {},
 };
 function toast(text, cls = '') {
@@ -5643,6 +5685,7 @@ function shell() {
       <div class="tb-title" id="tbtitle"></div>
       <div class="wallet" id="wallet"></div>
     </header>
+    <div class="archibar" id="archibar" hidden></div>
     <main id="main"></main>
     <footer class="foot">Jeu de fan non officiel et gratuit, inspiré de l'univers de Dofus. Dofus et tous les noms associés appartiennent à Ankama Games. Aucune image du jeu original n'est utilisée.</footer>
   </div>
@@ -5669,6 +5712,9 @@ function updateChrome() {
     ${acc.token ? `<button class="wchip acc-chip hide-sm" data-act="goaccount" title="Compte connecté">${avatarHtml(acc.name, acc.avatarAt, 'sm')}<b>${esc(acc.name)}</b></button>` : ''}
     <span class="wchip hide-sm" title="Monstres vaincus"><small>Vaincus</small><b class="num">${fmt(st.stats.totalKills)}</b></span>`;
   if (w !== ui._wallet) { $('#wallet').innerHTML = w; ui._wallet = w; }
+  const ar = st.archi && MONSTERS[st.archi.mid], arq = !!(ar && st.heroes.some(x => x.nextArchi || (x.fight && x.fight.archi))), arf = !!(ar && st.heroes.some(x => x.fight && x.fight.archi)), ab = $('#archibar');
+  const ah = ar ? `<button class="wchip archi-btn${arq ? ' queued' : ''}" data-act="archifight" title="${esc(ar.name)}"><span class="ab-ic">👹</span><b>${arf ? 'Combat contre l’archimonstre…' : arq ? 'Archimonstre au prochain combat…' : 'Combattre l’archimonstre'}</b><small>${esc(ar.name)}</small></button>` : '';
+  if (ab && ah !== ui._arch) { ab.innerHTML = ah; ab.hidden = !ah; ui._arch = ah; }
   renderParty();
 }
 function renderParty() {
@@ -5746,7 +5792,7 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
@@ -6423,7 +6469,7 @@ function resInspector(id) {
   const r = RESOURCES[id]; const n = st.res[id];
   const uses = RECIPES.filter(rc => rc.ing[id]).map(rc => { const o = RESOURCES[rc.out] || ITEMS[rc.out];
     return `<button class="use" data-act="gorecipe" data-job="${rc.job}" data-h="${ITEMS[rc.out] && ITEMS[rc.out].harvest ? 1 : 0}">${RESOURCES[rc.out] ? o.icon : itemIcon(rc.out)}<span>${o.name}</span><small>${JOBS[rc.job].name} ${rc.lvl} · ×${rc.ing[id]}</small></button>`; });
-  const from = Object.entries(MONSTERS).filter(([, m]) => m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
+  const from = Object.entries(MONSTERS).filter(([, m]) => !m.archi && m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
   const crop = CROPS.find(c => c.id === id);
   return `<div class="insp-head"><div class="tile lg res"><span class="t-emo">${r.icon}</span></div><div class="ih-t"><b class="display">${r.name}</b><small>${r.key ? 'Clef de donjon' : r.food ? 'Consommable' : r.crop ? 'Céréale' : r.rare ? 'Ressource rare' : 'Ressource'}</small><span class="qty num">×${fmt(n)}</span></div></div>
     <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Valeur du stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
@@ -6558,6 +6604,14 @@ const ACTIONS = {
     const h = heroById(d.hero); if (!h) return 'keep';
     if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
     patchCombat(); return 'keep';
+  },
+  archifight() {
+    const a = st.archi; if (!a) return;
+    if (st.heroes.some(x => x.nextArchi || (x.fight && x.fight.archi))) return;
+    const inZone = x => x.act && x.act.type === 'zone' && x.act.id === a.zone;
+    const h = [heroById(a.hero), ...st.heroes].find(x => x && inZone(x));
+    if (!h) { const z = findPlace('zone', a.zone); toast(`Envoie un héros dans ${z ? z.name : 'la zone de l’archimonstre'} pour le combattre.`, 'warn'); return; }
+    h.nextArchi = a.mid; toast(`${h.name} affrontera ${MONSTERS[a.mid].name} dès son prochain combat !`, 'quest'); saveGame();
   },
   iopfury(d) {
     const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
