@@ -463,6 +463,42 @@ function zobFarce(scene, from, tos, pw, hero) {
     });
   });
 }
+/* ---------- Zobal : APOTHÉOSE (la Ferveur atteint son maximum) ----------
+   Le monde s'assombrit, les trois masques tournoient de plus en plus vite autour du Zobal, fusionnent
+   en un Masque d'Or géant sous un soleil immense, onde de choc, piliers de lumière, pluie d'or. */
+function zobApotheose(scene, unit) {
+  const sp = unit.querySelector('.sprite') || unit, p0 = fxPos(scene, sp);
+  if (!p0 || !FX_OK()) return;
+  const W = scene.offsetWidth, H = scene.offsetHeight, hd = { x: p0.x, y: p0.y - H * .12 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
+  const mid = { x: W * .5, y: H * .42 };
+  zbMark(unit, 'zob-apoint', 3000); zbMark(scene, 'zb-shake', 3300);
+  const veil = fxEl(scene, 'zb-veil', 0, 0); fxAnim(veil, [{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .8 }, { opacity: 0 }], { duration: 3200, easing: 'linear' });
+  const faces = [['😆', '#ffd24a'], ['😢', '#5ab0ff'], ['🤪', '#ff6ad0']], orbs = faces.map((f, i) => fxEl(scene, 'zb-orb', hd.x, hd.y, `<span>${f[0]}</span>`, `--c:${f[1]}`));
+  const T0 = performance.now(), TC = 1500;
+  (function spin(now) { // les masques tournent en spirale, de plus en plus vite, puis fondent vers le Zobal
+    const t = now - T0; if (!scene.isConnected) { orbs.forEach(o => o.remove()); return; }
+    const k = Math.min(1, t / TC), ang0 = t * (.004 + .012 * k * k), r = 18 + 38 * Math.sin(Math.min(1, k * 1.15) * Math.PI * .8) * (1 - k * k * .6);
+    orbs.forEach((o, i) => { const a = ang0 + i * Math.PI * 2 / 3, cx = hd.x + (mid.x - hd.x) * Math.pow(k, 3), cy = hd.y + (mid.y - hd.y) * Math.pow(k, 3);
+      o.style.left = (cx + Math.cos(a) * r * (1 - k * .85)) + 'px'; o.style.top = (cy + Math.sin(a) * r * .55 * (1 - k * .85)) + 'px'; o.style.opacity = t < 100 ? t / 100 : 1; o.style.transform = `translate(-50%,-50%) scale(${.8 + k * .5})`;
+      if (Math.random() < .5) { const s = fxEl(scene, 'sfx-spark', parseFloat(o.style.left), parseFloat(o.style.top), '', `--c:${faces[i][1]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.3)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(.1)', opacity: 0 }], { duration: 380 }); } });
+    if (t < TC) requestAnimationFrame(spin); else orbs.forEach(o => o.remove());
+  })(T0);
+  for (let i = 0; i < 14; i++) at(i * 100, () => { const a = Math.random() * 6.28, s = fxEl(scene, 'sfx-spark', hd.x + Math.cos(a) * 16, hd.y + 18, '', '--c:#ffe27a'); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.4)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * 14}px),calc(-50% - ${40 + Math.random() * 50}px)) scale(.1)`, opacity: 0 }], { duration: 700 }); });
+  at(TC - 80, () => { const f = fxEl(scene, 'zb-flash', 0, 0); fxAnim(f, [{ opacity: 0 }, { opacity: .95, offset: .2 }, { opacity: 0 }], { duration: 560, easing: 'linear' }); });
+  at(TC, () => {
+    const sun = fxEl(scene, 'zb-sun mega', mid.x, mid.y);
+    fxAnim(sun, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(0deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1) rotate(40deg)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-50%) scale(1.3) rotate(120deg)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-50%) scale(1.8) rotate(180deg)', opacity: 0 }], { duration: 1500, easing: 'linear' });
+    const gm = fxEl(scene, 'zb-gmask', mid.x, mid.y, '<i></i>');
+    fxAnim(gm, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(-180deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.5) rotate(8deg)', opacity: 1, offset: .22 }, { transform: 'translate(-50%,-50%) scale(1.15) rotate(-4deg)', opacity: 1, offset: .38 }, { transform: 'translate(-50%,-50%) scale(1.25) rotate(3deg)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-50%) scale(2.6) rotate(0deg)', opacity: 0 }], { duration: 1500 });
+    [0, 1, 2].forEach(i => { const r = fxEl(scene, 'sfx-ring thick', mid.x, mid.y, '', `--c:${['#fff3b0', '#ffb02e', '#c58aff'][i]}`); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${14 + i * 3})`, opacity: 0 }], { duration: 900 + i * 150, delay: i * 120 }); });
+    const t = fxEl(scene, 'zb-txt zb-apotxt', mid.x, H * .78, 'APOTHÉOSE !', '--c:#fff3b0;--o:#7a2a00;--s:30px');
+    fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.35)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-50%) scale(1.04)', opacity: 1, offset: .85 }, { transform: 'translate(-50%,-62%) scale(1.1)', opacity: 0 }], { duration: 1500 });
+    for (let i = 0; i < 9; i++) { const ray = fxEl(scene, 'zb-pillar', W * (i + .5) / 9, H); fxAnim(ray, [{ transform: 'translate(-50%,-100%) scaleY(0)', opacity: 0 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: .9, offset: .3 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: 0 }], { duration: 1100, delay: Math.abs(i - 4) * 70 }); }
+    for (let i = 0; i < 46; i++) { const x = Math.random() * W, c = fxEl(scene, Math.random() < .5 ? 'zb-coin big' : 'zb-conf', x, -12, '', `background:${ZOB_CONF[i % 6]}`); fxAnim(c, [{ transform: 'translate(-50%,0) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * 50}px),${H + 20}px) rotate(${360 + Math.random() * 720}deg)`, opacity: 1 }], { duration: 900 + Math.random() * 700, delay: 150 + Math.random() * 900, easing: 'cubic-bezier(.3,.4,.6,1)' }); }
+    for (let i = 0; i < 24; i++) { const a = Math.random() * 6.28, d = 40 + Math.random() * 140, s = fxEl(scene, 'sfx-spark', mid.x, mid.y, '', `--c:${ZOB_CONF[i % 6]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.8)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.6}px),calc(-50% + ${Math.sin(a) * d * .6}px)) scale(.1)`, opacity: 0 }], { duration: 800 + Math.random() * 500 }); }
+    scene.querySelectorAll('.unit.mon').forEach(m => zbMark(m, 'zb-glow', 700));
+  });
+}
 FX_KIND.zob = function (scene, from, tos, fx, hero) {
   const unit = hero.closest('.unit'), mask = (unit && unit.dataset.mask) || 'rire', pw = fx[3] || 1;
   (mask === 'larme' ? zobLarme : mask === 'farce' ? zobFarce : zobRire)(scene, from, tos, pw, hero);

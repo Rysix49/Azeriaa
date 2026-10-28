@@ -2604,6 +2604,24 @@ label.btn { cursor: pointer; }
 .sfx.zb-conf { z-index: 8; width: 7px; height: 11px; border-radius: 1px; }
 .unit.mon.zb-boing .sprite { animation: zb-foeboing .76s ease-out; }
 @keyframes zb-foeboing { 0% { scale: 1; filter: none; } 14% { scale: 1.32 .6; filter: brightness(1.8) hue-rotate(40deg); } 34% { scale: .8 1.28; } 54% { scale: 1.14 .88; filter: hue-rotate(-30deg); } 74% { scale: .97 1.05; } 100% { scale: 1; filter: none; } }
+/* Apothéose (Ferveur au maximum) */
+.zb-shake { animation: zb-shake .35s 3 linear; animation-delay: 1.5s; }
+@keyframes zb-shake { 0%, 100% { translate: 0 0; } 25% { translate: 3px -2px; } 50% { translate: -3px 2px; } 75% { translate: 2px 2px; } }
+.sfx.zb-veil { z-index: 5; inset: 0 !important; width: auto; height: auto; background: radial-gradient(ellipse at 50% 55%, #3a1068aa, #08021ad8 85%); }
+.sfx.zb-flash { z-index: 12; inset: 0 !important; width: auto; height: auto; background: radial-gradient(circle at 50% 42%, #fff, #fff3b0 60%, #ffd24a); }
+.sfx.zb-orb { z-index: 10; width: 28px; height: 28px; display: grid; place-items: center; font-size: 20px; border-radius: 50%; background: radial-gradient(circle, #fff9, var(--c) 70%); box-shadow: 0 0 14px var(--c), 0 0 28px var(--c); }
+.sfx.zb-sun.mega { z-index: 9; width: 440px; height: 440px; }
+.sfx.zb-gmask { z-index: 11; width: 58px; height: 68px; border: 3px solid #5a2a00; border-radius: 50% 50% 46% 46% / 42% 42% 58% 58%; background: radial-gradient(circle at 35% 28%, #fffbe0, #ffd24a 45%, #c8841a); box-shadow: 0 0 22px #ffd24a, 0 0 60px #ff9a2a, inset 0 -6px 10px #b8701a; }
+.sfx.zb-gmask::before { content: ""; position: absolute; left: 9px; top: 20px; width: 15px; height: 8px; border-radius: 50% 50% 50% 50% / 100% 100% 0 0; background: #3a1c00; box-shadow: 21px 0 0 #3a1c00; transform: rotate(-8deg); }
+.sfx.zb-gmask i { position: absolute; left: 11px; top: 38px; width: 30px; height: 15px; border-radius: 0 0 50% 50% / 0 0 100% 100%; background: #3a1c00; border-top: 3px solid #3a1c00; overflow: hidden; }
+.sfx.zb-gmask i::after { content: ""; position: absolute; left: 3px; right: 3px; top: 0; height: 5px; background: #fffbe0; }
+.sfx.zb-apotxt { z-index: 12; font-size: 30px !important; letter-spacing: .06em; background: linear-gradient(90deg, #fff3b0 0 40%, #fff 50%, #fff3b0 60%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px #ffb02e) drop-shadow(0 2px 0 #7a2a00); animation: zb-shine 1.2s linear; }
+@keyframes zb-shine { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.sfx.zb-pillar { z-index: 8; width: 26px; height: 170%; background: linear-gradient(transparent, #fff3b0bb 40%, #ffd24a88 70%, transparent); transform-origin: 50% 100%; mix-blend-mode: screen; filter: blur(1px); }
+.sfx.zb-coin.big { width: 12px; height: 12px; }
+.unit.hero.zob-apoint { z-index: 10; }
+.unit.hero.zob-apoint .hs-zobal { animation: zb-lift 3s ease-in-out; }
+@keyframes zb-lift { 0% { transform: none; filter: none; } 12% { transform: translateY(2px) scale(1.04, .94); } 40% { transform: translateY(-12px) scale(1.08); filter: brightness(1.5) drop-shadow(0 0 10px #ffd24a); } 52% { transform: translateY(-14px) scale(1.14); filter: brightness(2.2) drop-shadow(0 0 18px #fff3b0); } 66% { transform: translateY(-10px) scale(1.06); filter: brightness(1.4) drop-shadow(0 0 12px #ffd24a); } 100% { transform: none; filter: none; } }
 /* ===== fin Zobal : attaques ===== */
 /* ===== fin Zobal ===== */
 /* Format téléphone forcé (généré depuis les règles mobiles) */
@@ -2670,7 +2688,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793215705';
+const BUILD_ID = '1793216069';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -6452,6 +6470,42 @@ function zobFarce(scene, from, tos, pw, hero) {
     });
   });
 }
+/* ---------- Zobal : APOTHÉOSE (la Ferveur atteint son maximum) ----------
+   Le monde s'assombrit, les trois masques tournoient de plus en plus vite autour du Zobal, fusionnent
+   en un Masque d'Or géant sous un soleil immense, onde de choc, piliers de lumière, pluie d'or. */
+function zobApotheose(scene, unit) {
+  const sp = unit.querySelector('.sprite') || unit, p0 = fxPos(scene, sp);
+  if (!p0 || !FX_OK()) return;
+  const W = scene.offsetWidth, H = scene.offsetHeight, hd = { x: p0.x, y: p0.y - H * .12 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
+  const mid = { x: W * .5, y: H * .42 };
+  zbMark(unit, 'zob-apoint', 3000); zbMark(scene, 'zb-shake', 3300);
+  const veil = fxEl(scene, 'zb-veil', 0, 0); fxAnim(veil, [{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .8 }, { opacity: 0 }], { duration: 3200, easing: 'linear' });
+  const faces = [['😆', '#ffd24a'], ['😢', '#5ab0ff'], ['🤪', '#ff6ad0']], orbs = faces.map((f, i) => fxEl(scene, 'zb-orb', hd.x, hd.y, `<span>${f[0]}</span>`, `--c:${f[1]}`));
+  const T0 = performance.now(), TC = 1500;
+  (function spin(now) { // les masques tournent en spirale, de plus en plus vite, puis fondent vers le Zobal
+    const t = now - T0; if (!scene.isConnected) { orbs.forEach(o => o.remove()); return; }
+    const k = Math.min(1, t / TC), ang0 = t * (.004 + .012 * k * k), r = 18 + 38 * Math.sin(Math.min(1, k * 1.15) * Math.PI * .8) * (1 - k * k * .6);
+    orbs.forEach((o, i) => { const a = ang0 + i * Math.PI * 2 / 3, cx = hd.x + (mid.x - hd.x) * Math.pow(k, 3), cy = hd.y + (mid.y - hd.y) * Math.pow(k, 3);
+      o.style.left = (cx + Math.cos(a) * r * (1 - k * .85)) + 'px'; o.style.top = (cy + Math.sin(a) * r * .55 * (1 - k * .85)) + 'px'; o.style.opacity = t < 100 ? t / 100 : 1; o.style.transform = `translate(-50%,-50%) scale(${.8 + k * .5})`;
+      if (Math.random() < .5) { const s = fxEl(scene, 'sfx-spark', parseFloat(o.style.left), parseFloat(o.style.top), '', `--c:${faces[i][1]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.3)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(.1)', opacity: 0 }], { duration: 380 }); } });
+    if (t < TC) requestAnimationFrame(spin); else orbs.forEach(o => o.remove());
+  })(T0);
+  for (let i = 0; i < 14; i++) at(i * 100, () => { const a = Math.random() * 6.28, s = fxEl(scene, 'sfx-spark', hd.x + Math.cos(a) * 16, hd.y + 18, '', '--c:#ffe27a'); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.4)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * 14}px),calc(-50% - ${40 + Math.random() * 50}px)) scale(.1)`, opacity: 0 }], { duration: 700 }); });
+  at(TC - 80, () => { const f = fxEl(scene, 'zb-flash', 0, 0); fxAnim(f, [{ opacity: 0 }, { opacity: .95, offset: .2 }, { opacity: 0 }], { duration: 560, easing: 'linear' }); });
+  at(TC, () => {
+    const sun = fxEl(scene, 'zb-sun mega', mid.x, mid.y);
+    fxAnim(sun, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(0deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1) rotate(40deg)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-50%) scale(1.3) rotate(120deg)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-50%) scale(1.8) rotate(180deg)', opacity: 0 }], { duration: 1500, easing: 'linear' });
+    const gm = fxEl(scene, 'zb-gmask', mid.x, mid.y, '<i></i>');
+    fxAnim(gm, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(-180deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.5) rotate(8deg)', opacity: 1, offset: .22 }, { transform: 'translate(-50%,-50%) scale(1.15) rotate(-4deg)', opacity: 1, offset: .38 }, { transform: 'translate(-50%,-50%) scale(1.25) rotate(3deg)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-50%) scale(2.6) rotate(0deg)', opacity: 0 }], { duration: 1500 });
+    [0, 1, 2].forEach(i => { const r = fxEl(scene, 'sfx-ring thick', mid.x, mid.y, '', `--c:${['#fff3b0', '#ffb02e', '#c58aff'][i]}`); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${14 + i * 3})`, opacity: 0 }], { duration: 900 + i * 150, delay: i * 120 }); });
+    const t = fxEl(scene, 'zb-txt zb-apotxt', mid.x, H * .78, 'APOTHÉOSE !', '--c:#fff3b0;--o:#7a2a00;--s:30px');
+    fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.35)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-50%) scale(1.04)', opacity: 1, offset: .85 }, { transform: 'translate(-50%,-62%) scale(1.1)', opacity: 0 }], { duration: 1500 });
+    for (let i = 0; i < 9; i++) { const ray = fxEl(scene, 'zb-pillar', W * (i + .5) / 9, H); fxAnim(ray, [{ transform: 'translate(-50%,-100%) scaleY(0)', opacity: 0 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: .9, offset: .3 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: 0 }], { duration: 1100, delay: Math.abs(i - 4) * 70 }); }
+    for (let i = 0; i < 46; i++) { const x = Math.random() * W, c = fxEl(scene, Math.random() < .5 ? 'zb-coin big' : 'zb-conf', x, -12, '', `background:${ZOB_CONF[i % 6]}`); fxAnim(c, [{ transform: 'translate(-50%,0) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * 50}px),${H + 20}px) rotate(${360 + Math.random() * 720}deg)`, opacity: 1 }], { duration: 900 + Math.random() * 700, delay: 150 + Math.random() * 900, easing: 'cubic-bezier(.3,.4,.6,1)' }); }
+    for (let i = 0; i < 24; i++) { const a = Math.random() * 6.28, d = 40 + Math.random() * 140, s = fxEl(scene, 'sfx-spark', mid.x, mid.y, '', `--c:${ZOB_CONF[i % 6]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.8)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.6}px),calc(-50% + ${Math.sin(a) * d * .6}px)) scale(.1)`, opacity: 0 }], { duration: 800 + Math.random() * 500 }); }
+    scene.querySelectorAll('.unit.mon').forEach(m => zbMark(m, 'zb-glow', 700));
+  });
+}
 FX_KIND.zob = function (scene, from, tos, fx, hero) {
   const unit = hero.closest('.unit'), mask = (unit && unit.dataset.mask) || 'rire', pw = fx[3] || 1;
   (mask === 'larme' ? zobLarme : mask === 'farce' ? zobFarce : zobRire)(scene, from, tos, pw, hero);
@@ -8324,7 +8378,7 @@ function startRewind(h, card, scene, fresh) {
   setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T1 + 260 + p2.length * 280);
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
-const FURY_ANIM = {};
+const FURY_ANIM = {}, ZOB_APO_PREV = {};
 let FURY_FREEZE = 0; // > 0 pendant la cinématique de la Colère de Iop : plus personne n'agit (héros, ennemis, autres joueurs)
 const COLERE_ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="cfb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient></defs><path d="M16 2 L19 6 L19 20 L13 20 L13 6 Z" fill="url(#cfb)" stroke="#5a1408" stroke-width="1.2"/><path d="M16 4 L16 19" stroke="#e8a52a" stroke-width="1"/><path d="M8 20 Q16 23 24 20 L24 22.5 Q16 25.5 8 22.5 Z" fill="#ffb62e" stroke="#5a1408" stroke-width="1.1"/><rect x="14.4" y="23" width="3.2" height="5" rx="1" fill="#7a2410" stroke="#3a0c04" stroke-width=".8"/><circle cx="16" cy="29.3" r="1.9" fill="#ff3b22" stroke="#3a0c04" stroke-width=".8"/></svg>`;
 function furyGauge(h) {
@@ -8670,6 +8724,7 @@ function patchCombat() {
     if (h.cls === 'zobal') { // masque porté, aura de Ferveur, Rupture
       const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), mk = zobMask(h), n = Math.min(ZOB_FERV_MAX, h.ferv || 1);
       if (fu) { if (fu.dataset.mask !== mk) { const had = fu.dataset.mask; fu.dataset.mask = mk; if (had) ecaState(fu, 'zob-swap', 700); } fu.classList.toggle('zob-apo', n >= ZOB_FERV_MAX); }
+      if (fu && scene && ZOB_APO_PREV[h.id] !== undefined && ZOB_APO_PREV[h.id] < ZOB_FERV_MAX && n >= ZOB_FERV_MAX) zobApotheose(scene, fu); ZOB_APO_PREV[h.id] = n;
       if (fsp) fsp.style.setProperty('--fv', (n / ZOB_FERV_MAX).toFixed(2));
       card.querySelectorAll('.zmask').forEach(b => { const on = b.dataset.mask === mk; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
       const rp = h.fight ? h.fight.ruptSeq || 0 : 0; if (scene && +(scene.dataset.rp || 0) < rp) { sceneFx(scene, 'rupt', 'RUPTURE !', '🎭'); zobShards(card); } if (scene) scene.dataset.rp = rp;

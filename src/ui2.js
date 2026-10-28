@@ -662,7 +662,7 @@ function startRewind(h, card, scene, fresh) {
   setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T1 + 260 + p2.length * 280);
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
-const FURY_ANIM = {};
+const FURY_ANIM = {}, ZOB_APO_PREV = {};
 let FURY_FREEZE = 0; // > 0 pendant la cinématique de la Colère de Iop : plus personne n'agit (héros, ennemis, autres joueurs)
 const COLERE_ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="cfb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient></defs><path d="M16 2 L19 6 L19 20 L13 20 L13 6 Z" fill="url(#cfb)" stroke="#5a1408" stroke-width="1.2"/><path d="M16 4 L16 19" stroke="#e8a52a" stroke-width="1"/><path d="M8 20 Q16 23 24 20 L24 22.5 Q16 25.5 8 22.5 Z" fill="#ffb62e" stroke="#5a1408" stroke-width="1.1"/><rect x="14.4" y="23" width="3.2" height="5" rx="1" fill="#7a2410" stroke="#3a0c04" stroke-width=".8"/><circle cx="16" cy="29.3" r="1.9" fill="#ff3b22" stroke="#3a0c04" stroke-width=".8"/></svg>`;
 function furyGauge(h) {
@@ -1008,6 +1008,7 @@ function patchCombat() {
     if (h.cls === 'zobal') { // masque porté, aura de Ferveur, Rupture
       const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), mk = zobMask(h), n = Math.min(ZOB_FERV_MAX, h.ferv || 1);
       if (fu) { if (fu.dataset.mask !== mk) { const had = fu.dataset.mask; fu.dataset.mask = mk; if (had) ecaState(fu, 'zob-swap', 700); } fu.classList.toggle('zob-apo', n >= ZOB_FERV_MAX); }
+      if (fu && scene && ZOB_APO_PREV[h.id] !== undefined && ZOB_APO_PREV[h.id] < ZOB_FERV_MAX && n >= ZOB_FERV_MAX) zobApotheose(scene, fu); ZOB_APO_PREV[h.id] = n;
       if (fsp) fsp.style.setProperty('--fv', (n / ZOB_FERV_MAX).toFixed(2));
       card.querySelectorAll('.zmask').forEach(b => { const on = b.dataset.mask === mk; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
       const rp = h.fight ? h.fight.ruptSeq || 0 : 0; if (scene && +(scene.dataset.rp || 0) < rp) { sceneFx(scene, 'rupt', 'RUPTURE !', '🎭'); zobShards(card); } if (scene) scene.dataset.rp = rp;

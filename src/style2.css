@@ -2596,5 +2596,23 @@ label.btn { cursor: pointer; }
 .sfx.zb-conf { z-index: 8; width: 7px; height: 11px; border-radius: 1px; }
 .unit.mon.zb-boing .sprite { animation: zb-foeboing .76s ease-out; }
 @keyframes zb-foeboing { 0% { scale: 1; filter: none; } 14% { scale: 1.32 .6; filter: brightness(1.8) hue-rotate(40deg); } 34% { scale: .8 1.28; } 54% { scale: 1.14 .88; filter: hue-rotate(-30deg); } 74% { scale: .97 1.05; } 100% { scale: 1; filter: none; } }
+/* Apothéose (Ferveur au maximum) */
+.zb-shake { animation: zb-shake .35s 3 linear; animation-delay: 1.5s; }
+@keyframes zb-shake { 0%, 100% { translate: 0 0; } 25% { translate: 3px -2px; } 50% { translate: -3px 2px; } 75% { translate: 2px 2px; } }
+.sfx.zb-veil { z-index: 5; inset: 0 !important; width: auto; height: auto; background: radial-gradient(ellipse at 50% 55%, #3a1068aa, #08021ad8 85%); }
+.sfx.zb-flash { z-index: 12; inset: 0 !important; width: auto; height: auto; background: radial-gradient(circle at 50% 42%, #fff, #fff3b0 60%, #ffd24a); }
+.sfx.zb-orb { z-index: 10; width: 28px; height: 28px; display: grid; place-items: center; font-size: 20px; border-radius: 50%; background: radial-gradient(circle, #fff9, var(--c) 70%); box-shadow: 0 0 14px var(--c), 0 0 28px var(--c); }
+.sfx.zb-sun.mega { z-index: 9; width: 440px; height: 440px; }
+.sfx.zb-gmask { z-index: 11; width: 58px; height: 68px; border: 3px solid #5a2a00; border-radius: 50% 50% 46% 46% / 42% 42% 58% 58%; background: radial-gradient(circle at 35% 28%, #fffbe0, #ffd24a 45%, #c8841a); box-shadow: 0 0 22px #ffd24a, 0 0 60px #ff9a2a, inset 0 -6px 10px #b8701a; }
+.sfx.zb-gmask::before { content: ""; position: absolute; left: 9px; top: 20px; width: 15px; height: 8px; border-radius: 50% 50% 50% 50% / 100% 100% 0 0; background: #3a1c00; box-shadow: 21px 0 0 #3a1c00; transform: rotate(-8deg); }
+.sfx.zb-gmask i { position: absolute; left: 11px; top: 38px; width: 30px; height: 15px; border-radius: 0 0 50% 50% / 0 0 100% 100%; background: #3a1c00; border-top: 3px solid #3a1c00; overflow: hidden; }
+.sfx.zb-gmask i::after { content: ""; position: absolute; left: 3px; right: 3px; top: 0; height: 5px; background: #fffbe0; }
+.sfx.zb-apotxt { z-index: 12; font-size: 30px !important; letter-spacing: .06em; background: linear-gradient(90deg, #fff3b0 0 40%, #fff 50%, #fff3b0 60%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px #ffb02e) drop-shadow(0 2px 0 #7a2a00); animation: zb-shine 1.2s linear; }
+@keyframes zb-shine { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.sfx.zb-pillar { z-index: 8; width: 26px; height: 170%; background: linear-gradient(transparent, #fff3b0bb 40%, #ffd24a88 70%, transparent); transform-origin: 50% 100%; mix-blend-mode: screen; filter: blur(1px); }
+.sfx.zb-coin.big { width: 12px; height: 12px; }
+.unit.hero.zob-apoint { z-index: 10; }
+.unit.hero.zob-apoint .hs-zobal { animation: zb-lift 3s ease-in-out; }
+@keyframes zb-lift { 0% { transform: none; filter: none; } 12% { transform: translateY(2px) scale(1.04, .94); } 40% { transform: translateY(-12px) scale(1.08); filter: brightness(1.5) drop-shadow(0 0 10px #ffd24a); } 52% { transform: translateY(-14px) scale(1.14); filter: brightness(2.2) drop-shadow(0 0 18px #fff3b0); } 66% { transform: translateY(-10px) scale(1.06); filter: brightness(1.4) drop-shadow(0 0 12px #ffd24a); } 100% { transform: none; filter: none; } }
 /* ===== fin Zobal : attaques ===== */
 /* ===== fin Zobal ===== */
