@@ -1434,6 +1434,41 @@ label.btn { cursor: pointer; }
 @keyframes ipc-hair { 0% { transform: none; } 38% { transform: scale(.94, 1.22); } 74% { transform: scale(1.08, .86) rotate(3deg); } 100% { transform: none; } }
 @keyframes ipc-cape { 0% { transform: rotate(0); } 38% { transform: rotate(-14deg) skewY(-4deg); } 74% { transform: rotate(12deg); } 100% { transform: rotate(0); } }
 @media (prefers-reduced-motion: reduce) { .ip-ghost, .ip-wave, .ip-ember { display: none; } }
+
+/* ===================== Colère de Iop : le héros bondit et s'abat ===================== */
+.unit.hero.cl-leap { z-index: 21; }
+.unit.hero.cl-leap .sprite { scale: 1.12; filter: drop-shadow(0 0 12px #ff4a1a) drop-shadow(0 0 26px #ff8a2a) brightness(1.18); animation: clleap 1.55s cubic-bezier(.45, 0, .25, 1) both; }
+@keyframes clleap {
+  0% { transform: translateY(0) scale(1); } 10% { transform: translateY(5px) scale(1.1, .88); }
+  30% { transform: translateY(-62px) scale(.94, 1.12) rotate(-4deg); } 62% { transform: translateY(-70px) scale(1.02) rotate(-7deg); }
+  72% { transform: translateY(8px) translateX(14px) scale(1.2, .8) rotate(10deg); } 80% { transform: translateY(-9px) scale(.97, 1.05); }
+  100% { transform: none; } }
+.hero.cl-leap .hs-iop .p-sword { animation: clsw 1.55s cubic-bezier(.45, 0, .2, 1) both; filter: drop-shadow(0 0 8px #ffd24a) drop-shadow(0 0 16px #ff4a1a); }
+@keyframes clsw { 0% { transform: rotate(-22deg); } 10% { transform: rotate(-36deg); } 30%, 62% { transform: rotate(-158deg) scale(1.12); } 71% { transform: rotate(158deg) scale(1.14); } 84% { transform: rotate(132deg); } 100% { transform: rotate(0); } }
+.hero.cl-leap .hs-iop .p-bladefire { opacity: 1; animation: ipfire .25s ease-in-out infinite; }
+.hero.cl-leap .hs-iop .p-flame { opacity: 1; animation: ipflame .3s ease-in-out infinite; }
+.hero.cl-leap .hs-iop .p-slash { animation: clslash 1.55s ease-out both; }
+@keyframes clslash { 0%, 66% { opacity: 0; transform: scale(.5) rotate(-40deg); } 72% { opacity: 1; transform: scale(1.3) rotate(40deg); } 90% { opacity: .6; transform: scale(1.6) rotate(110deg); } 100% { opacity: 0; } }
+.hero.cl-leap .hs-iop .p-cape { animation: clcape 1.55s ease-in-out both; }
+@keyframes clcape { 0% { transform: none; } 30%, 62% { transform: rotate(-16deg) skewY(-6deg) scale(1, 1.1); } 72% { transform: rotate(14deg) scale(1, .9); } 100% { transform: none; } }
+.hero.cl-leap .hs-iop .p-hair { animation: ipc-hair 1.55s ease-out both; }
+.cl-ghost { position: absolute; pointer-events: none; z-index: 20; opacity: 0; filter: sepia(1) saturate(7) hue-rotate(-25deg) brightness(1.3); animation: clghost .6s ease-out both; }
+.cl-ghost .hs { width: 100%; height: 100%; filter: none; }
+.cl-ghost .hs, .cl-ghost .hs * { animation: none !important; }
+@keyframes clghost { 0% { opacity: 0; } 15% { opacity: .6; } 100% { opacity: 0; transform: scale(1.06); } }
+.cl-speed { position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen;
+  background: repeating-conic-gradient(from 0deg at var(--cx) var(--gy), #fff7d0cc 0 .8deg, transparent .8deg 6deg);
+  -webkit-mask-image: radial-gradient(circle at var(--cx) var(--gy), transparent 8%, #000 70%); mask-image: radial-gradient(circle at var(--cx) var(--gy), transparent 8%, #000 70%); }
+.colere.s3 .cl-speed { animation: clspeed .7s ease-out forwards; }
+@keyframes clspeed { 0% { opacity: 0; transform: scale(1.5); } 40% { opacity: .75; } 100% { opacity: 0; transform: scale(1); } }
+.cl-bigslash { position: absolute; left: var(--cx); top: var(--gy); width: 0; height: 0; }
+.cl-bigslash i { position: absolute; left: -170px; top: -150px; width: 340px; height: 150px; border-radius: 50%; border-top: 9px solid #fff; border-left: 2px solid transparent; border-right: 2px solid transparent; filter: drop-shadow(0 0 10px #ffb02e) drop-shadow(0 0 22px #ff3b22); opacity: 0; transform: rotate(-24deg) scaleX(.2); }
+.cl-bigslash i.b2 { border-top-color: #ffd04a; border-top-width: 5px; top: -128px; transform: rotate(18deg) scaleX(.2); }
+.colere.s4 .cl-bigslash i { animation: clbs .6s cubic-bezier(.1, .8, .2, 1) forwards; }
+.colere.s4 .cl-bigslash i.b2 { animation-name: clbs2; animation-delay: .08s; }
+@keyframes clbs { 0% { opacity: 0; transform: rotate(-24deg) scaleX(.2); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(-24deg) scaleX(1.5) translateY(-16px); } }
+@keyframes clbs2 { 0% { opacity: 0; transform: rotate(18deg) scaleX(.2); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(18deg) scaleX(1.5) translateY(-16px); } }
+@media (prefers-reduced-motion: reduce) { .cl-ghost, .cl-speed, .cl-bigslash { display: none; } .unit.hero.cl-leap .sprite { animation: none; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1497,7 +1532,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793149723';
+const BUILD_ID = '1793150039';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -5588,7 +5623,7 @@ function playColere(card, h, done) {
   const scene = card.querySelector('.scene'); const hero = card.querySelector('[data-k="fighter"]');
   if (!scene || !hero) { done(); return; }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const T = reduced ? { title: 0, drop: 150, impact: 300, end: 900 } : { title: 380, drop: 900, impact: 1350, end: 2700 };
+  const T = reduced ? { title: 0, leap: 100, drop: 150, impact: 300, end: 900 } : { title: 380, leap: 650, drop: 1250, impact: 1700, end: 3200 };
   const mons = [...card.querySelectorAll('.unit.mon:not(.dead)')];
   const hp = relPos(hero.querySelector('.sprite') || hero, scene);
   const foes = mons.length ? mons.map(m => relPos(m.querySelector('.sprite') || m, scene)) : [{ x: hp.w * .72, y: hp.h * .6 }];
@@ -5603,20 +5638,32 @@ function playColere(card, h, done) {
   ov.innerHTML = `<div class="cl-dark"></div>
     <div class="cl-aura"><svg class="cl-rune" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="34" class="r2"/><path d="M50 6 L58 50 L50 94 L42 50 Z M6 50 L50 42 L94 50 L50 58 Z" class="r3"/></svg>${parts}</div>
     <div class="cl-title"><span>COLÈRE</span><b>DE IOP</b></div>
+    <div class="cl-speed"></div>
     <div class="cl-beam"></div>
     <div class="cl-sword">${COLERE_SWORD}</div>
     <div class="cl-impact"><div class="cl-wave"></div><div class="cl-wave w2"></div><div class="cl-wave w3"></div>
       <svg class="cl-crack" viewBox="-100 -20 200 40"><path d="M0 0 L-30 6 L-52 2 L-80 10 M0 0 L26 8 L48 3 L84 11 M0 0 L-14 14 M0 0 L12 16 L22 14 M-30 6 L-38 16 M48 3 L56 -6"/></svg>
       ${embers}${rocks}</div>
+    <div class="cl-bigslash"><i></i><i class="b2"></i></div>
     <div class="cl-flash"></div>`;
   scene.appendChild(ov);
   scene.classList.add('cl-on'); hero.classList.add('cl-charge');
   requestAnimationFrame(() => ov.classList.add('s1'));
   setTimeout(() => ov.classList.add('s2'), T.title);
+  setTimeout(() => { // le Iop bondit : images fantômes qui suivent son vrai mouvement
+    hero.classList.remove('cl-charge'); hero.classList.add('cl-leap'); ov.classList.add('s25');
+    const sp = hero.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-iop');
+    if (!svg || reduced) return;
+    const gh = setInterval(() => {
+      const r = sp.getBoundingClientRect(), b = scene.getBoundingClientRect(); const g = document.createElement('div'); g.className = 'cl-ghost';
+      g.style.cssText = `left:${r.left - b.left}px;top:${r.top - b.top}px;width:${r.width}px;height:${r.height}px`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 600);
+    }, 70);
+    setTimeout(() => clearInterval(gh), T.impact - T.leap + 120);
+  }, T.leap);
   setTimeout(() => ov.classList.add('s3'), T.drop);
   setTimeout(() => {
     ov.classList.add('s4'); scene.classList.add('cl-shake');
-    hero.classList.remove('cl-charge'); hero.classList.add('cl-release');
     const hits = done();
     if (hits) mons.forEach(m => { const i = +m.dataset.mon; const x = hits[i]; if (!x) return;
       const n = document.createElement('span'); n.className = 'cl-num' + (x.crit ? ' crit' : ''); n.textContent = '−' + fmt(x.v); m.appendChild(n); setTimeout(() => n.remove(), 1700);
@@ -5624,7 +5671,7 @@ function playColere(card, h, done) {
   }, T.impact);
   setTimeout(() => scene.classList.remove('cl-shake'), T.impact + 520);
   setTimeout(() => { ov.classList.add('s5'); }, T.end - 450);
-  setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-release'); }, T.end);
+  setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-leap'); }, T.end);
 }
 function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
 function floatNum(el, txt, cls) {
@@ -6210,7 +6257,7 @@ const ACTIONS = {
       patchCombat(); saveGame();
       return hits;
     });
-    setTimeout(() => { delete FURY_ANIM[h.id]; h.wait = Math.max(h.wait, 600); }, 2800);
+    setTimeout(() => { delete FURY_ANIM[h.id]; h.wait = Math.max(h.wait, 600); }, 3300);
     return 'keep';
   },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
