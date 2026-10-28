@@ -42,7 +42,7 @@ const ui = {
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
   recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '',
 };
-const UI_KEEP = ['view', 'hero', 'skBranch', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
+const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -1279,30 +1279,82 @@ function placeDetail(p, type) {
 }
 
 /* ---------------------------- Vue : Inventaire ---------------------------- */
-const INV_FILTERS = [['all', 'Tout'], ['gear', 'Équipements'], ['res', 'Ressources'], ['harvest', 'Outils de récolte'], ['relic', 'Reliques']];
+const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['res', 'Ressources', '🧺']];
+const INV_SORTS = [['lvl', 'Niveau'], ['q', 'Qualité'], ['val', 'Valeur'], ['name', 'Nom']];
+const INV_RCATS = [['all', 'Toutes'], ['loot', 'Butin'], ['crop', 'Récoltes'], ['food', 'Repas'], ['rune', 'Runes'], ['rare', 'Rares'], ['key', 'Clefs']];
+const INV_RCAT_LABEL = { loot: 'Butin de monstres', crop: 'Récoltes', food: 'Repas', rune: 'Runes', rare: 'Ressources rares', key: 'Clefs de donjon' };
+const resCat = id => { const r = RESOURCES[id]; return r.key ? 'key' : r.food ? 'food' : r.rune ? 'rune' : r.crop ? 'crop' : r.rare ? 'rare' : 'loot'; };
 const gearKind = g => (ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const gearStatChips = g => Object.entries(g.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k] || 'var(--fg)'}">+${v} ${STAT_LABEL[k]}</i>`).join('');
 function gearTile(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
-  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}${by ? ' worn' : ''}"${by ? ` style="--c:${CLASSES[by.cls].color}"` : ''} data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" aria-label="Porté par ${esc(by.name)}">${emblem(by.cls, true)}<b>${esc(by.name.slice(0, 1).toUpperCase())}</b></span>` : ''}</button>`;
+  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}${by ? ' worn' : ''}"${by ? ` style="--c:${CLASSES[by.cls].color}"` : ''} data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)} · niv. ${d.lvl}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" aria-label="Porté par ${esc(by.name)}">${emblem(by.cls, true)}<b>${esc(by.name.slice(0, 1).toUpperCase())}</b></span>` : ''}</button>`;
 }
 function resTile(id) {
   const r = RESOURCES[id]; const sel = ui.sel && ui.sel.k === 'res' && ui.sel.id === id;
   return `<button class="tile res${r.rare || r.key ? ' q-high' : ''}${sel ? ' sel' : ''}" data-act="pick" data-kind="res" data-id="${id}" title="${esc(r.name)} ×${fmt(st.res[id])}"><span class="t-emo">${r.icon}</span><span class="t-n num">${short(st.res[id])}</span></button>`;
 }
+function gearRow(g) {
+  const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
+  const type = d.relic ? 'Relique' : d.harvest ? HARVEST_SLOT_LABEL[d.slot] : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
+  return `<button class="iv-row ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}"><span class="tile sm ${qClass(g)}">${itemIcon(g.id)}</span>
+    <span class="iv-n"><b>${esc(d.name)}</b><small>${type} · niv. ${d.lvl}</small></span><span class="iv-st">${gearStatChips(g)}</span>
+    <span class="iv-r">${qualityTag(g)}${by ? `<span class="iv-by" style="--c:${CLASSES[by.cls].color}">${emblem(by.cls, true)}${esc(by.name)}</span>` : `<small class="iv-v">${fmt(itemValue(g))} K</small>`}</span></button>`;
+}
+function resRow(id) {
+  const r = RESOURCES[id]; const sel = ui.sel && ui.sel.k === 'res' && ui.sel.id === id;
+  return `<button class="iv-row${r.rare || r.key ? ' q-high' : ''}${sel ? ' sel' : ''}" data-act="pick" data-kind="res" data-id="${id}"><span class="tile sm res"><span class="t-emo">${r.icon}</span></span>
+    <span class="iv-n"><b>${esc(r.name)}</b><small>${INV_RCAT_LABEL[resCat(id)]}</small></span><span class="iv-st"><i class="num" style="color:var(--gold-2)">×${fmt(st.res[id])}</i></span>
+    <span class="iv-r"><small class="iv-v">${r.value} K l’unité</small><small class="iv-v num">${fmt(r.value * st.res[id])} K</small></span></button>`;
+}
+function invSection(title, icon, count, inner, list) {
+  return `<div class="iv-sec"><h4><span>${icon}</span>${title}<em class="num">${count}</em></h4>${list ? `<div class="iv-list">${inner}</div>` : `<div class="tiles">${inner}</div>`}</div>`;
+}
 function renderInventaire() {
   const f = INV_FILTERS.some(x => x[0] === ui.invFilter) ? ui.invFilter : 'all';
-  const resIds = Object.keys(st.res).filter(id => st.res[id] > 0).sort((a, b) => RESOURCES[b].value - RESOURCES[a].value);
-  const gs = [...st.gear].sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl || itemQuality(b) - itemQuality(a));
-  const counts = { all: resIds.length + gs.length, res: resIds.length, gear: 0, harvest: 0, relic: 0 };
-  for (const g of gs) counts[gearKind(g)]++;
-  const tiles = [];
-  if (f !== 'res') for (const g of gs) if (f === 'all' || gearKind(g) === f) tiles.push(gearTile(g));
-  if (f === 'all' || f === 'res') for (const id of resIds) tiles.push(resTile(id));
-  const total = resIds.reduce((s, id) => s + st.res[id] * RESOURCES[id].value, 0);
-  return `<div class="inv-layout"><section class="panel">
-    <div class="chips-row">${INV_FILTERS.map(([v, l]) => `<button class="fchip" data-act="invf" data-v="${v}" aria-pressed="${f === v}">${l}<small>${counts[v]}</small></button>`).join('')}</div>
-    <div class="inv-tools"><span class="sub">Valeur des ressources au marchand : ${kamasHtml(total)}</span><button class="btn sm" data-act="sellallres" ${resIds.length ? '' : 'disabled'}>Vendre les ressources communes</button></div>
-    ${tiles.length ? `<div class="tiles">${tiles.join('')}</div>` : `<div class="empty">Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.</div>`}
+  const sort = INV_SORTS.some(x => x[0] === ui.invSort) ? ui.invSort : 'lvl', view = ui.invView === 'list' ? 'list' : 'grid';
+  const q = norm(ui.invQ || ''), rcat = INV_RCATS.some(x => x[0] === ui.invRcat) ? ui.invRcat : 'all';
+  const slot = ui.invSlot || 'all', freeOnly = !!ui.invFree;
+  const allRes = Object.keys(st.res).filter(id => st.res[id] > 0);
+  const counts = { all: 0, res: allRes.length, gear: 0, harvest: 0, relic: 0 };
+  for (const g of st.gear) counts[gearKind(g)]++;
+  counts.all = counts.res + counts.gear + counts.harvest + counts.relic;
+  const worn = st.gear.filter(g => equippedBy(st, g.uid)).length;
+  const stock = allRes.reduce((s, id) => s + st.res[id] * RESOURCES[id].value, 0), units = allRes.reduce((s, id) => s + st.res[id], 0);
+  const matchG = g => { const d = ITEMS[g.id]; if (q && !norm(d.name).includes(q)) return false; if (freeOnly && equippedBy(st, g.uid)) return false; return true; };
+  const gcmp = { lvl: (a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl || itemQuality(b) - itemQuality(a), q: (a, b) => (b.stasis ? 2 : 0) + itemQuality(b) - ((a.stasis ? 2 : 0) + itemQuality(a)) || ITEMS[b.id].lvl - ITEMS[a.id].lvl, val: (a, b) => itemValue(b) - itemValue(a), name: (a, b) => ITEMS[a.id].name.localeCompare(ITEMS[b.id].name, 'fr') }[sort];
+  const rcmp = { lvl: (a, b) => RESOURCES[b].value - RESOURCES[a].value, q: (a, b) => st.res[b] - st.res[a], val: (a, b) => RESOURCES[b].value * st.res[b] - RESOURCES[a].value * st.res[a], name: (a, b) => RESOURCES[a].name.localeCompare(RESOURCES[b].name, 'fr') }[sort];
+  const gearOf = kind => st.gear.filter(g => gearKind(g) === kind && matchG(g) && (kind !== 'gear' || slot === 'all' || (slot === 'anneau' ? ITEMS[g.id].slot === 'anneau' : ITEMS[g.id].slot === slot))).sort(gcmp);
+  const resList = allRes.filter(id => (!q || norm(RESOURCES[id].name).includes(q)) && (rcat === 'all' || resCat(id) === rcat)).sort(rcmp);
+  const isList = view === 'list', gT = isList ? gearRow : gearTile, rT = isList ? resRow : resTile;
+  const secs = [];
+  const gs = f === 'all' || f === 'gear' ? gearOf('gear') : [], hs = f === 'all' || f === 'harvest' ? gearOf('harvest') : [], rl = f === 'all' || f === 'relic' ? gearOf('relic') : [];
+  if (gs.length) secs.push(invSection('Équipements', '⚔️', gs.length, gs.map(gT).join(''), isList));
+  if (hs.length) secs.push(invSection('Outils de récolte', '🪓', hs.length, hs.map(gT).join(''), isList));
+  if (rl.length) secs.push(invSection('Reliques', '✨', rl.length, rl.map(gT).join(''), isList));
+  if ((f === 'all' || f === 'res') && resList.length) {
+    if (rcat === 'all' && f === 'res') for (const [c, l] of INV_RCATS.slice(1)) { const ids = resList.filter(id => resCat(id) === c); if (ids.length) secs.push(invSection(INV_RCAT_LABEL[c], { loot: '🦴', crop: '🌾', food: '🍞', rune: '🔮', rare: '💎', key: '🗝️' }[c], ids.length, ids.map(rT).join(''), isList)); }
+    else secs.push(invSection('Ressources', '🧺', resList.length, resList.map(rT).join(''), isList));
+  }
+  const slotChips = f === 'gear' ? `<div class="chips-row iv-sub">${[['all', 'Tous'], ...['arme', 'coiffe', 'cape', 'amulette', 'anneau', 'ceinture', 'bottes'].map(s => [s, SLOT_LABEL[s === 'anneau' ? 'anneau1' : s]])].map(([v, l]) => `<button class="fchip sm" data-act="invslot" data-v="${v}" aria-pressed="${slot === v}">${l}</button>`).join('')}</div>` : '';
+  const rcatChips = f === 'res' ? `<div class="chips-row iv-sub">${INV_RCATS.map(([v, l]) => `<button class="fchip sm" data-act="invrcat" data-v="${v}" aria-pressed="${rcat === v}">${l}</button>`).join('')}</div>` : '';
+  const sell = `<button class="btn sm" data-act="sellallres" ${allRes.length ? '' : 'disabled'} title="Vend toutes les ressources sauf les rares et les clefs">Vendre les ressources communes</button>`;
+  return `<div class="inv-layout"><section class="panel iv-panel">
+    <div class="iv-stats">
+      <div class="iv-stat"><span>⚔️</span><div><small>Objets</small><b class="num">${counts.gear + counts.harvest + counts.relic}</b><em>${worn} porté${worn > 1 ? 's' : ''}</em></div></div>
+      <div class="iv-stat"><span>🧺</span><div><small>Ressources</small><b class="num">${allRes.length}</b><em>${short(units)} unités</em></div></div>
+      <div class="iv-stat gold"><span>💰</span><div><small>Stock</small><b class="num">${fmt(stock)}</b><em>kamas</em></div></div>
+    </div>
+    <div class="iv-bar">
+      <label class="iv-search"><span aria-hidden="true">🔎</span><input id="invq" type="search" placeholder="Rechercher un objet…" value="${esc(ui.invQ || '')}" autocomplete="off" data-input="invq">${ui.invQ ? '<button type="button" class="iv-x" data-act="invqclear" aria-label="Effacer">✕</button>' : ''}</label>
+      <div class="iv-seg" role="group" aria-label="Affichage"><button data-act="invview" data-v="grid" aria-pressed="${!isList}" title="Grille">▦</button><button data-act="invview" data-v="list" aria-pressed="${isList}" title="Liste">☰</button></div>
+    </div>
+    <div class="chips-row iv-cats">${INV_FILTERS.map(([v, l, i]) => `<button class="fchip" data-act="invf" data-v="${v}" aria-pressed="${f === v}"><span class="ci">${i}</span>${l}<small>${counts[v]}</small></button>`).join('')}</div>
+    ${slotChips}${rcatChips}
+    <div class="iv-tools"><div class="iv-sort"><span class="sub">Trier</span>${INV_SORTS.map(([v, l]) => `<button class="fchip sm" data-act="invsort" data-v="${v}" aria-pressed="${sort === v}">${l}</button>`).join('')}</div>
+      <div class="iv-sort">${f !== 'res' ? `<button class="fchip sm" data-act="invfree" aria-pressed="${freeOnly}" title="Masquer les objets portés">Non portés</button>` : ''}${sell}</div></div>
+    ${secs.length ? secs.join('') : `<div class="empty">${q ? `Aucun résultat pour « ${esc(ui.invQ)} ».` : 'Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.'}</div>`}
     <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
   </section><aside class="panel inspector">${inspector()}</aside></div>`;
 }
@@ -1310,19 +1362,30 @@ function inspector() {
   const s = ui.sel;
   if (s && s.k === 'gear') { const g = gearById(st, s.uid); if (g) return gearInspector(g); }
   if (s && s.k === 'res' && st.res[s.id] > 0) return resInspector(s.id);
-  return `<div class="insp-empty">${ICONS.inventaire}<b>Sélectionne un objet</b><p class="sub">Clique sur une case pour voir ses détails, l’équiper sur un héros ou le vendre.</p></div>`;
+  return `<div class="insp-empty">${ICONS.inventaire}<b>Sélectionne un objet</b><p class="sub">Clique sur une case pour voir ses détails, le comparer à ce que portent tes héros, l’équiper ou le vendre.</p></div>`;
+}
+function gearCurrent(d, h) {
+  if (d.relic) return h.relic; if (d.harvest) return (h.hequip || {})[d.slot];
+  const ss = slotsFor(d.slot); return h.equip[ss.find(s => !h.equip[s]) || ss[0]];
+}
+function gearDiff(g, cur) {
+  const o = cur ? gearById(st, cur).stats : {}; const ks = [...new Set([...Object.keys(g.stats), ...Object.keys(o)])];
+  return ks.map(k => [k, (g.stats[k] || 0) - (o[k] || 0)]).filter(([, v]) => v).map(([k, v]) => `<i class="${v > 0 ? 'up' : 'dn'}">${v > 0 ? '▲ +' : '▼ '}${v} ${STAT_LABEL[k]}</i>`).join('');
 }
 function gearInspector(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid);
   const type = d.relic ? 'Relique' : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]}` : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
   const req = d.harvest ? `Paysan ${d.lvl}` : `Niveau ${d.lvl}`;
   const canFor = h => (d.harvest ? st.jobs.paysan.lvl >= d.lvl : h.lvl >= d.lvl);
-  return `<div class="insp-head"><div class="tile lg ${qClass(g)}">${itemIcon(g.id)}</div><div class="ih-t"><b class="display">${esc(d.name)}</b><small>${type} · ${req}</small>${qualityTag(g)}</div></div>
-    <div class="insp-stats">${Object.entries(g.stats).map(([k, v]) => `<div class="s" style="--c:${STAT_COLOR[k] || 'var(--fg)'}"><span>+${v} ${STAT_LABEL[k]}</span><small>${d.stats[k][0]}–${d.stats[k][1]}</small></div>`).join('')}</div>
+  const stat = ([k, v]) => { const [a, b] = d.stats[k], pc = b === a ? 100 : Math.round((v - a) / (b - a) * 100);
+    return `<div class="s" style="--c:${STAT_COLOR[k] || 'var(--fg)'}"><span>+${v} ${STAT_LABEL[k]}</span><small>${a}–${b}</small><i class="roll"><b style="width:${Math.max(4, pc)}%"></b></i></div>`; };
+  const rows = st.heroes.map(h => { const on = by && by.id === h.id, ok = canFor(h), cur = gearCurrent(d, h), cd = cur ? ITEMS[gearById(st, cur).id] : null, diff = on ? '' : gearDiff(g, cur);
+    return `<button class="iv-eq${on ? ' here' : ''}" ${on || !ok ? 'disabled' : ''} data-act="equipon" data-uid="${g.uid}" data-hero="${h.id}" style="--c:${CLASSES[h.cls].color}">${emblem(h.cls, true)}<span class="iv-eqt"><b>${esc(h.name)}</b><small>${on ? 'Le porte déjà' : !ok ? `${req} requis` : cd ? `Remplace ${esc(cd.name)}` : 'Emplacement libre'}</small>${diff && ok ? `<span class="iv-diff">${diff}</span>` : ''}</span><span class="iv-go">${on ? '✓' : ok ? 'Équiper' : '🔒'}</span></button>`; }).join('');
+  return `<div class="insp-card ${qClass(g)}"><div class="insp-head"><div class="tile lg ${qClass(g)}">${itemIcon(g.id)}</div><div class="ih-t"><b class="display">${esc(d.name)}</b><small>${type} · ${req}</small>${qualityTag(g)}</div></div></div>
+    <div class="insp-stats">${Object.entries(g.stats).map(stat).join('')}</div>
     ${d.set ? setBlock(d.set, by) : ''}
     ${by ? `<div class="eqby-line">${emblem(by.cls, true)}<span>Porté par <b>${esc(by.name)}</b></span><button class="btn sm ghost" data-act="unequipuid" data-uid="${g.uid}">Retirer</button></div>` : ''}
-    ${st.heroes.length ? `<div class="label">Équiper sur</div><div class="send-list">${st.heroes.map(h => { const on = by && by.id === h.id; const ok = canFor(h);
-      return heroChip(h, `data-act="equipon" data-uid="${g.uid}" data-hero="${h.id}" ${on || !ok ? 'disabled' : ''}`, on ? 'Le porte déjà' : ok ? 'Équiper' : `${req} requis`, (on ? 'here' : '') + ' sm'); }).join('')}</div>` : ''}
+    ${st.heroes.length ? `<div class="label">Équiper sur</div><div class="iv-eqs">${rows}</div>` : ''}
     <div class="insp-sell">${by ? '<span class="sub">Retire l’objet pour pouvoir le vendre.</span>' : ui.sellUid === g.uid
       ? `<button class="btn danger" data-act="sellgear" data-uid="${g.uid}">Confirmer la vente · ${fmt(itemValue(g))} K</button><button class="btn ghost" data-act="sellcancel">Annuler</button>`
       : `<button class="btn ghost" data-act="sellask" data-uid="${g.uid}">Vendre · ${fmt(itemValue(g))} kamas</button>`}</div>`;
@@ -1334,7 +1397,7 @@ function resInspector(id) {
   const from = Object.entries(MONSTERS).filter(([, m]) => !m.archi && m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
   const crop = CROPS.find(c => c.id === id);
   return `<div class="insp-head"><div class="tile lg res"><span class="t-emo">${r.icon}</span></div><div class="ih-t"><b class="display">${r.name}</b><small>${r.key ? 'Clef de donjon' : r.food ? 'Consommable' : r.crop ? 'Céréale' : r.rare ? 'Ressource rare' : 'Ressource'}</small><span class="qty num">×${fmt(n)}</span></div></div>
-    <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Valeur du stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
+    <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
     ${r.food ? `<div class="food-desc">${r.icon} ${r.food.desc}. Manger un nouveau repas remplace l’effet en cours.</div>
       <div class="label">Faire manger à</div><div class="send-list">${st.heroes.map(h => heroChip(h, `data-act="eat" data-id="${id}" data-hero="${h.id}"`, h.food ? `En cours · ${mmss(h.food.left)}` : 'Manger', 'sm')).join('')}</div>` : ''}
     <div class="insp-sell"><button class="btn sm" data-act="sellres" data-id="${id}" data-n="1">Vendre 1</button><button class="btn sm" data-act="sellres" data-id="${id}" data-n="10" ${n < 10 ? 'disabled' : ''}>Vendre 10</button><button class="btn sm danger" data-act="sellres" data-id="${id}" data-n="all">Tout vendre</button></div>
@@ -1376,9 +1439,11 @@ function renderMain(force) {
   const keep = ['.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
   // La page garde sa hauteur et sa position pendant le redessin : sans ça, le défilement saute quand le contenu change de taille
   const main = $('#main'), sy = window.scrollY, mh = main.offsetHeight; main.style.minHeight = mh + 'px';
+  const ae = document.activeElement, fk = ae && ae.id === 'invq' ? [ae.selectionStart, ae.selectionEnd] : null;
   main.innerHTML = (RENDER[ui.view] || renderCombat)();
   try { window.scrollTo(0, sy); } catch (e) {}
   requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
+  if (fk) { const e = $('#invq'); if (e) { e.focus(); try { e.setSelectionRange(fk[0], fk[1]); } catch (x) {} } }
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
   if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); updateArchiBtn(); }
 }
@@ -1499,6 +1564,8 @@ const ACTIONS = {
     if (innerWidth < 1000) setTimeout(() => { const el = $('.inspector'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 30);
   },
   invf(d) { ui.invFilter = d.v; },
+  invsort(d) { ui.invSort = d.v; }, invview(d) { ui.invView = d.v; }, invslot(d) { ui.invSlot = d.v; }, invrcat(d) { ui.invRcat = d.v; }, invfree() { ui.invFree = !ui.invFree; },
+  invqclear() { ui.invQ = ''; },
   sellres(d) { const k = sellRes(st, d.id, d.n === 'all' ? Infinity : +d.n); if (k) toast(`+${fmt(k)} kamas`); },
   sellallres() { let k = 0; for (const id of Object.keys(st.res)) if (!RESOURCES[id].rare && !RESOURCES[id].key) k += sellRes(st, id, Infinity); if (k) toast(`Vendu pour ${fmt(k)} kamas`); },
   sellask(d) { ui.sellUid = d.uid; },
@@ -1594,7 +1661,7 @@ document.addEventListener('change', e => {
   const el = e.target;
   if (el.dataset.change === 'auto') { const h = selHero(); h.auto = el.value; if (h.auto) autoAllocate(h); el.blur(); saveGame(); render(true); }
 });
-document.addEventListener('input', e => { if (e.target.dataset.input === 'rname') ui.recruitName = e.target.value; });
+document.addEventListener('input', e => { if (e.target.dataset.input === 'rname') ui.recruitName = e.target.value; if (e.target.dataset.input === 'invq') { ui.invQ = e.target.value; renderMain(true); } });
 document.addEventListener('pointerdown', e => {
   pointerDown = true;
   const t = e.target.closest('.nav-btn[data-act="view"]');
