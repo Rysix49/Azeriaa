@@ -3124,7 +3124,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793228011';
+const BUILD_ID = '1793228141';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3661,24 +3661,24 @@ function foodFxList(f) { return Object.entries(f.fx).map(([k, v]) => ({ k, v, la
 function defFood(id, lvl, name, icon, fx, min, ing, tale) {
   const food = { fx, ms: min * 60 * 1000 }; food.desc = foodFxList(food).map(x => x.txt).join(' · ') + ` pendant ${min} min`;
   const cost = Object.entries(ing).reduce((a, [k, n]) => a + RESOURCES[k].value * n, 0);
-  RESOURCES[id] = { name, icon, value: Math.round(cost * 6 / 10) * 10, food, tale };
+  RESOURCES[id] = { name, icon, value: Math.round(cost * 3 / 10) * 10, food, tale };
   RECIPES.push({ out: id, job: 'boulanger', lvl, ing });
 }
-defFood('pain_ble', 1, 'Pain de Blé', '🍞', { speed: 100 }, 10, { ble: 40 }, 'Le classique du matin. Croustillant, et ça file comme le vent.');
-defFood('galette_orge', 10, "Galette d'Orge", '🥞', { dmgPct: 10 }, 20, { orge: 40, laine_bouftou: 30 }, 'Épaisse, dorée, et elle donne envie de cogner.');
-defFood('brioche_avoine', 20, "Brioche d'Avoine", '🥐', { kamas: 25 }, 20, { avoine: 45, plume_tofu: 40, dard_moskito: 20 }, 'Tellement bonne que les marchands paient plus cher à ta table.');
-defFood('tourte_houblon', 30, 'Tourte du Houblon', '🥧', { xpPct: 25 }, 20, { houblon: 50, defense_sanglier: 20, queue_ecurouille: 20 }, 'Une bouchée et tout devient clair. Même les leçons de combat.');
-defFood('tisane_sauge', 35, 'Tisane de Sauge Sacrée', '🍵', { rxp: 40 }, 30, { sauge: 50, menthe: 30, ortie: 40 }, 'La sagesse des herbes dans une tasse. Les plantes se laissent mieux cueillir.');
-defFood('pain_lin', 40, 'Pain de Lin Épicé', '🥖', { pp: 35 }, 20, { lin: 55, patte_arakne: 30, chapeau_champ: 25 }, 'Un parfum qui attire le butin comme les mouches.');
-defFood('seigle_noir', 50, 'Pain de Seigle Noir', '🍞', { res: 12 }, 25, { seigle: 60, carapace_scara: 25, fragment_craq: 20 }, 'Dense comme un mur. Les coups glissent dessus.');
-defFood('makis_riz', 50, 'Makis de Pandala', '🍙', { crit: 10 }, 20, { riz: 60, plume_kwak: 30, oreille_bwork: 20 }, 'Roulés avec précision, servis avec tranchant.');
-defFood('cookie_trefle', 55, 'Cookie au Trèfle à 5 Feuilles', '🍪', { rqty: 30 }, 30, { trefle: 55, orchidee: 25, petale_pissenlit: 40 }, 'La chance se mange. Les champs sont plus généreux.');
-defFood('chope_malt', 60, 'Chope de Malt Brâkmarienne', '🍺', { hpPct: 25 }, 25, { malt: 65, peau_kanigrou: 25, poil_koalak: 25 }, 'Un gros cœur et de gros bras. Très gros.');
-defFood('soupe_chanvre', 70, 'Soupe de Chanvre du Paysan', '🍲', { rspd: 50 }, 30, { chanvre: 70, ortie: 50, os_chafer: 20 }, 'Elle réveille les bras : la faux va deux fois plus vite.');
-defFood('fondue_royale', 75, 'Fondue du Bouftou Royal', '🫕', { dmgPct: 18, hpPct: 15 }, 30, { laine_bouftou: 80, cuir_bouftou: 50, corne_royale: 1 }, 'Un plat de roi. Il fait du bien à tout le corps.');
-defFood('tarte_edelweiss', 80, "Tarte à l'Edelweiss", '🥧', { dodge: 15, speed: 25 }, 25, { edelweiss: 70, croc_mufafah: 25, gelee_bleutee: 20 }, 'Légère comme un flocon : on ne te touche plus.');
-defFood('festin_mandragore', 90, 'Festin de Mandragore', '🍖', { xpPct: 30, kamas: 30, pp: 40 }, 30, { mandragore: 60, ginseng: 50, belladone: 30, ectoplasme: 20 }, 'Il crie quand on le coupe, mais qu’est-ce qu’il est bon.');
-defFood('banquet_dieux', 100, "Banquet des Dieux d'Amakna", '🍰', { dmgPct: 25, hpPct: 25, xpPct: 30, crit: 10, speed: 30 }, 45, { perceneige: 70, mandragore: 70, laine_royale: 1, nattes_bworkette: 1 }, 'Le repas ultime. Les héros s’en souviennent toute leur vie.');
+defFood('pain_ble', 1, 'Pain de Blé', '🍞', { speed: 100 }, 10, { ble: 100 }, 'Le classique du matin. Croustillant, et ça file comme le vent.');
+defFood('galette_orge', 10, "Galette d'Orge", '🥞', { dmgPct: 10 }, 20, { orge: 130, dard_moskito: 60 }, 'Épaisse, dorée, et elle donne envie de cogner.');
+defFood('brioche_avoine', 20, "Brioche d'Avoine", '🥐', { kamas: 25 }, 20, { avoine: 160, queue_ecurouille: 120, pic_prespic: 40 }, 'Tellement bonne que les marchands paient plus cher à ta table.');
+defFood('tourte_houblon', 30, 'Tourte du Houblon', '🥧', { xpPct: 25 }, 20, { houblon: 180, defense_sanglier: 100, ecorce_abra: 60 }, 'Une bouchée et tout devient clair. Même les leçons de combat.');
+defFood('tisane_sauge', 35, 'Tisane de Sauge Sacrée', '🍵', { rxp: 40 }, 30, { sauge: 180, menthe: 90, ortie: 120 }, 'La sagesse des herbes dans une tasse. Les plantes se laissent mieux cueillir.');
+defFood('pain_lin', 40, 'Pain de Lin Épicé', '🥖', { pp: 35 }, 20, { lin: 200, carapace_scara: 80, fragment_craq: 60 }, 'Un parfum qui attire le butin comme les mouches.');
+defFood('seigle_noir', 50, 'Pain de Seigle Noir', '🍞', { res: 12 }, 25, { seigle: 220, oreille_bwork: 80, fragment_craq: 60 }, 'Dense comme un mur. Les coups glissent dessus.');
+defFood('makis_riz', 50, 'Makis de Pandala', '🍙', { crit: 10 }, 20, { riz: 220, oreille_bwork: 70, poil_koalak: 40 }, 'Roulés avec précision, servis avec tranchant.');
+defFood('cookie_trefle', 55, 'Cookie au Trèfle à 5 Feuilles', '🍪', { rqty: 30 }, 30, { trefle: 200, orchidee: 60, poil_koalak: 100 }, 'La chance se mange. Les champs sont plus généreux.');
+defFood('chope_malt', 60, 'Chope de Malt Brâkmarienne', '🍺', { hpPct: 25 }, 25, { malt: 240, peau_kanigrou: 80, poil_koalak: 60 }, 'Un gros cœur et de gros bras. Très gros.');
+defFood('soupe_chanvre', 70, 'Soupe de Chanvre du Paysan', '🍲', { rspd: 50 }, 30, { chanvre: 260, ortie: 150, croc_mufafah: 60, os_chafer: 40 }, 'Elle réveille les bras : la faux va deux fois plus vite.');
+defFood('fondue_royale', 75, 'Fondue du Bouftou Royal', '🫕', { dmgPct: 18, hpPct: 15 }, 30, { os_chafer: 150, croc_mufafah: 100, corne_royale: 2, laine_royale: 3 }, 'Un plat de roi. Il fait du bien à tout le corps.');
+defFood('tarte_edelweiss', 80, "Tarte à l'Edelweiss", '🥧', { dodge: 15, speed: 25 }, 25, { edelweiss: 240, os_chafer: 60, gelee_bleutee: 60 }, 'Légère comme un flocon : on ne te touche plus.');
+defFood('festin_mandragore', 90, 'Festin de Mandragore', '🍖', { xpPct: 30, kamas: 30, pp: 40 }, 30, { mandragore: 200, ginseng: 160, belladone: 80, ectoplasme: 60 }, 'Il crie quand on le coupe, mais qu’est-ce qu’il est bon.');
+defFood('banquet_dieux', 100, "Banquet des Dieux d'Amakna", '🍰', { dmgPct: 25, hpPct: 25, xpPct: 30, crit: 10, speed: 30 }, 45, { perceneige: 240, mandragore: 240, ectoplasme: 80, laine_royale: 3, nattes_bworkette: 2 }, 'Le repas ultime. Les héros s’en souviennent toute leur vie.');
 /* Plat du jour : un plat par jour (parmi ceux que tu sais faire) donne une portion offerte à chaque fabrication */
 function platDuJour(lvl, t = Date.now()) {
   const pool = RECIPES.filter(r => r.job === 'boulanger' && r.lvl <= Math.max(1, lvl)); if (!pool.length) return null;
