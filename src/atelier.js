@@ -201,16 +201,58 @@ function atBrkGo() {
   for (const g of sel) { const res = brisage(st, g.uid); if (typeof res === 'string') continue; n++; xp += res.xp; lv = lv || res.lvUp; icons.push(res.id); for (const [k, v] of Object.entries(res.runes)) runes[k] = (runes[k] || 0) + v; }
   st.stats.broken = (st.stats.broken || 0) + n;
   atBrkClose(); ui.fmSel = ui.fmSel && gearById(st, ui.fmSel) ? ui.fmSel : null; ui.fmLog = [];
-  const chips = Object.entries(runes).map(([k, v]) => `<span class="fg-rune" style="--c:${RUNES[k].col}">${RUNES[k].icon} +${v}</span>`).join('');
+  breakShow(icons, runes, n, xp);
+  if (lv) toast(`Forgemage passe niveau ${st.jobs.forgemage.lvl} !`, 'lvl');
+}
+/* ---------- Cinématique de brisage : les objets volent en éclats, les runes apparaissent ---------- */
+function breakShow(icons, runes, n, xp) {
   const old = document.getElementById('forge'); if (old) old.remove();
   const el = document.createElement('div'); el.id = 'forge'; el.className = 'forge breaking';
-  const shown = icons.slice(0, 5);
-  el.innerHTML = `<div class="forge-card"><div class="fg-stage"><div class="fg-glow"></div>${shown.map((id, i) => `<div class="fg-work big" style="margin-left:${(i - (shown.length - 1) / 2) * 38}px;animation-delay:${i * .08}s">${itemIcon(id)}</div>`).join('')}<div class="fg-hammer">🔨</div><div class="fg-flash"></div>${Array.from({ length: 20 }, (_, k) => { const a = k / 20 * 6.28, dd = 40 + Math.random() * 70; return `<i class="fg-sp" style="--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd - 10).toFixed(0)}px;--t:.32s;--c:${Object.values(RUNES)[k % 6].col}"></i>`; }).join('')}</div>
-    <div class="fg-reveal"><b class="fg-name">${n} objet${n > 1 ? 's' : ''} brisé${n > 1 ? 's' : ''}</b><div class="fg-runes">${chips || '<span class="sub">Aucune rune…</span>'}</div><div class="fg-foot"><span class="pop-xp">+${fmt(xp)} XP 🔮</span></div></div></div>`;
+  const shown = icons.slice(0, 5), S = 46, W = 340, GY = 78;
+  const cx = i => W / 2 + (i - (shown.length - 1) / 2) * 62;
+  const chips = Object.entries(runes).map(([k, v]) => `<span class="fg-rune" data-k="${k}" style="--c:${RUNES[k].col}">${RUNES[k].icon} +<b data-n="${v}">0</b></span>`).join('');
+  el.innerHTML = `<div class="forge-card"><div class="fg-stage fg-bstage"><div class="fg-circle"></div><div class="fg-glow"></div>
+      ${shown.map((id, i) => `<div class="fg-bitem" style="left:${cx(i) - S / 2}px;top:${GY - S / 2}px;width:${S}px;height:${S}px;animation-delay:${i * .07}s">${itemIcon(id)}</div>`).join('')}
+      <div class="fg-bhammer">🔨</div><div class="fg-flash b"></div></div>
+    <div class="fg-reveal fg-breveal"><b class="fg-name">${n} objet${n > 1 ? 's' : ''} brisé${n > 1 ? 's' : ''}</b><div class="fg-runes">${chips || '<span class="sub">Aucune rune…</span>'}</div><div class="fg-foot"><span class="pop-xp">+${fmt(xp)} XP 🔮</span></div></div></div>`;
   document.body.appendChild(el);
+  const stage = el.querySelector('.fg-stage'), alive = () => el.isConnected, at = (ms, fn) => setTimeout(() => { if (alive()) fn(); }, ms);
+  const add = (cls, x, y, html = '', style = '') => { const d = document.createElement('div'); d.className = cls; d.style.cssText = `left:${x}px;top:${y}px;${style}`; d.innerHTML = html; stage.appendChild(d); return d; };
+  const run = (d, frames, o) => { if (!d.animate) { setTimeout(() => d.remove(), o.duration); return; } const an = d.animate(frames, { fill: 'forwards', easing: 'ease-out', ...o }); an.onfinish = () => d.remove(); };
+  const TS = 560; // l'impact du marteau
+  at(TS, () => {
+    el.classList.add('shake');
+    run(add('fg-ring', W / 2, GY), [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(7)', opacity: 0 }], { duration: 700 });
+    shown.forEach((id, i) => {
+      const x0 = cx(i), delay = Math.abs(i - (shown.length - 1) / 2) * 45;
+      setTimeout(() => {
+        if (!alive()) return;
+        const art = el.querySelectorAll('.fg-bitem')[i]; if (art) art.style.visibility = 'hidden';
+        const N = 3, pts = []; for (let r = 0; r <= N; r++) for (let c = 0; c <= N; c++) pts.push([c / N * 100 + (c > 0 && c < N ? (Math.random() - .5) * 16 : 0), r / N * 100 + (r > 0 && r < N ? (Math.random() - .5) * 16 : 0)]);
+        for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+          const p = (rr, cc) => pts[rr * (N + 1) + cc], tl = p(r, c), tr = p(r, c + 1), bl = p(r + 1, c), br = p(r + 1, c + 1);
+          (Math.random() < .5 ? [[tl, tr, br], [tl, br, bl]] : [[tl, tr, bl], [tr, br, bl]]).forEach(tri => {
+            const mx = (tri[0][0] + tri[1][0] + tri[2][0]) / 3 - 50, my = (tri[0][1] + tri[1][1] + tri[2][1]) / 3 - 50;
+            const sh = add('fg-shard', x0 - S / 2, GY - S / 2, itemIcon(id), `width:${S}px;height:${S}px;clip-path:polygon(${tri.map(q => q[0].toFixed(1) + '% ' + q[1].toFixed(1) + '%').join(',')})`);
+            const sp = 70 + Math.random() * 90, vx = (mx / 50) * sp + (Math.random() - .5) * 40, vy = (my / 50) * sp - 70 - Math.random() * 40, g = 380, rot = (Math.random() - .5) * 900;
+            const kf = [0, .25, .5, .75, 1].map(t => { const tt = t * .95; return { transform: `translate(${(vx * tt).toFixed(1)}px,${(vy * tt + .5 * g * tt * tt).toFixed(1)}px) rotate(${(rot * t).toFixed(0)}deg) scale(${(1 - t * .35).toFixed(2)})`, opacity: t < .7 ? 1 : 1 - (t - .7) / .3, offset: t }; });
+            run(sh, kf, { duration: 950, easing: 'linear' });
+          });
+        }
+        for (let q = 0; q < 12; q++) { const a = Math.random() * 6.28, d = 24 + Math.random() * 40, p = add('fg-dust', x0, GY); run(p, [{ transform: 'translate(-50%,-50%) scale(1.4)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d - 10}px)) scale(.1)`, opacity: 0 }], { duration: 520 + Math.random() * 280 }); }
+      }, delay);
+    });
+  });
+  // les runes jaillissent des débris puis rejoignent le récapitulatif
+  const glyphs = []; Object.entries(runes).forEach(([k, v]) => { const cnt = Math.min(6, Math.max(1, Math.ceil(v / 4))); for (let q = 0; q < cnt; q++) glyphs.push(k); });
+  glyphs.forEach((k, gi) => at(TS + 330 + gi * 70, () => {
+    const x0 = cx(gi % shown.length) + (Math.random() - .5) * 26, g = add('fg-rglyph', x0, GY + 6, RUNES[k].icon, `--c:${RUNES[k].col}`);
+    run(g, [{ transform: 'translate(-50%,-50%) scale(0) rotate(-40deg)', opacity: 0 }, { transform: 'translate(-50%,-90%) scale(1.5) rotate(8deg)', opacity: 1, offset: .22 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * 30}px),-170%) scale(1.2) rotate(-6deg)`, opacity: 1, offset: .55 }, { transform: `translate(calc(-50% + ${(W / 2 - x0) * .6}px),${stage.offsetHeight - GY + 24}px) scale(.5)`, opacity: 0 }], { duration: 1250, easing: 'ease-in-out' });
+  }));
+  // décompte des runes obtenues
+  at(TS + 900, () => { el.querySelectorAll('.fg-rune b[data-n]').forEach(b => { const tot = +b.dataset.n, t0 = performance.now(); (function tick(now) { const p = Math.min(1, (now - t0) / 800); b.textContent = Math.round(tot * (1 - Math.pow(1 - p, 3))); if (p < 1 && alive()) requestAnimationFrame(tick); else b.textContent = tot; })(t0); }); });
   const kill = () => { el.classList.add('out'); setTimeout(() => el.remove(), 320); };
-  el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, 4800);
-  if (lv) toast(`Forgemage passe niveau ${st.jobs.forgemage.lvl} !`, 'lvl');
+  el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, 5200);
 }
 document.addEventListener('input', e => {
   const t = e.target.dataset && e.target.dataset.input; if (t !== 'brk-jet' && t !== 'brk-lvl') return;

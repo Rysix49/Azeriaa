@@ -2817,3 +2817,25 @@ label.btn { cursor: pointer; }
 .brk-sum { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 10px; border-top: 1px dashed var(--line-2); }
 .brk-sum .fm-pred { margin-top: 6px; }
 @media (max-width: 900px) { .fm-top { flex-direction: column; } .fm-breakbtn { flex-direction: row; gap: 8px; } .fm-top .fm-runes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Brisage : éclats et runes */
+.fg-bstage { height: 178px; overflow: hidden; background: radial-gradient(ellipse at 50% 55%, #8a5ae855, transparent 65%); }
+.fg-circle { position: absolute; left: 50%; top: 78px; width: 270px; height: 270px; margin: -135px 0 0 -135px; border-radius: 50%; border: 2px dashed #a070ff77; box-shadow: 0 0 30px #8a5ae866, inset 0 0 40px #8a5ae844; transform: scaleY(.38) rotate(0deg); animation: fg-circ 6s linear infinite, fg-in .4s ease-out; }
+.fg-circle::after { content: ""; position: absolute; inset: 22px; border-radius: 50%; border: 1px solid #c9a0ff55; }
+@keyframes fg-circ { to { transform: scaleY(.38) rotate(360deg); } }
+.fg-bitem { position: absolute; z-index: 3; animation: fg-bpop .35s cubic-bezier(.2, 1.4, .4, 1) both; filter: drop-shadow(0 0 8px #a070ff); }
+.fg-bitem .iart { width: 100%; height: 100%; }
+@keyframes fg-bpop { from { transform: scale(0) translateY(18px); opacity: 0; } }
+.fg-bhammer { position: absolute; left: 50%; top: 4px; margin-left: -4px; font-size: 52px; transform-origin: 85% 90%; z-index: 6; animation: fg-slam .62s cubic-bezier(.5, 0, .9, .4) .1s both; }
+@keyframes fg-slam { 0% { transform: translateY(-60px) rotate(-70deg); opacity: 0; } 30% { opacity: 1; transform: translateY(-28px) rotate(-85deg); } 80% { transform: translateY(14px) rotate(12deg) scale(1.1); opacity: 1; } 100% { transform: translateY(18px) rotate(14deg) scale(1.1); opacity: 0; } }
+.fg-flash.b { top: auto; background: radial-gradient(circle at 50% 44%, #fff, #c9a0ff 45%, transparent 75%); animation: fg-flash .45s ease-out .56s forwards; }
+.fg-ring { position: absolute; z-index: 4; width: 46px; height: 46px; border-radius: 50%; border: 3px solid #e6d2ff; box-shadow: 0 0 14px #a070ff, inset 0 0 10px #a070ff; pointer-events: none; }
+.fg-shard { position: absolute; z-index: 5; pointer-events: none; filter: drop-shadow(0 0 3px #0008); }
+.fg-shard .iart { width: 100%; height: 100%; }
+.fg-dust { position: absolute; z-index: 5; width: 5px; height: 5px; border-radius: 50%; background: #e6d2ff; box-shadow: 0 0 6px #a070ff; pointer-events: none; }
+.fg-rglyph { position: absolute; z-index: 7; font-size: 24px; text-shadow: 0 0 10px var(--c), 0 0 20px var(--c); pointer-events: none; }
+.forge.breaking .fg-breveal { animation-delay: 1.15s; }
+.forge.breaking .fg-breveal .fg-item { margin-top: 0; }
+.fg-name small { font-size: 11px; font-family: var(--f-body); color: var(--muted); font-weight: 600; }
+.forge.shake .forge-card { animation: fg-shake .28s linear; }
+@keyframes fg-shake { 0%, 100% { transform: translate(0, 0); } 20% { transform: translate(-4px, 2px); } 40% { transform: translate(4px, -2px); } 60% { transform: translate(-3px, -1px); } 80% { transform: translate(2px, 2px); } }
