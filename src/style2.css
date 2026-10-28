@@ -2414,4 +2414,12 @@ label.btn { cursor: pointer; }
 @keyframes sc-ringout { 0% { opacity: 1; transform: scale(.4); } 100% { opacity: 0; transform: scale(7); } }
 .fnum.sac { color: #ffd8d0; text-shadow: 0 0 10px #ff2a1a, 0 2px 0 #3a0804; font-weight: 900; letter-spacing: .06em; font-size: 1.3em; }
 @media (prefers-reduced-motion: reduce) { .sc-ghost, .sc-slash, .sc-drop, .sc-ring { display: none; } }
+
+/* couronne d'épines : se garnit en Berserk */
+.hs-sacrieur .p-thorns2{transform-box:view-box;transform-origin:63px 33px;transform:scale(.55,.2);transition:transform .7s cubic-bezier(.2,1.6,.4,1),opacity .5s}
+.hero.sac-rage .hs-sacrieur .p-thorns2{transform:scale(1);animation:sc-thorn 1.3s ease-in-out .7s infinite alternate}
+.hero.sac-rage .hs-sacrieur .p-crown{filter:drop-shadow(0 0 2px #ff3b1f)}
+.hs-sacrieur .p-crowndrip{animation:sc-cdrip 1.6s linear infinite}
+@keyframes sc-thorn{from{transform:scale(1)}to{transform:scale(1.05,1.12)}}
+@keyframes sc-cdrip{to{stroke-dashoffset:-16}}
 /* ===== fin Sacrieur ===== */
