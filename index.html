@@ -2327,7 +2327,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793205135';
+const BUILD_ID = '1793205307';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2466,7 +2466,7 @@ const CLASSES = {
   xelor: {
     name: 'Xélor', role: 'Mage du temps', main: 'deg', elem: 'int', hpMult: 0.95, color: '#3f73c4',
     desc: 'Accumule du temps à chaque sort, fige ses ennemis et rejoue des tours entiers.',
-    passive: { name: 'Sablier Temporel', points: [['⏳','Grains du temps','Chaque PA dépensé ajoute 1 grain au sablier (12 max).'],['🔁','Rembobinage','Sablier plein : il le vide et rejoue un tour complet, sans regagner de grains.'],['❄️','Distorsion','12 % de chance de figer la cible : elle passe sa prochaine attaque.'],['🎯','Temps arrêté','Une cible figée subit +25 % de dégâts.'],['⌛','Éclat du temps','Chaque Rembobinage remplit le sablier au-dessus de sa tête (4 rembobinages). Plein, un clic le brise : le Xélor vit 10 combats d’un coup, avec leur XP, leurs kamas et leur butin.'],['🌀','Paradoxe','Une fois par combat : s’il tombe à 0 PV avec 6 grains ou plus, il revient aux PV du début de son tour (30 % minimum).']], desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : au début de son tour, le Xélor le vide et rejoue un tour complet, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
+    passive: { name: 'Sablier Temporel', points: [['⏳','Grains du temps','Chaque PA dépensé ajoute 1 grain au sablier (12 max).'],['🔁','Rembobinage','Sablier plein : il se vide aussitôt et le Xélor rejoue son tour, sans regagner de grains.'],['❄️','Distorsion','12 % de chance de figer la cible : elle passe sa prochaine attaque.'],['🎯','Temps arrêté','Une cible figée subit +25 % de dégâts.'],['⌛','Éclat du temps','Chaque Rembobinage remplit le sablier au-dessus de sa tête (4 rembobinages). Plein, un clic le brise : le Xélor vit 10 combats d’un coup, avec leur XP, leurs kamas et leur butin.'],['🌀','Paradoxe','Une fois par combat : s’il tombe à 0 PV avec 6 grains ou plus, il revient aux PV du début de son tour (30 % minimum).']], desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : dès que le 12e grain tombe, le Xélor le vide et rejoue son tour, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
     spells: [
       { id: 'aiguille', name: 'Aiguille', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
       { id: 'gelure', name: 'Gelure', lvl: 4, pa: 2, min: 3, max: 5, stat: 'int', type: 'dmg', freeze: 30, max_: 1 },
@@ -3087,8 +3087,6 @@ function heroTurn(st, h, t, ev) {
   const xel = h.cls === 'xelor';
   const aliveBefore = f.mons.filter(m => m.hp > 0).length;
   if (xel) f.hpMark = h.hp;
-  const rewind = xel && (f.grains || 0) >= 12;
-  if (rewind) f.grains -= 12;
   const actions = [];
   const phase = (gainGrains) => {
   f.casts = {};
@@ -3145,9 +3143,11 @@ function heroTurn(st, h, t, ev) {
     enuChest(h, f, actions);
     if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
   }
-  const rwPre = rewind ? f.mons.map(m => m.hp) : null;
+  const rwPre = xel ? f.mons.map(m => m.hp) : null;
   phase(true);
-  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
+  if (rewind) f.grains -= 12;
+  if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
