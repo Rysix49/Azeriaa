@@ -557,7 +557,7 @@ function updateArchiBtn() {
   if (ar) {
     tgt = st.heroes.find(x => x.fight && x.fight.archi); if (tgt) state = 2;
     if (!tgt) { tgt = st.heroes.find(x => x.nextArchi); if (tgt) state = 1; }
-    if (!tgt) { const inZone = x => x.act && x.act.type === 'zone' && x.act.id === a.zone; tgt = [heroById(a.hero), ...st.heroes].find(x => x && inZone(x)) || st.heroes.find(x => !(x.act && x.act.type === 'harvest')); }
+    if (!tgt) { const inZone = x => x.act && x.act.type === 'zone' && x.act.id === a.zone; tgt = [heroById(a.hero), ...st.heroes].find(x => x && inZone(x)); }
   }
   for (const btn of btns) {
     const card = btn.closest('[data-hero-card]'), mine = !!(tgt && card && card.dataset.heroCard === String(tgt.id));

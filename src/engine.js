@@ -117,6 +117,8 @@ function setActivity(st, h, type, id, tier = 0) {
   h.act = type ? { type, id, room: 0, tier: type === 'zone' ? clamp(+tier || 0, 0, SUBZONES.length - 1) : 0 } : null;
   h.session = type ? { start: Date.now(), xp: 0, kamas: 0, kills: 0, runs: 0 } : null;
   h.log = [];
+  /* l'archimonstre s'enfuit quand plus aucun héros n'est dans sa zone */
+  if (st.archi && !st.heroes.some(x => x.act && x.act.type === 'zone' && x.act.id === st.archi.zone)) st.archi = null;
   if (type === 'harvest') h.wait = harvestMs(st, h);
 }
 
