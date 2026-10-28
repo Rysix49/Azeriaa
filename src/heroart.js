@@ -1064,6 +1064,85 @@ sacrieur: `<svg class="hs hs-sacrieur" viewBox="0 0 128 128" aria-hidden="true">
   </g>
   <g class="p-steam"><path d="M46 20 q-3 -6 0 -10 q3 -4 0 -9 M80 22 q4 -6 0 -11 q-3 -4 0 -9" fill="none" stroke="#ffd0c0" stroke-width="2" stroke-linecap="round" opacity="0"/></g>
 </svg>`,
+
+/* ---- ZOBAL ---- maître des masques : trois masques interchangeables (Rieur, Pleureur, Farceur), aura de Ferveur, bâton étoilé ---- */
+zobal: `<svg class="hs hs-zobal" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <linearGradient id="zbTun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a566ea"/><stop offset=".6" stop-color="#6a30b8"/><stop offset="1" stop-color="#3e1a78"/></linearGradient>
+    <linearGradient id="zbSlv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ee0d4"/><stop offset="1" stop-color="#1f8a90"/></linearGradient>
+    <linearGradient id="zbGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4b0"/><stop offset=".55" stop-color="#f0bc3a"/><stop offset="1" stop-color="#b8781a"/></linearGradient>
+    <radialGradient id="zbSkin" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#ffe2c0"/><stop offset="1" stop-color="#d49060"/></radialGradient>
+    <radialGradient id="zbMR" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#fff0b0"/><stop offset=".55" stop-color="#ffc83a"/><stop offset="1" stop-color="#d88a10"/></radialGradient>
+    <radialGradient id="zbML" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#e4f4ff"/><stop offset=".55" stop-color="#8ec4f4"/><stop offset="1" stop-color="#3f78c8"/></radialGradient>
+    <radialGradient id="zbMF" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#e8ffc4"/><stop offset=".55" stop-color="#9ae860"/><stop offset="1" stop-color="#3f9a2a"/></radialGradient>
+    <radialGradient id="zbAura" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#d8a8ff" stop-opacity=".75"/><stop offset=".6" stop-color="#a060f0" stop-opacity=".3"/><stop offset="1" stop-color="#a060f0" stop-opacity="0"/></radialGradient>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="119" rx="30" ry="5" fill="#000" opacity=".3"/>
+  <circle class="p-aura" cx="62" cy="62" r="52" fill="url(#zbAura)"/>
+  <g class="p-orbit"><g class="p-mini"><ellipse cx="62" cy="10" rx="4" ry="5" fill="url(#zbGold)" stroke="#1c0b3a" stroke-width="1.2"/><path d="M60 9.5h1.6M63 9.5h1.6M60.4 12q1.6 1.4 3.2 0" stroke="#1c0b3a" stroke-width=".9" fill="none"/></g></g>
+  <g class="p-bag" stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round">
+    <path d="M50 60 Q34 60 22 70 Q20 76 26 74 Q36 70 48 70Z" fill="#ff6aa8"/>
+    <path d="M50 64 Q38 70 30 84 Q30 90 35 86 Q42 78 50 72Z" fill="#ffd24a"/>
+  </g>
+  <g class="p-armB" stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M52 62 Q42 68 42 80 L47 82 Q48 72 56 68Z" fill="url(#zbSlv)"/>
+    <circle cx="44.5" cy="83" r="4.6" fill="url(#zbSkin)"/>
+    <g class="p-spare"><ellipse cx="38" cy="86" rx="6" ry="7.4" fill="url(#zbMR)"/><path d="M35 84.5q1.6-1.6 3.2 0M39 84.5q1.6-1.6 3.2 0M35.4 89q2.6 2 5.4 0" stroke="#1c0b3a" stroke-width="1.2" fill="none"/></g>
+  </g>
+  <g stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M55 88 L51 108" stroke-width="11"/><path d="M55 88 L51 108" stroke="#e8508e" stroke-width="7"/>
+    <path d="M69 88 L72 108" stroke-width="11"/><path d="M69 88 L72 108" stroke="#38c8c0" stroke-width="7"/>
+    <path d="M42 112 Q42 105 51 106 L58 108 Q60 114 50 115 Q44 118 38 108 Q36 104 40 106Z" fill="url(#zbGold)"/>
+    <path d="M66 108 Q76 105 80 110 Q84 106 88 100 Q91 106 86 114 Q78 116 66 114Z" fill="url(#zbGold)"/>
+    <path d="M52 87 L56 107 M70 88 L72 107" stroke="#fff" stroke-width="1.4" opacity=".35"/>
+  </g>
+  <g class="p-torso">
+    <path d="M47 58 Q62 52 78 58 L82 88 Q62 95 43 88Z" fill="url(#zbTun)" stroke="#1c0b3a" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="M62 62 L69 72 L62 82 L55 72Z M54 78 L59 84 L54 90 L49 84Z M70 78 L75 84 L70 90 L65 84Z" fill="url(#zbGold)" stroke="#1c0b3a" stroke-width="1.2" stroke-linejoin="round" opacity=".92"/>
+    <path d="M44 86 Q62 94 82 86" fill="none" stroke="#ffd24a" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="62" cy="88" r="3.4" fill="url(#zbGold)" stroke="#1c0b3a" stroke-width="1.2"/>
+    <path d="M45 56 L49 49 L54 56 L59 48 L64 56 L69 48 L74 56 L79 49 L83 58 Q63 66 45 58Z" fill="#fff4dc" stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="52" cy="60" r="2.4" fill="#ff5a9a" stroke="#1c0b3a" stroke-width="1"/><circle cx="73" cy="60" r="2.4" fill="#5ee0d4" stroke="#1c0b3a" stroke-width="1"/>
+  </g>
+  <g class="p-shovel" stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M100 66 L108 36" stroke-width="5.4"/><path d="M100 66 L108 36" stroke="#e8c070" stroke-width="2.6"/>
+    <g class="p-glint"><path d="M108 24 l2.6 6.2 l6.4 2.4 l-6.4 2.4 l-2.6 6.2 l-2.6 -6.2 l-6.4 -2.4 l6.4 -2.4Z" fill="url(#zbGold)" stroke-width="1.4"/></g>
+    <path d="M104 52 Q116 54 118 64 Q112 58 104 58Z" fill="#ff6aa8" stroke-width="1.4"/>
+    <path d="M76 61 Q88 64 90 74 L84 78 Q82 70 74 68Z" fill="url(#zbSlv)"/>
+    <path d="M88 72 Q96 74 100 68 L103 72 Q98 82 86 80Z" fill="url(#zbSlv)"/>
+    <circle cx="100.5" cy="67" r="5" fill="url(#zbSkin)"/>
+    <path d="M97 65 q3-2 6 0" fill="none" stroke="#a8643c" stroke-width="1" stroke-opacity=".6"/>
+  </g>
+  <g class="p-face">
+    <path class="p-feath" d="M56 18 Q54 6 62 2 Q62 10 64 16Z" fill="#b078f0" stroke="#1c0b3a" stroke-width="1.8" stroke-linejoin="round"/>
+    <path class="p-feath f2" d="M62 17 Q64 4 73 2 Q70 10 68 17Z" fill="#40d8cc" stroke="#1c0b3a" stroke-width="1.8" stroke-linejoin="round"/>
+    <path class="p-feath f3" d="M68 19 Q74 10 83 12 Q78 17 72 22Z" fill="#ffd24a" stroke="#1c0b3a" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M44 38 Q42 18 63 17 Q84 18 82 38 Q80 28 63 27 Q46 28 44 38Z" fill="#3a1a72" stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round"/>
+    <g class="m-rire">
+      <ellipse cx="63" cy="36" rx="16.4" ry="18.6" fill="url(#zbMR)" stroke="#1c0b3a" stroke-width="2.4"/>
+      <path d="M55 22 L63 17 L71 22 L63 27Z" fill="#fff" opacity=".35"/>
+      <path d="M52.5 33 Q57 27 61.5 33 M65 33 Q69.5 27 74 33" fill="none" stroke="#1c0b3a" stroke-width="2.6" stroke-linecap="round"/>
+      <circle cx="52" cy="40" r="3.4" fill="#ff7a5a" opacity=".6"/><circle cx="74" cy="40" r="3.4" fill="#ff7a5a" opacity=".6"/>
+      <path d="M53 42 Q63 56 73 42 Q63 47 53 42Z" fill="#7a1030" stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round"/><path d="M56 44.4 Q63 47.6 70 44.4" fill="none" stroke="#fff" stroke-width="1.8"/>
+    </g>
+    <g class="m-larme">
+      <ellipse cx="63" cy="36" rx="16.4" ry="18.6" fill="url(#zbML)" stroke="#1c0b3a" stroke-width="2.4"/>
+      <path d="M55 22 L63 17 L71 22 L63 27Z" fill="#fff" opacity=".4"/>
+      <path d="M52 32 Q57 36 61.5 31 M65 31 Q69.5 36 74 32" fill="none" stroke="#1c0b3a" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M51 28 L61 31 M75 28 L65 31" stroke="#1c0b3a" stroke-width="2" stroke-linecap="round"/>
+      <path class="p-tear" d="M55 38 Q52 44 55 46 Q58 44 55 38Z" fill="#e8f8ff" stroke="#1c0b3a" stroke-width="1.2"/><path class="p-tear t2" d="M71 38 Q68 44 71 46 Q74 44 71 38Z" fill="#e8f8ff" stroke="#1c0b3a" stroke-width="1.2"/>
+      <path d="M55 49 Q63 42 71 49" fill="none" stroke="#1c0b3a" stroke-width="2.6" stroke-linecap="round"/>
+    </g>
+    <g class="m-farce">
+      <ellipse cx="63" cy="36" rx="16.4" ry="18.6" fill="url(#zbMF)" stroke="#1c0b3a" stroke-width="2.4"/>
+      <path d="M48 26 L54 31 L50 36 L56 40" fill="none" stroke="#ff4a9a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="56" cy="32" r="5.2" fill="#fff" stroke="#1c0b3a" stroke-width="2"/><path d="M56 32 m0 0 a1.6 1.6 0 1 1 1.6 1.6 a3.2 3.2 0 1 1 -3.2 -3.2" fill="none" stroke="#1c0b3a" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M66 28 L74 36 M74 28 L66 36" stroke="#1c0b3a" stroke-width="2.8" stroke-linecap="round"/>
+      <path d="M52 44 Q58 40 64 46 Q70 52 76 42 Q72 56 62 54 Q54 52 52 44Z" fill="#7a1030" stroke="#1c0b3a" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M62 50 Q66 58 70 50Z" fill="#ff6aa8" stroke="#1c0b3a" stroke-width="1.6" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>`,
 };
 
 function hasHeroArt(cls) { return !!HERO_ART[cls]; }

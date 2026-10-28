@@ -20,6 +20,13 @@ const SPELL_FX = {
   fleche_explosive:  ['arrow', '#ffb03a', '', 'explode'],
   fleche_punitive:   ['beam', '#b4ff7a'],
   pluie_fleches:     ['rain', '#c8ff9a', '➶'],
+  // Zobal : masques
+  grimace:           ['proj', '#c58aff', '🎭'],
+  tour_de_passe:     ['proj', '#ffd24a', '🃏'],
+  danse_macabre:     ['wave', '#b06aff'],
+  mascarade:         ['buff', '#d9a8ff', '🎭'],
+  rictus:            ['beam', '#ff6ad0'],
+  carnaval:          ['rain', '#d9a8ff', '🎭'],
   // Sacrieur : sang
   assaut:            ['slash', '#d4202a'],
   absorption:        ['drain', '#ff2a3a'],

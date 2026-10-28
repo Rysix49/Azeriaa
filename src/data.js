@@ -59,6 +59,24 @@ const CLASSES = {
       { id: 'pluie_fleches', name: 'Pluie de Flèches', lvl: 40, pa: 5, min: 18, max: 24, stat: 'agi', type: 'aoe', cd: 1 },
     ],
   },
+  zobal: {
+    name: 'Zobal', role: 'Maître des masques', main: 'deg', elem: 'cha', hpMult: 1.0, color: '#8a4fd0',
+    desc: 'Change de masque comme de personnalité : chacun lui donne un style de combat.',
+    passive: { name: 'Bal Masqué', points: [
+      ['🎭','Trois masques','Il porte toujours un masque, à choisir sur sa carte. 😆 Rieur : +12 % de dégâts. 😢 Pleureur : −10 % de dégâts subis et un peu de soin à chaque tour. 🤪 Farceur : 15 % de chances que ses sorts offensifs soient lancés deux fois.'],
+      ['🔥','Ferveur','Chaque tour où il garde le même masque, sa Ferveur monte (5 max) et amplifie le pouvoir du masque (+4 % par point). Au maximum, c’est l’Apothéose : +15 % de chances de coup critique.'],
+      ['💥','Rupture','Changer de masque en plein combat brise l’ancien : toute sa Ferveur explose en dégâts sur tous les ennemis, et la moitié lui reste pour le nouveau masque.'],
+      ['🃏','Bal costumé','Le masque porté se garde d’un combat à l’autre ; à chaque nouveau combat, la Ferveur repart de 1.']
+    ], desc: 'Trois masques à équiper (Rieur offensif, Pleureur défensif, Farceur chaotique). La Ferveur monte tant qu’il garde son masque ; changer de masque déclenche une Rupture qui frappe tous les ennemis.' },
+    spells: [
+      { id: 'grimace', name: 'Grimace', lvl: 1, pa: 3, min: 6, max: 9, stat: 'cha', type: 'dmg', max_: 2 },
+      { id: 'tour_de_passe', name: 'Tour de Passe-passe', lvl: 6, pa: 2, min: 5, max: 7, stat: 'cha', type: 'dmg', max_: 2 },
+      { id: 'danse_macabre', name: 'Danse Macabre', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
+      { id: 'mascarade', name: 'Mascarade', lvl: 22, pa: 2, type: 'buff', buff: { deg: 35, res: 8 }, turns: 3, cd: 5 },
+      { id: 'rictus', name: 'Rictus Tragique', lvl: 30, pa: 4, min: 24, max: 32, stat: 'cha', type: 'dmg', cd: 1 },
+      { id: 'carnaval', name: 'Carnaval Sanglant', lvl: 42, pa: 5, min: 18, max: 24, stat: 'cha', type: 'aoe', cd: 2 },
+    ],
+  },
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
