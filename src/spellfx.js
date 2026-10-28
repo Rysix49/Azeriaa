@@ -220,6 +220,8 @@ const FX_KIND = {
 function playSpellFx(card, cast) {
   if (!FX_OK()) return;
   const scene = card.querySelector('.scene'); if (!scene) return;
+  const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
+  if (heroUnit) { const k = ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]) ? 'cheer' : 'atk'; heroUnit.classList.remove('atk', 'cheer'); void heroUnit.offsetWidth; heroUnit.classList.add(k); setTimeout(() => heroUnit.classList.remove(k), 650); }
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
   const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
   const from = fxPos(scene, heroSprite); if (!from) return;
