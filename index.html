@@ -2591,6 +2591,8 @@ label.btn { cursor: pointer; }
 .sfx.zb-ripple { z-index: 6; width: 54px; height: 18px; border: 3px solid #cdeeff; border-radius: 50%; box-shadow: 0 0 8px #5ab0ff, inset 0 0 6px #5ab0ff; }
 .sfx.zb-mist { z-index: 7; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle, #e4f6ffaa, transparent 70%); }
 .sfx.zb-rain { z-index: 7; width: 2px; height: 26px; background: linear-gradient(#cdeeff00, #9ad4ff); }
+.sfx.zb-tear.big { width: 22px; height: 28px; }
+.sfx.zb-geyser { z-index: 7; width: 30px; height: 70px; border-radius: 50% 50% 20% 20% / 90% 90% 10% 10%; background: linear-gradient(#e8f8ff, #8ed0ff 40%, #2a78d0); box-shadow: 0 0 12px #5ab0ff; transform-origin: 50% 100%; }
 .unit.mon.zb-wet .sprite { animation: zb-foewet 1s ease-out; }
 @keyframes zb-foewet { 0% { filter: sepia(.8) hue-rotate(170deg) saturate(2.6) brightness(.85); scale: 1.06 .92; } 100% { filter: none; scale: 1; } }
 /* effets : Farceur */
@@ -2668,7 +2670,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793215425';
+const BUILD_ID = '1793215705';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -6387,7 +6389,7 @@ function zobRire(scene, from, tos, pw, hero) {
     const r = fxEl(scene, 'sfx-ring thick', hd.x, hd.y, '', '--c:#ffe27a'); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(2.6)', opacity: 0 }], { duration: 560 });
   });
   [0, 1, 2].forEach(i => at(120 + i * 140, () => {
-    const e = fxEl(scene, 'zb-txt', hd.x + (i - 1) * 20 + 8, hd.y - 12, 'HA!', `--c:#ffe27a;--o:#7a4300;--s:${20 + i * 4 + Math.round(pw * 3)}px`);
+    const e = fxEl(scene, 'zb-txt', hd.x + (i - 1) * 20 + 8, hd.y - 12, 'HA!', `--c:#ffe27a;--o:#7a4300;--s:${11 + i * 2 + Math.round(pw * 2)}px`);
     fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(.2) rotate(-12deg)', opacity: 0 }, { transform: `translate(-50%,-95%) scale(1.2) rotate(${(i - 1) * 12}deg)`, opacity: 1, offset: .25 }, { transform: `translate(-50%,-210%) scale(1) rotate(${(i - 1) * 16}deg)`, opacity: 0 }], { duration: 800 });
   }));
   tos.forEach((p, ti) => {
@@ -6409,27 +6411,24 @@ function zobRire(scene, from, tos, pw, hero) {
 function zobLarme(scene, from, tos, pw, hero) {
   const sw = hero.offsetWidth, sh = hero.offsetHeight, hd = { x: from.x + sw * .03, y: from.y - sh * .27 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
   const eyes = [{ x: hd.x - sw * .05, y: hd.y + sh * .02 }, { x: hd.x + sw * .08, y: hd.y + sh * .02 }];
-  const cl = fxEl(scene, 'zb-cloud', hd.x, hd.y - sh * .3, '<i></i><i></i><i></i><i></i>');
-  fxAnim(cl, [{ transform: 'translate(-50%,-50%) scale(.1)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-70%) scale(.8)', opacity: 0 }], { duration: 1150 });
-  at(80, () => { const e = fxEl(scene, 'zb-txt', hd.x - 6, hd.y - 14, 'snif…', '--c:#cfeaff;--o:#12386a;--s:15px'); fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 }, { transform: 'translate(-50%,-110%) scale(1)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-170%) scale(1)', opacity: 0 }], { duration: 700 }); });
+  at(40, () => { const e = fxEl(scene, 'zb-txt', hd.x - 6, hd.y - 14, 'snif…', '--c:#cfeaff;--o:#12386a;--s:12px'); fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 }, { transform: 'translate(-50%,-110%) scale(1)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-170%) scale(1)', opacity: 0 }], { duration: 700 }); });
+  for (let i = 0; i < 9; i++) eyes.forEach((ey, ei) => at(60 + i * 40 + ei * 20, () => { // les larmes ruissellent sur le masque
+    const d = fxEl(scene, 'zb-tear sm', ey.x, ey.y); fxAnim(d, [{ transform: 'translate(-50%,-50%) scale(.7)', opacity: 1 }, { transform: `translate(calc(-50% + ${(ei ? 5 : -5)}px),calc(-50% + 34px)) scale(1)`, opacity: 0 }], { duration: 420, easing: 'ease-in' }); }));
+  const top = { x: from.x + sw * .22, y: from.y - sh * .62 };
   tos.forEach((p, ti) => {
-    const nd = 14 + Math.round(pw * 6);
-    eyes.forEach((ey, ei) => { for (let i = 0; i < nd / 2; i++) at(260 + i * 32 + ei * 16 + ti * 40, () => { // jets de larmes
-      const d = fxEl(scene, 'zb-tear', ey.x, ey.y), tx = p.x + (Math.random() - .5) * 26, ty = p.y + (Math.random() - .5) * 18, a = zbArc(ey, { x: tx, y: ty }, 52 + Math.random() * 40);
-      fxAnim(d, [{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 1 }, { transform: `translate(calc(-50% + ${a.mx}px),calc(-50% + ${a.my}px)) scale(1.1)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${a.dx}px),calc(-50% + ${a.dy}px)) scale(.9)`, opacity: 1 }], { duration: 440 + Math.random() * 90, easing: 'cubic-bezier(.35,.1,.65,.9)' }); }); });
-    at(300 + ti * 40, () => { // vague de sanglot portée par le bâton
-      const w = fxEl(scene, 'zb-wave', from.x + sw * .28, from.y + sh * .02);
-      fxAnim(w, [{ transform: 'translate(-50%,-50%) scale(.3,.3) rotate(-18deg)', opacity: 0 }, { transform: `translate(calc(-50% + ${(p.x - from.x) * .5}px),calc(-50% + ${(p.y - from.y) * .5 - 14}px)) scale(1.1,.9) rotate(-8deg)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${p.x - from.x - sw * .28}px),calc(-50% + ${p.y - from.y - 4}px)) scale(1.6,1.1) rotate(0deg)`, opacity: 0 }], { duration: 640, easing: 'ease-in' });
+    at(380 + ti * 90, () => { // une énorme larme se forme, puis est lancée en cloche
+      const g = fxEl(scene, 'zb-tear big', top.x, top.y), dx = p.x - top.x, dy = p.y - top.y;
+      fxAnim(g, [{ transform: 'translate(-50%,-50%) scale(.1)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.2)', opacity: 1, offset: .22 }, { transform: `translate(calc(-50% + ${dx * .5}px),calc(-50% + ${dy * .5 - 70}px)) scale(1.3)`, opacity: 1, offset: .62 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.9)`, opacity: 1 }], { duration: 760, easing: 'ease-in-out' });
     });
-    at(260 + (nd / 2) * 32 + 300 + ti * 40, () => { // éclaboussure
-      for (let r = 0; r < 2; r++) { const rp = fxEl(scene, 'zb-ripple', p.x, p.y + 14); fxAnim(rp, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${2.2 + r * .8})`, opacity: 0 }], { duration: 620, delay: r * 110 }); }
-      for (let q = 0; q < 14; q++) { const ang = -Math.PI * (.08 + Math.random() * .84), d = 24 + Math.random() * 40, c = fxEl(scene, 'zb-tear sm', p.x, p.y);
-        fxAnim(c, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d}px),calc(-50% + ${Math.sin(ang) * d}px)) scale(.8)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d * 1.2}px),calc(-50% + ${Math.sin(ang) * d + 30}px)) scale(.4)`, opacity: 0 }], { duration: 560 + Math.random() * 200, easing: 'ease-out' }); }
-      for (let q = 0; q < 3; q++) { const m = fxEl(scene, 'zb-mist', p.x + (q - 1) * 14, p.y); fxAnim(m, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: .8 }, { transform: `translate(-50%,-${90 + q * 20}%) scale(1.8)`, opacity: 0 }], { duration: 800, delay: q * 70 }); }
+    at(380 + 760 + ti * 90, () => { // la larme éclate en geyser
+      const gy = fxEl(scene, 'zb-geyser', p.x, p.y + 10);
+      fxAnim(gy, [{ transform: 'translate(-50%,-100%) scaleY(.1)', opacity: 1 }, { transform: `translate(-50%,-100%) scaleY(${1 + pw * .25})`, opacity: 1, offset: .35 }, { transform: `translate(-50%,-100%) scaleY(${1.1 + pw * .25}) scaleX(.5)`, opacity: 0 }], { duration: 640, easing: 'ease-out' });
+      for (let r = 0; r < 2; r++) { const rp = fxEl(scene, 'zb-ripple', p.x, p.y + 12); fxAnim(rp, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${2.2 + r * .8})`, opacity: 0 }], { duration: 620, delay: r * 110 }); }
+      for (let q = 0; q < 16; q++) { const ang = -Math.PI * (.1 + Math.random() * .8), d = 26 + Math.random() * 44, c = fxEl(scene, 'zb-tear sm', p.x, p.y);
+        fxAnim(c, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d}px),calc(-50% + ${Math.sin(ang) * d}px)) scale(.8)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d * 1.2}px),calc(-50% + ${Math.sin(ang) * d + 34}px)) scale(.4)`, opacity: 0 }], { duration: 560 + Math.random() * 200, easing: 'ease-out' }); }
       zbMark(zbFoeAt(scene, p), 'zb-wet', 1000);
     });
   });
-  at(520, () => { for (let i = 0; i < 22; i++) { const x = Math.random() * scene.offsetWidth, e = fxEl(scene, 'zb-rain', x, -20); fxAnim(e, [{ transform: 'translateY(0)', opacity: .9 }, { transform: `translateY(${scene.offsetHeight + 40}px)`, opacity: .9 }], { duration: 520 + Math.random() * 260, delay: Math.random() * 360, easing: 'linear' }); } });
 }
 function zobFarce(scene, from, tos, pw, hero) {
   const sw = hero.offsetWidth, sh = hero.offsetHeight, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
