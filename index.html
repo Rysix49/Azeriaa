@@ -2696,6 +2696,7 @@ label.btn { cursor: pointer; }
 .mrank .pips i { width: 8px; height: 8px; transform: rotate(45deg); border: 1px solid #ffffff30; background: #00000050; }
 .mrank .pips i.on { background: linear-gradient(135deg, #fff3b0, #e8aa2e); border-color: #b9800f; box-shadow: 0 0 5px #e8aa2e99; }
 .mrank.m1 { color: #b8e08a; } .mrank.m2 { color: #8ec4f4; } .mrank.m3 { color: #c58aff; } .mrank.m4 { color: var(--gold-2); text-shadow: 0 0 8px #e8aa2e88; }
+.mrank.m5 { color: #ff9ae0; text-shadow: 0 0 10px #ff5ac8aa; } .mrank.m5 .pips i.on { background: linear-gradient(135deg, #ffe0f6, #ff5ac8); border-color: #c0309a; box-shadow: 0 0 6px #ff5ac8aa; }
 .bar.mast > i { background: linear-gradient(90deg, #b9800f, #f6cd6a); }
 .bar.thin { height: 6px; }
 .rc-perks { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: var(--muted); }
@@ -3054,7 +3055,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793226518';
+const BUILD_ID = '1793226658';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3498,10 +3499,11 @@ const HARVEST_RANKS = [
   { at: 1000, qty: 10, mir: 1 },
   { at: 3000, qty: 15, mir: 1.5 },
   { at: 7500, qty: 20, mir: 2 },
+  { at: 15000, qty: 50, mir: 12 },
 ];
 const HARVEST_RANK_NAMES = {
-  paysan:     ['Glaneur', 'Moissonneur', 'Fermier', 'Maître des champs', 'Légende des blés'],
-  alchimiste: ['Curieux', 'Herboriste', 'Apothicaire', 'Maître alchimiste', 'Sage des herbes'],
+  paysan:     ['Glaneur', 'Moissonneur', 'Fermier', 'Maître des champs', 'Légende des blés', 'Divinité des moissons'],
+  alchimiste: ['Curieux', 'Herboriste', 'Apothicaire', 'Maître alchimiste', 'Sage des herbes', 'Maître des plantes sacrées'],
 };
 const MIRACLE_BASE = 3;   // % de chance de Récolte miraculeuse (quantité ×3, XP ×2)
 const ALMANAX_MULT = 2;   // quantité ×2 pour la plante de l'Almanax
@@ -8722,7 +8724,7 @@ function renderRecolte() {
     return `<article data-crop="${c.id}" class="pcard${locked ? ' locked' : ''}${isAlm ? ' is-alm' : ''}${workers.length ? ' busy' : ''}${m.i >= 3 ? ' master' : ''}">
       <div class="pc-art"><div class="pc-glow" style="--c:${PLANT_COL[c.id]}"></div>${plantSvg(c.id, locked ? 'sil' : '')}<span class="pc-lv">Niv. ${c.lvl}</span>${isAlm && !locked ? '<span class="pc-star">★ ×2</span>' : ''}${locked ? '' : `<span class="pc-stock num" title="En stock">${short(st.res[c.id] || 0)}</span>`}</div>
       <div class="pc-main"><b class="pc-name">${locked ? '???' : esc(c.name)}</b><small class="sub">${locked ? 'Plante à découvrir' : esc(c.where)}</small>
-        ${locked ? '' : `<div class="pc-rank"><span class="mrank m${m.i}"><span class="pips">${Array.from({ length: 4 }, (_, k) => `<i class="${k < m.i ? 'on' : ''}"></i>`).join('')}</span>${m.name}</span><small class="sub num">${m.next ? `${fmt(m.n)} / ${fmt(m.next.at)}` : `${fmt(m.n)} récoltes`}</small></div><div class="bar mast thin"><i style="width:${(prog * 100).toFixed(0)}%"></i></div>
+        ${locked ? '' : `<div class="pc-rank"><span class="mrank m${m.i}"><span class="pips">${Array.from({ length: HARVEST_RANKS.length - 1 }, (_, k) => `<i class="${k < m.i ? 'on' : ''}"></i>`).join('')}</span>${m.name}</span><small class="sub num">${m.next ? `${fmt(m.n)} / ${fmt(m.next.at)}` : `${fmt(m.n)} récoltes`}</small></div><div class="bar mast thin"><i style="width:${(prog * 100).toFixed(0)}%"></i></div>
         <div class="pc-stats"><span>${qa === qb ? qa : `${qa}–${qb}`}<small>/ récolte</small></span><span>+${c.xp}<small>XP</small></span><span>${c.value}<small>K pièce</small></span><span title="Chance de Récolte miraculeuse (×3)">${(MIRACLE_BASE + m.rank.mir).toFixed(1).replace('.', ',')} %<small>miracle</small></span>${m.rank.qty ? `<span>+${m.rank.qty} %<small>qté</small></span>` : ''}</div>`}</div>
       <div class="pc-send">${wk}${sends}</div></article>`;
   }).join('');

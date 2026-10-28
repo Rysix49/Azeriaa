@@ -441,10 +441,11 @@ const HARVEST_RANKS = [
   { at: 1000, qty: 10, mir: 1 },
   { at: 3000, qty: 15, mir: 1.5 },
   { at: 7500, qty: 20, mir: 2 },
+  { at: 15000, qty: 50, mir: 12 },
 ];
 const HARVEST_RANK_NAMES = {
-  paysan:     ['Glaneur', 'Moissonneur', 'Fermier', 'Maître des champs', 'Légende des blés'],
-  alchimiste: ['Curieux', 'Herboriste', 'Apothicaire', 'Maître alchimiste', 'Sage des herbes'],
+  paysan:     ['Glaneur', 'Moissonneur', 'Fermier', 'Maître des champs', 'Légende des blés', 'Divinité des moissons'],
+  alchimiste: ['Curieux', 'Herboriste', 'Apothicaire', 'Maître alchimiste', 'Sage des herbes', 'Maître des plantes sacrées'],
 };
 const MIRACLE_BASE = 3;   // % de chance de Récolte miraculeuse (quantité ×3, XP ×2)
 const ALMANAX_MULT = 2;   // quantité ×2 pour la plante de l'Almanax

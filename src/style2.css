@@ -2688,6 +2688,7 @@ label.btn { cursor: pointer; }
 .mrank .pips i { width: 8px; height: 8px; transform: rotate(45deg); border: 1px solid #ffffff30; background: #00000050; }
 .mrank .pips i.on { background: linear-gradient(135deg, #fff3b0, #e8aa2e); border-color: #b9800f; box-shadow: 0 0 5px #e8aa2e99; }
 .mrank.m1 { color: #b8e08a; } .mrank.m2 { color: #8ec4f4; } .mrank.m3 { color: #c58aff; } .mrank.m4 { color: var(--gold-2); text-shadow: 0 0 8px #e8aa2e88; }
+.mrank.m5 { color: #ff9ae0; text-shadow: 0 0 10px #ff5ac8aa; } .mrank.m5 .pips i.on { background: linear-gradient(135deg, #ffe0f6, #ff5ac8); border-color: #c0309a; box-shadow: 0 0 6px #ff5ac8aa; }
 .bar.mast > i { background: linear-gradient(90deg, #b9800f, #f6cd6a); }
 .bar.thin { height: 6px; }
 .rc-perks { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: var(--muted); }
