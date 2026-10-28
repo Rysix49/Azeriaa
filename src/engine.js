@@ -827,6 +827,40 @@ function equip(st, h, gearUid, wanted) {
 function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
 function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0 }; for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
+/* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
+function heroPower(st, h) {
+  const t = heroTotals(st, h);
+  const base = 10 * (1 + h.lvl * 0.045);
+  let off = (base * (1 + t.deg / 100) + t.dmg + (h.cls === 'eniripsa' ? t.soin * 0.6 : 0)) * (1 + t.critPct / 200) * (1 + (t.dmgPct || 0) / 100) * (t.pa / 6);
+  const def = t.maxHp / (1 - t.resPct / 100) / (1 - t.dodgePct / 100) * (1 + (t.regen || 0) / 20);
+  const util = 1 + t.pp / 100 * 0.12 + t.xpBonus / 100 * 0.08 + (t.kamas || 0) / 100 * 0.1;
+  return off * Math.sqrt(def) * util * (1 + (t.speed || 0) / 100 * 0.5);
+}
+/* Équipe pour chaque emplacement l'objet qui rend le héros le plus puissant (sans déséquiper les autres héros). Renvoie le nombre de changements. */
+function bestEquip(st, h) {
+  const before = { ...h.equip }; let changed = true, passes = 0;
+  const pool = st.gear.filter(g => { const d = ITEMS[g.id]; if (d.relic || d.harvest || h.lvl < d.lvl) return false; const by = equippedBy(st, g.uid); return !by || by.id === h.id; });
+  while (changed && passes++ < 5) {
+    changed = false;
+    for (const slot of SLOTS) {
+      const type = slot.startsWith('anneau') ? 'anneau' : slot;
+      const cur = h.equip[slot]; let best = cur, bestP = heroPower(st, h);
+      for (const g of pool) {
+        if (ITEMS[g.id].slot !== type || g.uid === cur) continue;
+        const other = Object.entries(h.equip).find(([s, u]) => u === g.uid && s !== slot);
+        if (other) continue; // déjà porté sur un autre emplacement
+        if (type === 'anneau') { const sib = slot === 'anneau1' ? 'anneau2' : 'anneau1'; const sg = h.equip[sib] && gearById(st, h.equip[sib]); if (sg && sg.id === g.id) continue; }
+        const keep = h.equip[slot]; h.equip[slot] = g.uid; const p = heroPower(st, h);
+        if (p > bestP * 1.0001) { bestP = p; best = g.uid; }
+        if (keep) h.equip[slot] = keep; else delete h.equip[slot];
+      }
+      if (best && best !== cur) { h.equip[slot] = best; changed = true; }
+    }
+  }
+  h.hp = Math.min(h.hp, heroTotals(st, h).maxHp);
+  if (!h.act) h.hp = heroTotals(st, h).maxHp;
+  return SLOTS.filter(s => before[s] !== h.equip[s]).length;
+}
 function unequipSlot(st, h, slot) { delete h.equip[slot]; h.hp = Math.min(h.hp, heroTotals(st, h).maxHp); }
 
 

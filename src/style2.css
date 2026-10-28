@@ -1538,3 +1538,7 @@ label.btn { cursor: pointer; }
 
 /* ennemi déjà mort quand la carte est redessinée : pose finale directe, sans rejouer la chute */
 .mon.dead.still .sprite.has-art .ms { animation-duration: 0s; animation-delay: 0s; }
+
+/* bouton « meilleur équipement » sous les emplacements */
+.best-row { display: flex; justify-content: center; margin: 10px 0 4px; }
+.best-btn { font-weight: 900; letter-spacing: .02em; padding: 9px 18px; box-shadow: 0 0 14px #ffd24a40; }

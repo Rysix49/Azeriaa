@@ -755,7 +755,8 @@ function combatGear(h) {
         ${open ? `<div class="bg-more">${gs.slice(1).map(g => row(g, true)).join('')}</div>` : ''}</div>`;
     }).join('')}</div>` : `<div class="empty sm">Aucun objet de type ${SLOT_LABEL[ui.slot].toLowerCase()} dans le sac. <button class="btn sm" data-act="view" data-v="ateliers">Aller aux Ateliers</button></div>`;
   }
-  return `${doll}${detail}${sets ? `<div class="sets">${sets}</div>` : ''}
+  const bestBtn = `<div class="best-row"><button class="btn gold best-btn" data-act="bestequip" title="Équipe automatiquement, pour chaque emplacement, l'objet qui rend ${esc(h.name)} le plus puissant">⚡ Meilleur équipement</button></div>`;
+  return `${doll}${bestBtn}${detail}${sets ? `<div class="sets">${sets}</div>` : ''}
     <div class="list-h"><span class="label">${ui.slot ? `Sac · ${SLOT_LABEL[ui.slot]}` : 'Sac · choisis un type d’objet'}</span>
       ${ui.slot ? '<button class="btn sm ghost" data-act="pickslot" data-slot="">◂ Tous les types</button>' : '<span class="hint">▲ = un objet meilleur que celui porté</span>'}</div>
     ${body}`;
@@ -1108,6 +1109,7 @@ const ACTIONS = {
   resetstats() { resetStats(st, selHero()); selHero().auto = ''; },
   equip(d) { const err = equip(st, selHero(), d.uid, d.slot || null); if (err) toast(err, 'warn'); },
   equipon(d) { const h = heroById(d.hero); const err = equip(st, h, d.uid, null); if (err) toast(err, 'warn'); else toast(`${ITEMS[gearById(st, d.uid).id].name} équipé sur ${h.name}.`); },
+  bestequip() { const h = selHero(), n = bestEquip(st, h); toast(n ? `${n} pièce${n > 1 ? 's' : ''} d’équipement changée${n > 1 ? 's' : ''} sur ${h.name}.` : `${h.name} porte déjà le meilleur équipement disponible.`, n ? undefined : 'info'); saveGame(); },
   unequip(d) { unequipSlot(st, selHero(), d.slot); },
   unequipuid(d) { const by = equippedBy(st, d.uid); if (by) unequipUid(by, d.uid); },
   toggledetail() { ui.detailHidden = !ui.detailHidden; },

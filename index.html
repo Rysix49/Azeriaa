@@ -1546,6 +1546,10 @@ label.btn { cursor: pointer; }
 
 /* ennemi déjà mort quand la carte est redessinée : pose finale directe, sans rejouer la chute */
 .mon.dead.still .sprite.has-art .ms { animation-duration: 0s; animation-delay: 0s; }
+
+/* bouton « meilleur équipement » sous les emplacements */
+.best-row { display: flex; justify-content: center; margin: 10px 0 4px; }
+.best-btn { font-weight: 900; letter-spacing: .02em; padding: 9px 18px; box-shadow: 0 0 14px #ffd24a40; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1609,7 +1613,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793186344';
+const BUILD_ID = '1793186798';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2966,6 +2970,40 @@ function equip(st, h, gearUid, wanted) {
 function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
 function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0 }; for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
+/* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
+function heroPower(st, h) {
+  const t = heroTotals(st, h);
+  const base = 10 * (1 + h.lvl * 0.045);
+  let off = (base * (1 + t.deg / 100) + t.dmg + (h.cls === 'eniripsa' ? t.soin * 0.6 : 0)) * (1 + t.critPct / 200) * (1 + (t.dmgPct || 0) / 100) * (t.pa / 6);
+  const def = t.maxHp / (1 - t.resPct / 100) / (1 - t.dodgePct / 100) * (1 + (t.regen || 0) / 20);
+  const util = 1 + t.pp / 100 * 0.12 + t.xpBonus / 100 * 0.08 + (t.kamas || 0) / 100 * 0.1;
+  return off * Math.sqrt(def) * util * (1 + (t.speed || 0) / 100 * 0.5);
+}
+/* Équipe pour chaque emplacement l'objet qui rend le héros le plus puissant (sans déséquiper les autres héros). Renvoie le nombre de changements. */
+function bestEquip(st, h) {
+  const before = { ...h.equip }; let changed = true, passes = 0;
+  const pool = st.gear.filter(g => { const d = ITEMS[g.id]; if (d.relic || d.harvest || h.lvl < d.lvl) return false; const by = equippedBy(st, g.uid); return !by || by.id === h.id; });
+  while (changed && passes++ < 5) {
+    changed = false;
+    for (const slot of SLOTS) {
+      const type = slot.startsWith('anneau') ? 'anneau' : slot;
+      const cur = h.equip[slot]; let best = cur, bestP = heroPower(st, h);
+      for (const g of pool) {
+        if (ITEMS[g.id].slot !== type || g.uid === cur) continue;
+        const other = Object.entries(h.equip).find(([s, u]) => u === g.uid && s !== slot);
+        if (other) continue; // déjà porté sur un autre emplacement
+        if (type === 'anneau') { const sib = slot === 'anneau1' ? 'anneau2' : 'anneau1'; const sg = h.equip[sib] && gearById(st, h.equip[sib]); if (sg && sg.id === g.id) continue; }
+        const keep = h.equip[slot]; h.equip[slot] = g.uid; const p = heroPower(st, h);
+        if (p > bestP * 1.0001) { bestP = p; best = g.uid; }
+        if (keep) h.equip[slot] = keep; else delete h.equip[slot];
+      }
+      if (best && best !== cur) { h.equip[slot] = best; changed = true; }
+    }
+  }
+  h.hp = Math.min(h.hp, heroTotals(st, h).maxHp);
+  if (!h.act) h.hp = heroTotals(st, h).maxHp;
+  return SLOTS.filter(s => before[s] !== h.equip[s]).length;
+}
 function unequipSlot(st, h, slot) { delete h.equip[slot]; h.hp = Math.min(h.hp, heroTotals(st, h).maxHp); }
 
 
@@ -6185,7 +6223,8 @@ function combatGear(h) {
         ${open ? `<div class="bg-more">${gs.slice(1).map(g => row(g, true)).join('')}</div>` : ''}</div>`;
     }).join('')}</div>` : `<div class="empty sm">Aucun objet de type ${SLOT_LABEL[ui.slot].toLowerCase()} dans le sac. <button class="btn sm" data-act="view" data-v="ateliers">Aller aux Ateliers</button></div>`;
   }
-  return `${doll}${detail}${sets ? `<div class="sets">${sets}</div>` : ''}
+  const bestBtn = `<div class="best-row"><button class="btn gold best-btn" data-act="bestequip" title="Équipe automatiquement, pour chaque emplacement, l'objet qui rend ${esc(h.name)} le plus puissant">⚡ Meilleur équipement</button></div>`;
+  return `${doll}${bestBtn}${detail}${sets ? `<div class="sets">${sets}</div>` : ''}
     <div class="list-h"><span class="label">${ui.slot ? `Sac · ${SLOT_LABEL[ui.slot]}` : 'Sac · choisis un type d’objet'}</span>
       ${ui.slot ? '<button class="btn sm ghost" data-act="pickslot" data-slot="">◂ Tous les types</button>' : '<span class="hint">▲ = un objet meilleur que celui porté</span>'}</div>
     ${body}`;
@@ -6538,6 +6577,7 @@ const ACTIONS = {
   resetstats() { resetStats(st, selHero()); selHero().auto = ''; },
   equip(d) { const err = equip(st, selHero(), d.uid, d.slot || null); if (err) toast(err, 'warn'); },
   equipon(d) { const h = heroById(d.hero); const err = equip(st, h, d.uid, null); if (err) toast(err, 'warn'); else toast(`${ITEMS[gearById(st, d.uid).id].name} équipé sur ${h.name}.`); },
+  bestequip() { const h = selHero(), n = bestEquip(st, h); toast(n ? `${n} pièce${n > 1 ? 's' : ''} d’équipement changée${n > 1 ? 's' : ''} sur ${h.name}.` : `${h.name} porte déjà le meilleur équipement disponible.`, n ? undefined : 'info'); saveGame(); },
   unequip(d) { unequipSlot(st, selHero(), d.slot); },
   unequipuid(d) { const by = equippedBy(st, d.uid); if (by) unequipUid(by, d.uid); },
   toggledetail() { ui.detailHidden = !ui.detailHidden; },
