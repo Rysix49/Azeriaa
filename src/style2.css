@@ -1681,3 +1681,6 @@ label.btn { cursor: pointer; }
 .ec-line.teal { background: linear-gradient(90deg, transparent, #fff 40%, #2fe0b8 70%, transparent); box-shadow: 0 0 8px #2fe0b8, 0 0 14px #1f9d88; }
 .ec-line.gold { background: linear-gradient(90deg, transparent, #fff 40%, #ffd24a 70%, transparent); box-shadow: 0 0 8px #ffd24a, 0 0 14px #ff9a2e; }
 @media (prefers-reduced-motion: reduce) { .hs-ecaflip *, .hero .hs-ecaflip { animation: none !important; } .ec-ghost, .ec-line, .eca-spirit { display: none; } }
+
+/* Fenêtre de combat un peu dézoomée */
+.scene { zoom: .82; }
