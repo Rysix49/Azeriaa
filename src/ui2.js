@@ -329,6 +329,39 @@ function goldFx(card, text, burstTarget, n) {
   const t = document.createElement('span'); t.className = 'fnum gold'; t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
   coinBurst(burstTarget || fg, n || 8);
 }
+/* Jackpot : machine à sous, rayons d'or, pluie de pièces et impacts sur chaque ennemi (≈ 2,7 s) */
+function playJackpot(card, fx) {
+  const scene = card.querySelector('.scene'); if (!scene) return;
+  if (!FX_OK()) { goldFx(card, 'JACKPOT !', scene, 0); return; }
+  const H = scene.clientHeight || 220;
+  const sym = ['🍒', '🔔', '💎', '🍀', '🪙', '<b class="s7">7</b>'];
+  const strip = sym.concat(sym).map(x => `<span>${x}</span>`).join('');
+  const reels = [0, 1, 2].map(() => `<div class="jp-reel"><div class="jp-strip">${strip}</div></div>`).join('');
+  const bulbs = Array.from({ length: 12 }, (_, i) => `<i style="--i:${i}"></i>`).join('');
+  const coins = Array.from({ length: 44 }, () => `<i style="left:${(Math.random() * 100).toFixed(1)}%;--t:${(800 + Math.random() * 600).toFixed(0)}ms;--d:${(1080 + Math.random() * 650).toFixed(0)}ms;--s:${(.8 + Math.random() * .8).toFixed(2)};--r:${(Math.random() * 360).toFixed(0)}deg"></i>`).join('');
+  const ov = document.createElement('div'); ov.className = 'jp'; ov.style.setProperty('--fall', (H + 40) + 'px');
+  ov.innerHTML = `<div class="jp-dim"></div><div class="jp-rays"></div>
+    <div class="jp-machine"><div class="jp-bulbs">${bulbs}</div><div class="jp-reels">${reels}</div></div>
+    <div class="jp-title"><span>JACKPOT</span><small>PLUIE D’OR</small></div><div class="jp-rain">${coins}</div>`;
+  scene.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const reelEls = ov.querySelectorAll('.jp-reel');
+  [560, 840, 1120].forEach((ms, k) => setTimeout(() => reelEls[k].classList.add('stop'), ms));
+  const hero = card.querySelector('[data-k="fighter"]');
+  setTimeout(() => { ov.classList.add('win'); scene.classList.add('gold-flash'); if (hero) hero.classList.add('jp-hero'); }, 1150);
+  setTimeout(() => {
+    scene.classList.add('cl-shake');
+    ((fx && fx.hits) || []).forEach((hit, k) => setTimeout(() => {
+      const mon = card.querySelector(`[data-mon="${hit.i}"]`); if (!mon) return;
+      mon.classList.remove('jp-hit'); void mon.offsetWidth; mon.classList.add('jp-hit');
+      const n = document.createElement('span'); n.className = 'jp-num'; n.textContent = '−' + fmt(hit.v) + (hit.crit ? ' !' : ''); mon.appendChild(n);
+      coinBurst(mon.querySelector('.sprite') || mon, 9);
+      setTimeout(() => { n.remove(); mon.classList.remove('jp-hit'); }, 1300);
+    }, k * 110));
+  }, 1500);
+  setTimeout(() => { scene.classList.remove('cl-shake'); scene.classList.remove('gold-flash'); if (hero) hero.classList.remove('jp-hero'); }, 2300);
+  setTimeout(() => ov.remove(), 2800);
+}
 function missFx(card) { const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return; const n = document.createElement('span'); n.className = 'fnum miss'; n.textContent = 'Raté !'; fg.appendChild(n); setTimeout(() => n.remove(), 950); }
 
 /* ---------------------- Traque du Cra ---------------------- */
@@ -470,7 +503,7 @@ function patchCombat() {
       }
       if (h.cls === 'enutrof') {
         const ch = h.fight.chestSeq || 0; if (ch > +(scene.dataset.ch || 0)) { scene.dataset.ch = ch; goldFx(card, 'Coffre !', card.querySelector(`[data-mon="${h.fight.treasure}"] .sprite`), 12); }
-        const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; goldFx(card, 'JACKPOT !', scene, 22); scene.classList.remove('gold-flash'); void scene.offsetWidth; scene.classList.add('gold-flash'); setTimeout(() => scene.classList.remove('gold-flash'), 900); }
+        const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
         const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
       }
       if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }

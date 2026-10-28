@@ -383,11 +383,10 @@ function enuChest(h, f, actions) {
 }
 function enuJackpot(h, t, f) {
   const alive = f.mons.filter(m => m.hp > 0);
-  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); return `${r.v}${r.crit ? ' CC' : ''}`; });
+  const hits = [];
+  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); hits.push({ i: f.mons.indexOf(m), v: r.v, crit: r.crit }); return `${r.v}${r.crit ? ' CC' : ''}`; });
   h.purse = 0; f.jackpots = (f.jackpots || 0) + 1; f.jackSeq = (f.jackSeq || 0) + 1;
-  f.fxSeq = (f.fxSeq || 0) + 1;
-  (f.fx = f.fx || []).push({ n: f.fxSeq, id: ENU_JACKPOT.id, t: alive.map(m => f.mons.indexOf(m)) });
-  if (f.fx.length > 16) f.fx.shift();
+  f.jackFx = { n: f.jackSeq, hits }; // pour la cinématique
   return `🎰 JACKPOT ! Pluie d’Or → ${parts.join('/')}`;
 }
 
