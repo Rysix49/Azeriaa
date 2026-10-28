@@ -397,6 +397,7 @@ function ecaToss(h, t, f, actions) {
    Un ennemi cache un trésor (f.treasure) que l'Enutrof vise en priorité.
    Chaque sort remplit la bourse (h.purse, gardée d'un combat à l'autre) :
    pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
+const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour voir l'animation du dernier coup
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
 const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
 const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
@@ -524,7 +525,9 @@ function fightStep(st, h, ev) {
   }
   if (f.mons.every(m => m.hp <= 0)) {
     // Un Jackpot vient d'achever le combat : on laisse la cinématique se jouer avant de conclure
-    if (jackpot) { h.wait += JACKPOT_ANIM_MS; return null; }
+    if (jackpot) { f.fin = true; h.wait += JACKPOT_ANIM_MS; return null; }
+    // Dernier coup (sort, poison, piège) : on laisse l'attaque et la chute des ennemis se jouer avant de conclure
+    if (!f.fin) { f.fin = true; h.wait += FINISH_ANIM_MS; return null; }
     return 'win';
   }
   if (h.hp <= 0) return 'lose';
