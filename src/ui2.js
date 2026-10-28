@@ -252,6 +252,7 @@ function passiveHtml(c) {
   const body = p.points ? `<ul class="pv-list">${p.points.map(([ic, t, d]) => `<li><span class="pv-ic" aria-hidden="true">${ic}</span><div><b>${t}</b><span>${d}</span></div></li>`).join('')}</ul>` : `<span>${p.desc}</span>`;
   return `<div class="passive" style="--c:${c.color}"><span class="label">Passif · ${p.name}</span>${body}</div>`;
 }
+function stigHtml(h) { const f = h.fight, n = (f && f.stig) || 0; return `🩸 ${'◆'.repeat(n)}${'◇'.repeat(SAC_STIG_MAX - n)}${f && f.martyr ? ' · ☠✗' : ''}`; }
 function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
@@ -283,7 +284,7 @@ function fightCard(h) {
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -295,7 +296,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -712,10 +713,10 @@ function floatNum(el, txt, cls) {
   if (cls === 'dmg') { el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 300); }
 }
 /* Effets visuels des passifs (Xélor) posés par-dessus la scène */
-function sceneFx(scene, kind, text) {
+function sceneFx(scene, kind, text, icon = '⏳') {
   if (!scene) return;
   const fx = document.createElement('div'); fx.className = 'fx fx-' + kind;
-  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">⏳</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
+  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">${icon}</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
   scene.appendChild(fx);
   scene.classList.remove('fx-' + kind + '-on'); void scene.offsetWidth; scene.classList.add('fx-' + kind + '-on');
   setTimeout(() => { fx.remove(); scene.classList.remove('fx-' + kind + '-on'); }, 1500);
@@ -785,6 +786,7 @@ function patchCombat() {
       }
       if (+(scene.dataset.rw || 0) < rw && !rwNew) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
+      const mt = h.fight.martyrSeq || 0; if (+(scene.dataset.mt || 0) < mt) { sceneFx(scene, 'martyr', 'MARTYRE !', '☠️'); ecaState(card.querySelector('[data-k="fighter"]'), 'sac-martyr', 1300); } scene.dataset.mt = mt;
       scene.dataset.rw = rw; scene.dataset.px = px;
     }
     const s1 = q('status'); if (s1) { if (s1.textContent !== stxt) s1.textContent = stxt; s1.className = 'status ' + sc; }
@@ -855,6 +857,7 @@ function patchCombat() {
     }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
+    const sg = q('stig'); if (sg) { const tx = stigHtml(h); if (sg.textContent !== tx) sg.textContent = tx; sg.classList.toggle('full', !!(h.fight && h.fight.stig >= SAC_STIG_MAX)); }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }

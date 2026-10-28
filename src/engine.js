@@ -206,7 +206,7 @@ function rollSpell(h, t, f, sp, monRes) {
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
-  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
+  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + SAC_STIG_DMG * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }
@@ -217,6 +217,13 @@ function heroTurn(st, h, t, ev) {
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
+  if (h.cls === 'sacrieur') { // Pacte de sang : il se saigne volontairement (jamais sous 40 % de PV) et gagne un Stigmate
+    f.stig = f.stig || 0;
+    if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
+      const loss = Math.max(1, Math.min(Math.round(t.maxHp * SAC_PACT_LOSS), Math.round(h.hp - t.maxHp * SAC_PACT_FLOOR)));
+      h.hp -= loss; f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
+    }
+  }
   const xel = h.cls === 'xelor';
   const aliveBefore = f.mons.filter(m => m.hp > 0).length;
   if (xel) f.hpMark = h.hp;
@@ -281,6 +288,10 @@ function heroTurn(st, h, t, ev) {
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
   if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
+    const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
+    if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
+  }
   if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
@@ -370,6 +381,19 @@ function monsterTurn(st, h, t, m, ev) {
   }
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.cls === 'sacrieur') {
+    f.stig = Math.min(SAC_STIG_MAX, (f.stig || 0) + 1); // chaque coup reçu grave un Stigmate
+    const back = Math.min(m.hp, Math.max(1, Math.round(dmg * SAC_REFLECT))); // Douleur partagée
+    m.hp -= back; f.reflectSeq = (f.reflectSeq || 0) + 1;
+    ev.log(h, `🪞 Douleur partagée : ${def.name} subit ${back}${m.hp <= 0 ? ' et succombe' : ''}.`, 'hero');
+    if (h.hp <= 0 && !f.martyr) { // Martyre : le coup fatal est évité, le sang explose sur tous les ennemis
+      f.martyr = true; f.martyrSeq = (f.martyrSeq || 0) + 1; f.stig = SAC_STIG_MAX;
+      h.hp = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_HP));
+      const blast = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_BLAST));
+      for (const o of f.mons) if (o.hp > 0) o.hp = Math.max(0, o.hp - blast);
+      ev.log(h, `☠️ MARTYRE ! ${h.name} survit avec ${h.hp} PV et son sang explose : −${blast} PV à tous les ennemis.`, 'win');
+    }
+  }
   if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
     const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
     h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
@@ -409,6 +433,8 @@ function ecaToss(h, t, f, actions) {
    pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
 const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour voir l'animation du dernier coup
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
+/* Sacrieur : Pacte de sang, Stigmates, Douleur partagée, Soif de sang, Martyre */
+const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR = 0.4, SAC_REFLECT = 0.3, SAC_THIRST = 0.08, SAC_MARTYR_HP = 0.12, SAC_MARTYR_BLAST = 0.2;
 /* Xélor, Éclat du temps : 4 rembobinages remplissent le sablier ; plein, il se brise et le Xélor vit 10 combats d'un coup. */
 const CHRONO_MAX = 4, CHRONO_FIGHTS = 10;
 function chronoReady(h) { return h.cls === 'xelor' && (h.chrono || 0) >= CHRONO_MAX && !!h.act && h.act.type === 'zone'; }

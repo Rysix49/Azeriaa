@@ -2298,3 +2298,13 @@ label.btn { cursor: pointer; }
 @keyframes cl-pop { 0% { opacity: 0; transform: scale(.2) translateY(14px); } 100% { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .cb-echo, .cb-pop, .cb-fly, .cb-slash { display: none; } }
 /* ===== fin Xélor ===== */
+/* ===================== Sacrieur : Pacte de sang ===================== */
+.vs .stig { margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #a32f2f33; border: 1px solid #a32f2f88; color: #ffd0d0 !important; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.vs .stig.full { background: #a32f2f; color: #fff !important; box-shadow: 0 0 10px #ff4a3a; animation: pulse 1.2s ease-in-out infinite; }
+.fx-martyr .fx-ring { border-color: #ff4a3a; box-shadow: 0 0 34px #ff2a1a, inset 0 0 22px #ff6a4a; }
+.fx-martyr .fx-icon { filter: drop-shadow(0 0 14px #ff2a1a); }
+.fx-martyr .fx-text { color: #ffe0d8; font-size: 32px; text-shadow: 0 0 14px #ff2a1a, 0 2px 0 #3a0804; }
+.scene.fx-martyr-on { animation: martyrflash 1.3s ease-out; }
+@keyframes martyrflash { 0% { filter: none; translate: 0 0; } 10% { filter: brightness(1.8) saturate(1.8) hue-rotate(-20deg); translate: -6px 3px; } 22% { translate: 5px -4px; } 40% { filter: brightness(1.2) saturate(1.4); translate: -3px 2px; } 100% { filter: none; translate: 0 0; } }
+.unit.hero.sac-martyr .sprite { animation: sacmartyr 1.2s ease-out; }
+@keyframes sacmartyr { 0% { filter: none; } 15% { filter: drop-shadow(0 0 14px #ff2a1a) brightness(1.6) saturate(1.6); scale: 1.18; } 100% { filter: none; scale: 1; } }

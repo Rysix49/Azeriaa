@@ -2306,6 +2306,16 @@ label.btn { cursor: pointer; }
 @keyframes cl-pop { 0% { opacity: 0; transform: scale(.2) translateY(14px); } 100% { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .cb-echo, .cb-pop, .cb-fly, .cb-slash { display: none; } }
 /* ===== fin Xélor ===== */
+/* ===================== Sacrieur : Pacte de sang ===================== */
+.vs .stig { margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #a32f2f33; border: 1px solid #a32f2f88; color: #ffd0d0 !important; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.vs .stig.full { background: #a32f2f; color: #fff !important; box-shadow: 0 0 10px #ff4a3a; animation: pulse 1.2s ease-in-out infinite; }
+.fx-martyr .fx-ring { border-color: #ff4a3a; box-shadow: 0 0 34px #ff2a1a, inset 0 0 22px #ff6a4a; }
+.fx-martyr .fx-icon { filter: drop-shadow(0 0 14px #ff2a1a); }
+.fx-martyr .fx-text { color: #ffe0d8; font-size: 32px; text-shadow: 0 0 14px #ff2a1a, 0 2px 0 #3a0804; }
+.scene.fx-martyr-on { animation: martyrflash 1.3s ease-out; }
+@keyframes martyrflash { 0% { filter: none; translate: 0 0; } 10% { filter: brightness(1.8) saturate(1.8) hue-rotate(-20deg); translate: -6px 3px; } 22% { translate: 5px -4px; } 40% { filter: brightness(1.2) saturate(1.4); translate: -3px 2px; } 100% { filter: none; translate: 0 0; } }
+.unit.hero.sac-martyr .sprite { animation: sacmartyr 1.2s ease-out; }
+@keyframes sacmartyr { 0% { filter: none; } 15% { filter: drop-shadow(0 0 14px #ff2a1a) brightness(1.6) saturate(1.6); scale: 1.18; } 100% { filter: none; scale: 1; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -2370,7 +2380,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793205824';
+const BUILD_ID = '1793207132';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2448,7 +2458,13 @@ const CLASSES = {
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
-    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 % de dégâts finaux par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, ses dégâts sont multipliés par 1,7.']], desc: '+1 % de dégâts finaux par % de PV manquant.' },
+    passive: { name: 'Pacte de Sang', points: [
+      ['🩸','Pacte de sang','Au début de son tour, il s’ouvre volontairement les veines : −5 % de ses PV max (jamais sous 40 %) et il gagne 1 Stigmate.'],
+      ['✴️','Stigmates','Chaque coup reçu lui grave aussi un Stigmate. 6 au maximum par combat : chacun donne +8 % de dégâts finaux.'],
+      ['🪞','Douleur partagée','30 % des dégâts qu’il encaisse sont renvoyés à l’ennemi qui l’a frappé.'],
+      ['🧛','Soif de sang','Chaque ennemi qu’il achève lui rend 8 % de ses PV max.'],
+      ['☠️','Martyre','Une fois par combat, un coup fatal le laisse à 12 % de ses PV : son sang explose et inflige 20 % de ses PV max à tous les ennemis, et ses Stigmates montent au maximum.']
+    ], desc: 'Il se saigne chaque tour pour accumuler des Stigmates (+8 % de dégâts chacun, 6 max), renvoie 30 % des coups reçus et se soigne en achevant ses ennemis. Une fois par combat, un coup fatal déclenche le Martyre : il survit et son sang explose sur tous les ennemis.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
@@ -3116,7 +3132,7 @@ function rollSpell(h, t, f, sp, monRes) {
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
-  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
+  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + SAC_STIG_DMG * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }
@@ -3127,6 +3143,13 @@ function heroTurn(st, h, t, ev) {
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
+  if (h.cls === 'sacrieur') { // Pacte de sang : il se saigne volontairement (jamais sous 40 % de PV) et gagne un Stigmate
+    f.stig = f.stig || 0;
+    if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
+      const loss = Math.max(1, Math.min(Math.round(t.maxHp * SAC_PACT_LOSS), Math.round(h.hp - t.maxHp * SAC_PACT_FLOOR)));
+      h.hp -= loss; f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
+    }
+  }
   const xel = h.cls === 'xelor';
   const aliveBefore = f.mons.filter(m => m.hp > 0).length;
   if (xel) f.hpMark = h.hp;
@@ -3191,6 +3214,10 @@ function heroTurn(st, h, t, ev) {
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
   if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
+    const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
+    if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
+  }
   if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
@@ -3280,6 +3307,19 @@ function monsterTurn(st, h, t, m, ev) {
   }
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.cls === 'sacrieur') {
+    f.stig = Math.min(SAC_STIG_MAX, (f.stig || 0) + 1); // chaque coup reçu grave un Stigmate
+    const back = Math.min(m.hp, Math.max(1, Math.round(dmg * SAC_REFLECT))); // Douleur partagée
+    m.hp -= back; f.reflectSeq = (f.reflectSeq || 0) + 1;
+    ev.log(h, `🪞 Douleur partagée : ${def.name} subit ${back}${m.hp <= 0 ? ' et succombe' : ''}.`, 'hero');
+    if (h.hp <= 0 && !f.martyr) { // Martyre : le coup fatal est évité, le sang explose sur tous les ennemis
+      f.martyr = true; f.martyrSeq = (f.martyrSeq || 0) + 1; f.stig = SAC_STIG_MAX;
+      h.hp = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_HP));
+      const blast = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_BLAST));
+      for (const o of f.mons) if (o.hp > 0) o.hp = Math.max(0, o.hp - blast);
+      ev.log(h, `☠️ MARTYRE ! ${h.name} survit avec ${h.hp} PV et son sang explose : −${blast} PV à tous les ennemis.`, 'win');
+    }
+  }
   if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
     const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
     h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
@@ -3319,6 +3359,8 @@ function ecaToss(h, t, f, actions) {
    pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
 const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour voir l'animation du dernier coup
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
+/* Sacrieur : Pacte de sang, Stigmates, Douleur partagée, Soif de sang, Martyre */
+const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR = 0.4, SAC_REFLECT = 0.3, SAC_THIRST = 0.08, SAC_MARTYR_HP = 0.12, SAC_MARTYR_BLAST = 0.2;
 /* Xélor, Éclat du temps : 4 rembobinages remplissent le sablier ; plein, il se brise et le Xélor vit 10 combats d'un coup. */
 const CHRONO_MAX = 4, CHRONO_FIGHTS = 10;
 function chronoReady(h) { return h.cls === 'xelor' && (h.chrono || 0) >= CHRONO_MAX && !!h.act && h.act.type === 'zone'; }
@@ -7171,6 +7213,7 @@ function passiveHtml(c) {
   const body = p.points ? `<ul class="pv-list">${p.points.map(([ic, t, d]) => `<li><span class="pv-ic" aria-hidden="true">${ic}</span><div><b>${t}</b><span>${d}</span></div></li>`).join('')}</ul>` : `<span>${p.desc}</span>`;
   return `<div class="passive" style="--c:${c.color}"><span class="label">Passif · ${p.name}</span>${body}</div>`;
 }
+function stigHtml(h) { const f = h.fight, n = (f && f.stig) || 0; return `🩸 ${'◆'.repeat(n)}${'◇'.repeat(SAC_STIG_MAX - n)}${f && f.martyr ? ' · ☠✗' : ''}`; }
 function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
@@ -7202,7 +7245,7 @@ function fightCard(h) {
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -7214,7 +7257,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -7631,10 +7674,10 @@ function floatNum(el, txt, cls) {
   if (cls === 'dmg') { el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 300); }
 }
 /* Effets visuels des passifs (Xélor) posés par-dessus la scène */
-function sceneFx(scene, kind, text) {
+function sceneFx(scene, kind, text, icon = '⏳') {
   if (!scene) return;
   const fx = document.createElement('div'); fx.className = 'fx fx-' + kind;
-  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">⏳</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
+  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">${icon}</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
   scene.appendChild(fx);
   scene.classList.remove('fx-' + kind + '-on'); void scene.offsetWidth; scene.classList.add('fx-' + kind + '-on');
   setTimeout(() => { fx.remove(); scene.classList.remove('fx-' + kind + '-on'); }, 1500);
@@ -7704,6 +7747,7 @@ function patchCombat() {
       }
       if (+(scene.dataset.rw || 0) < rw && !rwNew) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
+      const mt = h.fight.martyrSeq || 0; if (+(scene.dataset.mt || 0) < mt) { sceneFx(scene, 'martyr', 'MARTYRE !', '☠️'); ecaState(card.querySelector('[data-k="fighter"]'), 'sac-martyr', 1300); } scene.dataset.mt = mt;
       scene.dataset.rw = rw; scene.dataset.px = px;
     }
     const s1 = q('status'); if (s1) { if (s1.textContent !== stxt) s1.textContent = stxt; s1.className = 'status ' + sc; }
@@ -7774,6 +7818,7 @@ function patchCombat() {
     }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
+    const sg = q('stig'); if (sg) { const tx = stigHtml(h); if (sg.textContent !== tx) sg.textContent = tx; sg.classList.toggle('full', !!(h.fight && h.fight.stig >= SAC_STIG_MAX)); }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }

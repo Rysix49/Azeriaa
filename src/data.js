@@ -75,7 +75,13 @@ const CLASSES = {
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
-    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 % de dégâts finaux par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, ses dégâts sont multipliés par 1,7.']], desc: '+1 % de dégâts finaux par % de PV manquant.' },
+    passive: { name: 'Pacte de Sang', points: [
+      ['🩸','Pacte de sang','Au début de son tour, il s’ouvre volontairement les veines : −5 % de ses PV max (jamais sous 40 %) et il gagne 1 Stigmate.'],
+      ['✴️','Stigmates','Chaque coup reçu lui grave aussi un Stigmate. 6 au maximum par combat : chacun donne +8 % de dégâts finaux.'],
+      ['🪞','Douleur partagée','30 % des dégâts qu’il encaisse sont renvoyés à l’ennemi qui l’a frappé.'],
+      ['🧛','Soif de sang','Chaque ennemi qu’il achève lui rend 8 % de ses PV max.'],
+      ['☠️','Martyre','Une fois par combat, un coup fatal le laisse à 12 % de ses PV : son sang explose et inflige 20 % de ses PV max à tous les ennemis, et ses Stigmates montent au maximum.']
+    ], desc: 'Il se saigne chaque tour pour accumuler des Stigmates (+8 % de dégâts chacun, 6 max), renvoie 30 % des coups reçus et se soigne en achevant ses ennemis. Une fois par combat, un coup fatal déclenche le Martyre : il survit et son sang explose sur tous les ennemis.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
