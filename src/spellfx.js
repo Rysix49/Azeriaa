@@ -466,12 +466,17 @@ function zobFarce(scene, from, tos, pw, hero) {
 /* ---------- Zobal : APOTHÉOSE (la Ferveur atteint son maximum) ----------
    Le monde s'assombrit, les trois masques tournoient de plus en plus vite autour du Zobal, fusionnent
    en un Masque d'Or géant sous un soleil immense, onde de choc, piliers de lumière, pluie d'or. */
-function zobApotheose(scene, unit) {
+function zobApotheose(scene0, unit) {
+  if (!FX_OK() || !scene0.isConnected) return;
+  // calque indépendant : la cinématique se joue jusqu'au bout même si le combat finit et que la scène est redessinée
+  const rc = scene0.getBoundingClientRect(), sc = rc.width / (scene0.offsetWidth || 1), scene = document.createElement('div');
+  scene.className = 'zb-overlay'; scene.style.cssText = `left:${rc.left}px;top:${rc.top}px;width:${scene0.offsetWidth}px;height:${scene0.offsetHeight}px;transform:scale(${sc})`;
+  document.body.appendChild(scene); setTimeout(() => scene.remove(), 3600);
   const sp = unit.querySelector('.sprite') || unit, p0 = fxPos(scene, sp);
-  if (!p0 || !FX_OK()) return;
+  if (!p0) { scene.remove(); return; }
   const W = scene.offsetWidth, H = scene.offsetHeight, hd = { x: p0.x, y: p0.y - H * .12 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
   const mid = { x: W * .5, y: H * .42 };
-  zbMark(unit, 'zob-apoint', 3000); zbMark(scene, 'zb-shake', 3300);
+  zbMark(unit, 'zob-apoint', 3000); zbMark(scene0, 'zb-shake', 3300);
   const veil = fxEl(scene, 'zb-veil', 0, 0); fxAnim(veil, [{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .8 }, { opacity: 0 }], { duration: 3200, easing: 'linear' });
   const faces = [['😆', '#ffd24a'], ['😢', '#5ab0ff'], ['🤪', '#ff6ad0']], orbs = faces.map((f, i) => fxEl(scene, 'zb-orb', hd.x, hd.y, `<span>${f[0]}</span>`, `--c:${f[1]}`));
   const T0 = performance.now(), TC = 1500;
@@ -496,7 +501,7 @@ function zobApotheose(scene, unit) {
     for (let i = 0; i < 9; i++) { const ray = fxEl(scene, 'zb-pillar', W * (i + .5) / 9, H); fxAnim(ray, [{ transform: 'translate(-50%,-100%) scaleY(0)', opacity: 0 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: .9, offset: .3 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: 0 }], { duration: 1100, delay: Math.abs(i - 4) * 70 }); }
     for (let i = 0; i < 46; i++) { const x = Math.random() * W, c = fxEl(scene, Math.random() < .5 ? 'zb-coin big' : 'zb-conf', x, -12, '', `background:${ZOB_CONF[i % 6]}`); fxAnim(c, [{ transform: 'translate(-50%,0) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * 50}px),${H + 20}px) rotate(${360 + Math.random() * 720}deg)`, opacity: 1 }], { duration: 900 + Math.random() * 700, delay: 150 + Math.random() * 900, easing: 'cubic-bezier(.3,.4,.6,1)' }); }
     for (let i = 0; i < 24; i++) { const a = Math.random() * 6.28, d = 40 + Math.random() * 140, s = fxEl(scene, 'sfx-spark', mid.x, mid.y, '', `--c:${ZOB_CONF[i % 6]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.8)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.6}px),calc(-50% + ${Math.sin(a) * d * .6}px)) scale(.1)`, opacity: 0 }], { duration: 800 + Math.random() * 500 }); }
-    scene.querySelectorAll('.unit.mon').forEach(m => zbMark(m, 'zb-glow', 700));
+    scene0.querySelectorAll('.unit.mon').forEach(m => zbMark(m, 'zb-glow', 700));
   });
 }
 FX_KIND.zob = function (scene, from, tos, fx, hero) {

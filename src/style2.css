@@ -2597,6 +2597,9 @@ label.btn { cursor: pointer; }
 .unit.mon.zb-boing .sprite { animation: zb-foeboing .76s ease-out; }
 @keyframes zb-foeboing { 0% { scale: 1; filter: none; } 14% { scale: 1.32 .6; filter: brightness(1.8) hue-rotate(40deg); } 34% { scale: .8 1.28; } 54% { scale: 1.14 .88; filter: hue-rotate(-30deg); } 74% { scale: .97 1.05; } 100% { scale: 1; filter: none; } }
 /* Apothéose (Ferveur au maximum) */
+.zb-overlay .sfx { position: absolute; z-index: 5; pointer-events: none; will-change: transform, opacity; }
+.zb-overlay { position: fixed; z-index: 9000; transform-origin: 0 0; pointer-events: none; overflow: hidden; }
+
 .zb-shake { animation: zb-shake .35s 3 linear; animation-delay: 1.5s; }
 @keyframes zb-shake { 0%, 100% { translate: 0 0; } 25% { translate: 3px -2px; } 50% { translate: -3px 2px; } 75% { translate: 2px 2px; } }
 .sfx.zb-veil { z-index: 5; inset: 0 !important; width: auto; height: auto; background: radial-gradient(ellipse at 50% 55%, #3a1068aa, #08021ad8 85%); }
