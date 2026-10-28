@@ -861,6 +861,20 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
     <path d="M52 110 h10 M65 110 h10" stroke="#ffd24a" stroke-width="2"/>
   </g>
 
+  <!-- main arrière : une montre flotte au creux de la paume -->
+  <g class="p-armB">
+    <path d="M55 61 Q44 64 38 76 Q40 82 45 80 Q48 72 56 69Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M36 80 q-3 -4 1 -6 q4 -1 6 3 q1 4 -3 5Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.6" stroke-linejoin="round"/>
+    <g class="p-watch">
+      <circle cx="30" cy="66" r="8" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1.4"/>
+      <circle cx="30" cy="66" r="6" fill="url(#xlFace)" stroke="#8a5a14" stroke-width=".8"/>
+      <path d="M30 59 v-3.4 M28.4 55.6 h3.2" stroke="#8a5a14" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+      <g class="p-wmh" stroke="#1a2680" stroke-width="1" stroke-linecap="round"><path d="M30 66 V61.4"/></g>
+      <g class="p-wh" stroke="#1a2680" stroke-width="1.4" stroke-linecap="round"><path d="M30 66 L33 67.6"/></g>
+      <circle cx="30" cy="66" r="1" fill="#c8301a"/>
+    </g>
+  </g>
+
   <g class="p-torso">
     <!-- redingote longue et fine -->
     <path d="M54 56 Q51 70 55 80 Q51 88 49 97 Q63 102 77 97 Q75 88 71 80 Q75 70 72 56 Q63 51 54 56Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2.2" stroke-linejoin="round"/>
@@ -881,20 +895,6 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
     <g class="p-cog1" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1"><path d="M58.4,58.0 L59.7,59.1 L59.4,60.2 L57.7,60.4 L57.1,61.1 L57.2,62.8 L56.2,63.4 L54.9,62.3 L54.0,62.4 L52.9,63.7 L51.8,63.4 L51.6,61.7 L50.9,61.1 L49.2,61.2 L48.6,60.2 L49.7,58.9 L49.6,58.0 L48.3,56.9 L48.6,55.8 L50.3,55.6 L50.9,54.9 L50.8,53.2 L51.8,52.6 L53.1,53.7 L54.0,53.6 L55.1,52.3 L56.2,52.6 L56.4,54.3 L57.1,54.9 L58.8,54.8 L59.4,55.8 L58.3,57.1Z M55.5,58 a1.5,1.5 0 1 0 -3.0,0 a1.5,1.5 0 1 0 3.0,0Z"/></g>
     <path d="M57 55 Q63 60 70 55 L71 50 Q63 54 56 50Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.5" stroke-linejoin="round"/>
     <path d="M56 51 Q63 55 71 51" fill="none" stroke="url(#xlGold)" stroke-width="1.4" stroke-linecap="round"/>
-  </g>
-
-  <!-- main arrière : une montre flotte au creux de la paume -->
-  <g class="p-armB">
-    <path d="M55 61 Q44 64 38 76 Q40 82 45 80 Q48 72 56 69Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="M36 80 q-3 -4 1 -6 q4 -1 6 3 q1 4 -3 5Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.6" stroke-linejoin="round"/>
-    <g class="p-watch">
-      <circle cx="30" cy="66" r="8" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1.4"/>
-      <circle cx="30" cy="66" r="6" fill="url(#xlFace)" stroke="#8a5a14" stroke-width=".8"/>
-      <path d="M30 59 v-3.4 M28.4 55.6 h3.2" stroke="#8a5a14" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-      <g class="p-wmh" stroke="#1a2680" stroke-width="1" stroke-linecap="round"><path d="M30 66 V61.4"/></g>
-      <g class="p-wh" stroke="#1a2680" stroke-width="1.4" stroke-linecap="round"><path d="M30 66 L33 67.6"/></g>
-      <circle cx="30" cy="66" r="1" fill="#c8301a"/>
-    </g>
   </g>
 
   <!-- bras avant et bâton au sablier -->
