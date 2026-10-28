@@ -213,6 +213,7 @@ function rollSpell(h, t, f, sp, monRes) {
 
 function heroTurn(st, h, t, ev) {
   const f = h.fight;
+  if (f.pendHeal) colosseHeal(st, h); // filet de sécurité : un Colosse interrompu rend quand même ses PV
   for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--;
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
@@ -221,7 +222,7 @@ function heroTurn(st, h, t, ev) {
     f.stig = f.stig || 0;
     if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
       const loss = Math.max(1, Math.min(Math.round(t.maxHp * SAC_PACT_LOSS), Math.round(h.hp - t.maxHp * SAC_PACT_FLOOR)));
-      h.hp -= loss; f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
+      h.hp -= loss; gainBlood(h, loss, t.maxHp); f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
     }
   }
   const xel = h.cls === 'xelor';
@@ -379,7 +380,9 @@ function monsterTurn(st, h, t, m, ev) {
       return;
     }
   }
+  const hpBefore = h.hp;
   h.hp = Math.max(0, h.hp - dmg);
+  gainBlood(h, hpBefore - h.hp, t.maxHp); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
   if (h.cls === 'sacrieur') {
     f.stig = Math.min(SAC_STIG_MAX, (f.stig || 0) + 1); // chaque coup reçu grave un Stigmate
@@ -435,6 +438,44 @@ const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
 /* Sacrieur : Pacte de sang, Stigmates, Douleur partagée, Soif de sang, Martyre */
 const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR = 0.4, SAC_REFLECT = 0.3, SAC_THIRST = 0.08, SAC_MARTYR_HP = 0.12, SAC_MARTYR_BLAST = 0.2;
+
+/* ---------------------- Colosse de Sang (jauge de Sang versé) ----------------------
+   Chaque PV perdu par le Sacrieur (Pacte de sang, coups reçus) remplit la jauge ; elle persiste entre les combats.
+   Pleine, le joueur déclenche l'attaque à la main : le Sacrieur sacrifie 35 % de ses PV actuels, passe en Berserk et un colosse
+   de sang écrase tous les ennemis (dégâts accrus par le sang sacrifié et les Stigmates, résistances ignorées). */
+const SAC_BLOOD_MAX = 300, SAC_BLOOD_RATE = 0.6, SAC_COLOSSE_COST = 0.35, SAC_COLOSSE_BLOOD = 1.25;
+const COLOSSE_SPELL = { id: 'colosse_ult', name: 'Colosse de Sang', min: 110, max: 150, type: 'aoe' };
+function gainBlood(h, lost, maxHp) { if (h.cls === 'sacrieur' && lost > 0 && maxHp > 0) h.blood = Math.min(SAC_BLOOD_MAX, (h.blood || 0) + lost / maxHp * 100 * SAC_BLOOD_RATE); }
+function bloodReady(h) { return h.cls === 'sacrieur' && (h.blood || 0) >= SAC_BLOOD_MAX; }
+/* Soif de sang du Colosse : rend les PV différés (idempotent) */
+function colosseHeal(st, h) {
+  const f = h.fight; if (!f || !f.pendHeal) return 0;
+  const t = heroTotals(st, h), r = Math.min(Math.max(0, t.maxHp - h.hp), f.pendHeal); h.hp += r; f.pendHeal = 0; return r;
+}
+/* Déclenche l'attaque. Retourne { hits, pay, heal } (ou null si impossible) */
+function unleashColosse(st, h, ev) {
+  const f = h.fight;
+  if (!bloodReady(h) || !f || !f.mons.some(m => m.hp > 0)) return null;
+  const t = heroTotals(st, h);
+  const pay = Math.max(0, Math.min(Math.round(h.hp * SAC_COLOSSE_COST), Math.round(h.hp) - 1)); // le sacrifice ne tue jamais
+  h.hp -= pay; f.stig = SAC_STIG_MAX; // le sang appelle le sang : Berserk garanti
+  const { scale } = spellPower(h, t, f, COLOSSE_SPELL), mult = 1 + SAC_STIG_DMG * f.stig / 100;
+  let kills = 0;
+  const hits = f.mons.map(m => {
+    if (m.hp <= 0) return null;
+    const crit = Math.random() * 100 < t.critPct + 25;
+    let v = (rnd(COLOSSE_SPELL.min, COLOSSE_SPELL.max) * scale + t.dmg + pay * SAC_COLOSSE_BLOOD) * mult;
+    if (crit) v *= 1.5;
+    if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+    v = Math.max(1, Math.round(v)); // ignore les résistances
+    m.hp = Math.max(0, m.hp - v); if (m.hp <= 0) kills++;
+    return { v, crit };
+  });
+  const heal = Math.round(t.maxHp * SAC_THIRST * kills); f.pendHeal = heal; // le soin n'est appliqué qu'à la fin de la cinématique (colosseHeal)
+  h.blood = 0; h.bloodCount = (h.bloodCount || 0) + 1; f.ult = (f.ult || 0) + 1; f.colosse = (f.colosse || 0) + 1;
+  ev.log(h, `🩸 COLOSSE DE SANG ! −${pay} PV sacrifiés · ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}${heal ? ` · 🧛 +${heal} PV` : ''}`, 'boss');
+  return { hits, pay, heal };
+}
 /* Xélor, Éclat du temps : 4 rembobinages remplissent le sablier ; plein, il se brise et le Xélor vit 10 combats d'un coup. */
 const CHRONO_MAX = 4, CHRONO_FIGHTS = 10;
 function chronoReady(h) { return h.cls === 'xelor' && (h.chrono || 0) >= CHRONO_MAX && !!h.act && h.act.type === 'zone'; }

@@ -2430,6 +2430,61 @@ label.btn { cursor: pointer; }
 .hs-sacrieur .p-crowndrip{animation:sc-cdrip 1.6s linear infinite}
 @keyframes sc-thorn{from{transform:scale(1)}to{transform:scale(1.05,1.12)}}
 @keyframes sc-cdrip{to{stroke-dashoffset:-16}}
+
+/* ===================== Colosse de Sang (grosse attaque) ===================== */
+.fury.blood .fury-fill { background: linear-gradient(90deg, #4a050c, #b3121f 60%, #ff4a3a); }
+.fury.blood.full { border-color: #ff7a6a; animation: bloodfull 1s ease-in-out infinite; }
+.fury.blood.full .fury-fill { background: linear-gradient(90deg, #7a0814, #ff2a2a, #ffc0b0, #ff2a2a, #7a0814); background-size: 200% 100%; animation: furyshine 1.4s linear infinite; }
+@keyframes bloodfull { 50% { box-shadow: 0 0 10px #ff2a2a, 0 0 2px #fff inset; } }
+.fury-btn.blood-btn { border-color: #ffb0a0; background: radial-gradient(circle at 50% 35%, #ff5a4a, #a0101c 60%, #3a0309); box-shadow: 0 0 0 3px #00000070, 0 0 18px #ff2a2a, 0 0 36px #c8101c88; padding: 5px 7px 6px; }
+.fury-btn.blood-btn::before, .fury-btn.blood-btn::after { border-color: #ff6a5a; }
+.scene.cc-on .unit.hero { z-index: 21; }
+.colosse { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
+.cc-dark { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 62% 62%, #2a050a22 16%, #14020add 100%), #2a040a55; }
+.cc-beat { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 24% 62%, #ff2a2a99, transparent 64%); }
+.cc-seal { position: absolute; opacity: 0; filter: drop-shadow(0 0 5px #ff2a1a) drop-shadow(0 0 14px #a0101c); }
+.cc-seal svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.cc-seal .dr { stroke-dasharray: 100; stroke-dashoffset: 100; }
+.cc-seal .sp { transform-box: view-box; transform-origin: 100px 100px; animation: ccspin 9s linear infinite; }
+@keyframes ccspin { to { transform: rotate(360deg); } }
+.cc-arcs { position: absolute; inset: 0; overflow: visible; }
+.cc-arcs path { fill: none; stroke-linecap: round; }
+.cc-arcs .o { stroke: #2a0306; stroke-width: 9; } .cc-arcs .r { stroke: #d0121f; stroke-width: 5.5; filter: drop-shadow(0 0 5px #ff2a2a); } .cc-arcs .l { stroke: #ff9a8a; stroke-width: 1.6; opacity: .8; }
+.cc-col { position: absolute; opacity: 0; will-change: transform, opacity; }
+.cc-col svg { width: 100%; height: 100%; display: block; overflow: visible; filter: brightness(.62) sepia(1) saturate(4.5) hue-rotate(-38deg) contrast(1.15) drop-shadow(0 0 14px #ff1a2a) drop-shadow(0 0 34px #a0101c); }
+.cc-col.arm-off .hs-sacrieur .p-arm { visibility: hidden; }
+.cc-fist { position: absolute; opacity: 0; will-change: transform; }
+.cc-fist svg { width: 100%; height: 100%; display: block; overflow: visible; filter: brightness(.7) sepia(1) saturate(5) hue-rotate(-38deg) contrast(1.2) drop-shadow(0 0 12px #ff1a2a) drop-shadow(0 0 28px #a0101c); }
+.cc-fist .hs-sacrieur > *:not(.p-arm) { display: none; }
+.cc-fm { position: absolute; width: 1px; height: 1px; }
+.cc-arm { position: absolute; inset: 0; overflow: visible; opacity: 0; }
+.cc-arm path { fill: none; stroke-linecap: round; }
+.cc-arm .o { stroke: #2a0306; } .cc-arm .r { stroke: #8a0c18; filter: drop-shadow(0 0 8px #ff2a2a); } .cc-arm .l { stroke: #ff6a5a; opacity: .55; }
+.cc-title { position: absolute; left: 50%; top: 9%; opacity: 0; transform: translate(-50%, 0); text-align: center; white-space: nowrap; line-height: .95; font-weight: 900; font-family: Georgia, 'Times New Roman', serif; }
+.cc-title span { display: block; font-size: var(--fs); letter-spacing: .06em; color: #ffe9dc; -webkit-text-stroke: 2px #3a0509; paint-order: stroke fill; text-shadow: 0 3px 0 #7a0814, 0 6px 0 #3a0509, 0 0 22px #ff2a2a, 0 0 44px #c8101c; }
+.cc-title b { display: block; font-size: calc(var(--fs) * .46); letter-spacing: .5em; margin-top: 4px; color: #ff6a5a; text-shadow: 0 2px 0 #3a0509, 0 0 14px #ff2a2a; }
+.cc-flash { position: absolute; inset: 0; opacity: 0; background: #ff2a2a; mix-blend-mode: screen; }
+.cc-drop { position: absolute; width: var(--s); height: calc(var(--s) * 1.3); margin: -3px 0 0 -3px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: #d0121f; box-shadow: 0 0 6px #ff2a2a; opacity: 0; animation: ccdrop 1.1s cubic-bezier(.2, .7, .4, 1) var(--d) forwards; }
+.cc-drop.big { animation-duration: 1.4s; }
+@keyframes ccdrop { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 55% { opacity: 1; transform: translate(var(--dx), var(--dy)); } 100% { opacity: 0; transform: translate(calc(var(--dx) * 1.25), calc(var(--dy) + 80px)) scale(.4); } }
+.cc-ring { position: absolute; width: 16px; height: 16px; margin: -8px; border-radius: 50%; border: 3px solid #ff4a3a; box-shadow: 0 0 12px #ff2a2a; animation: ccring .9s ease-out forwards; }
+@keyframes ccring { to { transform: scale(10); opacity: 0; border-width: 1px; } }
+.cc-wave { position: absolute; width: var(--w); height: calc(var(--w) * .3); margin: calc(var(--w) * -.15) 0 0 calc(var(--w) * -.5); border-radius: 50%; border: 5px solid #ff4a3a; box-shadow: 0 0 18px #ff2a2a, inset 0 0 18px #ff2a2a88; opacity: 0; animation: ccwave 1s cubic-bezier(.1, .7, .3, 1) forwards; }
+@keyframes ccwave { 0% { transform: scale(.1); opacity: 1; } 100% { transform: scale(1.7); opacity: 0; border-width: 1px; } }
+.cc-spike { position: absolute; transform-origin: 50% 100%; transform: scaleY(0); background: linear-gradient(0deg, #3a0409, #a0101c 40%, #ff4a3a 85%, #ffd0c0); clip-path: polygon(0 100%, 14% 46%, 36% 20%, 50% 0, 64% 20%, 86% 46%, 100% 100%); }
+.cc-crack { position: absolute; opacity: 0; animation: cccrack 2.4s ease-out forwards; }
+.cc-crack svg path { fill: none; stroke: #2a0306; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: ccdraw .35s ease-out forwards; filter: drop-shadow(0 0 3px #ff2a2a); }
+@keyframes cccrack { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ccdraw { to { stroke-dashoffset: 0; } }
+.cc-rain { position: absolute; top: -30px; width: 2px; height: var(--len); background: linear-gradient(#ff4a3a00, #d0121f); opacity: 0; animation: ccrain linear forwards; }
+@keyframes ccrain { 0% { opacity: .9; transform: translateY(0); } 100% { opacity: .9; transform: translateY(var(--fall)); } }
+.cc-fly { position: absolute; width: var(--s); height: var(--s); margin: -3px; border-radius: 50%; background: radial-gradient(circle, #fff0e8, #ff3a2a 55%, #a0101c); box-shadow: 0 0 10px #ff2a2a; opacity: 0; }
+.unit.hero.sac-cast .sprite { animation: sc-cast .24s linear infinite; filter: drop-shadow(0 0 8px #ff2a2a) drop-shadow(0 0 20px #a0101c) brightness(1.1); }
+@keyframes sc-cast { 25% { translate: -1px 1px; } 50% { translate: 1px -1px; } 75% { translate: 1px 1px; } }
+.unit.hero.sac-absorb .sprite { animation: sc-absorb .9s ease-out; }
+@keyframes sc-absorb { 0% { filter: brightness(2.2) drop-shadow(0 0 22px #ff5a4a); scale: 1.12; } 100% { filter: none; scale: 1; } }
+.scene.cc-rumble { animation: ccrumble .85s linear; }
+@keyframes ccrumble { 0%, 100% { transform: translate(0); } 12% { transform: translate(-1px, 1px); } 25% { transform: translate(2px, -1px); } 37% { transform: translate(-2px, 0); } 50% { transform: translate(1px, 2px); } 62% { transform: translate(-1px, -1px); } 75% { transform: translate(2px, 1px); } 87% { transform: translate(-1px, 0); } }
 /* ===== fin Sacrieur ===== */
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
@@ -2495,7 +2550,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793208648';
+const BUILD_ID = '1793209567';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2578,8 +2633,9 @@ const CLASSES = {
       ['✴️','Stigmates','Chaque coup reçu lui grave aussi un Stigmate. 6 au maximum par combat : chacun donne +8 % de dégâts finaux.'],
       ['🪞','Douleur partagée','30 % des dégâts qu’il encaisse sont renvoyés à l’ennemi qui l’a frappé.'],
       ['🧛','Soif de sang','Chaque ennemi qu’il achève lui rend 8 % de ses PV max.'],
+      ['👹','Colosse de Sang','Chaque PV perdu (Pacte de sang, coups reçus) remplit la jauge de Sang versé, qui persiste entre les combats. Pleine, clique sur le bouton : il sacrifie 35 % de ses PV actuels, passe en Berserk et un colosse de sang écrase tous les ennemis (dégâts accrus par le sang sacrifié et les Stigmates, résistances ignorées).'],
       ['☠️','Martyre','Une fois par combat, un coup fatal le laisse à 12 % de ses PV : son sang explose et inflige 20 % de ses PV max à tous les ennemis, et ses Stigmates montent au maximum.']
-    ], desc: 'Il se saigne chaque tour pour accumuler des Stigmates (+8 % de dégâts chacun, 6 max), renvoie 30 % des coups reçus et se soigne en achevant ses ennemis. Une fois par combat, un coup fatal déclenche le Martyre : il survit et son sang explose sur tous les ennemis.' },
+    ], desc: 'Il se saigne chaque tour pour accumuler des Stigmates (+8 % de dégâts chacun, 6 max), renvoie 30 % des coups reçus et se soigne en achevant ses ennemis. Le sang versé remplit une jauge : pleine, elle libère le Colosse de Sang, une attaque colossale sur tous les ennemis. Une fois par combat, un coup fatal déclenche le Martyre : il survit et son sang explose sur tous les ennemis.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
@@ -3254,6 +3310,7 @@ function rollSpell(h, t, f, sp, monRes) {
 
 function heroTurn(st, h, t, ev) {
   const f = h.fight;
+  if (f.pendHeal) colosseHeal(st, h); // filet de sécurité : un Colosse interrompu rend quand même ses PV
   for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--;
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
@@ -3262,7 +3319,7 @@ function heroTurn(st, h, t, ev) {
     f.stig = f.stig || 0;
     if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
       const loss = Math.max(1, Math.min(Math.round(t.maxHp * SAC_PACT_LOSS), Math.round(h.hp - t.maxHp * SAC_PACT_FLOOR)));
-      h.hp -= loss; f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
+      h.hp -= loss; gainBlood(h, loss, t.maxHp); f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
     }
   }
   const xel = h.cls === 'xelor';
@@ -3420,7 +3477,9 @@ function monsterTurn(st, h, t, m, ev) {
       return;
     }
   }
+  const hpBefore = h.hp;
   h.hp = Math.max(0, h.hp - dmg);
+  gainBlood(h, hpBefore - h.hp, t.maxHp); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
   if (h.cls === 'sacrieur') {
     f.stig = Math.min(SAC_STIG_MAX, (f.stig || 0) + 1); // chaque coup reçu grave un Stigmate
@@ -3476,6 +3535,44 @@ const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
 /* Sacrieur : Pacte de sang, Stigmates, Douleur partagée, Soif de sang, Martyre */
 const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR = 0.4, SAC_REFLECT = 0.3, SAC_THIRST = 0.08, SAC_MARTYR_HP = 0.12, SAC_MARTYR_BLAST = 0.2;
+
+/* ---------------------- Colosse de Sang (jauge de Sang versé) ----------------------
+   Chaque PV perdu par le Sacrieur (Pacte de sang, coups reçus) remplit la jauge ; elle persiste entre les combats.
+   Pleine, le joueur déclenche l'attaque à la main : le Sacrieur sacrifie 35 % de ses PV actuels, passe en Berserk et un colosse
+   de sang écrase tous les ennemis (dégâts accrus par le sang sacrifié et les Stigmates, résistances ignorées). */
+const SAC_BLOOD_MAX = 300, SAC_BLOOD_RATE = 0.6, SAC_COLOSSE_COST = 0.35, SAC_COLOSSE_BLOOD = 1.25;
+const COLOSSE_SPELL = { id: 'colosse_ult', name: 'Colosse de Sang', min: 110, max: 150, type: 'aoe' };
+function gainBlood(h, lost, maxHp) { if (h.cls === 'sacrieur' && lost > 0 && maxHp > 0) h.blood = Math.min(SAC_BLOOD_MAX, (h.blood || 0) + lost / maxHp * 100 * SAC_BLOOD_RATE); }
+function bloodReady(h) { return h.cls === 'sacrieur' && (h.blood || 0) >= SAC_BLOOD_MAX; }
+/* Soif de sang du Colosse : rend les PV différés (idempotent) */
+function colosseHeal(st, h) {
+  const f = h.fight; if (!f || !f.pendHeal) return 0;
+  const t = heroTotals(st, h), r = Math.min(Math.max(0, t.maxHp - h.hp), f.pendHeal); h.hp += r; f.pendHeal = 0; return r;
+}
+/* Déclenche l'attaque. Retourne { hits, pay, heal } (ou null si impossible) */
+function unleashColosse(st, h, ev) {
+  const f = h.fight;
+  if (!bloodReady(h) || !f || !f.mons.some(m => m.hp > 0)) return null;
+  const t = heroTotals(st, h);
+  const pay = Math.max(0, Math.min(Math.round(h.hp * SAC_COLOSSE_COST), Math.round(h.hp) - 1)); // le sacrifice ne tue jamais
+  h.hp -= pay; f.stig = SAC_STIG_MAX; // le sang appelle le sang : Berserk garanti
+  const { scale } = spellPower(h, t, f, COLOSSE_SPELL), mult = 1 + SAC_STIG_DMG * f.stig / 100;
+  let kills = 0;
+  const hits = f.mons.map(m => {
+    if (m.hp <= 0) return null;
+    const crit = Math.random() * 100 < t.critPct + 25;
+    let v = (rnd(COLOSSE_SPELL.min, COLOSSE_SPELL.max) * scale + t.dmg + pay * SAC_COLOSSE_BLOOD) * mult;
+    if (crit) v *= 1.5;
+    if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+    v = Math.max(1, Math.round(v)); // ignore les résistances
+    m.hp = Math.max(0, m.hp - v); if (m.hp <= 0) kills++;
+    return { v, crit };
+  });
+  const heal = Math.round(t.maxHp * SAC_THIRST * kills); f.pendHeal = heal; // le soin n'est appliqué qu'à la fin de la cinématique (colosseHeal)
+  h.blood = 0; h.bloodCount = (h.bloodCount || 0) + 1; f.ult = (f.ult || 0) + 1; f.colosse = (f.colosse || 0) + 1;
+  ev.log(h, `🩸 COLOSSE DE SANG ! −${pay} PV sacrifiés · ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}${heal ? ` · 🧛 +${heal} PV` : ''}`, 'boss');
+  return { hits, pay, heal };
+}
 /* Xélor, Éclat du temps : 4 rembobinages remplissent le sablier ; plein, il se brise et le Xélor vit 10 combats d'un coup. */
 const CHRONO_MAX = 4, CHRONO_FIGHTS = 10;
 function chronoReady(h) { return h.cls === 'xelor' && (h.chrono || 0) >= CHRONO_MAX && !!h.act && h.act.type === 'zone'; }
@@ -7470,6 +7567,11 @@ function sacBerserk(card, fu) {
   if (scene) { scene.classList.remove('cb-shake'); void scene.offsetWidth; scene.classList.add('cb-shake'); setTimeout(() => scene.classList.remove('cb-shake'), 800); }
 }
 function stigHtml(h) { const f = h.fight, n = (f && f.stig) || 0; return `🩸 ${'◆'.repeat(n)}${'◇'.repeat(SAC_STIG_MAX - n)}${f && f.martyr ? ' · ☠✗' : ''}`; }
+const COLOSSE_ICON = `<svg viewBox="0 0 40 44" aria-hidden="true"><path d="M20 2C20 2 6 18 6 28a14 14 0 0 0 28 0C34 18 20 2 20 2Z" fill="#c81420" stroke="#2a0306" stroke-width="2" stroke-linejoin="round"/><path d="M12 22q2-8 8-15" fill="none" stroke="#ff9a8a" stroke-width="1.6" stroke-linecap="round" opacity=".8"/><rect x="12" y="22" width="16" height="11" rx="3.6" fill="#f3e2c2" stroke="#2a0306" stroke-width="1.5"/><path d="M16 22v6M20 22v6M24 22v6" stroke="#2a0306" stroke-width="1.3" stroke-linecap="round"/><path d="M12 28q-3 0-3 3t4 3" fill="none" stroke="#2a0306" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+function bloodGauge(h) {
+  const p = clamp((h.blood || 0) / SAC_BLOOD_MAX, 0, 1);
+  return `<div class="fury blood${p >= 1 ? ' full' : ''}" data-k="blood" title="Sang versé : ${Math.floor(h.blood || 0)} / ${SAC_BLOOD_MAX}. Chaque PV perdu remplit la jauge. Pleine, déclenche le Colosse de Sang !"><span class="fury-fill" style="--p:${p.toFixed(3)}"></span><span class="fury-lbl">${p >= 1 ? 'COLOSSE !' : 'Sang ' + Math.floor(p * 100) + ' %'}</span></div>`;
+}
 function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
@@ -7513,11 +7615,13 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur') && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
+          ${h.cls === 'sacrieur' ? bloodGauge(h) : ''}
+          ${h.cls === 'sacrieur' ? `<button class="fury-btn blood-btn" data-act="sacolosse" data-hero="${h.id}" data-k="bloodbtn" title="Déclencher le Colosse de Sang !" aria-label="Déclencher le Colosse de Sang"${bloodReady(h) && h.fight ? '' : ' hidden'}>${COLOSSE_ICON}</button>` : ''}
           ${h.cls === 'xelor' ? chronoBtn(h) : ''}
           <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
         ${stage}
@@ -7923,6 +8027,119 @@ function playColere(card, h, done) {
   setTimeout(() => { ov.classList.add('s5'); }, T.end - 450);
   setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-leap'); }, T.end);
 }
+/* ---------------------- Sacrieur : Colosse de Sang ----------------------
+   ~5 s : un sceau de sang se grave sous ses pieds, des arcs de sang jaillissent de sa poitrine et dessinent un second sceau sous les ennemis ;
+   le Sacrieur paie son tribut (PV), passe en Berserk, et un colosse spectral — son propre reflet, géant — se dresse derrière lui, arme son poing
+   puis l'abat sur les ennemis : onde de choc, lances de sang, pluie écarlate. Le sang des vaincus lui revient (Soif de sang). */
+const CC_SEAL = (() => {
+  let ticks = '', runes = '';
+  for (let i = 0; i < 36; i++) { const a = i * 10 * Math.PI / 180, r1 = 83, r2 = i % 3 ? 87 : 91; ticks += `M${(100 + r1 * Math.sin(a)).toFixed(1)} ${(100 - r1 * Math.cos(a)).toFixed(1)}L${(100 + r2 * Math.sin(a)).toFixed(1)} ${(100 - r2 * Math.cos(a)).toFixed(1)}`; }
+  for (let i = 0; i < 6; i++) runes += `<path transform="rotate(${i * 60} 100 100)" d="M100 28v14M94 31l6 6 6-6M96 46h8"/>`;
+  return `<svg viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true"><g class="sp" fill="none" stroke="#ff3a2a" stroke-linecap="round" stroke-linejoin="round">
+    <circle class="dr" cx="100" cy="100" r="95" pathLength="100" stroke-width="3.4"/><circle class="dr" cx="100" cy="100" r="78" pathLength="100" stroke-width="1.8"/>
+    <path class="fd" d="${ticks}" stroke-width="1.6"/>
+    <path class="dr" pathLength="100" d="M100 24L166 138H34Z" stroke-width="2.6"/><path class="dr" pathLength="100" d="M100 176L34 62H166Z" stroke-width="2.6"/>
+    <circle class="dr" cx="100" cy="100" r="46" pathLength="100" stroke-width="2"/>
+    <g class="fd" stroke-width="2.2">${runes}</g>
+    <circle class="fd" cx="100" cy="100" r="9" fill="#ff3a2a" stroke="none"/></g></svg>`;
+})();
+function playColosse(card, h, k) {
+  const scene = card.querySelector('.scene'), fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-sacrieur');
+  const mons = [...card.querySelectorAll('.unit.mon:not(.dead)')];
+  let res = null;
+  const nums = () => { const hits = res && res.hits; if (!hits) return; mons.forEach(m => { const x = hits[+m.dataset.mon]; if (!x) return;
+    const n = document.createElement('span'); n.className = 'cl-num' + (x.crit ? ' crit' : ''); n.textContent = '−' + fmt(x.v); m.appendChild(n); setTimeout(() => n.remove(), 1700);
+    m.classList.add('cl-hit'); setTimeout(() => m.classList.remove('cl-hit'), 900); }); };
+  if (!scene || !sp || !svg || !FX_OK()) { // mouvement réduit : pas de cinématique, juste les effets de jeu
+    setTimeout(() => { res = k.pay(); }, 150); setTimeout(() => { k.impact(); nums(); }, 500); setTimeout(() => k.heal(), 900); setTimeout(k.done, 1300);
+    return;
+  }
+  const T = { pay: 950, rise: 1050, title: 1250, wind: 2100, slam: 2600, hit: 2830, end: 5000 };
+  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight, W = hp.w, H = hp.h;
+  const foes = mons.length ? mons.map(m => { const s = m.querySelector('.sprite') || m, p = relPos(s, scene); return { x: p.x, y: p.y, g: p.y + s.offsetHeight * .42, el: m }; }) : [{ x: W * .72, y: H * .6, g: H * .8, el: null }];
+  const fx = foes.reduce((a, p) => a + p.x, 0) / foes.length, fy = foes.reduce((a, p) => a + p.y, 0) / foes.length, gy = Math.max(...foes.map(p => p.g));
+  const hg = hp.y + sh * .42, chest = { x: hp.x + sw * .03, y: hp.y - sh * .04 };
+  const cs = Math.round(Math.min(H * 1.3, W * .58)), ox = cs * .4, oy = cs * .9, bodyX = Math.max(hp.x + sw * .5, cs * .44), cl = Math.round(bodyX - cs * 62 / 128), ct = Math.round(6 - cs * .09);
+  const FX = cs * 105 / 128, FY = cs * 76 / 128, rest = { x: cl + FX, y: ct + FY }, tgt = { x: fx - 22, y: (fy * 2 + gy) / 3 - 4 }, sh0 = { x: cl + cs * 84 / 128, y: ct + cs * 58 / 128 }; // poing au repos, cible de l'impact, épaule du colosse
+  const tx = Math.round(tgt.x - rest.x), ty = Math.round(tgt.y - rest.y);
+  const ov = document.createElement('div'); ov.className = 'colosse'; ov.style.cssText = `--ch:${H}px`;
+  const sealBox = (cx, cy, w) => `left:${(cx - w / 2).toFixed(0)}px;top:${(cy - w * .17).toFixed(0)}px;width:${w.toFixed(0)}px;height:${(w * .34).toFixed(0)}px`;
+  const spread = foes.length > 1 ? Math.max(...foes.map(p => p.x)) - Math.min(...foes.map(p => p.x)) : 0;
+  const arcs = foes.map((p, i) => { const x1 = p.x, y1 = p.g - 4, dx = x1 - chest.x; return `M${chest.x.toFixed(0)} ${chest.y.toFixed(0)}C${(chest.x + dx * .25).toFixed(0)} ${(chest.y - H * .5).toFixed(0)} ${(x1 - dx * .25).toFixed(0)} ${(chest.y - H * .55).toFixed(0)} ${x1.toFixed(0)} ${y1.toFixed(0)}`; });
+  ov.innerHTML = `<div class="cc-dark"></div><div class="cc-beat"></div>
+    <div class="cc-seal h" style="${sealBox(hp.x, hg, sw * 2.3)}">${CC_SEAL}</div>
+    <div class="cc-seal f" style="${sealBox(fx, gy, Math.max(sw * 3, spread + sw * 2.4))}">${CC_SEAL}</div>
+    <svg class="cc-arcs" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${arcs.map(d => `<path class="o" pathLength="100" d="${d}"/><path class="r" pathLength="100" d="${d}"/><path class="l" pathLength="100" d="${d}"/>`).join('')}</svg>
+    <div class="cc-col hero sac-rage" style="left:${cl}px;top:${ct}px;width:${cs}px;height:${cs}px;transform-origin:${ox}px ${oy}px;--st:1"></div>
+    <svg class="cc-arm" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><path class="o" stroke-width="${Math.round(cs * .12) + 8}"/><path class="r" stroke-width="${Math.round(cs * .12)}"/><path class="l" stroke-width="${Math.round(cs * .04)}"/></svg>
+    <div class="cc-fist hero sac-rage" style="left:${cl}px;top:${ct}px;width:${cs}px;height:${cs}px;transform-origin:${FX}px ${FY}px;--st:1"><i class="cc-fm" style="left:${FX}px;top:${FY}px"></i></div>
+    <div class="cc-title" style="--fs:${Math.round(Math.min(H * .2, W * .1))}px"><span>COLOSSE</span><b>DE SANG</b></div><div class="cc-flash"></div>`;
+  const col = ov.querySelector('.cc-col'), fist = ov.querySelector('.cc-fist'), fm = ov.querySelector('.cc-fm'), armSvg = ov.querySelector('.cc-arm'), c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); col.appendChild(c); fist.appendChild(c.cloneNode(true));
+  scene.appendChild(ov); scene.classList.add('cc-on');
+  const live = () => ov.isConnected, at = (ms, fn) => setTimeout(() => { if (live()) fn(); }, ms);
+  const an = (el, kf, o) => el.animate(kf, Object.assign({ duration: 400, fill: 'forwards', easing: 'ease-out' }, o));
+  const add = (cls, css, ms, html) => { const e = document.createElement('i'); e.className = cls; e.style.cssText = css; if (html) e.innerHTML = html; ov.appendChild(e); if (ms) setTimeout(() => e.remove(), ms); return e; };
+  const q = s => ov.querySelector(s), qa = s => [...ov.querySelectorAll(s)];
+  ecaState(fu, 'sac-cast', T.slam - 50);
+  an(q('.cc-dark'), [{ opacity: 0 }, { opacity: 1 }], { duration: 600 });
+  [250, 700, 1150].forEach((t, i) => at(t, () => { an(q('.cc-beat'), [{ opacity: 0, transform: 'scale(.9)' }, { opacity: .6 - i * .08, transform: 'scale(1.04)', offset: .3 }, { opacity: 0, transform: 'scale(1)' }], { duration: 420, fill: 'none' }); }));
+  // sceaux de sang : se gravent sous le Sacrieur puis sous les ennemis
+  const seal = (el, delay, dur) => { el.classList.add('on'); qa('.cc-seal.' + el.classList[1] + ' .dr').forEach((p, i) => an(p, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { duration: dur, delay: delay + i * 70, fill: 'both' })); an(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay }); };
+  seal(q('.cc-seal.h'), 0, 800); seal(q('.cc-seal.f'), 650, 800);
+  // arcs de sang qui partent de la poitrine
+  qa('.cc-arcs path').forEach((p, i) => { const f = Math.floor(i / 3); p.style.strokeDasharray = '100'; an(p, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { duration: 720, delay: 280 + f * 90, easing: 'cubic-bezier(.3,.6,.3,1)', fill: 'both' }); });
+  at(T.pay, () => { // le tribut : PV perdus, Berserk, gerbe de sang
+    res = k.pay();
+    for (let i = 0; i < 30; i++) { const a = -Math.PI * (.02 + Math.random() * .96), r = 40 + Math.random() * 110; add('cc-drop', `left:${chest.x.toFixed(0)}px;top:${chest.y.toFixed(0)}px;--dx:${(Math.cos(a) * r * 1.3).toFixed(0)}px;--dy:${(Math.sin(a) * r).toFixed(0)}px;--s:${(3 + Math.random() * 6).toFixed(1)}px;--d:${(Math.random() * 220).toFixed(0)}ms`, 1700); }
+    add('cc-ring', `left:${chest.x}px;top:${chest.y}px`, 1000);
+    an(q('.cc-flash'), [{ opacity: .4 }, { opacity: 0 }], { duration: 380 });
+  });
+  // le colosse se dresse
+  at(T.rise, () => an(col, [{ transform: `translate(-34px,${(cs * .55).toFixed(0)}px) scale(.82)`, opacity: 0 }, { transform: 'translate(0,0) scale(1)', opacity: .9 }], { duration: 950, easing: 'cubic-bezier(.2,.8,.2,1)' }));
+  at(T.rise + 100, () => { scene.classList.add('cc-rumble'); setTimeout(() => scene.classList.remove('cc-rumble'), 850); });
+  at(T.title, () => an(q('.cc-title'), [{ opacity: 0, transform: 'translate(-50%,0) scale(3.2)', filter: 'blur(10px)' }, { opacity: 1, transform: 'translate(-50%,0) scale(1)', filter: 'blur(0)', offset: .55 }, { opacity: 1, transform: 'translate(-50%,0) scale(1.04)' }], { duration: 1250, easing: 'cubic-bezier(.2,1.3,.4,1)' }));
+  // il arme son poing : le poing se détache du colosse (un bras de sang le retient) et recule…
+  const beam = () => { if (!live()) return; const m = relPos(fm, scene), dd = `M${sh0.x.toFixed(0)} ${sh0.y.toFixed(0)}Q${((sh0.x + m.x) / 2).toFixed(0)} ${((sh0.y + m.y) / 2 - H * .2).toFixed(0)} ${m.x.toFixed(0)} ${m.y.toFixed(0)}`; armSvg.querySelectorAll('path').forEach(pp => pp.setAttribute('d', dd)); requestAnimationFrame(beam); };
+  at(T.wind, () => {
+    col.classList.add('arm-off'); fist.style.opacity = 1; armSvg.style.opacity = 1; beam();
+    an(col, [{ transform: 'translate(0,0) rotate(0deg)' }, { transform: `translate(${(-cs * .03).toFixed(0)}px,0) rotate(-5deg)` }], { duration: 480, easing: 'cubic-bezier(.4,0,.2,1)' });
+    an(fist, [{ transform: 'translate(0,0) scale(1) rotate(0deg)' }, { transform: `translate(${(-cs * .1).toFixed(0)}px,${(-cs * .2).toFixed(0)}px) scale(1.4) rotate(-18deg)` }], { duration: 480, easing: 'cubic-bezier(.4,0,.2,1)' });
+  });
+  // …puis s'abat sur les ennemis
+  at(T.slam, () => {
+    an(col, [{ transform: `translate(${(-cs * .03).toFixed(0)}px,0) rotate(-5deg)` }, { transform: `translate(${(cs * .05).toFixed(0)}px,${(cs * .03).toFixed(0)}px) rotate(7deg)` }], { duration: T.hit - T.slam, easing: 'cubic-bezier(.7,0,1,.5)' });
+    an(fist, [{ transform: `translate(${(-cs * .1).toFixed(0)}px,${(-cs * .2).toFixed(0)}px) scale(1.4) rotate(-18deg)`, filter: 'blur(0)' }, { transform: `translate(${tx}px,${ty}px) scale(2.5) rotate(12deg)`, filter: 'blur(0)' }], { duration: T.hit - T.slam, easing: 'cubic-bezier(.7,0,1,.45)' });
+    heroGesture(fu, 'atk');
+  });
+  at(T.hit - 60, () => { an(q('.cc-title'), [{ opacity: 1 }, { opacity: 0, transform: 'translate(-50%,-14px) scale(1.35)' }], { duration: 300 }); });
+  at(T.hit, () => { // IMPACT
+    k.impact(); nums();
+    scene.classList.remove('cl-shake'); void scene.offsetWidth; scene.classList.add('cl-shake'); setTimeout(() => scene.classList.remove('cl-shake'), 560);
+    an(q('.cc-flash'), [{ opacity: .8 }, { opacity: 0 }], { duration: 340, easing: 'ease-out' });
+    qa('.cc-arcs path').forEach(p => an(p, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }));
+    for (let n = 0; n < 3; n++) add('cc-wave', `left:${fx.toFixed(0)}px;top:${(gy).toFixed(0)}px;--w:${Math.round(Math.max(sw * 2.4, spread + sw * 2))}px;animation-delay:${n * 120}ms`, 1300);
+    add('cc-crack', `left:${(fx - 170).toFixed(0)}px;top:${(gy - 16).toFixed(0)}px`, 2600, `<svg viewBox="-100 -20 200 40" width="340" height="68"><path pathLength="100" d="M0 0L-30 6L-52 2L-80 10M0 0L26 8L48 3L84 11M0 0L-14 14M0 0L12 16L22 14M-30 6L-38 16M48 3L56-6"/></svg>`);
+    foes.forEach((p, i) => { // lances de sang sous chaque ennemi
+      [[0, 1, 1], [-.55, .62, .66], [.55, .62, .66], [-1.05, .36, .5], [1.05, .36, .5]].forEach(([ox2, hh, ww], j) => {
+        const wd = Math.round(sw * .34 * ww), ht = Math.round(H * .78 * hh * (.85 + Math.random() * .3));
+        const e = add('cc-spike', `left:${(p.x + ox2 * sw * .42 - wd / 2).toFixed(0)}px;top:${(p.g - ht).toFixed(0)}px;width:${wd}px;height:${ht}px`, 1900);
+        an(e, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1.06)', offset: .55 }, { transform: 'scaleY(1)', offset: .7 }, { transform: 'scaleY(1)', opacity: 1, offset: .8 }, { transform: 'scaleY(.3)', opacity: 0 }], { duration: 1500, delay: j * 40 + i * 50, easing: 'cubic-bezier(.1,.8,.3,1)' });
+      });
+      for (let n = 0; n < 16; n++) { const a = -Math.PI * (.05 + Math.random() * .9), r = 40 + Math.random() * 110; add('cc-drop big', `left:${p.x.toFixed(0)}px;top:${(p.g - 6).toFixed(0)}px;--dx:${(Math.cos(a) * r * 1.2).toFixed(0)}px;--dy:${(Math.sin(a) * r * 1.2).toFixed(0)}px;--s:${(4 + Math.random() * 8).toFixed(1)}px;--d:${(Math.random() * 120).toFixed(0)}ms`, 1700); }
+    });
+    for (let n = 0; n < 46; n++) add('cc-rain', `left:${(Math.random() * W).toFixed(0)}px;--len:${(10 + Math.random() * 20).toFixed(0)}px;--fall:${(H + 50)}px;animation-delay:${(80 + Math.random() * 700).toFixed(0)}ms;animation-duration:${(520 + Math.random() * 420).toFixed(0)}ms`, 1900);
+  });
+  at(T.hit + 420, () => { an(col, [{ opacity: .95 }, { opacity: 0, filter: 'blur(7px)' }], { duration: 950, easing: 'ease-in' }); [fist, armSvg].forEach(e => an(e, [{ opacity: 1 }, { opacity: 0, filter: 'blur(6px)' }], { duration: 800, easing: 'ease-in' })); });
+  // le sang des vaincus revient au Sacrieur
+  at(T.hit + 900, () => {
+    const heal = (res && res.heal) || 0; if (heal <= 0) return;
+    foes.forEach((p, i) => { for (let n = 0; n < 5; n++) { const e = add('cc-fly', `left:${(p.x + Math.random() * 30 - 15).toFixed(0)}px;top:${(p.y + Math.random() * 30 - 10).toFixed(0)}px;--s:${(5 + Math.random() * 5).toFixed(0)}px`, 1500);
+      an(e, [{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${((chest.x - p.x) * .5 + (Math.random() - .5) * 60).toFixed(0)}px,${(-60 - Math.random() * 50).toFixed(0)}px) scale(1.2)`, opacity: 1, offset: .45 }, { transform: `translate(${(chest.x - p.x).toFixed(0)}px,${(chest.y - p.y).toFixed(0)}px) scale(.4)`, opacity: .9 }], { duration: 820, delay: n * 70 + i * 60, easing: 'cubic-bezier(.5,0,.6,1)' }); } });
+    at(1000, () => { k.heal(); ecaState(fu, 'sac-absorb', 900); });
+  });
+  at(T.end - 450, () => { an(q('.cc-dark'), [{ opacity: 1 }, { opacity: 0 }], { duration: 450 }); qa('.cc-seal').forEach(e => an(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 450 })); });
+  setTimeout(() => { ov.remove(); scene.classList.remove('cc-on', 'cc-rumble'); fu.classList.remove('sac-cast'); k.done(); }, T.end);
+}
 function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
 function floatNum(el, txt, cls) {
   const f = document.createElement('span'); f.className = 'fnum ' + cls; f.textContent = txt;
@@ -8074,6 +8291,8 @@ function patchCombat() {
     }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
+    const bl = q('blood'); if (bl) { const p = clamp((h.blood || 0) / SAC_BLOOD_MAX, 0, 1); bl.firstElementChild.style.setProperty('--p', p.toFixed(3)); bl.classList.toggle('full', p >= 1); const lb = bl.lastElementChild, tx = p >= 1 ? 'COLOSSE !' : 'Sang ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
+    const bb = q('bloodbtn'); if (bb) { const show = bloodReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (bb.hidden === show) bb.hidden = !show; }
     if (h.cls === 'sacrieur') { // les runes-cicatrices s'allument avec les Stigmates ; au maximum : BERSERK
       const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), n = h.fight ? Math.min(SAC_STIG_MAX, h.fight.stig || 0) : 0, v = (n / SAC_STIG_MAX).toFixed(2);
       if (fsp && fsp.style.getPropertyValue('--st') !== v) { fsp.style.setProperty('--st', v); fsp.querySelectorAll('.p-rune').forEach((el, i) => el.classList.toggle('lit', i < n)); }
@@ -8578,6 +8797,20 @@ const ACTIONS = {
       return hits;
     });
     setTimeout(() => { delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 600); }, 3300);
+    return 'keep';
+  },
+  sacolosse(d) {
+    const h = heroById(d.hero); if (!h || !bloodReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
+    const btn = card.querySelector('[data-k="bloodbtn"]'); if (btn) btn.hidden = true;
+    PF_HOLD[h.id] = {}; card.querySelectorAll('.unit.mon').forEach(el => { PF_HOLD[h.id][+el.dataset.mon] = +el.dataset.hp; }); // les PV des ennemis ne bougent qu'à l'impact
+    playColosse(card, h, {
+      pay: () => { const r = unleashColosse(st, h, liveEv); patchCombat(); return r; },
+      impact: () => { delete PF_HOLD[h.id]; card.querySelectorAll('.unit.mon').forEach(el => { const m = h.fight && h.fight.mons[+el.dataset.mon]; if (m) el.dataset.hp = m.hp; }); patchCombat(); },
+      heal: () => { const r = colosseHeal(st, h); patchCombat(); return r; },
+      done: () => { colosseHeal(st, h); delete PF_HOLD[h.id]; delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 700); patchCombat(); saveGame(); },
+    });
     return 'keep';
   },
   xelchrono(d) {
