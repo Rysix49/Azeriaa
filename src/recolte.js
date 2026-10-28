@@ -195,7 +195,7 @@ function renderRecolte() {
       <div class="pc-art"><div class="pc-glow" style="--c:${PLANT_COL[c.id]}"></div>${plantSvg(c.id, locked ? 'sil' : '')}<span class="pc-lv">Niv. ${c.lvl}</span>${isAlm && !locked ? '<span class="pc-star">★ ×2</span>' : ''}${locked ? '' : `<span class="pc-stock num" title="En stock">${short(st.res[c.id] || 0)}</span>`}</div>
       <div class="pc-main"><b class="pc-name">${locked ? '???' : esc(c.name)}</b><small class="sub">${locked ? 'Plante à découvrir' : esc(c.where)}</small>
         ${locked ? '' : `<div class="pc-rank"><span class="mrank m${m.i}"><span class="pips">${Array.from({ length: HARVEST_RANKS.length - 1 }, (_, k) => `<i class="${k < m.i ? 'on' : ''}"></i>`).join('')}</span>${m.name}</span><small class="sub num">${m.next ? `${fmt(m.n)} / ${fmt(m.next.at)}` : `${fmt(m.n)} récoltes`}</small></div><div class="bar mast thin"><i style="width:${(prog * 100).toFixed(0)}%"></i></div>
-        <div class="pc-stats"><span>${qa === qb ? qa : `${qa}–${qb}`}<small>/ récolte</small></span><span>+${c.xp}<small>XP</small></span><span>${c.value}<small>K pièce</small></span><span title="Chance de Récolte miraculeuse (×3)">${(MIRACLE_BASE + m.rank.mir).toFixed(1).replace('.', ',')} %<small>miracle</small></span>${m.rank.qty ? `<span>+${m.rank.qty} %<small>qté</small></span>` : ''}</div>`}</div>
+        <div class="pc-stats"><span>${qa === qb ? qa : `${qa}–${qb}`}<small>/ récolte</small></span><span>+${c.xp}<small>XP</small></span><span>${c.value}<small>K pièce</small></span><span class="st-mir" data-miracle="${c.id}">${(MIRACLE_BASE + m.rank.mir).toFixed(1).replace('.', ',')} %<small>miracle</small></span>${m.rank.qty ? `<span>+${m.rank.qty} %<small>qté</small></span>` : ''}</div>`}</div>
       <div class="pc-send">${wk}${sends}</div></article>`;
   }).join('');
   return `<div class="split at-split hv-split"><aside class="joblist">${jobs}</aside><section class="panel at-panel hv-panel hv-${jid} hv-${phase}" style="--p36:${hvSync(3.6)};--p32:${hvSync(3.2)};--p40:${hvSync(4)};--p24:${hvSync(2.4)}">
@@ -206,3 +206,28 @@ function renderRecolte() {
     <div class="pc-grid">${cards}</div>
     <p class="hint">Chaque plante se maîtrise avec le temps : plus de quantité et plus de chances de <b>Récolte miraculeuse</b> (×3 quantité, ×2 XP). La quantité augmente de 1 tous les 10 niveaux au-dessus du palier.</p></section></div>`;
 }
+
+/* Appui long sur « miracle » : explication de la Récolte miraculeuse */
+(function () {
+  let timer = null, tip = null;
+  const hide = () => { clearTimeout(timer); if (tip) { tip.remove(); tip = null; } };
+  const show = el => {
+    const c = CROPS.find(x => x.id === el.dataset.miracle); if (!c) return;
+    const m = harvestMastery(st, c), chance = MIRACLE_BASE + m.rank.mir, [qa, qb] = cropQty(st, c);
+    hide(); tip = document.createElement('div'); tip.className = 'hv-tip';
+    tip.innerHTML = `<b class="display">✨ Récolte miraculeuse</b>
+      <p>À chaque récolte, une chance que la nature se montre généreuse : la <b>quantité récoltée est multipliée par 3</b> et l’<b>XP de métier par 2</b>.</p>
+      <ul><li>Chance de base : <b>${MIRACLE_BASE} %</b></li><li>Maîtrise de ${esc(c.name)} (${m.name}) : <b>+${m.rank.mir.toString().replace('.', ',')} %</b></li><li>Chance actuelle : <b class="gold">${chance.toFixed(1).replace('.', ',')} %</b>${m.next ? ` <small>(${m.next.at.toLocaleString('fr-FR')} récoltes pour passer à ${(MIRACLE_BASE + m.next.mir).toString().replace('.', ',')} %)</small>` : ''}</li></ul>
+      <p class="sub">Le miracle se cumule avec l’Almanax du jour (×2) : jusqu’à ×6 la quantité. Exemple ici : ${qa === qb ? qa : qa + '–' + qb} → ${qa * 3}${qa === qb ? '' : '–' + qb * 3} plantes.</p>`;
+    document.body.appendChild(tip);
+    const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+    tip.style.top = (r.top - h - 10 < 8 ? r.bottom + 10 : r.top - h - 10) + 'px';
+  };
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest && e.target.closest('[data-miracle]'); if (!b) return;
+    hide(); const id = b.dataset.miracle; timer = setTimeout(() => { const cur = document.querySelector(`[data-miracle="${id}"]`); if (cur) show(cur); }, 350);
+  });
+  ['pointerup', 'pointercancel', 'scroll'].forEach(t => document.addEventListener(t, hide, true));
+  document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('[data-miracle]')) e.preventDefault(); });
+})();

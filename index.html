@@ -2973,6 +2973,12 @@ label.btn { cursor: pointer; }
 .pc-leaf { position: absolute; left: 50%; top: 62%; z-index: 3; width: 7px; height: 7px; pointer-events: none; border-radius: 50% 0 50% 0; background: var(--c); box-shadow: 0 0 6px var(--c); }
 .pc-flash { position: absolute; left: 50%; top: 60%; z-index: 2; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, #fffbe0, #ffd24a88 35%, transparent 70%); animation: pc-flash .7s ease-out forwards; }
 @keyframes pc-flash { from { opacity: 1; transform: scale(.2); } to { opacity: 0; transform: scale(1.5); } }
+
+.pc-stats .st-mir { cursor: help; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; border-color: #e8aa2e66; }
+.hv-tip { position: fixed; z-index: 90; width: min(320px, calc(100vw - 16px)); padding: 12px 14px; border-radius: 12px; pointer-events: none; background: linear-gradient(160deg, #2e2410, #15110a); border: 1px solid #e8aa2e; box-shadow: 0 10px 30px #000c, 0 0 18px #e8aa2e44; font-size: 12.5px; line-height: 1.45; animation: hv-tipin .16s ease-out; }
+.hv-tip b.display { display: block; font-size: 18px; color: var(--gold-2); margin-bottom: 4px; }
+.hv-tip p { margin: 5px 0; } .hv-tip ul { margin: 6px 0; padding-left: 18px; } .hv-tip .gold { color: var(--gold-2); } .hv-tip small { color: var(--muted); }
+@keyframes hv-tipin { from { opacity: 0; transform: translateY(4px); } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -3055,7 +3061,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793226658';
+const BUILD_ID = '1793226799';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -8725,7 +8731,7 @@ function renderRecolte() {
       <div class="pc-art"><div class="pc-glow" style="--c:${PLANT_COL[c.id]}"></div>${plantSvg(c.id, locked ? 'sil' : '')}<span class="pc-lv">Niv. ${c.lvl}</span>${isAlm && !locked ? '<span class="pc-star">★ ×2</span>' : ''}${locked ? '' : `<span class="pc-stock num" title="En stock">${short(st.res[c.id] || 0)}</span>`}</div>
       <div class="pc-main"><b class="pc-name">${locked ? '???' : esc(c.name)}</b><small class="sub">${locked ? 'Plante à découvrir' : esc(c.where)}</small>
         ${locked ? '' : `<div class="pc-rank"><span class="mrank m${m.i}"><span class="pips">${Array.from({ length: HARVEST_RANKS.length - 1 }, (_, k) => `<i class="${k < m.i ? 'on' : ''}"></i>`).join('')}</span>${m.name}</span><small class="sub num">${m.next ? `${fmt(m.n)} / ${fmt(m.next.at)}` : `${fmt(m.n)} récoltes`}</small></div><div class="bar mast thin"><i style="width:${(prog * 100).toFixed(0)}%"></i></div>
-        <div class="pc-stats"><span>${qa === qb ? qa : `${qa}–${qb}`}<small>/ récolte</small></span><span>+${c.xp}<small>XP</small></span><span>${c.value}<small>K pièce</small></span><span title="Chance de Récolte miraculeuse (×3)">${(MIRACLE_BASE + m.rank.mir).toFixed(1).replace('.', ',')} %<small>miracle</small></span>${m.rank.qty ? `<span>+${m.rank.qty} %<small>qté</small></span>` : ''}</div>`}</div>
+        <div class="pc-stats"><span>${qa === qb ? qa : `${qa}–${qb}`}<small>/ récolte</small></span><span>+${c.xp}<small>XP</small></span><span>${c.value}<small>K pièce</small></span><span class="st-mir" data-miracle="${c.id}">${(MIRACLE_BASE + m.rank.mir).toFixed(1).replace('.', ',')} %<small>miracle</small></span>${m.rank.qty ? `<span>+${m.rank.qty} %<small>qté</small></span>` : ''}</div>`}</div>
       <div class="pc-send">${wk}${sends}</div></article>`;
   }).join('');
   return `<div class="split at-split hv-split"><aside class="joblist">${jobs}</aside><section class="panel at-panel hv-panel hv-${jid} hv-${phase}" style="--p36:${hvSync(3.6)};--p32:${hvSync(3.2)};--p40:${hvSync(4)};--p24:${hvSync(2.4)}">
@@ -8736,6 +8742,31 @@ function renderRecolte() {
     <div class="pc-grid">${cards}</div>
     <p class="hint">Chaque plante se maîtrise avec le temps : plus de quantité et plus de chances de <b>Récolte miraculeuse</b> (×3 quantité, ×2 XP). La quantité augmente de 1 tous les 10 niveaux au-dessus du palier.</p></section></div>`;
 }
+
+/* Appui long sur « miracle » : explication de la Récolte miraculeuse */
+(function () {
+  let timer = null, tip = null;
+  const hide = () => { clearTimeout(timer); if (tip) { tip.remove(); tip = null; } };
+  const show = el => {
+    const c = CROPS.find(x => x.id === el.dataset.miracle); if (!c) return;
+    const m = harvestMastery(st, c), chance = MIRACLE_BASE + m.rank.mir, [qa, qb] = cropQty(st, c);
+    hide(); tip = document.createElement('div'); tip.className = 'hv-tip';
+    tip.innerHTML = `<b class="display">✨ Récolte miraculeuse</b>
+      <p>À chaque récolte, une chance que la nature se montre généreuse : la <b>quantité récoltée est multipliée par 3</b> et l’<b>XP de métier par 2</b>.</p>
+      <ul><li>Chance de base : <b>${MIRACLE_BASE} %</b></li><li>Maîtrise de ${esc(c.name)} (${m.name}) : <b>+${m.rank.mir.toString().replace('.', ',')} %</b></li><li>Chance actuelle : <b class="gold">${chance.toFixed(1).replace('.', ',')} %</b>${m.next ? ` <small>(${m.next.at.toLocaleString('fr-FR')} récoltes pour passer à ${(MIRACLE_BASE + m.next.mir).toString().replace('.', ',')} %)</small>` : ''}</li></ul>
+      <p class="sub">Le miracle se cumule avec l’Almanax du jour (×2) : jusqu’à ×6 la quantité. Exemple ici : ${qa === qb ? qa : qa + '–' + qb} → ${qa * 3}${qa === qb ? '' : '–' + qb * 3} plantes.</p>`;
+    document.body.appendChild(tip);
+    const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+    tip.style.top = (r.top - h - 10 < 8 ? r.bottom + 10 : r.top - h - 10) + 'px';
+  };
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest && e.target.closest('[data-miracle]'); if (!b) return;
+    hide(); const id = b.dataset.miracle; timer = setTimeout(() => { const cur = document.querySelector(`[data-miracle="${id}"]`); if (cur) show(cur); }, 350);
+  });
+  ['pointerup', 'pointercancel', 'scroll'].forEach(t => document.addEventListener(t, hide, true));
+  document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('[data-miracle]')) e.preventDefault(); });
+})();
 /* =====================================================================
    AMAKNA IDLE — INTERFACE v2
    Barre latérale (navigation + groupe), scènes de combat, poupée

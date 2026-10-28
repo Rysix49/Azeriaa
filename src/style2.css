@@ -2965,3 +2965,9 @@ label.btn { cursor: pointer; }
 .pc-leaf { position: absolute; left: 50%; top: 62%; z-index: 3; width: 7px; height: 7px; pointer-events: none; border-radius: 50% 0 50% 0; background: var(--c); box-shadow: 0 0 6px var(--c); }
 .pc-flash { position: absolute; left: 50%; top: 60%; z-index: 2; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, #fffbe0, #ffd24a88 35%, transparent 70%); animation: pc-flash .7s ease-out forwards; }
 @keyframes pc-flash { from { opacity: 1; transform: scale(.2); } to { opacity: 0; transform: scale(1.5); } }
+
+.pc-stats .st-mir { cursor: help; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; border-color: #e8aa2e66; }
+.hv-tip { position: fixed; z-index: 90; width: min(320px, calc(100vw - 16px)); padding: 12px 14px; border-radius: 12px; pointer-events: none; background: linear-gradient(160deg, #2e2410, #15110a); border: 1px solid #e8aa2e; box-shadow: 0 10px 30px #000c, 0 0 18px #e8aa2e44; font-size: 12.5px; line-height: 1.45; animation: hv-tipin .16s ease-out; }
+.hv-tip b.display { display: block; font-size: 18px; color: var(--gold-2); margin-bottom: 4px; }
+.hv-tip p { margin: 5px 0; } .hv-tip ul { margin: 6px 0; padding-left: 18px; } .hv-tip .gold { color: var(--gold-2); } .hv-tip small { color: var(--muted); }
+@keyframes hv-tipin { from { opacity: 0; transform: translateY(4px); } }
