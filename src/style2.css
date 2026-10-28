@@ -2347,10 +2347,16 @@ label.btn { cursor: pointer; }
 @keyframes sc-eyes { 50% { opacity: .45; } }
 .hs-sacrieur .p-cracks { animation: sc-cracks .9s ease-in-out infinite; }
 @keyframes sc-cracks { 50% { opacity: .5; } }
+/* tatouages tribaux : ils se dessinent en traits de feu quand le Berserk s'éveille */
+.hs-sacrieur .p-tattoo { stroke: #ffd070; stroke-width: 2.2; }
+.hs-sacrieur .p-tattoo path { stroke: #ffd070; stroke-dasharray: 150; stroke-dashoffset: 150; transition: stroke-dashoffset .9s ease-out; filter: drop-shadow(0 0 2px #ff2a1a) drop-shadow(0 0 4px #ff6a2a); }
+.hs-sacrieur .p-tattoo path:nth-child(2) { transition-delay: .15s; } .hs-sacrieur .p-tattoo path:nth-child(3) { transition-delay: .3s; } .hs-sacrieur .p-tattoo path:nth-child(4) { transition-delay: .45s; } .hs-sacrieur .p-tattoo path:nth-child(5) { transition-delay: .6s; } .hs-sacrieur .p-tattoo path:nth-child(6) { transition-delay: .75s; }
+.hero.sac-rage .hs-sacrieur .p-tattoo path { stroke-dashoffset: 0; animation: sc-tat 1.1s ease-in-out 1s infinite; }
+@keyframes sc-tat { 0%, 100% { filter: drop-shadow(0 0 2.5px #ff2a1a); } 50% { filter: drop-shadow(0 0 3px #ff2a1a) drop-shadow(0 0 9px #ff7a4a) brightness(1.5); } }
 /* BERSERK : à 6 Stigmates il se transforme (cornes, crinière de flammes, peau rouge, yeux en feu, lame incandescente) */
 .hero.sac-rage .hs-sacrieur .p-rage { opacity: 1; }
 .hero.sac-rage .hs-sacrieur .p-calm { opacity: 0; }
-.hero.sac-rage .hs-sacrieur .p-rageskin { opacity: .5; }
+.hero.sac-rage .hs-sacrieur .p-rageskin { opacity: .22; }
 .hero.sac-rage .hs-sacrieur .p-horns { transform: scale(1); }
 .hero.sac-rage .hs-sacrieur .p-aura { opacity: .95; }
 .hero.sac-rage .hs-sacrieur .p-bloodfist { opacity: .85; }
@@ -2358,7 +2364,7 @@ label.btn { cursor: pointer; }
 .hero.sac-rage .hs-sacrieur .p-orbit circle { stroke: #ff6a4a; stroke-dasharray: 6 3; stroke-width: 2.4; }
 .hero.sac-rage .hs-sacrieur .p-mane { animation: sc-mane .45s ease-in-out infinite; }
 @keyframes sc-mane { 0%, 100% { transform: scale(1, .94); } 50% { transform: scale(1.04, 1.1); } }
-.hero.sac-rage .hs-sacrieur { transform-origin: 50% 100%; animation: sc-rage-body .5s ease-in-out infinite; filter: drop-shadow(0 0 6px #ff2a1a); }
+.hero.sac-rage .hs-sacrieur { transform-origin: 50% 100%; animation: sc-rage-body .5s ease-in-out infinite; filter: drop-shadow(0 0 4px #ff2a1a); }
 @keyframes sc-rage-body { 0%, 100% { transform: scale(1.1) translate(0, 0); } 25% { transform: scale(1.11) translate(-1px, 0); } 75% { transform: scale(1.1) translate(1px, -1px); } }
 .hero.sac-rage .hs-sacrieur .p-torso { animation-duration: .8s; }
 .hero.sac-trans .hs-sacrieur { animation: sc-trans 1.2s cubic-bezier(.3, .6, .3, 1) both; transform-origin: 50% 100%; }
