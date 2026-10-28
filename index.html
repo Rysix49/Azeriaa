@@ -2195,58 +2195,100 @@ label.btn { cursor: pointer; }
 .chrono-btn.full::before, .chrono-btn.full::after { content: ""; position: absolute; inset: -2px -6px; border-radius: 50%; border: 2px solid #ffd96a; animation: furyping 1.4s ease-out infinite; pointer-events: none; }
 .chrono-btn.full::after { animation-delay: .7s; }
 @keyframes cs-full { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 3px #ffd96a); } 50% { transform: scale(1.12); filter: drop-shadow(0 0 10px #ffcf4a); } }
-.hero.xel-chrono .hs-xelor { animation: xlk-body 4.7s ease-in-out both; }
+.hero.xel-chrono .hs-xelor { animation: xlk-body 6.2s ease-in-out both; }
 @keyframes xlk-body { 0% { transform: none; } 10% { transform: translateY(-10px) scale(1.05); } 80% { transform: translateY(-10px) scale(1.05); } 100% { transform: none; } }
-.hero.xel-chrono .hs-xelor .p-halo { opacity: 1; filter: drop-shadow(0 0 8px #ffd96a); animation: xlk-halo 4.7s cubic-bezier(.4, 0, .3, 1) both; }
+.hero.xel-chrono .hs-xelor .p-halo { opacity: 1; filter: drop-shadow(0 0 8px #ffd96a); animation: xlk-halo 6.2s cubic-bezier(.4, 0, .3, 1) both; }
 @keyframes xlk-halo { 0% { transform: scale(1) rotate(0); } 20% { transform: scale(1.35) rotate(-120deg); } 80% { transform: scale(1.35) rotate(-2200deg); } 100% { transform: scale(1) rotate(-2400deg); } }
 .hero.xel-chrono .hs-xelor .p-mh { animation: xl-spin .35s linear infinite; }
 .hero.xel-chrono .hs-xelor .p-hh { animation: xl-spin 2.4s linear infinite; }
 .hero.xel-chrono .hs-xelor .p-ticks { animation: xl-spin .8s linear infinite; }
 .hero.xel-chrono .hs-xelor .p-aura { opacity: 1; }
 .hero.xel-chrono .hs-xelor .p-eye { filter: drop-shadow(0 0 4px #ffe08a) brightness(1.4); }
-.hero.xel-chrono .hs-xelor .p-arm { transform-box: view-box; transform-origin: 72px 64px; animation: xlr-arm 4.7s ease-in-out both; }
-.hero.xel-chrono .hs-xelor .p-glow { animation: xlr-glow 4.7s ease-in-out both; }
-.scene > .cburst { position: absolute; inset: 0; z-index: 14; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.hero.xel-chrono .hs-xelor .p-arm { transform-box: view-box; transform-origin: 72px 64px; animation: xlr-arm 6.2s ease-in-out both; }
+.hero.xel-chrono .hs-xelor .p-glow { animation: xlr-glow 6.2s ease-in-out both; }
+.scene > .cburst { position: absolute; inset: 0; z-index: 14; pointer-events: none; overflow: hidden; border-radius: inherit; transition: opacity .6s; }
+.cburst.out { opacity: 0; }
 .cburst > * { position: absolute; pointer-events: none; }
-.cb-dim { inset: 0; background: radial-gradient(ellipse at 50% 50%, #3a2a0a55 0%, #1a1450c8 60%, #060a28e6 100%); opacity: 0; }
-.cb-tint { inset: 0; background: #ffb62e; mix-blend-mode: color; opacity: 0; }
-.cb-rays { left: 50%; top: 50%; width: 220%; aspect-ratio: 1; margin: -110% 0 0 -110%; background: repeating-conic-gradient(from 0deg, #ffe9a044 0deg 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(circle, #000 0%, transparent 55%); mask: radial-gradient(circle, #000 0%, transparent 55%); opacity: 0; }
-.cb-glass { left: 50%; top: 50%; width: calc(var(--gs, 160px) * .62); height: var(--gs, 160px); margin: calc(var(--gs, 160px) / -2) 0 0 calc(var(--gs, 160px) * -.31); opacity: 0; filter: drop-shadow(0 0 14px #ffd96a); }
-.cb-glass svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.cb-count { left: 50%; top: 14%; transform: translateX(-50%); text-align: center; opacity: 0; color: #fff; font-weight: 900; text-shadow: 0 0 12px #ffb62e, 0 2px 0 #3a2204; line-height: 1; }
+.cb-dim, .cb-tint, .cb-rays, .cb-clock, .cb-vig { opacity: 0; transition: opacity .7s; }
+.cburst.go .cb-dim, .cburst.go .cb-vig { opacity: 1; } .cburst.go .cb-tint { opacity: .36; } .cburst.go .cb-rays { opacity: .8; } .cburst.go .cb-clock { opacity: .5; }
+.cb-dim { inset: 0; background: radial-gradient(ellipse at 50% 50%, #3a2a0a40 0%, #1a1450c0 58%, #060a28ea 100%); }
+.cb-tint { inset: 0; background: #ffb62e; mix-blend-mode: color; }
+.cb-vig { inset: 0; box-shadow: inset 0 0 90px 10px #000c; }
+.cb-rays { left: 50%; top: 50%; width: 230%; aspect-ratio: 1; margin: -115% 0 0 -115%; background: repeating-conic-gradient(from 0deg, #ffe9a050 0deg 5deg, transparent 5deg 15deg); -webkit-mask: radial-gradient(circle, #000 0%, transparent 52%); mask: radial-gradient(circle, #000 0%, transparent 52%); animation: cb-cw 9s linear infinite; }
+@keyframes cb-cw { to { transform: rotate(360deg); } }
+.cb-clock { left: 50%; top: 50%; width: var(--cs, 300px); height: var(--cs, 300px); margin: calc(var(--cs, 300px) / -2) 0 0 calc(var(--cs, 300px) / -2); }
+.cb-clock svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.cb-clock .ring, .cb-clock .mh, .cb-clock .hh { transform-box: view-box; transform-origin: 100px 100px; }
+.cburst.go .cb-clock .ring { animation: cb-ccw 14s linear infinite; }
+.cburst.go .cb-clock .mh { animation: cb-hand var(--spin, 3000ms) cubic-bezier(.5, 0, .9, .6) 1s both; }
+.cburst.go .cb-clock .hh { animation: cb-hand2 var(--spin, 3000ms) cubic-bezier(.5, 0, .9, .6) 1s both; }
+@keyframes cb-ccw { to { transform: rotate(-360deg); } }
+@keyframes cb-hand { to { transform: rotate(3600deg); } }
+@keyframes cb-hand2 { to { transform: rotate(300deg); } }
+.cb-bar { left: 0; right: 0; height: 10%; background: #000; transform: scaleY(0); transition: transform .6s cubic-bezier(.3, .7, .3, 1); z-index: 3; }
+.cb-bar.t { top: 0; transform-origin: top; } .cb-bar.b { bottom: 0; transform-origin: bottom; }
+.cburst.go .cb-bar { transform: scaleY(1); }
+.cb-pip { width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #2a3874; border: 2px solid #6a7ab8; transition: background .15s, box-shadow .15s; }
+.cb-pip.lit { background: #ffe08a; border-color: #fff3b0; box-shadow: 0 0 12px #ffcf4a, 0 0 26px #ffb62e; animation: cb-pip .4s ease-out; }
+@keyframes cb-pip { 0% { transform: scale(2.4); } 100% { transform: scale(1); } }
+.cb-glass { left: 50%; top: 50%; width: calc(var(--gs, 160px) * .62); height: var(--gs, 160px); margin: calc(var(--gs, 160px) / -2) 0 0 calc(var(--gs, 160px) * -.31); opacity: 0; filter: drop-shadow(0 0 16px #ffd96a); z-index: 2; }
+.cb-spin, .cb-glass svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.cburst.go .cb-glass { animation: cb-glass-in .95s cubic-bezier(.2, .9, .3, 1) both; }
+@keyframes cb-glass-in { 0% { opacity: 0; transform: translate(var(--ox, 0), var(--oy, -60px)) scale(.16); } 55% { opacity: 1; } 100% { opacity: 1; transform: translate(0, 0) scale(1); } }
+.cburst.go .cb-spin { animation: cb-spinup var(--spin, 3000ms) cubic-bezier(.55, 0, .9, .5) .95s both; }
+@keyframes cb-spinup { 0% { transform: rotate(0); } 100% { transform: rotate(2160deg); } }
+.cb-glass .cs-crack { fill: none; stroke: #fff; stroke-width: 1.4; stroke-linecap: round; opacity: 0; filter: drop-shadow(0 0 2px #fff); }
+.cburst.crack .cb-glass { animation: cb-tremble .08s linear infinite; filter: drop-shadow(0 0 24px #fff) brightness(1.5); }
+.cburst.crack .cs-crack { opacity: 1; }
+@keyframes cb-tremble { 0% { transform: translate(-2px, 1px) scale(1.12); } 50% { transform: translate(2px, -1px) scale(1.14); } 100% { transform: translate(-1px, -2px) scale(1.12); } }
+.cburst.boom .cb-glass { animation: cb-glass-out .2s ease-out both; }
+@keyframes cb-glass-out { 0% { opacity: 1; transform: scale(1.14); } 100% { opacity: 0; transform: scale(2.6); } }
+.cb-count { left: 50%; top: 13%; transform: translateX(-50%); text-align: center; opacity: 0; color: #fff; font-weight: 900; text-shadow: 0 0 12px #ffb62e, 0 2px 0 #3a2204; line-height: 1; z-index: 4; transition: opacity .5s .6s; }
+.cburst.go .cb-count, .cburst.go .cb-tick { opacity: 1; }
 .cb-count .n { font-size: clamp(38px, 11vw, 64px); }
 .cb-count small { display: block; font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: #ffe9a0; margin-top: 4px; }
 .cb-count.beat { animation: cb-beat .22s ease-out; }
-@keyframes cb-beat { 0% { transform: translateX(-50%) scale(1.25); } 100% { transform: translateX(-50%) scale(1); } }
-.cb-tick { left: 0; right: 0; bottom: 9%; display: flex; justify-content: center; gap: 18px; opacity: 0; font-weight: 800; font-size: clamp(14px, 4vw, 20px); text-shadow: 0 1px 0 #000, 0 0 8px #000; }
+@keyframes cb-beat { 0% { transform: translateX(-50%) scale(1.28); } 100% { transform: translateX(-50%) scale(1); } }
+.cb-tick { left: 0; right: 0; bottom: 12%; display: flex; justify-content: center; gap: 18px; opacity: 0; font-weight: 800; font-size: clamp(14px, 4vw, 20px); text-shadow: 0 1px 0 #000, 0 0 8px #000; z-index: 4; transition: opacity .5s .6s; }
 .cb-tick .xp { color: #b8f0ff; } .cb-tick .k { color: #ffe08a; }
-.cb-title { left: 0; right: 0; top: 40%; text-align: center; font-weight: 900; font-size: clamp(22px, 6.4vw, 40px); letter-spacing: .22em; color: #fff8d8; text-shadow: 0 0 14px #ffb62e, 0 0 30px #ff8a2a, 0 3px 0 #5a3408; opacity: 0; white-space: nowrap; }
-.cb-title small { display: block; font-size: .4em; letter-spacing: .4em; color: #bfe0ff; margin-top: 6px; text-shadow: 0 0 8px #3a6aff; }
-.cb-flash { inset: 0; background: radial-gradient(circle, #fff 0%, #fff0b0 40%, #ffcf4a 100%); opacity: 0; }
 .cb-ring { left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 3px solid #ffe08a; box-shadow: 0 0 18px #ffb62e, inset 0 0 12px #ffb62e88; opacity: 0; }
-.cb-burst { left: 50%; top: 50%; }
-.cb-grain { position: absolute; left: 0; top: 0; width: var(--s, 5px); height: var(--s, 5px); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fffbd0, #ffc83a); box-shadow: 0 0 8px #ffd96a; opacity: 0; }
-.cburst.go .cb-dim { animation: cb-fade 4.7s ease-in-out both; --o: 1; }
-.cburst.go .cb-tint { animation: cb-fade 4.7s ease-in-out both; --o: .38; }
-.cburst.go .cb-rays { animation: cb-rays 4.7s linear both; }
-.cburst.go .cb-count, .cburst.go .cb-tick { animation: cb-fade 4.7s ease-in-out both; --o: 1; }
-@keyframes cb-fade { 0% { opacity: 0; } 9% { opacity: var(--o, 1); } 90% { opacity: var(--o, 1); } 100% { opacity: 0; } }
-@keyframes cb-rays { 0% { opacity: 0; transform: rotate(0); } 12% { opacity: .85; } 90% { opacity: .85; } 100% { opacity: 0; transform: rotate(120deg); } }
-.cburst.go .cb-glass { animation: cb-glass 4.7s cubic-bezier(.4, 0, .3, 1) both; }
-@keyframes cb-glass { 0% { opacity: 0; transform: scale(.2) rotate(0); } 10% { opacity: 1; transform: scale(1) rotate(0); } 20% { transform: scale(1.04) rotate(180deg); } 76% { opacity: 1; transform: scale(1.1) rotate(180deg); } 80% { opacity: 1; transform: scale(1.5) rotate(180deg); } 82%, 100% { opacity: 0; transform: scale(2.4) rotate(180deg); } }
-.cburst.go .cb-ring { animation: cb-ring 1.2s ease-out both; }
-.cburst.go .cb-ring.r2 { animation-delay: .35s; } .cburst.go .cb-ring.r3 { animation-delay: .7s; }
+.cburst.go .cb-ring { animation: cb-ring 1.3s ease-out both; }
+.cburst.go .cb-ring.r2 { animation-delay: .45s; }
 @keyframes cb-ring { 0% { opacity: .95; transform: scale(.3); } 100% { opacity: 0; transform: scale(16); } }
-.cburst.boom .cb-flash { animation: cb-flash .9s ease-out both; }
-@keyframes cb-flash { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 0; } }
-.cburst.boom .cb-title { animation: cb-title 2.2s ease-out both; }
-@keyframes cb-title { 0% { opacity: 0; transform: scale(.4); letter-spacing: .6em; } 18% { opacity: 1; transform: scale(1.12); letter-spacing: .22em; } 30% { transform: scale(1); } 85% { opacity: 1; } 100% { opacity: 0; } }
-.cburst.boom .cb-grain { animation: cb-grain 1.3s ease-out var(--d) both; }
+.cb-pulse { left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 3px solid #fff3b0; box-shadow: 0 0 14px #ffcf4a; animation: cb-pulse .65s ease-out both; }
+.cb-pulse.big { border-width: 5px; animation: cb-pulse-big 1.2s ease-out both; }
+@keyframes cb-pulse { 0% { opacity: .9; transform: scale(.5); } 100% { opacity: 0; transform: scale(7); } }
+@keyframes cb-pulse-big { 0% { opacity: 1; transform: scale(.5); } 100% { opacity: 0; transform: scale(22); } }
+.cb-slash { left: -20%; width: 140%; height: 3px; background: linear-gradient(90deg, transparent, #fff 40%, #ffe08a 60%, transparent); box-shadow: 0 0 12px #ffcf4a; transform-origin: left center; animation: cb-slash .36s ease-out both; z-index: 1; }
+@keyframes cb-slash { 0% { opacity: 1; transform: rotate(var(--r, 0deg)) scaleX(0); } 55% { opacity: 1; transform: rotate(var(--r, 0deg)) scaleX(1); } 100% { opacity: 0; transform: rotate(var(--r, 0deg)) scaleX(1); } }
+.cb-fly { left: 0; top: 0; font-size: 20px; line-height: 1; margin: -10px 0 0 -10px; text-shadow: 0 0 8px #ffb62e; animation: cb-fly .8s cubic-bezier(.5, 0, .85, .5) both; z-index: 2; }
+@keyframes cb-fly { 0% { opacity: 0; translate: var(--x0) var(--y0); scale: 1.3; } 15% { opacity: 1; } 100% { opacity: 0; translate: var(--x1) var(--y1); scale: .3; } }
+.cb-burst { left: 50%; top: 50%; z-index: 3; }
+.cb-grain, .cb-shard { position: absolute; left: 0; top: 0; opacity: 0; }
+.cb-grain { width: var(--s, 5px); height: var(--s, 5px); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fffbd0, #ffc83a); box-shadow: 0 0 8px #ffd96a; }
+.cb-shard { background: linear-gradient(135deg, #ffffffcc, #bfe0ff88 45%, #ffd96acc); margin: -20px 0 0 -20px; filter: drop-shadow(0 0 4px #fff); }
+.cburst.boom .cb-grain { animation: cb-grain 1.5s ease-out var(--d) both; }
+.cburst.boom .cb-shard { animation: cb-shard 1.6s cubic-bezier(.2, .7, .3, 1) both; }
 @keyframes cb-grain { 0% { opacity: 1; translate: 0 0; } 100% { opacity: 0; translate: var(--dx) var(--dy); } }
-.cb-echo { opacity: 0; filter: hue-rotate(-14deg) saturate(1.6) brightness(1.3); animation: cb-echo .65s ease-out both; }
+@keyframes cb-shard { 0% { opacity: 1; translate: 0 0; rotate: 0deg; } 70% { opacity: 1; } 100% { opacity: 0; translate: var(--dx) var(--dy); rotate: var(--rot); } }
+.cb-title { left: 0; right: 0; top: 38%; text-align: center; font-weight: 900; font-size: clamp(22px, 6.6vw, 42px); letter-spacing: .2em; color: #fff8d8; text-shadow: 0 0 14px #ffb62e, 0 0 32px #ff8a2a, 0 3px 0 #5a3408; white-space: nowrap; z-index: 5; }
+.cb-title span { display: inline-block; opacity: 0; }
+.cburst.boom .cb-title { animation: cb-title-out .5s ease-in 1.5s both; }
+@keyframes cb-title-out { to { opacity: 0; transform: scale(1.15); } }
+.cb-title small { display: block; font-size: .4em; letter-spacing: .4em; color: #bfe0ff; margin-top: 6px; text-shadow: 0 0 8px #3a6aff; opacity: 0; }
+.cburst.boom .cb-title span { animation: cb-letter .6s cubic-bezier(.2, 1.4, .4, 1) calc(var(--i) * 45ms + 120ms) both; }
+.cburst.boom .cb-title small { animation: cb-sub .8s ease-out 1s both; }
+@keyframes cb-letter { 0% { opacity: 0; transform: translateY(-30px) scale(2.2); filter: blur(6px); } 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes cb-sub { to { opacity: 1; } }
+.cb-flash { inset: 0; background: radial-gradient(circle, #fff 0%, #fff0b0 45%, #ffcf4a 100%); opacity: 0; z-index: 6; }
+.cburst.boom .cb-flash { animation: cb-flash 1s ease-out both; }
+@keyframes cb-flash { 0% { opacity: 0; } 8% { opacity: 1; } 100% { opacity: 0; } }
+.scene.cb-shake { animation: cb-shake .8s linear; }
+@keyframes cb-shake { 0%, 100% { translate: 0 0; } 8% { translate: -9px 5px; } 16% { translate: 8px -6px; } 24% { translate: -7px -4px; } 32% { translate: 6px 5px; } 44% { translate: -4px 3px; } 60% { translate: 3px -2px; } 80% { translate: -1px 1px; } }
+.cb-echo { opacity: 0; filter: hue-rotate(-14deg) saturate(1.6) brightness(1.3); animation: cb-echo .68s ease-out both; z-index: 1; }
 .cb-echo svg { width: 100%; height: 100%; display: block; overflow: visible; }
-@keyframes cb-echo { 0% { opacity: .85; translate: 0 0; } 100% { opacity: 0; translate: var(--tx, 200px) 0; } }
-.cb-pop { color: #fff3b0; font-size: 22px; text-shadow: 0 0 10px #ffb62e; margin: -10px 0 0 -8px; animation: cb-pop .55s ease-out both; }
+@keyframes cb-echo { 0% { opacity: .9; translate: 0 0; } 100% { opacity: 0; translate: var(--tx, 200px) 0; } }
+.cb-pop { color: #fff3b0; font-size: 22px; text-shadow: 0 0 10px #ffb62e; margin: -10px 0 0 -8px; animation: cb-pop .55s ease-out both; z-index: 2; }
 @keyframes cb-pop { 0% { opacity: 1; transform: scale(.4); } 100% { opacity: 0; transform: scale(2) translateY(-14px); } }
 .unit.cb-zap .sprite { animation: cb-zap .24s steps(2) both !important; }
 @keyframes cb-zap { 0% { filter: brightness(2.2) saturate(.3); translate: 4px 0; } 100% { filter: none; translate: 0 0; } }
@@ -2258,10 +2300,11 @@ label.btn { cursor: pointer; }
 @keyframes cb-loot-out { to { opacity: 0; transform: translate(-50%, -80%) scale(.9); } }
 .cb-lt { font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: #ffe9a0; font-size: 13px; margin-bottom: 8px; text-shadow: 0 0 8px #ffb62e; }
 .cb-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-height: 150px; overflow: hidden; }
-.cl-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #ffffff18; border: 1px solid #ffffff30; color: #fff; }
+.cl-chip { animation: cl-pop .45s cubic-bezier(.2, 1.5, .4, 1) calc(var(--i, 0) * 90ms + 250ms) both; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #ffffff18; border: 1px solid #ffffff30; color: #fff; }
 .cl-chip svg, .cl-chip img { width: 18px; height: 18px; }
 .cl-chip.xp { color: #b8f0ff; } .cl-chip.k { color: #ffe08a; } .cl-chip.rare { border-color: #c98aff; color: #e6c8ff; } .cl-chip.gear { border-color: #ffd24a; color: #fff3b0; } .cl-chip.lvl { background: #3aa86a55; border-color: #7ae0a0; }
-@media (prefers-reduced-motion: reduce) { .cb-echo, .cb-pop { display: none; } }
+@keyframes cl-pop { 0% { opacity: 0; transform: scale(.2) translateY(14px); } 100% { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .cb-echo, .cb-pop, .cb-fly, .cb-slash { display: none; } }
 /* ===== fin Xélor ===== */
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
@@ -2327,7 +2370,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793205307';
+const BUILD_ID = '1793205824';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -7377,7 +7420,7 @@ function chronoBtn(h) {
   const c = Math.min(CHRONO_MAX, h.chrono || 0);
   return `<button class="chrono-btn${c >= CHRONO_MAX ? ' full' : ''}" data-act="xelchrono" data-hero="${h.id}" data-k="chrono" style="--p:${(c / CHRONO_MAX).toFixed(2)}" title="Éclat du temps : chaque Rembobinage remplit le sablier. Plein, clique dessus : 10 combats d’un coup !" aria-label="Éclat du temps">${CHRONO_SVG}<b>${c}/${CHRONO_MAX}</b></button>`;
 }
-const CB_MS = 4700;
+const CB_MS = 6200;
 function playChrono(card, h, sum, done) {
   const scene = card.querySelector('.scene'), fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite');
   const N = sum.n;
@@ -7386,42 +7429,71 @@ function playChrono(card, h, sum, done) {
     for (const [r, c] of Object.entries(sum.loot)) chips.push(`<span class="cl-chip${RESOURCES[r].rare ? ' rare' : ''}">${RESOURCES[r].icon} ${c}× ${esc(RESOURCES[r].name)}</span>`);
     for (const g of sum.gear) chips.push(`<span class="cl-chip gear">${itemIcon(g.id)} ${esc(ITEMS[g.id].name)}${g.stasis ? ' ✦' : ''}</span>`);
     if (sum.lvlUps > 0) chips.push(`<span class="cl-chip lvl">⬆ Niveau +${sum.lvlUps}</span>`);
-    const p = document.createElement('div'); p.className = 'cb-loot'; p.innerHTML = `<div class="cb-lt">⌛ ${N} combats gagnés</div><div class="cb-chips">${chips.join('')}</div>`;
-    scene.appendChild(p); setTimeout(() => p.classList.add('out'), 6500); setTimeout(() => p.remove(), 7200);
+    const p = document.createElement('div'); p.className = 'cb-loot'; p.innerHTML = `<div class="cb-lt">⌛ ${N} combats gagnés</div><div class="cb-chips">${chips.map((c, i) => c.replace('<span ', `<span style="--i:${i}" `)).join('')}</div>`;
+    scene.appendChild(p); setTimeout(() => p.classList.add('out'), 7000); setTimeout(() => p.remove(), 7700);
   };
   if (!scene || !sp || !FX_OK()) { if (scene) lootPanel(); setTimeout(done, 300); return; }
-  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight;
+  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight, W = hp.w, H = hp.h, cx = W / 2, cy = H / 2;
+  const btn = fu.querySelector('[data-k="chrono"]'), bp = btn ? relPos(btn, scene) : { x: hp.x, y: hp.y - 60 };
+  const gs = Math.max(130, Math.round(H * .8)); // hauteur du grand sablier
+  // 10 repères horaires autour du sablier : un s'allume à chaque combat
+  let pips = '';
+  for (let i = 0; i < N; i++) { const a = (i / N) * Math.PI * 2 - Math.PI / 2, r = gs * .72; pips += `<i class="cb-pip" style="left:${(cx + Math.cos(a) * r * 1.35).toFixed(0)}px;top:${(cy + Math.sin(a) * r * .78).toFixed(0)}px"></i>`; }
   let grains = '';
-  for (let i = 0; i < 30; i++) { const a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 120; grains += `<i class="cb-grain" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r * .7).toFixed(0)}px;--s:${(3 + Math.random() * 5).toFixed(1)}px;--d:${(Math.random() * 120).toFixed(0)}ms"></i>`; }
+  for (let i = 0; i < 70; i++) { const a = Math.random() * Math.PI * 2, r = 50 + Math.random() * 190; grains += `<i class="cb-grain" style="--dx:${(Math.cos(a) * r * 1.4).toFixed(0)}px;--dy:${(Math.sin(a) * r * .8).toFixed(0)}px;--s:${(3 + Math.random() * 6).toFixed(1)}px;--d:${(Math.random() * 160).toFixed(0)}ms"></i>`; }
+  let shards = '';
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2 + Math.random() * .3, r = 90 + Math.random() * 170, z = 34 + Math.random() * 56;
+    const pt = () => `${(Math.random() * 100).toFixed(0)}% ${(Math.random() * 100).toFixed(0)}%`;
+    shards += `<i class="cb-shard" style="width:${z.toFixed(0)}px;height:${z.toFixed(0)}px;clip-path:polygon(${pt()},${pt()},${pt()},${pt()});--dx:${(Math.cos(a) * r * 1.45).toFixed(0)}px;--dy:${(Math.sin(a) * r * .85).toFixed(0)}px;--rot:${(Math.random() * 900 - 450).toFixed(0)}deg"></i>`;
+  }
+  const letters = 'ÉCLAT DU TEMPS'.split('').map((c, i) => `<span style="--i:${i}">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+  const crackSvg = CHRONO_SVG.replace('</svg>', '<path class="cs-crack" d="M20 26L12 14M20 26L29 17M20 26L15 38M20 26L27 40M12 14L9 9M29 17L33 11M15 38L11 44"/></svg>');
+  // montage : les combats s'accélèrent
+  const T0 = 1050; let t = T0; const beats = [];
+  for (let i = 0; i < N; i++) { beats.push(t); t += Math.round(300 - i * 17); }
+  const TB = t + 260, spin = TB - T0 + 200;
   const ov = document.createElement('div'); ov.className = 'cburst';
-  ov.style.cssText = `--hx:${hp.x.toFixed(0)}px;--hy:${hp.y.toFixed(0)}px;--gs:${Math.max(120, Math.round(hp.h * .82))}px`;
-  ov.innerHTML = `<div class="cb-dim"></div><div class="cb-tint"></div><div class="cb-rays"></div>
-    <div class="cb-ring"></div><div class="cb-ring r2"></div><div class="cb-ring r3"></div>
-    <div class="cb-glass" style="--p:1">${CHRONO_SVG}</div>
+  ov.style.cssText = `--gs:${gs}px;--spin:${spin}ms;--ox:${(bp.x - cx).toFixed(0)}px;--oy:${(bp.y - cy).toFixed(0)}px;--cs:${Math.round(gs * 2.3)}px`;
+  ov.innerHTML = `<div class="cb-dim"></div><div class="cb-tint"></div><div class="cb-rays"></div><div class="cb-clock">${RW_CLOCK}</div><div class="cb-vig"></div>
+    <div class="cb-bar t"></div><div class="cb-bar b"></div>${pips}
+    <div class="cb-ring"></div><div class="cb-ring r2"></div>
+    <div class="cb-glass" style="--p:1"><div class="cb-spin">${crackSvg}</div></div>
     <div class="cb-count"><span class="n">0</span><small>/ ${N} combats</small></div>
     <div class="cb-tick"><b class="xp">+0 XP</b><b class="k">+0 K</b></div>
-    <div class="cb-burst">${grains}</div>
-    <div class="cb-title">ÉCLAT DU TEMPS<small>${N} combats d’un coup</small></div><div class="cb-flash"></div>`;
+    <div class="cb-burst">${grains}${shards}</div>
+    <div class="cb-title">${letters}<small>${N} combats d’un coup</small></div><div class="cb-flash"></div>`;
   scene.appendChild(ov); scene.classList.add('cb-on');
-  ecaState(fu, 'xel-chrono', CB_MS);
+  ecaState(fu, 'xel-chrono', CB_MS + 100);
   requestAnimationFrame(() => ov.classList.add('go'));
-  const nEl = ov.querySelector('.cb-count .n'), xpEl = ov.querySelector('.cb-tick .xp'), kEl = ov.querySelector('.cb-tick .k'), cnt = ov.querySelector('.cb-count');
-  const mons = [...card.querySelectorAll('.unit.mon .sprite')];
-  const svg = sp.querySelector('.hs-xelor');
-  const T0 = 950, DT = 215; // les 10 combats s'enchaînent comme des échos du temps
-  for (let i = 0; i < N; i++) setTimeout(() => {
+  const q1 = k => ov.querySelector(k), nEl = q1('.cb-count .n'), xpEl = q1('.cb-tick .xp'), kEl = q1('.cb-tick .k'), cnt = q1('.cb-count'), pipEls = [...ov.querySelectorAll('.cb-pip')];
+  const mons = [...card.querySelectorAll('.unit.mon .sprite')], svg = sp.querySelector('.hs-xelor');
+  const icons = ['⭐', '💰', '⭐', ...Object.keys(sum.loot).map(r => RESOURCES[r].icon)];
+  const add = (cls, style, ms, html = '') => { const e = document.createElement(cls[0] === '#' ? 'span' : 'i'); e.className = cls.replace('#', ''); e.style.cssText = style; if (html) e.textContent = html; ov.appendChild(e); setTimeout(() => e.remove(), ms); return e; };
+  beats.forEach((bt, i) => setTimeout(() => {
     if (!ov.isConnected) return;
     const f = (i + 1) / N; nEl.textContent = i + 1; xpEl.textContent = '+' + fmt(Math.round(sum.xp * f)) + ' XP'; kEl.textContent = '+' + fmt(Math.round(sum.kamas * f)) + ' K';
     cnt.classList.remove('beat'); void cnt.offsetWidth; cnt.classList.add('beat');
-    if (svg) { const g = document.createElement('div'); g.className = 'cb-echo'; const y = (Math.random() - .5) * hp.h * .5;
-      g.style.cssText = `left:${(hp.x - sw / 2).toFixed(0)}px;top:${(hp.y - sh / 2 + y).toFixed(0)}px;width:${sw}px;height:${sh}px;--tx:${(hp.w * (.38 + Math.random() * .34)).toFixed(0)}px`;
-      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 700); }
-    const m = mons.length ? mons[i % mons.length] : null; if (m) ecaState(m.closest('.unit'), 'cb-zap', 240);
-    if (m) { const r = relPos(m, scene), s = document.createElement('span'); s.className = 'cb-pop'; s.textContent = '✦'; s.style.cssText = `left:${r.x.toFixed(0)}px;top:${(r.y - 14).toFixed(0)}px`; ov.appendChild(s); setTimeout(() => s.remove(), 600); }
-  }, T0 + i * DT);
-  const TB = T0 + N * DT + 120; // éclatement final
-  setTimeout(() => { if (ov.isConnected) { ov.classList.add('boom'); nEl.textContent = N; xpEl.textContent = '+' + fmt(sum.xp) + ' XP'; kEl.textContent = '+' + fmt(sum.kamas) + ' K'; } }, TB);
-  setTimeout(lootPanel, TB + 500);
+    if (pipEls[i]) pipEls[i].classList.add('lit');
+    add('cb-pulse', '', 700);
+    add('cb-slash', `top:${(Math.random() * H).toFixed(0)}px;--r:${(Math.random() * 50 - 25).toFixed(0)}deg`, 420);
+    if (svg) { const g = document.createElement('div'); g.className = 'cb-echo'; const y = (Math.random() - .5) * H * .5;
+      g.style.cssText = `left:${(hp.x - sw / 2).toFixed(0)}px;top:${(hp.y - sh / 2 + y).toFixed(0)}px;width:${sw}px;height:${sh}px;--tx:${(W * (.38 + Math.random() * .34)).toFixed(0)}px`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 720); }
+    const m = mons.length ? mons[i % mons.length] : null; const mp = m ? relPos(m, scene) : { x: cx + 60, y: cy };
+    if (m) ecaState(m.closest('.unit'), 'cb-zap', 240);
+    add('cb-pop', `left:${mp.x.toFixed(0)}px;top:${(mp.y - 14).toFixed(0)}px`, 600, '✦');
+    for (let k = 0; k < 3; k++) add('cb-fly', `--x0:${(mp.x + Math.random() * 30 - 15).toFixed(0)}px;--y0:${(mp.y + Math.random() * 20 - 10).toFixed(0)}px;--x1:${cx.toFixed(0)}px;--y1:${cy.toFixed(0)}px;animation-delay:${k * 70}ms`, 1000, icons[(i * 3 + k) % icons.length]);
+  }, bt));
+  setTimeout(() => ov.isConnected && ov.classList.add('crack'), TB - 420); // le sablier se fissure sous la pression
+  setTimeout(() => { // éclatement
+    if (!ov.isConnected) return; ov.classList.add('boom');
+    nEl.textContent = N; xpEl.textContent = '+' + fmt(sum.xp) + ' XP'; kEl.textContent = '+' + fmt(sum.kamas) + ' K';
+    scene.classList.add('cb-shake'); setTimeout(() => scene.classList.remove('cb-shake'), 800);
+    for (let k = 0; k < 3; k++) add('cb-pulse big', `animation-delay:${k * 150}ms`, 1300);
+  }, TB);
+  setTimeout(lootPanel, TB + 1700);
+  setTimeout(() => ov.isConnected && ov.classList.add('out'), CB_MS - 300);
   setTimeout(() => { ov.remove(); scene.classList.remove('cb-on'); done(); }, CB_MS + 250);
 }
 /* ---------------------- Xélor : Rembobinage ----------------------

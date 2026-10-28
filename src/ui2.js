@@ -501,7 +501,7 @@ function chronoBtn(h) {
   const c = Math.min(CHRONO_MAX, h.chrono || 0);
   return `<button class="chrono-btn${c >= CHRONO_MAX ? ' full' : ''}" data-act="xelchrono" data-hero="${h.id}" data-k="chrono" style="--p:${(c / CHRONO_MAX).toFixed(2)}" title="Éclat du temps : chaque Rembobinage remplit le sablier. Plein, clique dessus : 10 combats d’un coup !" aria-label="Éclat du temps">${CHRONO_SVG}<b>${c}/${CHRONO_MAX}</b></button>`;
 }
-const CB_MS = 4700;
+const CB_MS = 6200;
 function playChrono(card, h, sum, done) {
   const scene = card.querySelector('.scene'), fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite');
   const N = sum.n;
@@ -510,42 +510,71 @@ function playChrono(card, h, sum, done) {
     for (const [r, c] of Object.entries(sum.loot)) chips.push(`<span class="cl-chip${RESOURCES[r].rare ? ' rare' : ''}">${RESOURCES[r].icon} ${c}× ${esc(RESOURCES[r].name)}</span>`);
     for (const g of sum.gear) chips.push(`<span class="cl-chip gear">${itemIcon(g.id)} ${esc(ITEMS[g.id].name)}${g.stasis ? ' ✦' : ''}</span>`);
     if (sum.lvlUps > 0) chips.push(`<span class="cl-chip lvl">⬆ Niveau +${sum.lvlUps}</span>`);
-    const p = document.createElement('div'); p.className = 'cb-loot'; p.innerHTML = `<div class="cb-lt">⌛ ${N} combats gagnés</div><div class="cb-chips">${chips.join('')}</div>`;
-    scene.appendChild(p); setTimeout(() => p.classList.add('out'), 6500); setTimeout(() => p.remove(), 7200);
+    const p = document.createElement('div'); p.className = 'cb-loot'; p.innerHTML = `<div class="cb-lt">⌛ ${N} combats gagnés</div><div class="cb-chips">${chips.map((c, i) => c.replace('<span ', `<span style="--i:${i}" `)).join('')}</div>`;
+    scene.appendChild(p); setTimeout(() => p.classList.add('out'), 7000); setTimeout(() => p.remove(), 7700);
   };
   if (!scene || !sp || !FX_OK()) { if (scene) lootPanel(); setTimeout(done, 300); return; }
-  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight;
+  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight, W = hp.w, H = hp.h, cx = W / 2, cy = H / 2;
+  const btn = fu.querySelector('[data-k="chrono"]'), bp = btn ? relPos(btn, scene) : { x: hp.x, y: hp.y - 60 };
+  const gs = Math.max(130, Math.round(H * .8)); // hauteur du grand sablier
+  // 10 repères horaires autour du sablier : un s'allume à chaque combat
+  let pips = '';
+  for (let i = 0; i < N; i++) { const a = (i / N) * Math.PI * 2 - Math.PI / 2, r = gs * .72; pips += `<i class="cb-pip" style="left:${(cx + Math.cos(a) * r * 1.35).toFixed(0)}px;top:${(cy + Math.sin(a) * r * .78).toFixed(0)}px"></i>`; }
   let grains = '';
-  for (let i = 0; i < 30; i++) { const a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 120; grains += `<i class="cb-grain" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r * .7).toFixed(0)}px;--s:${(3 + Math.random() * 5).toFixed(1)}px;--d:${(Math.random() * 120).toFixed(0)}ms"></i>`; }
+  for (let i = 0; i < 70; i++) { const a = Math.random() * Math.PI * 2, r = 50 + Math.random() * 190; grains += `<i class="cb-grain" style="--dx:${(Math.cos(a) * r * 1.4).toFixed(0)}px;--dy:${(Math.sin(a) * r * .8).toFixed(0)}px;--s:${(3 + Math.random() * 6).toFixed(1)}px;--d:${(Math.random() * 160).toFixed(0)}ms"></i>`; }
+  let shards = '';
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2 + Math.random() * .3, r = 90 + Math.random() * 170, z = 34 + Math.random() * 56;
+    const pt = () => `${(Math.random() * 100).toFixed(0)}% ${(Math.random() * 100).toFixed(0)}%`;
+    shards += `<i class="cb-shard" style="width:${z.toFixed(0)}px;height:${z.toFixed(0)}px;clip-path:polygon(${pt()},${pt()},${pt()},${pt()});--dx:${(Math.cos(a) * r * 1.45).toFixed(0)}px;--dy:${(Math.sin(a) * r * .85).toFixed(0)}px;--rot:${(Math.random() * 900 - 450).toFixed(0)}deg"></i>`;
+  }
+  const letters = 'ÉCLAT DU TEMPS'.split('').map((c, i) => `<span style="--i:${i}">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+  const crackSvg = CHRONO_SVG.replace('</svg>', '<path class="cs-crack" d="M20 26L12 14M20 26L29 17M20 26L15 38M20 26L27 40M12 14L9 9M29 17L33 11M15 38L11 44"/></svg>');
+  // montage : les combats s'accélèrent
+  const T0 = 1050; let t = T0; const beats = [];
+  for (let i = 0; i < N; i++) { beats.push(t); t += Math.round(300 - i * 17); }
+  const TB = t + 260, spin = TB - T0 + 200;
   const ov = document.createElement('div'); ov.className = 'cburst';
-  ov.style.cssText = `--hx:${hp.x.toFixed(0)}px;--hy:${hp.y.toFixed(0)}px;--gs:${Math.max(120, Math.round(hp.h * .82))}px`;
-  ov.innerHTML = `<div class="cb-dim"></div><div class="cb-tint"></div><div class="cb-rays"></div>
-    <div class="cb-ring"></div><div class="cb-ring r2"></div><div class="cb-ring r3"></div>
-    <div class="cb-glass" style="--p:1">${CHRONO_SVG}</div>
+  ov.style.cssText = `--gs:${gs}px;--spin:${spin}ms;--ox:${(bp.x - cx).toFixed(0)}px;--oy:${(bp.y - cy).toFixed(0)}px;--cs:${Math.round(gs * 2.3)}px`;
+  ov.innerHTML = `<div class="cb-dim"></div><div class="cb-tint"></div><div class="cb-rays"></div><div class="cb-clock">${RW_CLOCK}</div><div class="cb-vig"></div>
+    <div class="cb-bar t"></div><div class="cb-bar b"></div>${pips}
+    <div class="cb-ring"></div><div class="cb-ring r2"></div>
+    <div class="cb-glass" style="--p:1"><div class="cb-spin">${crackSvg}</div></div>
     <div class="cb-count"><span class="n">0</span><small>/ ${N} combats</small></div>
     <div class="cb-tick"><b class="xp">+0 XP</b><b class="k">+0 K</b></div>
-    <div class="cb-burst">${grains}</div>
-    <div class="cb-title">ÉCLAT DU TEMPS<small>${N} combats d’un coup</small></div><div class="cb-flash"></div>`;
+    <div class="cb-burst">${grains}${shards}</div>
+    <div class="cb-title">${letters}<small>${N} combats d’un coup</small></div><div class="cb-flash"></div>`;
   scene.appendChild(ov); scene.classList.add('cb-on');
-  ecaState(fu, 'xel-chrono', CB_MS);
+  ecaState(fu, 'xel-chrono', CB_MS + 100);
   requestAnimationFrame(() => ov.classList.add('go'));
-  const nEl = ov.querySelector('.cb-count .n'), xpEl = ov.querySelector('.cb-tick .xp'), kEl = ov.querySelector('.cb-tick .k'), cnt = ov.querySelector('.cb-count');
-  const mons = [...card.querySelectorAll('.unit.mon .sprite')];
-  const svg = sp.querySelector('.hs-xelor');
-  const T0 = 950, DT = 215; // les 10 combats s'enchaînent comme des échos du temps
-  for (let i = 0; i < N; i++) setTimeout(() => {
+  const q1 = k => ov.querySelector(k), nEl = q1('.cb-count .n'), xpEl = q1('.cb-tick .xp'), kEl = q1('.cb-tick .k'), cnt = q1('.cb-count'), pipEls = [...ov.querySelectorAll('.cb-pip')];
+  const mons = [...card.querySelectorAll('.unit.mon .sprite')], svg = sp.querySelector('.hs-xelor');
+  const icons = ['⭐', '💰', '⭐', ...Object.keys(sum.loot).map(r => RESOURCES[r].icon)];
+  const add = (cls, style, ms, html = '') => { const e = document.createElement(cls[0] === '#' ? 'span' : 'i'); e.className = cls.replace('#', ''); e.style.cssText = style; if (html) e.textContent = html; ov.appendChild(e); setTimeout(() => e.remove(), ms); return e; };
+  beats.forEach((bt, i) => setTimeout(() => {
     if (!ov.isConnected) return;
     const f = (i + 1) / N; nEl.textContent = i + 1; xpEl.textContent = '+' + fmt(Math.round(sum.xp * f)) + ' XP'; kEl.textContent = '+' + fmt(Math.round(sum.kamas * f)) + ' K';
     cnt.classList.remove('beat'); void cnt.offsetWidth; cnt.classList.add('beat');
-    if (svg) { const g = document.createElement('div'); g.className = 'cb-echo'; const y = (Math.random() - .5) * hp.h * .5;
-      g.style.cssText = `left:${(hp.x - sw / 2).toFixed(0)}px;top:${(hp.y - sh / 2 + y).toFixed(0)}px;width:${sw}px;height:${sh}px;--tx:${(hp.w * (.38 + Math.random() * .34)).toFixed(0)}px`;
-      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 700); }
-    const m = mons.length ? mons[i % mons.length] : null; if (m) ecaState(m.closest('.unit'), 'cb-zap', 240);
-    if (m) { const r = relPos(m, scene), s = document.createElement('span'); s.className = 'cb-pop'; s.textContent = '✦'; s.style.cssText = `left:${r.x.toFixed(0)}px;top:${(r.y - 14).toFixed(0)}px`; ov.appendChild(s); setTimeout(() => s.remove(), 600); }
-  }, T0 + i * DT);
-  const TB = T0 + N * DT + 120; // éclatement final
-  setTimeout(() => { if (ov.isConnected) { ov.classList.add('boom'); nEl.textContent = N; xpEl.textContent = '+' + fmt(sum.xp) + ' XP'; kEl.textContent = '+' + fmt(sum.kamas) + ' K'; } }, TB);
-  setTimeout(lootPanel, TB + 500);
+    if (pipEls[i]) pipEls[i].classList.add('lit');
+    add('cb-pulse', '', 700);
+    add('cb-slash', `top:${(Math.random() * H).toFixed(0)}px;--r:${(Math.random() * 50 - 25).toFixed(0)}deg`, 420);
+    if (svg) { const g = document.createElement('div'); g.className = 'cb-echo'; const y = (Math.random() - .5) * H * .5;
+      g.style.cssText = `left:${(hp.x - sw / 2).toFixed(0)}px;top:${(hp.y - sh / 2 + y).toFixed(0)}px;width:${sw}px;height:${sh}px;--tx:${(W * (.38 + Math.random() * .34)).toFixed(0)}px`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 720); }
+    const m = mons.length ? mons[i % mons.length] : null; const mp = m ? relPos(m, scene) : { x: cx + 60, y: cy };
+    if (m) ecaState(m.closest('.unit'), 'cb-zap', 240);
+    add('cb-pop', `left:${mp.x.toFixed(0)}px;top:${(mp.y - 14).toFixed(0)}px`, 600, '✦');
+    for (let k = 0; k < 3; k++) add('cb-fly', `--x0:${(mp.x + Math.random() * 30 - 15).toFixed(0)}px;--y0:${(mp.y + Math.random() * 20 - 10).toFixed(0)}px;--x1:${cx.toFixed(0)}px;--y1:${cy.toFixed(0)}px;animation-delay:${k * 70}ms`, 1000, icons[(i * 3 + k) % icons.length]);
+  }, bt));
+  setTimeout(() => ov.isConnected && ov.classList.add('crack'), TB - 420); // le sablier se fissure sous la pression
+  setTimeout(() => { // éclatement
+    if (!ov.isConnected) return; ov.classList.add('boom');
+    nEl.textContent = N; xpEl.textContent = '+' + fmt(sum.xp) + ' XP'; kEl.textContent = '+' + fmt(sum.kamas) + ' K';
+    scene.classList.add('cb-shake'); setTimeout(() => scene.classList.remove('cb-shake'), 800);
+    for (let k = 0; k < 3; k++) add('cb-pulse big', `animation-delay:${k * 150}ms`, 1300);
+  }, TB);
+  setTimeout(lootPanel, TB + 1700);
+  setTimeout(() => ov.isConnected && ov.classList.add('out'), CB_MS - 300);
   setTimeout(() => { ov.remove(); scene.classList.remove('cb-on'); done(); }, CB_MS + 250);
 }
 /* ---------------------- Xélor : Rembobinage ----------------------
