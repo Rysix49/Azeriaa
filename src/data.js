@@ -64,10 +64,10 @@ const CLASSES = {
     desc: 'Change de masque comme de personnalité : chacun lui donne un style de combat.',
     passive: { name: 'Bal Masqué', points: [
       ['🎭','Trois masques','Il porte toujours un masque, à choisir sur sa carte. 😆 Rieur : +12 % de dégâts. 😢 Pleureur : −10 % de dégâts subis et un peu de soin à chaque tour. 🤪 Farceur : 15 % de chances que ses sorts offensifs soient lancés deux fois.'],
-      ['🔥','Ferveur','Chaque tour où il garde le même masque, sa Ferveur gagne 1 point (10 max) et amplifie le pouvoir du masque (+4 % par point). Elle se garde d’un combat à l’autre. Au maximum, c’est l’Apothéose : +15 % de chances de coup critique, et la Ferveur reste pleine pendant 20 s avant de retomber.'],
+      ['🔥','Ferveur','Chaque attaque qu’il lance a 50 % de chances de lui donner 1 point de Ferveur (10 max) et amplifie le pouvoir du masque (+4 % par point). Elle se garde d’un combat à l’autre. Au maximum, c’est l’Apothéose : +15 % de chances de coup critique, et la Ferveur reste pleine pendant 20 s avant de retomber.'],
       ['💥','Rupture','Changer de masque en plein combat brise l’ancien : toute sa Ferveur explose en dégâts sur tous les ennemis, et la moitié lui reste pour le nouveau masque.'],
       ['🃏','Bal costumé','Le masque porté se garde d’un combat à l’autre ; à chaque nouveau combat, la Ferveur repart de 1.']
-    ], desc: 'Trois masques à équiper (Rieur offensif, Pleureur défensif, Farceur chaotique). La Ferveur (10 max, +1 par tour) monte tant qu’il garde son masque ; changer de masque déclenche une Rupture qui frappe tous les ennemis.' },
+    ], desc: 'Trois masques à équiper (Rieur offensif, Pleureur défensif, Farceur chaotique). La Ferveur (10 max, 50 % de chances de +1 par attaque) monte tant qu’il garde son masque ; changer de masque déclenche une Rupture qui frappe tous les ennemis.' },
     spells: [
       { id: 'grimace', name: 'Grimace', lvl: 1, pa: 3, min: 6, max: 9, stat: 'cha', type: 'dmg', max_: 2 },
       { id: 'tour_de_passe', name: 'Tour de Passe-passe', lvl: 6, pa: 2, min: 5, max: 7, stat: 'cha', type: 'dmg', max_: 2 },
