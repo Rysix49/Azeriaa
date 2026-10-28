@@ -219,12 +219,40 @@ const FX_KIND = {
 /* Geste du personnage : un seul à la fois ; si un sort arrive en plein mouvement, le suivant s'enchaîne juste après (pas de saccade) */
 function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
-  unit._gBusy = true; unit.classList.remove('atk', 'cheer'); void unit.offsetWidth; unit.classList.add(k);
+  unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
+  let variant = '';
+  if (k === 'atk' && unit.querySelector('.hs-iop')) { // le Iop varie ses coups : coup d'en haut, tourbillon, plongeon
+    const v = (unit._combo = ((unit._combo || 0) + 1) % 3); variant = ['atk-a', 'atk-b', 'atk-c'][v];
+    unit.classList.add(variant); iopFlourish(unit, v);
+  }
   setTimeout(() => {
-    unit.classList.remove(k); unit._gBusy = false;
+    unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
     const n = unit._gNext; unit._gNext = null;
     if (n) requestAnimationFrame(() => heroGesture(unit, n));
-  }, k === 'atk' ? 520 : 600);
+  }, k === 'atk' ? (variant ? 640 : 520) : 600);
+}
+
+/* Effets du Iop autour de son sprite : images fantômes, onde de choc au sol, braises */
+function iopFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-iop'); if (!svg) return;
+  for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'ip-ghost'; g.style.cssText = `--gx:${[16, 30, 22][v] * i}px;--gd:${i * 50}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 900 + i * 50);
+  }
+  const wave = (big) => { const w = document.createElement('span'); w.className = 'ip-wave' + (big ? ' big' : ''); sp.appendChild(w); setTimeout(() => w.remove(), 800); iopEmbers(sp, big ? 16 : 10); };
+  if (v === 0) setTimeout(wave, 300);
+  if (v === 1) { setTimeout(wave, 230); setTimeout(wave, 430); }
+  if (v === 2) setTimeout(() => wave(true), 470);
+}
+function iopEmbers(sp, n) {
+  for (let i = 0; i < n; i++) {
+    const e = document.createElement('i'); e.className = 'ip-ember';
+    const a = -Math.PI * (.05 + Math.random() * .9);
+    e.style.cssText = `--dx:${(Math.cos(a) * (20 + Math.random() * 42)).toFixed(0)}px;--dy:${(Math.sin(a) * (22 + Math.random() * 40)).toFixed(0)}px;--s:${(3 + Math.random() * 4).toFixed(1)}px;animation-delay:${(Math.random() * 90).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1000);
+  }
 }
 
 /* Joue l'animation d'un sort dans la carte de combat d'un héros */

@@ -424,6 +424,7 @@ function playPerfect(card, p) {
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
 const FURY_ANIM = {};
+let FURY_FREEZE = 0; // > 0 pendant la cinématique de la Colère de Iop : plus personne n'agit (héros, ennemis, autres joueurs)
 const COLERE_ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="cfb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient></defs><path d="M16 2 L19 6 L19 20 L13 20 L13 6 Z" fill="url(#cfb)" stroke="#5a1408" stroke-width="1.2"/><path d="M16 4 L16 19" stroke="#e8a52a" stroke-width="1"/><path d="M8 20 Q16 23 24 20 L24 22.5 Q16 25.5 8 22.5 Z" fill="#ffb62e" stroke="#5a1408" stroke-width="1.1"/><rect x="14.4" y="23" width="3.2" height="5" rx="1" fill="#7a2410" stroke="#3a0c04" stroke-width=".8"/><circle cx="16" cy="29.3" r="1.9" fill="#ff3b22" stroke="#3a0c04" stroke-width=".8"/></svg>`;
 function furyGauge(h) {
   const p = clamp((h.fury || 0) / FURY_MAX, 0, 1);
@@ -449,7 +450,7 @@ function playColere(card, h, done) {
   const scene = card.querySelector('.scene'); const hero = card.querySelector('[data-k="fighter"]');
   if (!scene || !hero) { done(); return; }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const T = reduced ? { title: 0, drop: 150, impact: 300, end: 900 } : { title: 380, drop: 900, impact: 1350, end: 2700 };
+  const T = reduced ? { title: 0, leap: 100, drop: 150, impact: 300, end: 900 } : { title: 380, leap: 650, drop: 1250, impact: 1700, end: 3200 };
   const mons = [...card.querySelectorAll('.unit.mon:not(.dead)')];
   const hp = relPos(hero.querySelector('.sprite') || hero, scene);
   const foes = mons.length ? mons.map(m => relPos(m.querySelector('.sprite') || m, scene)) : [{ x: hp.w * .72, y: hp.h * .6 }];
@@ -464,20 +465,32 @@ function playColere(card, h, done) {
   ov.innerHTML = `<div class="cl-dark"></div>
     <div class="cl-aura"><svg class="cl-rune" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="34" class="r2"/><path d="M50 6 L58 50 L50 94 L42 50 Z M6 50 L50 42 L94 50 L50 58 Z" class="r3"/></svg>${parts}</div>
     <div class="cl-title"><span>COLÈRE</span><b>DE IOP</b></div>
+    <div class="cl-speed"></div>
     <div class="cl-beam"></div>
     <div class="cl-sword">${COLERE_SWORD}</div>
     <div class="cl-impact"><div class="cl-wave"></div><div class="cl-wave w2"></div><div class="cl-wave w3"></div>
       <svg class="cl-crack" viewBox="-100 -20 200 40"><path d="M0 0 L-30 6 L-52 2 L-80 10 M0 0 L26 8 L48 3 L84 11 M0 0 L-14 14 M0 0 L12 16 L22 14 M-30 6 L-38 16 M48 3 L56 -6"/></svg>
       ${embers}${rocks}</div>
+    <div class="cl-bigslash"><i></i><i class="b2"></i></div>
     <div class="cl-flash"></div>`;
   scene.appendChild(ov);
   scene.classList.add('cl-on'); hero.classList.add('cl-charge');
   requestAnimationFrame(() => ov.classList.add('s1'));
   setTimeout(() => ov.classList.add('s2'), T.title);
+  setTimeout(() => { // le Iop bondit : images fantômes qui suivent son vrai mouvement
+    hero.classList.remove('cl-charge'); hero.classList.add('cl-leap'); ov.classList.add('s25');
+    const sp = hero.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-iop');
+    if (!svg || reduced) return;
+    const gh = setInterval(() => {
+      const r = sp.getBoundingClientRect(), b = scene.getBoundingClientRect(); const g = document.createElement('div'); g.className = 'cl-ghost';
+      g.style.cssText = `left:${r.left - b.left}px;top:${r.top - b.top}px;width:${r.width}px;height:${r.height}px`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 600);
+    }, 70);
+    setTimeout(() => clearInterval(gh), T.impact - T.leap + 120);
+  }, T.leap);
   setTimeout(() => ov.classList.add('s3'), T.drop);
   setTimeout(() => {
     ov.classList.add('s4'); scene.classList.add('cl-shake');
-    hero.classList.remove('cl-charge'); hero.classList.add('cl-release');
     const hits = done();
     if (hits) mons.forEach(m => { const i = +m.dataset.mon; const x = hits[i]; if (!x) return;
       const n = document.createElement('span'); n.className = 'cl-num' + (x.crit ? ' crit' : ''); n.textContent = '−' + fmt(x.v); m.appendChild(n); setTimeout(() => n.remove(), 1700);
@@ -485,7 +498,7 @@ function playColere(card, h, done) {
   }, T.impact);
   setTimeout(() => scene.classList.remove('cl-shake'), T.impact + 520);
   setTimeout(() => { ov.classList.add('s5'); }, T.end - 450);
-  setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-release'); }, T.end);
+  setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-leap'); }, T.end);
 }
 function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
 function floatNum(el, txt, cls) {
@@ -571,6 +584,7 @@ function patchCombat() {
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
+    if (h.cls === 'iop') { const sp = fg && fg.querySelector('.sprite'); if (sp) sp.style.setProperty('--rage', clamp(((h.fight && h.fight.rage) || 0) / 5 + (furyReady(h) ? .25 : 0), 0, 1).toFixed(2)); } // l'aura de flammes grandit avec la Rage
     if (h.cls === 'sram') {
       const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
       const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
@@ -1063,14 +1077,14 @@ const ACTIONS = {
   iopfury(d) {
     const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
-    FURY_ANIM[h.id] = true;
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
     const btn = card.querySelector('[data-k="furybtn"]'); if (btn) btn.hidden = true;
     playColere(card, h, () => {
       const hits = unleashFury(st, h, liveEv);
       patchCombat(); saveGame();
       return hits;
     });
-    setTimeout(() => { delete FURY_ANIM[h.id]; h.wait = Math.max(h.wait, 600); }, 2800);
+    setTimeout(() => { delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 600); }, 3300);
     return 'keep';
   },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
@@ -1390,8 +1404,9 @@ function showAway(s) {
 function loop() {
   const now = Date.now(); let dt = now - st.lastTick; st.lastTick = now;
   if (dt < 0) dt = 0;
-  if (dt <= 15000) for (const h of st.heroes) if (!FURY_ANIM[h.id]) tickHero(st, h, dt, liveEv); // le temps se fige pendant la Colère de Iop
-  else offline(dt); // onglet en veille : rattrapage, 20 min maximum
+  if (dt <= 15000) { // le temps se fige pendant la Colère de Iop : plus personne n'agit
+    if (!FURY_FREEZE) for (const h of st.heroes) if (!FURY_ANIM[h.id]) tickHero(st, h, dt, liveEv);
+  } else offline(dt); // onglet en veille : rattrapage, 20 min maximum
   render();
 }
 function start(data) {
