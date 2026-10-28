@@ -59,19 +59,6 @@ const CLASSES = {
       { id: 'pluie_fleches', name: 'Pluie de Flèches', lvl: 40, pa: 5, min: 18, max: 24, stat: 'agi', type: 'aoe', cd: 1 },
     ],
   },
-  eniripsa: {
-    name: 'Eniripsa', role: 'Soigneuse', main: 'deg', elem: 'int', hpMult: 0.95, color: '#c96fa8',
-    desc: 'Ses mots blessent et soignent. Très résistante sur la durée.',
-    passive: { name: 'Souffle Vital', points: [['💗','Souffle Vital','Régénère 4 % de ses PV max au début de chaque tour.'],['✨','Soins renforcés','Ses soins sont augmentés de 25 %.']], desc: 'Régénère 4 % de ses PV max au début de chaque tour. Ses soins sont augmentés de 25 %.' },
-    spells: [
-      { id: 'mot_blessant', name: 'Mot Blessant', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
-      { id: 'mot_soignant', name: 'Mot Soignant', lvl: 1, pa: 3, min: 10, max: 14, stat: 'int', type: 'heal', max_: 1 },
-      { id: 'mot_stimulant', name: 'Mot Stimulant', lvl: 8, pa: 2, type: 'buff', buff: { deg: 30, res: 10 }, turns: 3, cd: 5 },
-      { id: 'mot_interdit', name: 'Mot Interdit', lvl: 15, pa: 4, min: 15, max: 20, stat: 'int', type: 'dmg', max_: 1 },
-      { id: 'mot_regeneration', name: 'Mot de Régénération', lvl: 30, pa: 4, min: 30, max: 40, stat: 'int', type: 'heal', cd: 3 },
-      { id: 'mot_tourmente', name: 'Mot Tourmenté', lvl: 45, pa: 4, min: 14, max: 18, stat: 'int', type: 'aoe', max_: 1 },
-    ],
-  },
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',

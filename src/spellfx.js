@@ -20,13 +20,6 @@ const SPELL_FX = {
   fleche_explosive:  ['arrow', '#ffb03a', '', 'explode'],
   fleche_punitive:   ['beam', '#b4ff7a'],
   pluie_fleches:     ['rain', '#c8ff9a', '➶'],
-  // Eniripsa : mots
-  mot_blessant:      ['proj', '#ff8ad8', '✦'],
-  mot_soignant:      ['heal', '#ff9fe0', '💗'],
-  mot_stimulant:     ['buff', '#ff8ad8', '✨'],
-  mot_interdit:      ['beam', '#c77dff'],
-  mot_regeneration:  ['heal', '#7dffb0', '💖', 1.5],
-  mot_tourmente:     ['wave', '#ff6ec7'],
   // Sacrieur : sang
   assaut:            ['slash', '#d4202a'],
   absorption:        ['drain', '#ff2a3a'],

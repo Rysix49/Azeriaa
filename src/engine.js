@@ -203,7 +203,6 @@ function rollSpell(h, t, f, sp, monRes) {
   const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
   if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
-  if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
   if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + SAC_STIG_DMG * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
@@ -217,7 +216,6 @@ function heroTurn(st, h, t, ev) {
   for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--;
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
-  if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
   if (h.cls === 'sacrieur') { // Pacte de sang : il se saigne volontairement (jamais sous 40 % de PV) et gagne un Stigmate
     f.stig = f.stig || 0;
     if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
@@ -936,7 +934,7 @@ function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st
 function heroPower(st, h) {
   const t = heroTotals(st, h);
   const base = 10 * (1 + h.lvl * 0.045);
-  let off = (base * (1 + t.deg / 100) + t.dmg + (h.cls === 'eniripsa' ? t.soin * 0.6 : 0)) * (1 + t.critPct / 200) * (1 + (t.dmgPct || 0) / 100) * (t.pa / 6);
+  let off = (base * (1 + t.deg / 100) + t.dmg) * (1 + t.critPct / 200) * (1 + (t.dmgPct || 0) / 100) * (t.pa / 6);
   const def = t.maxHp / (1 - t.resPct / 100) / (1 - t.dodgePct / 100) * (1 + (t.regen || 0) / 20);
   const util = 1 + t.pp / 100 * 0.12 + t.xpBonus / 100 * 0.08 + (t.kamas || 0) / 100 * 0.1;
   return off * Math.sqrt(def) * util * (1 + (t.speed || 0) / 100 * 0.5);
@@ -980,6 +978,7 @@ function migrate(obj) {
   const st = Object.assign(base, obj);
   st.stats = Object.assign(newState().stats, obj.stats || {});
   for (const j of [...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)]) if (!st.jobs[j]) st.jobs[j] = { lvl: 1, xp: 0 };
+  st.heroes = st.heroes.filter(h => CLASSES[h.cls]); // classe supprimée (Eniripsa) : le héros disparaît de la sauvegarde
   for (const h of st.heroes) {
     h.log = h.log || []; h.hequip = h.hequip || {};
     // v8 : Force/Intelligence/Chance/Agilité fusionnées en Dégâts → points de capital remboursés
