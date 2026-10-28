@@ -1002,7 +1002,7 @@ const INV_FILTERS = [['all', 'Tout'], ['gear', 'Équipements'], ['res', 'Ressour
 const gearKind = g => (ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
 function gearTile(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
-  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" style="--c:${CLASSES[by.cls].color}"></span>` : ''}</button>`;
+  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}${by ? ' worn' : ''}"${by ? ` style="--c:${CLASSES[by.cls].color}"` : ''} data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" aria-label="Porté par ${esc(by.name)}">${emblem(by.cls, true)}<b>${esc(by.name.slice(0, 1).toUpperCase())}</b></span>` : ''}</button>`;
 }
 function resTile(id) {
   const r = RESOURCES[id]; const sel = ui.sel && ui.sel.k === 'res' && ui.sel.id === id;
@@ -1022,7 +1022,7 @@ function renderInventaire() {
     <div class="chips-row">${INV_FILTERS.map(([v, l]) => `<button class="fchip" data-act="invf" data-v="${v}" aria-pressed="${f === v}">${l}<small>${counts[v]}</small></button>`).join('')}</div>
     <div class="inv-tools"><span class="sub">Valeur des ressources au marchand : ${kamasHtml(total)}</span><button class="btn sm" data-act="sellallres" ${resIds.length ? '' : 'disabled'}>Vendre les ressources communes</button></div>
     ${tiles.length ? `<div class="tiles">${tiles.join('')}</div>` : `<div class="empty">Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.</div>`}
-    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. La pastille de couleur indique quel héros porte l’objet.</p>
+    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
   </section><aside class="panel inspector">${inspector()}</aside></div>`;
 }
 function inspector() {

@@ -472,7 +472,10 @@ button.tile:hover { transform: translateY(-1px); border-color: var(--gold); }
 .t-emo { font-size: 28px; line-height: 1; filter: drop-shadow(0 2px 1px #0008); }
 .t-n { position: absolute; right: 5px; bottom: 2px; font-size: 11.5px; font-weight: 900; text-shadow: 0 1px 2px #000, 0 0 4px #000; }
 .t-lv { position: absolute; left: 5px; top: 2px; font-size: 10px; font-weight: 900; color: var(--muted); text-shadow: 0 1px 2px #000; }
-.t-by { position: absolute; right: 5px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2px #000b; }
+.t-by { position: absolute; right: 3px; top: 3px; display: flex; align-items: center; gap: 1px; padding: 1px 4px 1px 1px; border-radius: 99px; background: #000c; box-shadow: 0 0 0 1.5px var(--c); }
+.t-by .emblem { --s: 16px; }
+.t-by b { font-size: 10px; font-weight: 900; color: #fff; line-height: 1; }
+.tile.worn { box-shadow: inset 0 -4px 0 var(--c); }
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)); gap: 8px; }
 .tile.sm { width: 48px; height: 48px; border-radius: 9px; }
 .tile.md { width: 58px; height: 58px; flex: none; }

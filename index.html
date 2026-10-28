@@ -480,7 +480,10 @@ button.tile:hover { transform: translateY(-1px); border-color: var(--gold); }
 .t-emo { font-size: 28px; line-height: 1; filter: drop-shadow(0 2px 1px #0008); }
 .t-n { position: absolute; right: 5px; bottom: 2px; font-size: 11.5px; font-weight: 900; text-shadow: 0 1px 2px #000, 0 0 4px #000; }
 .t-lv { position: absolute; left: 5px; top: 2px; font-size: 10px; font-weight: 900; color: var(--muted); text-shadow: 0 1px 2px #000; }
-.t-by { position: absolute; right: 5px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2px #000b; }
+.t-by { position: absolute; right: 3px; top: 3px; display: flex; align-items: center; gap: 1px; padding: 1px 4px 1px 1px; border-radius: 99px; background: #000c; box-shadow: 0 0 0 1.5px var(--c); }
+.t-by .emblem { --s: 16px; }
+.t-by b { font-size: 10px; font-weight: 900; color: #fff; line-height: 1; }
+.tile.worn { box-shadow: inset 0 -4px 0 var(--c); }
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)); gap: 8px; }
 .tile.sm { width: 48px; height: 48px; border-radius: 9px; }
 .tile.md { width: 58px; height: 58px; flex: none; }
@@ -2088,7 +2091,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793201973';
+const BUILD_ID = '1793203020';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -7445,7 +7448,7 @@ const INV_FILTERS = [['all', 'Tout'], ['gear', 'Équipements'], ['res', 'Ressour
 const gearKind = g => (ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
 function gearTile(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
-  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" style="--c:${CLASSES[by.cls].color}"></span>` : ''}</button>`;
+  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}${by ? ' worn' : ''}"${by ? ` style="--c:${CLASSES[by.cls].color}"` : ''} data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" aria-label="Porté par ${esc(by.name)}">${emblem(by.cls, true)}<b>${esc(by.name.slice(0, 1).toUpperCase())}</b></span>` : ''}</button>`;
 }
 function resTile(id) {
   const r = RESOURCES[id]; const sel = ui.sel && ui.sel.k === 'res' && ui.sel.id === id;
@@ -7465,7 +7468,7 @@ function renderInventaire() {
     <div class="chips-row">${INV_FILTERS.map(([v, l]) => `<button class="fchip" data-act="invf" data-v="${v}" aria-pressed="${f === v}">${l}<small>${counts[v]}</small></button>`).join('')}</div>
     <div class="inv-tools"><span class="sub">Valeur des ressources au marchand : ${kamasHtml(total)}</span><button class="btn sm" data-act="sellallres" ${resIds.length ? '' : 'disabled'}>Vendre les ressources communes</button></div>
     ${tiles.length ? `<div class="tiles">${tiles.join('')}</div>` : `<div class="empty">Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.</div>`}
-    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. La pastille de couleur indique quel héros porte l’objet.</p>
+    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
   </section><aside class="panel inspector">${inspector()}</aside></div>`;
 }
 function inspector() {
