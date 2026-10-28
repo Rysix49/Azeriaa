@@ -294,7 +294,7 @@ function heroTurn(st, h, t, ev) {
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
   if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
-  if (h.cls === 'zobal' && (h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = Math.min(ZOB_FERV_MAX, (h.ferv || 1) + ZOB_FERV_GAIN); if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } // Ferveur : +2 par tour passé avec le même masque ; pleine, elle tient 20 s
+  if (h.cls === 'zobal' && (h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = Math.min(ZOB_FERV_MAX, (h.ferv || 1) + ZOB_FERV_GAIN); if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } // Ferveur : +1 par tour passé avec le même masque ; pleine, elle tient 20 s
   if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
     const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
     if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
@@ -449,7 +449,7 @@ const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR =
 /* ---------------------- Zobal : masques, Ferveur et Rupture ----------------------
    h.mask : 'rire' | 'larme' | 'farce' (persiste). h.ferv : Ferveur (1..10, persiste entre les combats), +4 % d'effet par point.
    Changer de masque en combat (setMask) programme une Rupture : au prochain tour, la Ferveur explose sur tous les ennemis. */
-const ZOB_FERV_MAX = 10, ZOB_FERV_GAIN = 2, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
+const ZOB_FERV_MAX = 10, ZOB_FERV_GAIN = 1, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
 const ZOB_MASKS = { rire: { name: 'Masque Rieur', icon: '😆' }, larme: { name: 'Masque Pleureur', icon: '😢' }, farce: { name: 'Masque Farceur', icon: '🤪' } };
 const ZOB_RUPTURE_SPELL = { id: 'rupture', name: 'Rupture', min: 1, max: 1, type: 'aoe' };
 function zobMask(h) { return ZOB_MASKS[h.mask] ? h.mask : 'rire'; }

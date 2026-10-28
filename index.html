@@ -2598,7 +2598,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793214715';
+const BUILD_ID = '1793214904';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -2665,10 +2665,10 @@ const CLASSES = {
     desc: 'Change de masque comme de personnalité : chacun lui donne un style de combat.',
     passive: { name: 'Bal Masqué', points: [
       ['🎭','Trois masques','Il porte toujours un masque, à choisir sur sa carte. 😆 Rieur : +12 % de dégâts. 😢 Pleureur : −10 % de dégâts subis et un peu de soin à chaque tour. 🤪 Farceur : 15 % de chances que ses sorts offensifs soient lancés deux fois.'],
-      ['🔥','Ferveur','Chaque tour où il garde le même masque, sa Ferveur gagne 2 points (10 max) et amplifie le pouvoir du masque (+4 % par point). Elle se garde d’un combat à l’autre. Au maximum, c’est l’Apothéose : +15 % de chances de coup critique, et la Ferveur reste pleine pendant 20 s avant de retomber.'],
+      ['🔥','Ferveur','Chaque tour où il garde le même masque, sa Ferveur gagne 1 point (10 max) et amplifie le pouvoir du masque (+4 % par point). Elle se garde d’un combat à l’autre. Au maximum, c’est l’Apothéose : +15 % de chances de coup critique, et la Ferveur reste pleine pendant 20 s avant de retomber.'],
       ['💥','Rupture','Changer de masque en plein combat brise l’ancien : toute sa Ferveur explose en dégâts sur tous les ennemis, et la moitié lui reste pour le nouveau masque.'],
       ['🃏','Bal costumé','Le masque porté se garde d’un combat à l’autre ; à chaque nouveau combat, la Ferveur repart de 1.']
-    ], desc: 'Trois masques à équiper (Rieur offensif, Pleureur défensif, Farceur chaotique). La Ferveur (10 max, +2 par tour) monte tant qu’il garde son masque ; changer de masque déclenche une Rupture qui frappe tous les ennemis.' },
+    ], desc: 'Trois masques à équiper (Rieur offensif, Pleureur défensif, Farceur chaotique). La Ferveur (10 max, +1 par tour) monte tant qu’il garde son masque ; changer de masque déclenche une Rupture qui frappe tous les ennemis.' },
     spells: [
       { id: 'grimace', name: 'Grimace', lvl: 1, pa: 3, min: 6, max: 9, stat: 'cha', type: 'dmg', max_: 2 },
       { id: 'tour_de_passe', name: 'Tour de Passe-passe', lvl: 6, pa: 2, min: 5, max: 7, stat: 'cha', type: 'dmg', max_: 2 },
@@ -3444,7 +3444,7 @@ function heroTurn(st, h, t, ev) {
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
   if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
-  if (h.cls === 'zobal' && (h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = Math.min(ZOB_FERV_MAX, (h.ferv || 1) + ZOB_FERV_GAIN); if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } // Ferveur : +2 par tour passé avec le même masque ; pleine, elle tient 20 s
+  if (h.cls === 'zobal' && (h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = Math.min(ZOB_FERV_MAX, (h.ferv || 1) + ZOB_FERV_GAIN); if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } // Ferveur : +1 par tour passé avec le même masque ; pleine, elle tient 20 s
   if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
     const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
     if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
@@ -3599,7 +3599,7 @@ const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR =
 /* ---------------------- Zobal : masques, Ferveur et Rupture ----------------------
    h.mask : 'rire' | 'larme' | 'farce' (persiste). h.ferv : Ferveur (1..10, persiste entre les combats), +4 % d'effet par point.
    Changer de masque en combat (setMask) programme une Rupture : au prochain tour, la Ferveur explose sur tous les ennemis. */
-const ZOB_FERV_MAX = 10, ZOB_FERV_GAIN = 2, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
+const ZOB_FERV_MAX = 10, ZOB_FERV_GAIN = 1, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
 const ZOB_MASKS = { rire: { name: 'Masque Rieur', icon: '😆' }, larme: { name: 'Masque Pleureur', icon: '😢' }, farce: { name: 'Masque Farceur', icon: '🤪' } };
 const ZOB_RUPTURE_SPELL = { id: 'rupture', name: 'Rupture', min: 1, max: 1, type: 'aoe' };
 function zobMask(h) { return ZOB_MASKS[h.mask] ? h.mask : 'rire'; }
@@ -7814,7 +7814,7 @@ function fightCard(h) {
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : +2 par tour avec le même masque (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : +1 par tour avec le même masque (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
