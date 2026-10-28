@@ -1532,7 +1532,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793150039';
+const BUILD_ID = '1793150207';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -5598,6 +5598,7 @@ function playPerfect(card, p) {
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
 const FURY_ANIM = {};
+let FURY_FREEZE = 0; // > 0 pendant la cinématique de la Colère de Iop : plus personne n'agit (héros, ennemis, autres joueurs)
 const COLERE_ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="cfb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient></defs><path d="M16 2 L19 6 L19 20 L13 20 L13 6 Z" fill="url(#cfb)" stroke="#5a1408" stroke-width="1.2"/><path d="M16 4 L16 19" stroke="#e8a52a" stroke-width="1"/><path d="M8 20 Q16 23 24 20 L24 22.5 Q16 25.5 8 22.5 Z" fill="#ffb62e" stroke="#5a1408" stroke-width="1.1"/><rect x="14.4" y="23" width="3.2" height="5" rx="1" fill="#7a2410" stroke="#3a0c04" stroke-width=".8"/><circle cx="16" cy="29.3" r="1.9" fill="#ff3b22" stroke="#3a0c04" stroke-width=".8"/></svg>`;
 function furyGauge(h) {
   const p = clamp((h.fury || 0) / FURY_MAX, 0, 1);
@@ -6250,14 +6251,14 @@ const ACTIONS = {
   iopfury(d) {
     const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
-    FURY_ANIM[h.id] = true;
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
     const btn = card.querySelector('[data-k="furybtn"]'); if (btn) btn.hidden = true;
     playColere(card, h, () => {
       const hits = unleashFury(st, h, liveEv);
       patchCombat(); saveGame();
       return hits;
     });
-    setTimeout(() => { delete FURY_ANIM[h.id]; h.wait = Math.max(h.wait, 600); }, 3300);
+    setTimeout(() => { delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 600); }, 3300);
     return 'keep';
   },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
@@ -6577,8 +6578,9 @@ function showAway(s) {
 function loop() {
   const now = Date.now(); let dt = now - st.lastTick; st.lastTick = now;
   if (dt < 0) dt = 0;
-  if (dt <= 15000) for (const h of st.heroes) if (!FURY_ANIM[h.id]) tickHero(st, h, dt, liveEv); // le temps se fige pendant la Colère de Iop
-  else offline(dt); // onglet en veille : rattrapage, 20 min maximum
+  if (dt <= 15000) { // le temps se fige pendant la Colère de Iop : plus personne n'agit
+    if (!FURY_FREEZE) for (const h of st.heroes) if (!FURY_ANIM[h.id]) tickHero(st, h, dt, liveEv);
+  } else offline(dt); // onglet en veille : rattrapage, 20 min maximum
   render();
 }
 function start(data) {
