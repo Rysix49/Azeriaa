@@ -425,29 +425,73 @@ function reticleHtml(h) {
     segs += `<path class="seg${i < n ? ' on' : ''}" d="M${p(a0)} A${r} ${r} 0 0 1 ${p(a1)}"/>`; }
   return `<svg class="reticle${n >= CRA_FOCUS_MAX ? ' ready' : ''}" data-k="ret" viewBox="0 0 64 64" aria-hidden="true">${segs}<path class="cross" d="M32 2v10M32 52v10M2 32h10M52 32h10"/><circle class="dot" cx="32" cy="32" r="2"/></svg>`;
 }
-function playPerfect(card, p) {
-  const scene = card.querySelector('.scene'); if (!scene) return;
+/* Tir Parfait : ~3,4 s. L'archère se penche en arrière, bande l'arc au maximum (il tremble), se redresse, vise, puis lâche au bout de 2,1 s ;
+   pendant ce temps le combat est figé (FURY_ANIM) et l'affichage des monstres retenu (PF_HOLD) jusqu'à l'impact de la flèche. */
+const PF_MS = 3400, PF_REL = 2100, PF_ARROW = 300, PF_HOLD = {};
+function playPerfect(card, p, onImpact) {
+  const scene = card.querySelector('.scene');
   const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
-  if (!hero || !tgt) return;
+  if (!scene || !hero || !tgt) { if (onImpact) onImpact(); return; }
   const a = relPos(hero, scene), b = relPos(tgt, scene);
   if (hero.querySelector('.hs-cra')) { a.x += hero.offsetWidth * .39; a.y += hero.offsetHeight * .06; }
   const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
   const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
-  const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
+  const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.min(1, Math.hypot(b.x - a.x, b.y - a.y) / len);
+  const tHit = Math.round(PF_REL + PF_ARROW * hit);
+  const reduced = !FX_OK();
+  const num = (el, txt, cls, delay) => setTimeout(() => { if (!el || !el.parentElement) return; const n = document.createElement('span'); n.className = 'pf-num ' + cls; n.textContent = txt; el.parentElement.appendChild(n); setTimeout(() => n.remove(), 1500); }, delay);
+  if (reduced) { // mouvement réduit : pas de cinématique, juste les chiffres
+    setTimeout(() => { if (onImpact) onImpact(); }, 200);
+    num(tgt, '−' + fmt(p.v), 'main', 260); if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', 340);
+    return;
+  }
+  let motes = ''; // étincelles d'énergie aspirées par la flèche pendant que l'arc se bande
+  for (let i = 0; i < 28; i++) { const g = Math.random() * Math.PI * 2, r = 44 + Math.random() * 50; motes += `<i style="--dx:${(Math.cos(g) * r).toFixed(0)}px;--dy:${(Math.sin(g) * r).toFixed(0)}px;--d:${(620 + Math.random() * 1250).toFixed(0)}ms;--t:${(360 + Math.random() * 280).toFixed(0)}ms"></i>`; }
   const ov = document.createElement('div'); ov.className = 'perfect';
   ov.style.cssText = `--ax:${a.x}px;--ay:${a.y}px;--bx:${b.x}px;--by:${b.y}px;--ang:${ang}deg;--len:${len}px;--hit:${hit}`;
-  ov.innerHTML = `<div class="pf-dim"></div>
+  ov.innerHTML = `<div class="pf-dim"></div><div class="pf-vig"></div>
     <div class="pf-scope"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="30" class="in"/><path d="M50 0v38M50 62v38M0 50h38M62 50h38"/><path class="tick" d="M50 20v6M50 74v6M20 50h6M74 50h6"/></svg></div>
     <div class="pf-title">TIR PARFAIT</div>
-    <div class="pf-shot"><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>
-    <div class="pf-burst" style="left:var(--bx);top:var(--by)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`;
+    <div class="pf-charge"><b class="r r1"></b><b class="r r2"></b><b class="r r3"></b><b class="core"></b>${motes}</div>
+    <div class="pf-shot"><div class="pf-trail t2"></div><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>
+    <div class="pf-wave"></div><div class="pf-wave w2"></div>
+    <div class="pf-burst" style="left:var(--bx);top:var(--by)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b class="ring"></b></div>
+    <div class="pf-flash"></div><div class="pf-flash hit"></div>`;
   scene.appendChild(ov);
+  const ox = a.x + (b.x - a.x) * .3, oy = a.y + (b.y - a.y) * .3; // caméra : on zoome sur le contenu de la scène (pas sur la scène elle-même), autour d'un point proche de l'archère
+  const kids = [...scene.children]; kids.forEach(el => { el.style.transformOrigin = `${(ox - el.offsetLeft).toFixed(0)}px ${(oy - el.offsetTop).toFixed(0)}px`; });
+  scene.classList.add('pf-on', 'pf-cam'); // le monde se fige et la caméra s'approche
   requestAnimationFrame(() => ov.classList.add('go'));
-  const num = (el, txt, cls, delay) => setTimeout(() => { if (!el) return; const n = document.createElement('span'); n.className = 'pf-num ' + cls; n.textContent = txt; el.parentElement.appendChild(n); setTimeout(() => n.remove(), 1500); }, delay);
-  num(tgt, '−' + fmt(p.v), 'main', 760);
-  if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', 860);
-  setTimeout(() => { scene.classList.add('pf-kick'); setTimeout(() => scene.classList.remove('pf-kick'), 350); }, 740);
-  setTimeout(() => ov.remove(), 1900);
+  setTimeout(() => { // impact : la caméra se détend d'un coup, les monstres réagissent
+    scene.classList.remove('pf-cam', 'pf-on'); scene.classList.add('pf-kick');
+    if (onImpact) onImpact();
+  }, tHit);
+  num(tgt, '−' + fmt(p.v), 'main', tHit + 40);
+  if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', tHit + 150);
+  setTimeout(() => scene.classList.remove('pf-kick'), tHit + 700);
+  setTimeout(() => { ov.remove(); scene.classList.remove('pf-on', 'pf-cam', 'pf-kick'); kids.forEach(el => { el.style.transformOrigin = ''; }); }, PF_MS + 100);
+}
+/* Déroulé d'un tour qui contient le Tir Parfait : les tirs d'avant se jouent normalement, puis la cinématique ; ceux d'après attendent la fin.
+   Tant qu'elle dure, plus personne n'agit dans le combat. */
+function startPerfect(h, card, scene, fresh) {
+  const p = h.fight.perfect, k = fresh.findIndex(c => c.pf);
+  const pre = (k >= 0 ? fresh.slice(0, k) : []).slice(-3), post = (k >= 0 ? fresh.slice(k + 1) : fresh).slice(-3);
+  const quick = !FX_OK();
+  let t = 0, end = 0;
+  pre.forEach(c => { const st = Math.max(t, end); setTimeout(() => playSpellFx(card, c), st); end = st + (CRA_SHOT[c.id] || CRA_SHOT.fleche_magique)[2]; t = st + 280; });
+  const T0 = pre.length ? end + 120 : 80, dur = quick ? 600 : PF_MS;
+  PF_HOLD[h.id] = {}; card.querySelectorAll('.unit.mon').forEach(el => { PF_HOLD[h.id][+el.dataset.mon] = +el.dataset.hp; }); // les PV affichés ne bougent qu'à l'impact
+  FURY_ANIM[h.id] = 1;
+  setTimeout(() => {
+    const fu = card.querySelector('[data-k="fighter"]'); if (fu && !quick) ecaState(fu, 'cra-perfect', PF_MS + 40);
+    playPerfect(card, p, () => {
+      delete PF_HOLD[h.id];
+      [p.t, p.pierce && p.pierce.i].forEach(i => { if (i == null) return; const el = card.querySelector(`[data-mon="${i}"]`), m = h.fight && h.fight.mons[i]; if (el && m) { el.dataset.hp = m.hp; el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 320); } }); // le chiffre est celui de la cinématique
+      patchCombat();
+    });
+  }, T0);
+  post.forEach((c, j) => setTimeout(() => playSpellFx(card, c), T0 + dur + 150 + j * 280));
+  setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T0 + dur + 250 + post.length * 280);
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
 const FURY_ANIM = {};
@@ -581,7 +625,10 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       let lead = 0; // l'Ecaflip lance sa pièce (ou joue son Quitte ou Double) AVANT de frapper
       if (h.cls === 'ecaflip') { const cf0 = h.fight.coinFx, gf0 = h.fight.gambleFx; if (gf0 && gf0.n > +(scene.dataset.gm || 0)) lead = 1300; else if (cf0 && cf0.n > +(scene.dataset.co || 0)) lead = 450; }
-      if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280)); }
+      const pfNew = h.cls === 'cra' && h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0);
+      if (fresh.length) scene.dataset.fx = fresh[fresh.length - 1].n;
+      if (pfNew) { scene.dataset.pf = h.fight.perfect.n; startPerfect(h, card, scene, fresh); } // Tir Parfait : cinématique, combat figé
+      else if (fresh.length) fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280));
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
       if (h.cls === 'sram') {
@@ -600,7 +647,6 @@ function patchCombat() {
         const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
         const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
       }
-      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; if (h.cls === 'cra') ecaState(card.querySelector('[data-k="fighter"]'), 'cra-perfect', 1760); setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
@@ -619,19 +665,21 @@ function patchCombat() {
     const hpt = q('hpt'); if (hpt) hpt.textContent = `${fmt(hp)} / ${fmt(t.maxHp)}`;
     setBar(q('hpb'), hp, t.maxHp);
     q('xpt').textContent = h.lvl >= MAX_LEVEL ? 'Max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))}`; setBar(q('xpb'), h.xp, xpToNext(h.lvl));
+    const held = PF_HOLD[h.id]; // Tir Parfait en cours : les monstres gardent leurs PV d'avant jusqu'à l'impact
     if (h.fight) h.fight.mons.forEach((m, i) => {
       const el = card.querySelector(`[data-mon="${i}"]`); if (!el) return;
+      const mhp = held && held[i] != null ? held[i] : m.hp;
       const prev = +el.dataset.hp;
-      if (!isNaN(prev) && m.hp < prev) floatNum(el, '−' + fmt(prev - m.hp), 'dmg');
-      el.dataset.hp = m.hp;
-      el.classList.toggle('dead', m.hp <= 0); if (m.hp > 0) el.classList.remove('still');
-      if (m.frozen && m.hp > 0 && !el.classList.contains('frozen')) iceBurst(el);
-      el.classList.toggle('frozen', !!m.frozen && m.hp > 0);
-      setBar(el, m.hp, m.max);
-      el.querySelector('[data-k="mhp"]').textContent = fmt(m.hp);
+      if (!isNaN(prev) && mhp < prev) floatNum(el, '−' + fmt(prev - mhp), 'dmg');
+      el.dataset.hp = mhp;
+      el.classList.toggle('dead', mhp <= 0); if (mhp > 0) el.classList.remove('still');
+      if (m.frozen && mhp > 0 && !el.classList.contains('frozen')) iceBurst(el);
+      el.classList.toggle('frozen', !!m.frozen && mhp > 0);
+      setBar(el, mhp, m.max);
+      el.querySelector('[data-k="mhp"]').textContent = fmt(mhp);
     });
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
-    if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
+    if (lg && lg.dataset.lk !== lk && !held) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
     if (h.cls === 'iop') { const sp = fg && fg.querySelector('.sprite'); if (sp) sp.style.setProperty('--rage', clamp(((h.fight && h.fight.rage) || 0) / 5 + (furyReady(h) ? .25 : 0), 0, 1).toFixed(2)); } // l'aura de flammes grandit avec la Rage
     if (h.cls === 'sram') {
