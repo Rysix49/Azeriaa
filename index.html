@@ -1399,6 +1399,41 @@ label.btn { cursor: pointer; }
 .hero.cl-release .hs-iop .p-sword { animation: ipa-sword .5s cubic-bezier(.45, 0, .2, 1); }
 .hero.cl-release .hs-iop .p-slash { animation: ipa-slash .5s ease-out; }
 @media (prefers-reduced-motion: reduce) { .hs-iop *, .hero .hs-iop { animation: none !important; } }
+
+/* ===================== Iop : attaques variées (coup d'en haut, tourbillon, plongeon) ===================== */
+.hs-iop .p-bladefire { transform-origin: 50% 100%; opacity: calc(var(--rage, 0) * .75); animation: ipfire .45s ease-in-out infinite; }
+@keyframes ipfire { 50% { transform: scale(.88, 1.08); } }
+.hero.atk .hs-iop .p-bladefire { opacity: 1; }
+.ip-ghost { position: absolute; inset: 0; pointer-events: none; opacity: 0; filter: sepia(1) saturate(6) hue-rotate(-20deg) brightness(1.15); animation: ipghost .55s ease-out var(--gd) both; }
+.ip-ghost .hs { width: 100%; height: 100%; filter: none; }
+.ip-ghost .hs, .ip-ghost .hs * { animation: none !important; }
+@keyframes ipghost { 0% { opacity: 0; transform: translateX(0); } 18% { opacity: .55; } 100% { opacity: 0; transform: translateX(calc(var(--gx) * -1)) scale(.97); } }
+.ip-wave { position: absolute; left: 50%; bottom: -4px; width: 40px; height: 12px; margin-left: -20px; border-radius: 50%; pointer-events: none; z-index: 3; border: 3px solid #ffd24a; box-shadow: 0 0 14px #ff7a1e, inset 0 0 8px #ff7a1e; animation: ipwave .6s ease-out forwards; }
+.ip-wave.big { border-width: 4px; box-shadow: 0 0 22px #ff4a1a, inset 0 0 12px #ff7a1e; animation-duration: .75s; }
+@keyframes ipwave { 0% { transform: scale(.3); opacity: 1; } 100% { transform: scale(4.4, 3); opacity: 0; } }
+.ip-ember { position: absolute; left: 50%; bottom: 14px; z-index: 4; width: var(--s); height: var(--s); border-radius: 50%; pointer-events: none; background: radial-gradient(circle, #fff6b0, #ff9a2e 55%, #ff3b22); box-shadow: 0 0 6px #ff7a1e; animation: ipember .9s ease-out forwards; }
+@keyframes ipember { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), calc(var(--dy) + 24px)) scale(.2); opacity: 0; } }
+/* B — Tourbillon : le Iop pivote sur lui-même, l'épée tendue, deux tours complets */
+.hero.atk-b .hs-iop { animation: ipb-spin .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-iop .p-sword { animation: ipb-sword .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-iop .p-torso { animation: ipb-torso .64s ease-in-out; }
+.hero.atk-b .hs-iop .p-slash { animation: ipb-slash .64s ease-out; }
+.hero.atk-b .hs-iop .p-hair { animation: ipa-hair .64s ease-out; }
+@keyframes ipb-spin { 0% { transform: perspective(380px) rotateY(0); } 16% { transform: perspective(380px) rotateY(0) scale(.95, 1.03); } 78% { transform: perspective(380px) rotateY(720deg) scale(1.07); } 100% { transform: perspective(380px) rotateY(720deg); } }
+@keyframes ipb-sword { 0% { transform: rotate(0); } 16% { transform: rotate(-30deg); } 28%, 74% { transform: rotate(94deg); } 100% { transform: rotate(0); } }
+@keyframes ipb-torso { 0%, 100% { transform: none; } 16% { transform: translateY(3px) scale(1.04, .95); } 50% { transform: translateX(6px) rotate(4deg); } }
+@keyframes ipb-slash { 0%, 16% { opacity: 0; transform: scale(.6) rotate(-30deg); } 30% { opacity: .9; transform: scale(1) rotate(60deg); } 52% { opacity: .9; transform: scale(1.05) rotate(200deg); } 100% { opacity: 0; transform: scale(1.15) rotate(330deg); } }
+/* C — Plongeon : saut très haut, l'épée dressée, puis estoc vers le bas avec impact */
+.hero.atk-c .hs-iop { animation: ipc-jump .64s cubic-bezier(.4, 0, .3, 1); }
+.hero.atk-c .hs-iop .p-sword { animation: ipc-sword .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-c .hs-iop .p-hair { animation: ipc-hair .64s ease-out; }
+.hero.atk-c .hs-iop .p-cape { animation: ipc-cape .64s ease-out; }
+.hero.atk-c .hs-iop .p-slash { animation: ipa-slash .64s ease-out .12s; }
+@keyframes ipc-jump { 0% { transform: none; } 16% { transform: translateY(3px) scale(1.06, .93); } 38% { transform: translateY(-34px) scale(.95, 1.07); } 56% { transform: translateY(-38px) rotate(-5deg); } 74% { transform: translateY(3px) translateX(10px) rotate(8deg) scale(1.1, .88); } 88% { transform: translateY(-3px) scale(.99, 1.02); } 100% { transform: none; } }
+@keyframes ipc-sword { 0% { transform: rotate(0); } 16% { transform: rotate(-24deg); } 38%, 56% { transform: rotate(-128deg); } 72% { transform: rotate(152deg); } 90% { transform: rotate(130deg); } 100% { transform: rotate(0); } }
+@keyframes ipc-hair { 0% { transform: none; } 38% { transform: scale(.94, 1.22); } 74% { transform: scale(1.08, .86) rotate(3deg); } 100% { transform: none; } }
+@keyframes ipc-cape { 0% { transform: rotate(0); } 38% { transform: rotate(-14deg) skewY(-4deg); } 74% { transform: rotate(12deg); } 100% { transform: rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .ip-ghost, .ip-wave, .ip-ember { display: none; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1462,7 +1497,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793149572';
+const BUILD_ID = '1793149723';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -4796,12 +4831,40 @@ const FX_KIND = {
 /* Geste du personnage : un seul à la fois ; si un sort arrive en plein mouvement, le suivant s'enchaîne juste après (pas de saccade) */
 function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
-  unit._gBusy = true; unit.classList.remove('atk', 'cheer'); void unit.offsetWidth; unit.classList.add(k);
+  unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
+  let variant = '';
+  if (k === 'atk' && unit.querySelector('.hs-iop')) { // le Iop varie ses coups : coup d'en haut, tourbillon, plongeon
+    const v = (unit._combo = ((unit._combo || 0) + 1) % 3); variant = ['atk-a', 'atk-b', 'atk-c'][v];
+    unit.classList.add(variant); iopFlourish(unit, v);
+  }
   setTimeout(() => {
-    unit.classList.remove(k); unit._gBusy = false;
+    unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
     const n = unit._gNext; unit._gNext = null;
     if (n) requestAnimationFrame(() => heroGesture(unit, n));
-  }, k === 'atk' ? 520 : 600);
+  }, k === 'atk' ? (variant ? 640 : 520) : 600);
+}
+
+/* Effets du Iop autour de son sprite : images fantômes, onde de choc au sol, braises */
+function iopFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-iop'); if (!svg) return;
+  for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'ip-ghost'; g.style.cssText = `--gx:${[16, 30, 22][v] * i}px;--gd:${i * 50}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 900 + i * 50);
+  }
+  const wave = (big) => { const w = document.createElement('span'); w.className = 'ip-wave' + (big ? ' big' : ''); sp.appendChild(w); setTimeout(() => w.remove(), 800); iopEmbers(sp, big ? 16 : 10); };
+  if (v === 0) setTimeout(wave, 300);
+  if (v === 1) { setTimeout(wave, 230); setTimeout(wave, 430); }
+  if (v === 2) setTimeout(() => wave(true), 470);
+}
+function iopEmbers(sp, n) {
+  for (let i = 0; i < n; i++) {
+    const e = document.createElement('i'); e.className = 'ip-ember';
+    const a = -Math.PI * (.05 + Math.random() * .9);
+    e.style.cssText = `--dx:${(Math.cos(a) * (20 + Math.random() * 42)).toFixed(0)}px;--dy:${(Math.sin(a) * (22 + Math.random() * 40)).toFixed(0)}px;--s:${(3 + Math.random() * 4).toFixed(1)}px;animation-delay:${(Math.random() * 90).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1000);
+  }
 }
 
 /* Joue l'animation d'un sort dans la carte de combat d'un héros */
@@ -5017,6 +5080,7 @@ iop: `<svg class="hs hs-iop" viewBox="0 0 128 128" aria-hidden="true">
       <path d="M92 76 L92 26 L98 6 L104 26 L104 76Z" fill="url(#ipBlade)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
       <path d="M98 12 L98 74" stroke="#7c8a9c" stroke-width="2.2" stroke-linecap="round"/>
       <path d="M94.6 28 L94.6 72" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-opacity=".9"/>
+      <path class="p-bladefire" d="M91 72 Q86 58 92 46 Q88 34 95 22 Q94 14 98 4 Q102 14 101 22 Q108 34 104 46 Q110 58 105 72Z" fill="url(#ipFlame)" opacity="0"/>
       <path class="p-edge" d="M98 20 Q102 34 98 48 Q94 60 98 70" fill="none" stroke="#ff7a1e" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>
       <path d="M84 77 Q91 70 98 75 Q105 70 112 77 L109 83 Q98 79 87 83Z" fill="url(#ipGold)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
       <circle cx="98" cy="77.6" r="2.4" fill="#c0301e" stroke="#2a1606" stroke-width="1"/>
