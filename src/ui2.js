@@ -372,7 +372,9 @@ function playJackpot(card, fx) {
   const reelEls = ov.querySelectorAll('.jp-reel');
   [560, 840, 1120].forEach((ms, k) => setTimeout(() => reelEls[k].classList.add('stop'), ms));
   const hero = card.querySelector('[data-k="fighter"]');
-  setTimeout(() => { ov.classList.add('win'); scene.classList.add('gold-flash'); if (hero) hero.classList.add('jp-hero'); }, 1150);
+  const heroCls = card.querySelector('[data-k="fighter"] .hs') ? 'jp-pose' : 'jp-hero'; // dessin animé : pose de victoire, sinon simple halo
+  if (hero) hero.classList.add(heroCls); // le personnage entre dans la danse dès le lancement des rouleaux
+  setTimeout(() => { ov.classList.add('win'); scene.classList.add('gold-flash'); }, 1150);
   setTimeout(() => {
     scene.classList.add('cl-shake');
     ((fx && fx.hits) || []).forEach((hit, k) => setTimeout(() => {
@@ -383,7 +385,8 @@ function playJackpot(card, fx) {
       setTimeout(() => { n.remove(); mon.classList.remove('jp-hit'); }, 1300);
     }, k * 110));
   }, 1500);
-  setTimeout(() => { scene.classList.remove('cl-shake'); scene.classList.remove('gold-flash'); if (hero) hero.classList.remove('jp-hero'); }, 2300);
+  setTimeout(() => { scene.classList.remove('cl-shake'); scene.classList.remove('gold-flash'); }, 2300);
+  setTimeout(() => { if (hero) hero.classList.remove(heroCls); }, 2750);
   setTimeout(() => ov.remove(), 2800);
 }
 function missFx(card) { const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return; const n = document.createElement('span'); n.className = 'fnum miss'; n.textContent = 'Raté !'; fg.appendChild(n); setTimeout(() => n.remove(), 950); }

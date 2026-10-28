@@ -51,6 +51,7 @@ enutrof: `<svg class="hs hs-enutrof" viewBox="0 0 128 128" aria-hidden="true">
     <path d="M24 74 Q23 86 27 96" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
   </g>
 
+  <g class="p-spill" fill="url(#ehGold)" stroke="#7a4a00" stroke-width="1.1"><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/></g>
   <g class="p-body">
     <!-- manteau -->
     <path d="M46 62 Q64 52 82 62 L92 104 Q64 114 36 104Z" fill="url(#ehCoat)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
