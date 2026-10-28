@@ -885,8 +885,8 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
 
   <!-- main arrière : une montre flotte au creux de la paume -->
   <g class="p-armB">
-    <path d="M55 62 Q46 68 44 80 Q46 84 49 82 Q49 74 56 70Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="M42 82 q-3 -4 1 -6 q4 -1 6 3 q1 4 -3 5Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M55 61 Q44 64 38 76 Q40 82 45 80 Q48 72 56 69Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M36 80 q-3 -4 1 -6 q4 -1 6 3 q1 4 -3 5Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.6" stroke-linejoin="round"/>
     <g class="p-watch">
       <circle cx="30" cy="66" r="8" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1.4"/>
       <circle cx="30" cy="66" r="6" fill="url(#xlFace)" stroke="#8a5a14" stroke-width=".8"/>
@@ -917,7 +917,7 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
       </g>
       <circle class="p-glow" cx="94" cy="17" r="14" fill="#9fd4ff" opacity="0"/>
     </g>
-    <path d="M69 56 Q78 62 84 74 Q86 80 90 82 L96 80 Q96 74 92 68 Q84 54 70 50Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M70 61 Q78 63 84 74 Q86 80 90 82 L96 80 Q96 74 92 68 Q85 58 72 56Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
     <path d="M84 76 Q88 84 98 82 L96 76Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.6" stroke-linejoin="round"/>
     <path d="M84 77 Q89 84 97 82" fill="none" stroke="url(#xlGold)" stroke-width="1.4"/>
     <path d="M90 78 q-3 -2 -1 -5 q4 -2 7 1 q2 3 -1 5 q-2 2 -5 -1Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.5" stroke-linejoin="round"/>

@@ -2057,7 +2057,7 @@ label.btn { cursor: pointer; }
 @keyframes xl-tw { 0%, 100% { opacity: .15; } 45% { opacity: 1; } }
 .hs-xelor .p-cape { transform-box: view-box; transform-origin: 52px 58px; animation: xl-cape 3.2s ease-in-out infinite; }
 @keyframes xl-cape { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-3.6deg) skewX(-2deg); } }
-.hs-xelor .p-armB { transform-box: view-box; transform-origin: 48px 64px; animation: xl-float 3.4s ease-in-out infinite; }
+.hs-xelor .p-armB { transform-box: view-box; transform-origin: 55px 62px; animation: xl-float 3.4s ease-in-out infinite; }
 @keyframes xl-float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2.4px) rotate(3deg); } }
 .hs-xelor .p-watch { transform-box: view-box; transform-origin: 30px 66px; animation: xl-swing 4.2s ease-in-out infinite; }
 .hs-xelor .p-charm { transform-box: view-box; transform-origin: 25px 5px; animation: xl-swing 2.6s ease-in-out infinite; }
@@ -2077,7 +2077,7 @@ label.btn { cursor: pointer; }
 /* gestes de sort : un différent à chaque lancer, comme pour les autres classes */
 .hero.atk-a .hs-xelor { animation: xla-lunge .6s cubic-bezier(.45, 0, .2, 1); }
 @keyframes xla-lunge { 0% { transform: none; } 30% { transform: translateX(-5px) rotate(-2deg); } 55% { transform: translateX(12px) rotate(3deg); } 100% { transform: none; } }
-.hero.atk-a .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xla-arm .6s cubic-bezier(.45, 0, .2, 1); }
+.hero.atk-a .hs-xelor .p-arm { transform-box: view-box; transform-origin: 72px 60px; animation: xla-arm .6s cubic-bezier(.45, 0, .2, 1); }
 @keyframes xla-arm { 0% { transform: rotate(0); } 30% { transform: rotate(-26deg); } 58% { transform: rotate(22deg); } 100% { transform: rotate(0); } }
 .hero.atk-a .hs-xelor .p-glow { animation: xl-flare .6s ease-out; }
 @keyframes xl-flare { 0% { opacity: 0; transform: scale(.6); } 40% { opacity: .85; transform: scale(1.35); } 100% { opacity: 0; transform: scale(1.7); } }
@@ -2091,13 +2091,13 @@ label.btn { cursor: pointer; }
 @keyframes xlb-halo { 0% { transform: rotate(0) scale(1); } 100% { transform: rotate(150deg) scale(1.04); } }
 .hero.atk-c .hs-xelor { animation: xlc-jump .6s cubic-bezier(.3, .6, .4, 1); }
 @keyframes xlc-jump { 0% { transform: none; } 40% { transform: translateY(-12px) rotate(-3deg); } 70% { transform: translateY(2px) rotate(2deg); } 100% { transform: none; } }
-.hero.atk-c .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xlc-arm .6s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-c .hs-xelor .p-arm { transform-box: view-box; transform-origin: 72px 60px; animation: xlc-arm .6s cubic-bezier(.4, 0, .25, 1); }
 @keyframes xlc-arm { 0% { transform: rotate(0); } 35% { transform: rotate(-40deg); } 62% { transform: rotate(30deg); } 100% { transform: rotate(0); } }
 .hero.atk-c .hs-xelor .p-glass { transform-box: view-box; transform-origin: 94px 17px; animation: xlc-flip .6s ease-in-out; }
 @keyframes xlc-flip { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
 .hero.atk-c .hs-xelor .p-cape { animation: xlc-cape .6s ease-out; }
 @keyframes xlc-cape { 0% { transform: rotate(0); } 35% { transform: rotate(-10deg); } 100% { transform: rotate(0); } }
-.hero.cheer .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xl-cheer .6s cubic-bezier(.45, 0, .25, 1); }
+.hero.cheer .hs-xelor .p-arm { transform-box: view-box; transform-origin: 72px 60px; animation: xl-cheer .6s cubic-bezier(.45, 0, .25, 1); }
 @keyframes xl-cheer { 0% { transform: rotate(0); } 45% { transform: rotate(-38deg); } 100% { transform: rotate(0); } }
 .hero.cheer .hs-xelor .p-halo { opacity: 1; filter: drop-shadow(0 0 5px #9fd4ff); }
 .hero.dead .hs-xelor .p-halo { opacity: .08 !important; filter: none; animation: none; }
@@ -2114,7 +2114,7 @@ label.btn { cursor: pointer; }
 /* ----- Rembobinage : le Xélor renverse son sablier et remonte le temps ----- */
 .hero.xel-rewind .hs-xelor { animation: xlr-body 3.3s cubic-bezier(.4, 0, .3, 1) both; }
 @keyframes xlr-body { 0% { transform: none; } 14% { transform: translateY(-12px) scale(1.06); } 80% { transform: translateY(-12px) scale(1.06); } 100% { transform: none; } }
-.hero.xel-rewind .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xlr-arm 3.3s ease-in-out both; }
+.hero.xel-rewind .hs-xelor .p-arm { transform-box: view-box; transform-origin: 72px 60px; animation: xlr-arm 3.3s ease-in-out both; }
 @keyframes xlr-arm { 0% { transform: rotate(0); } 14% { transform: rotate(-34deg); } 86% { transform: rotate(-34deg); } 100% { transform: rotate(0); } }
 .hero.xel-rewind .hs-xelor .p-glass { transform-box: view-box; transform-origin: 94px 17px; animation: xlr-flip 3.3s ease-in-out both; }
 @keyframes xlr-flip { 0%, 12% { transform: rotate(0); } 28% { transform: rotate(180deg); } 72% { transform: rotate(180deg); } 88%, 100% { transform: rotate(360deg); } }
@@ -2243,7 +2243,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793204202';
+const BUILD_ID = '1793204340';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -6694,8 +6694,8 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
 
   <!-- main arrière : une montre flotte au creux de la paume -->
   <g class="p-armB">
-    <path d="M55 62 Q46 68 44 80 Q46 84 49 82 Q49 74 56 70Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="M42 82 q-3 -4 1 -6 q4 -1 6 3 q1 4 -3 5Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M55 61 Q44 64 38 76 Q40 82 45 80 Q48 72 56 69Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M36 80 q-3 -4 1 -6 q4 -1 6 3 q1 4 -3 5Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.6" stroke-linejoin="round"/>
     <g class="p-watch">
       <circle cx="30" cy="66" r="8" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1.4"/>
       <circle cx="30" cy="66" r="6" fill="url(#xlFace)" stroke="#8a5a14" stroke-width=".8"/>
@@ -6726,7 +6726,7 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
       </g>
       <circle class="p-glow" cx="94" cy="17" r="14" fill="#9fd4ff" opacity="0"/>
     </g>
-    <path d="M69 56 Q78 62 84 74 Q86 80 90 82 L96 80 Q96 74 92 68 Q84 54 70 50Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M70 61 Q78 63 84 74 Q86 80 90 82 L96 80 Q96 74 92 68 Q85 58 72 56Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
     <path d="M84 76 Q88 84 98 82 L96 76Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.6" stroke-linejoin="round"/>
     <path d="M84 77 Q89 84 97 82" fill="none" stroke="url(#xlGold)" stroke-width="1.4"/>
     <path d="M90 78 q-3 -2 -1 -5 q4 -2 7 1 q2 3 -1 5 q-2 2 -5 -1Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.5" stroke-linejoin="round"/>
