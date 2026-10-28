@@ -5,7 +5,7 @@
 
 const SAVE_VERSION = 2; // 2 : stats élémentaires fusionnées en Dégâts
 const STEP_MS = 550;            // durée d'une action de combat
-const REGEN_FULL_MS = 9000;    // temps pour récupérer 100 % des PV
+const REGEN_FULL_MS = 4500;    // temps pour récupérer 100 % des PV
 const DEATH_REST_MS = 20000;    // repos après une défaite
 const OFFLINE_CAP_MS = 20 * 60 * 1000;   // progression hors-ligne : 20 min maximum
 const MAX_TURNS = 60;
