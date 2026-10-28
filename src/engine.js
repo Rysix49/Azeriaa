@@ -778,19 +778,31 @@ function resolveLose(st, h, ev) {
 /* Avance un héros de dt millisecondes. */
 /* Quantité récoltée : augmente de 1 tous les 10 niveaux au-dessus du palier */
 function cropQty(st, c) { const lv = st.jobs[c.job].lvl; return [1, 1 + Math.floor(Math.max(0, lv - c.lvl) / 10)]; }
+function harvestMastery(st, c) {
+  const n = (st.mastery && st.mastery['h_' + c.id]) || 0; let i = 0;
+  HARVEST_RANKS.forEach((r, k) => { if (n >= r.at) i = k; });
+  return { n, i, rank: HARVEST_RANKS[i], next: HARVEST_RANKS[i + 1] || null, name: HARVEST_RANK_NAMES[c.job][i] };
+}
 function doHarvest(st, h, ev) {
   const c = findPlace('harvest', h.act.id); const job = st.jobs[c.job];
   if (job.lvl < c.lvl) { ev.stopped && ev.stopped(h, `${GATHER_JOBS[c.job].name} niveau ${c.lvl} requis`); setActivity(st, h, null); return; }
-  const ht = harvestTotals(st, h);
-  const [a, b] = cropQty(st, c); const n = irnd(a, b) + (Math.random() * 100 < ht.rqty ? 1 : 0);
-  const gx = Math.max(1, Math.round(c.xp * (1 + ht.rxp / 100)));
+  const ht = harvestTotals(st, h), m0 = harvestMastery(st, c);
+  const [a, b] = cropQty(st, c); let n = irnd(a, b) + (Math.random() * 100 < ht.rqty ? 1 : 0) + (Math.random() * 100 < m0.rank.qty ? 1 : 0);
+  const alm = almanaxCrop(c.job, job.lvl) === c.id; if (alm) n *= ALMANAX_MULT;
+  const miracle = Math.random() * 100 < MIRACLE_BASE + m0.rank.mir; if (miracle) n *= 3;
+  const gx = Math.max(1, Math.round(c.xp * (1 + ht.rxp / 100))) * (miracle ? 2 : 1);
   addRes(st, c.id, n);
   job.xp += gx;
   let up = false;
   while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; up = true; }
   st.stats.harvested = (st.stats.harvested || 0) + n;
+  st.mastery = st.mastery || {}; st.mastery['h_' + c.id] = m0.n + 1;
+  const m1 = harvestMastery(st, c), rankUp = m1.i > m0.i;
+  if (miracle) st.stats.miracles = (st.stats.miracles || 0) + 1;
+  h.hseq = (h.hseq || 0) + 1; h.hlast = { id: c.id, n, xp: gx, miracle, alm, rankUp: rankUp ? m1.name : null };
   if (h.session) { h.session.xp += gx; h.session.kills += n; sessionEvent(h, gx, 0, n); }
-  ev.log(h, `${h.name} récolte ${n}× ${c.name} (+${gx} XP ${GATHER_JOBS[c.job].name}).`, 'win');
+  ev.log(h, `${h.name} récolte ${n}× ${c.name} (+${gx} XP ${GATHER_JOBS[c.job].name})${miracle ? ' ✨ Récolte miraculeuse !' : ''}${alm ? ' · Almanax ×2' : ''}.`, miracle ? 'boss' : 'win');
+  if (rankUp) ev.harvrank && ev.harvrank(h, c, m1.name);
   if (up) ev.jobup && ev.jobup(c.job, job.lvl);
 }
 

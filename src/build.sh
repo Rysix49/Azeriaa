@@ -22,7 +22,7 @@ echo '<script>'
 echo "const BUILD_ID = '$BUILD_ID';"
 cat data.js engine.js art.js monart.js skin.js update.js
 echo '(function () {'
-cat spellfx.js heroart.js atelier.js ui2.js
+cat spellfx.js heroart.js atelier.js recolte.js ui2.js
 echo '})();'
 echo '</script>'
 } > "$OUT_DIR/index.html"

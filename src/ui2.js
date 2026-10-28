@@ -73,6 +73,7 @@ const liveEv = {
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
   },
   dungeonDone(h, p) { toast(`${h.name} a vaincu ${p.name} !`, 'quest'); },
+  harvrank(h, c, name) { toast(`${h.name} : maîtrise de ${c.name} → ${name} !`, 'quest'); },
   jobup(j, lv) { toast(`${GATHER_JOBS[j].name} passe niveau ${lv} !`, 'lvl'); },
   foodEnd(h) { toast(`L’effet du repas de ${h.name} est terminé.`, 'warn'); },
   stopped(h, why) { toast(`${h.name} s'arrête : ${why}.`, 'warn'); },
@@ -132,7 +133,7 @@ function statusOf(h) {
 function actLabel(h) { return !h.act ? '' : h.act.type === 'dungeon' ? 'Donjon' : h.act.type === 'harvest' ? 'Récolte' : 'Zone'; }
 function arenaTheme(h) {
   if (!h.act) return THEME.idle;
-  if (h.act.type === 'harvest') return THEME.harvest;
+  if (h.act.type === 'harvest') return harvestTheme(findPlace('harvest', h.act.id));
   const p = findPlace(h.act.type, h.act.id); return THEME[p.region] || THEME.idle;
 }
 function heroChip(h, attrs, label, extraCls = '') {
@@ -278,13 +279,7 @@ function fightCard(h) {
   const harvest = h.act && h.act.type === 'harvest';
   let stage;
   if (harvest) {
-    const c = place; const job = st.jobs[c.job]; const [qa, qb] = cropQty(st, c); const p = clamp(1 - h.wait / harvestMs(st, h), 0, 1);
-    stage = `<div class="vs"><span class="vs-ic">${ICONS.recolte}</span><small>${GATHER_JOBS[c.job].name} ${job.lvl}</small></div>
-      <div class="field"><div class="crops" data-k="crops" style="--g:${p.toFixed(2)}">${Array.from({ length: 6 }, () => `<span>${c.icon}</span>`).join('')}</div>
-        <div class="field-info"><b>${c.name}</b><span data-k="stock">${qa === qb ? qa : `${qa}–${qb}`} par récolte · stock ${fmt(st.res[c.id] || 0)}</span></div>
-        <div data-k="hprog">${bar('job', p, 1)}</div>
-        <div class="field-xp"><span>XP ${GATHER_JOBS[c.job].name}</span><span class="num" data-k="jxt">${fmt(job.xp)} / ${fmt(jobXpToNext(job.lvl))}</span></div>
-        <div data-k="jxb">${bar('xp thin', job.xp, jobXpToNext(job.lvl))}</div></div>`;
+    stage = harvestStage(h, place);
   } else {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
@@ -1002,14 +997,7 @@ function patchCombat() {
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
-    if (h.act && h.act.type === 'harvest') {
-      const c = findPlace('harvest', h.act.id); const job = st.jobs[c.job]; const p = clamp(1 - h.wait / harvestMs(st, h), 0, 1);
-      setBar(q('hprog'), p, 1);
-      const cr = q('crops'); if (cr) cr.style.setProperty('--g', p.toFixed(2));
-      const sk = q('stock'); if (sk) { const [qa, qb] = cropQty(st, c); const tx = `${qa === qb ? qa : `${qa}–${qb}`} par récolte · stock ${fmt(st.res[c.id] || 0)}`; if (sk.textContent !== tx) sk.textContent = tx; }
-      const jx = q('jxt'); if (jx) jx.textContent = `${fmt(job.xp)} / ${fmt(jobXpToNext(job.lvl))}`;
-      setBar(q('jxb'), job.xp, jobXpToNext(job.lvl));
-    }
+    if (h.act && h.act.type === 'harvest') harvestPatch(q, card, h, scene);
   }
   updateArchiBtn();
 }
@@ -1350,27 +1338,6 @@ function resInspector(id) {
     <div class="insp-sell"><button class="btn sm" data-act="sellres" data-id="${id}" data-n="1">Vendre 1</button><button class="btn sm" data-act="sellres" data-id="${id}" data-n="10" ${n < 10 ? 'disabled' : ''}>Vendre 10</button><button class="btn sm danger" data-act="sellres" data-id="${id}" data-n="all">Tout vendre</button></div>
     ${uses.length ? `<div class="label">Utilisé dans</div><div class="uses">${uses.join('')}</div>` : ''}
     ${from.length || crop ? `<div class="label">Où l’obtenir</div><div class="uses">${crop ? `<span class="use">${crop.icon}<span>Récolte</span><small>${GATHER_JOBS[crop.job].name} ${crop.lvl}</small></span>` : ''}${from.join('')}</div>` : ''}`;
-}
-
-/* ---------------------------- Vue : Récolte ---------------------------- */
-function renderRecolte() {
-  const jid = GATHER_JOBS[ui.gjob] ? ui.gjob : Object.keys(GATHER_JOBS)[0];
-  const jobs = Object.entries(GATHER_JOBS).map(([id, j]) => { const s = st.jobs[id]; const n = st.heroes.filter(h => h.act && h.act.type === 'harvest' && findPlace('harvest', h.act.id).job === id).length;
-    return `<button class="jrow" data-act="gjob" data-v="${id}" aria-pressed="${jid === id}"><span class="jr-top"><b>${j.icon} ${j.name}</b><span class="lvl">Niv. ${s.lvl}</span></span><small>${j.makes}${n ? ` · ${n} au travail` : ''}</small>${bar('job thin', s.xp, jobXpToNext(s.lvl))}</button>`; }).join('');
-  const job = st.jobs[jid];
-  const rows = CROPS.filter(c => c.job === jid).map(c => {
-    const locked = job.lvl < c.lvl; const [qa, qb] = cropQty(st, c);
-    const sends = locked ? `<span class="lockt">🔒 ${GATHER_JOBS[c.job].name} niveau ${c.lvl}</span>` : st.heroes.length ? st.heroes.map(h => { const there = h.act && h.act.type === 'harvest' && h.act.id === c.id;
-      return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="harvest" data-id="${c.id}" ${there ? 'disabled' : ''}`, there ? 'Récolte ici' : h.act ? `Quitte ${esc(placeName(h.act))}` : 'Disponible', (there ? 'here' : '') + ' sm'); }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
-    return `<article class="crow${locked ? ' locked' : ''}"><div class="tile res"><span class="t-emo">${c.icon}</span><span class="t-n num">${short(st.res[c.id] || 0)}</span></div>
-      <div class="cr-main"><b>${c.name}</b><span class="badge-lv">Niv. ${c.lvl}</span><small class="sub">${c.where} · +${c.xp} XP · ${locked ? 'verrouillé' : `${qa === qb ? qa : `${qa}–${qb}`} par récolte`} · ${c.value} K pièce</small></div>
-      <div class="cr-send">${sends}</div></article>`;
-  }).join('');
-  return `<div class="split"><aside class="joblist">${jobs}</aside><section class="panel">
-    <div class="panel-h"><h3 class="display">${GATHER_JOBS[jid].icon} ${GATHER_JOBS[jid].name} <span class="lvl">Niv. ${job.lvl}</span></h3><span class="sub num">${fmt(job.xp)} / ${fmt(jobXpToNext(job.lvl))} XP</span></div>
-    ${bar('xp', job.xp, jobXpToNext(job.lvl))}
-    <p class="hint">${GATHER_JOBS[jid].text} Une récolte toutes les ${HARVEST_MS / 1000} s, plus vite avec des outils (onglet Héros › Récolte). La quantité augmente de 1 tous les 10 niveaux au-dessus du palier.</p>
-    <div class="crop-rows">${rows}</div></section></div>`;
 }
 
 /* ---------------------------- Vue : Options ---------------------------- */

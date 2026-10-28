@@ -401,6 +401,7 @@ const MAX_JOB_LEVEL = 100;
    -------------------------------------------------------------------- */
 const GATHER_JOBS = {
   paysan: { name: 'Paysan', makes: 'Céréales', icon: '🌾', text: 'Fauche les champs d’Amakna. Chaque céréale se débloque à un palier de métier.' },
+  alchimiste: { name: 'Alchimiste', makes: 'Plantes et fleurs', icon: '🧪', text: 'Cueille les plantes rares des sous-bois et des montagnes. Chaque plante se débloque à un palier de métier.' },
 };
 const HARVEST_MS = 4000;   // durée d'une récolte
 const CROPS = [
@@ -412,11 +413,51 @@ const CROPS = [
   { id: 'seigle',  job: 'paysan', name: 'Seigle',  icon: '🌱', lvl: 50, xp: 30, value: 16, where: 'Plaines de Cania' },
   { id: 'riz',     job: 'paysan', name: 'Riz',     icon: '🍚', lvl: 50, xp: 30, value: 16, where: 'Rizières de Pandala' },
   { id: 'malt',    job: 'paysan', name: 'Malt',    icon: '🌰', lvl: 60, xp: 35, value: 21, where: 'Champs de Sufokia' },
-  { id: 'chanvre', job: 'paysan', name: 'Chanvre', icon: '🍀', lvl: 70, xp: 40, value: 27, where: 'Landes de Sidimote' },
+  { id: 'chanvre', job: 'paysan', name: 'Chanvre', icon: '🎋', lvl: 70, xp: 40, value: 27, where: 'Landes de Sidimote' },
+  /* Alchimiste : les plantes */
+  { id: 'ortie',      job: 'alchimiste', name: 'Ortie',               icon: '☘️', lvl: 1,   xp: 5,  value: 3,  where: "Forêt d'Astrub" },
+  { id: 'sauge',      job: 'alchimiste', name: 'Sauge',               icon: '🌿', lvl: 10,  xp: 10, value: 6,  where: 'Coin des Bouftous' },
+  { id: 'trefle',     job: 'alchimiste', name: 'Trèfle à 5 feuilles', icon: '🍀', lvl: 20,  xp: 15, value: 9,  where: 'Plaine des Porkass' },
+  { id: 'menthe',     job: 'alchimiste', name: 'Menthe sauvage',      icon: '🌱', lvl: 30,  xp: 20, value: 13, where: 'Forêt de Brâkmar' },
+  { id: 'orchidee',   job: 'alchimiste', name: 'Orchidée Freyesque',  icon: '🌸', lvl: 40,  xp: 25, value: 18, where: 'Marécages de Nauséabonde' },
+  { id: 'edelweiss',  job: 'alchimiste', name: 'Edelweiss',           icon: '🏵️', lvl: 50,  xp: 30, value: 24, where: 'Montagne des Craqueleurs' },
+  { id: 'pandouille', job: 'alchimiste', name: 'Graine de Pandouille', icon: '🥜', lvl: 60, xp: 35, value: 31, where: 'Forêt de Pandala' },
+  { id: 'ginseng',    job: 'alchimiste', name: 'Ginseng',             icon: '🥕', lvl: 70,  xp: 40, value: 39, where: 'Territoire des Dragoeufs' },
+  { id: 'belladone',  job: 'alchimiste', name: 'Belladone',           icon: '🫐', lvl: 80,  xp: 45, value: 48, where: 'Cimetière de Sidimote' },
+  { id: 'mandragore', job: 'alchimiste', name: 'Mandragore',          icon: '🧄', lvl: 90,  xp: 50, value: 58, where: 'Bois de Litneg' },
+  { id: 'perceneige', job: 'alchimiste', name: 'Perce-neige',         icon: '❄️', lvl: 100, xp: 55, value: 70, where: 'Sommets de Frigost' },
 ];
 /* XP de récolte divisée par 5 */
 for (const c of CROPS) c.xp = Math.max(1, Math.round(c.xp / 5));
 for (const c of CROPS) RESOURCES[c.id] = { name: c.name, icon: c.icon, value: c.value, crop: true };
+
+/* --------------------------------------------------------------------
+   RÉCOLTE — Maîtrise des plantes, Almanax du jour, Récolte miraculeuse
+   -------------------------------------------------------------------- */
+/* Rang de maîtrise d'une plante (nombre de récoltes) : +qty % de chance d'une unité en plus, +mir % de chance de miracle */
+const HARVEST_RANKS = [
+  { at: 0,    qty: 0,  mir: 0 },
+  { at: 50,   qty: 5,  mir: 0.5 },
+  { at: 200,  qty: 10, mir: 1 },
+  { at: 600,  qty: 15, mir: 1.5 },
+  { at: 1500, qty: 20, mir: 2 },
+];
+const HARVEST_RANK_NAMES = {
+  paysan:     ['Glaneur', 'Moissonneur', 'Fermier', 'Maître des champs', 'Légende des blés'],
+  alchimiste: ['Curieux', 'Herboriste', 'Apothicaire', 'Maître alchimiste', 'Sage des herbes'],
+};
+const MIRACLE_BASE = 3;   // % de chance de Récolte miraculeuse (quantité ×3, XP ×2)
+const ALMANAX_MULT = 2;   // quantité ×2 pour la plante de l'Almanax
+/* Numéro du jour (heure locale) : l'Almanax change à minuit */
+function dayNumber(t = Date.now()) { const d = new Date(t); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); }
+/* Almanax : chaque jour, une plante par métier (parmi celles déjà débloquées) rapporte ×2 */
+function almanaxCrop(job, lvl, t = Date.now()) {
+  const pool = CROPS.filter(c => c.job === job && c.lvl <= Math.max(1, lvl)); if (!pool.length) return null;
+  let x = (Math.imul(dayNumber(t), 374761393) + (job === 'paysan' ? 668265263 : 1274126177)) >>> 0;
+  x = Math.imul(x ^ (x >>> 13), 1274126177) >>> 0; x = (x ^ (x >>> 16)) >>> 0;
+  return pool[x % pool.length].id;
+}
+function msToMidnight(t = Date.now()) { const d = new Date(t); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - t; }
 
 const RECIPES = [
   { out: 'coiffe_aventurier', job: 'tailleur', lvl: 1, ing: { laine_bouftou: 3, plume_tofu: 2 } },
