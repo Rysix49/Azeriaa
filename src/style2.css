@@ -3329,3 +3329,6 @@ label.btn { cursor: pointer; }
 .map-detail { gap: 14px; }
 @media (max-width: 700px) { .wm { min-width: 820px; } .mgrid { grid-template-columns: 1fr; } .place-banner h2 { font-size: 28px; } .pb-mons { font-size: 36px; } .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .wm-march, .wm-cloud, .wm-fly, .wm-blades, .wn.sel .wn-ring, .wn-h, .pb-motes i, .pb-mons > span, .mc-ico > span { animation: none !important; } }
+.mc { cursor: pointer; } .mc:hover { border-color: #e8aa2e77; transform: translateY(-1px); } .mc { transition: border-color .2s, box-shadow .2s, transform .15s; }
+.mc-more { font-size: 11px; font-weight: 800; color: var(--gold); margin-top: -2px; letter-spacing: .02em; } .mc.open .mc-more { color: var(--dim); }
+.mc-detail { cursor: default; }

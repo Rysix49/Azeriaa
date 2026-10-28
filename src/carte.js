@@ -112,7 +112,7 @@ function monCard(p, type, mid, T) {
   const gr = gd.length ? (d.boss || ar ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
   const key = p.id + ':' + mid; const mo = !!(ui.openMons || {})[key];
   const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
-  const detail = mo ? `<div class="mc-detail"><div class="dr-items">
+  const detail = mo ? `<div class="mc-detail" data-act="noop"><div class="dr-items">
       ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
       ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
         <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
@@ -121,11 +121,12 @@ function monCard(p, type, mid, T) {
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
         <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
     </div></div>` : '';
-  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}">
-    <div class="mc-head" data-act="togglemon" data-k="${key}" tabindex="0" role="button" aria-expanded="${mo}" title="Voir les objets">
+  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}" data-act="togglemon" data-k="${key}">
+    <div class="mc-head" tabindex="0" role="button" aria-expanded="${mo}" title="Voir tous les objets droppables">
       <span class="mc-ico" aria-hidden="true"><span style="${cph(2600 + (key.length % 7) * 150)}">${monIcon(mid)}</span></span>
       <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
       <span class="chev" aria-hidden="true">▸</span></div>
+    <div class="mc-more">${mo ? 'Cliquer pour replier' : `Voir les ${d.drops.length + gd.length + rl.length} objets droppables`}</div>
     <div class="mc-stats"><span class="hp">❤ <b class="num">${fmt(ms.hp * T.hp)}</b> PV</span><span class="dm">⚔ <b class="num">${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)}</b> dégâts</span></div>
     ${ar ? `<div class="mc-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}
     <div class="mc-row"><label>Ressources</label><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></div>

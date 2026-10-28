@@ -1598,7 +1598,7 @@ document.addEventListener('click', e => {
   if (r !== 'keep') { saveGame(); render(true); }
 });
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act], [role="button"][data-act]')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act], [role="button"][data-act], .mc-head')) { e.preventDefault(); e.target.click(); }
 });
 document.addEventListener('change', e => {
   const el = e.target;
