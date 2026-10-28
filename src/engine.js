@@ -350,7 +350,7 @@ function monsterTurn(st, h, t, m, ev) {
     return;
   }
   if (h.cls === 'sram' && f.invis && Math.random() < 0.3) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
-  if (Math.random() * 100 < t.dodgePct) { ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
+  if (Math.random() * 100 < t.dodgePct) { f.dodgeSeq = (f.dodgeSeq || 0) + 1; ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
@@ -359,7 +359,7 @@ function monsterTurn(st, h, t, m, ev) {
   if (h.cls === 'ecaflip') {
     if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
     if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
-      f.lifeSeq = (f.lifeSeq || 0) + 1;
+      f.lifeSeq = (f.lifeSeq || 0) + 1; h.wait += ECA_LIFE_MS; // laisse la pirouette des Neuf Vies se jouer
       ev.log(h, line + `🐾 Neuf Vies ! ${h.name} retombe sur ses pattes : le coup de ${def.name} est évité.`, 'win');
       return;
     }
@@ -383,6 +383,7 @@ function monsterTurn(st, h, t, m, ev) {
    Chaque tour : pièce. Face = +40 % de dégâts ; Pile = −35 % de dégâts subis et +1 Trèfle
    (h.clover, gardés d'un combat à l'autre). À 6 Trèfles : Quitte ou Double. */
 const ECA_CLOVER_MAX = 6, ECA_FACE_DMG = 1.4, ECA_PILE_DEF = 0.65;
+const ECA_GAMBLE_MS = 900, ECA_LIFE_MS = 700; // pauses pour les animations de Quitte ou Double et de Neuf Vies
 function ecaToss(h, t, f, actions) {
   f.double = false;
   if ((h.clover || 0) >= ECA_CLOVER_MAX) {
@@ -515,9 +516,10 @@ function fightStep(st, h, ev) {
   const f = h.fight, t = heroTotals(st, h);
   let jackpot = false;
   if (f.phase === 0) {
-    const jk0 = f.jackSeq || 0;
+    const jk0 = f.jackSeq || 0, gm0 = f.gambleSeq || 0;
     heroTurn(st, h, t, ev);
     jackpot = (f.jackSeq || 0) > jk0;
+    if ((f.gambleSeq || 0) > gm0) h.wait += ECA_GAMBLE_MS; // Quitte ou Double : on attend la fin du jeu de dés
     f.phase = 1;
   } else {
     // cherche le prochain monstre vivant à jouer

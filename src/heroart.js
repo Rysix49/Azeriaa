@@ -400,6 +400,144 @@ sram: `<svg class="hs hs-sram" viewBox="0 0 128 128" aria-hidden="true">
     </g>
   </g>
 </svg>`,
+
+/* ---- ECAFLIP ---- chat joueur : haut-de-forme porte-bonheur, pièce qui danse, griffes dégainées, trèfles de chance ---- */
+ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <radialGradient id="ecFur" cx="42%" cy="32%" r="80%"><stop offset="0" stop-color="#ffc874"/><stop offset=".6" stop-color="#f09a38"/><stop offset="1" stop-color="#b86a1a"/></radialGradient>
+    <radialGradient id="ecBelly" cx="45%" cy="35%" r="75%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f4dcb0"/></radialGradient>
+    <linearGradient id="ecCoat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3fd0b0"/><stop offset=".55" stop-color="#1f9d88"/><stop offset="1" stop-color="#0b5048"/></linearGradient>
+    <linearGradient id="ecCoatD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b8472"/><stop offset="1" stop-color="#06302c"/></linearGradient>
+    <radialGradient id="ecGold" cx="36%" cy="30%" r="80%"><stop offset="0" stop-color="#fff8c0"/><stop offset=".45" stop-color="#ffd24a"/><stop offset="1" stop-color="#b8791a"/></radialGradient>
+    <linearGradient id="ecHat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a3a5a"/><stop offset="1" stop-color="#12121e"/></linearGradient>
+    <radialGradient id="ecEye" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#f4ffd0"/><stop offset=".5" stop-color="#8dff5a"/><stop offset="1" stop-color="#2f9a22"/></radialGradient>
+    <linearGradient id="ecBoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4a28"/><stop offset="1" stop-color="#32180a"/></linearGradient>
+    <linearGradient id="ecClaw" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8a95a8"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+    <radialGradient id="ecShield" cx="50%" cy="50%" r="50%"><stop offset=".6" stop-color="#6fa8ff" stop-opacity="0"/><stop offset=".9" stop-color="#8fd0ff" stop-opacity=".55"/><stop offset="1" stop-color="#bfe6ff" stop-opacity=".8"/></radialGradient>
+    <radialGradient id="ecLuck" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#ffe27a" stop-opacity=".85"/><stop offset=".5" stop-color="#2fe0b8" stop-opacity=".45"/><stop offset="1" stop-color="#2fe0b8" stop-opacity="0"/></radialGradient>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="119" rx="32" ry="5.5" fill="#000" opacity=".32"/>
+  <ellipse class="p-luck" cx="62" cy="68" rx="56" ry="58" fill="url(#ecLuck)" opacity="0"/>
+  <circle class="p-shield" cx="62" cy="66" r="56" fill="url(#ecShield)" opacity="0"/>
+
+  <!-- queue annelée -->
+  <g class="p-tail" stroke="#3a1c06" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M50 98 Q18 104 12 76 Q8 54 26 46 Q22 62 30 76 Q38 90 52 88Z" fill="url(#ecFur)"/>
+    <path d="M14 66 Q20 66 24 70 M12 76 Q19 77 25 80 M20 88 Q26 86 31 88 M24 52 Q27 56 25 60" fill="none" stroke="#7a3e0c" stroke-width="2.6"/>
+    <path d="M26 46 Q30 42 34 46 Q30 50 26 46Z" fill="#fffaf0" stroke-width="1.6"/>
+  </g>
+
+  <!-- basques de l'habit -->
+  <g class="p-coat" stroke="#04201c" stroke-width="2" stroke-linejoin="round">
+    <path d="M44 90 L36 112 L48 106 L56 116 L62 96Z" fill="url(#ecCoatD)"/>
+    <path d="M82 90 L92 112 L78 106 L70 116 L64 96Z" fill="url(#ecCoatD)"/>
+    <path d="M38 108 L48 104 M90 108 L78 104" stroke="#ffd24a" stroke-width="1.8" fill="none"/>
+  </g>
+
+  <!-- pattes et bottes -->
+  <g stroke="#3a1c06" stroke-width="2" stroke-linejoin="round">
+    <path d="M51 96 h12 v10 h-12Z M68 96 h12 v10 h-12Z" fill="url(#ecFur)"/>
+    <path d="M49 103 h15 v7 q7 1 7 5 q0 4.4 -6 4.4 h-19 q-4 0 -4 -4 q0 -4 7 -5Z" fill="url(#ecBoot)"/>
+    <path d="M67 103 h15 v7 q7 1 7 5 q0 4.4 -6 4.4 h-19 q-4 0 -4 -4 q0 -4 7 -5Z" fill="url(#ecBoot)"/>
+    <path d="M49 105 h15 M67 105 h15" stroke="#ffd24a" stroke-width="2.4" fill="none"/>
+    <path d="M70 117 l2 2.2 M74 117 l2 2.2 M78 117 l2 2.2 M52 117 l2 2.2 M56 117 l2 2.2 M60 117 l2 2.2" stroke="#fffaf0" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <g class="p-torso">
+    <!-- bras arrière : lance la pièce -->
+    <g class="p-arm2">
+      <path d="M49 68 Q38 66 35 52" fill="none" stroke="#04201c" stroke-width="10.6" stroke-linecap="round"/>
+      <path d="M49 68 Q38 66 35 52" fill="none" stroke="url(#ecCoat)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M33.6 56.6 L40 57.6" stroke="#ffd24a" stroke-width="4.4" stroke-linecap="round"/>
+      <circle cx="35" cy="48" r="5.2" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.8"/>
+    </g>
+    <g class="p-coin">
+      <circle cx="34" cy="31" r="10.4" fill="url(#ecGold)" stroke="#6a4208" stroke-width="2"/>
+      <circle cx="34" cy="31" r="7.6" fill="none" stroke="#b8791a" stroke-width="1.2"/>
+      <g fill="#8a5408"><ellipse cx="34" cy="33.4" rx="3.2" ry="2.6"/><circle cx="29.8" cy="29.6" r="1.4"/><circle cx="32.2" cy="27.2" r="1.4"/><circle cx="35.8" cy="27.2" r="1.4"/><circle cx="38.2" cy="29.6" r="1.4"/></g>
+      <path class="p-glint" d="M28 25 L30 23.6 M27.4 28 L28.6 27" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+    </g>
+    <!-- tunique : gilet, jabot, ceinture à dé -->
+    <path d="M46 62 Q62 55 80 62 L84 97 Q62 105 41 97Z" fill="url(#ecCoat)" stroke="#04201c" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M44 70 Q42 84 44 94" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M54 62 L62 92 L72 62Z" fill="url(#ecBelly)" stroke="#04201c" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M52 62 L60 90 M74 62 L64 90" stroke="#ffd24a" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+    <g fill="url(#ecGold)" stroke="#6a4208" stroke-width="1.2"><circle cx="62" cy="72" r="2"/><circle cx="62.6" cy="80" r="2"/></g>
+    <path d="M54 59 Q58 66 62 62 Q66 68 70 62 Q74 66 76 59 Q66 56 54 59Z" fill="#fff" stroke="#04201c" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M41 93 Q62 100 85 93 L86 100 Q62 107 40 100Z" fill="url(#ecBoot)" stroke="#04201c" stroke-width="1.8" stroke-linejoin="round"/>
+    <g class="p-die">
+      <rect x="55.6" y="92.6" width="13" height="11" rx="2" fill="#fff" stroke="#04201c" stroke-width="1.6"/>
+      <g fill="#c0301e"><circle cx="59" cy="96" r="1.3"/><circle cx="65.4" cy="96" r="1.3"/><circle cx="62.2" cy="98.2" r="1.3"/><circle cx="59" cy="100.6" r="1.3"/><circle cx="65.4" cy="100.6" r="1.3"/></g>
+    </g>
+    <!-- bras avant : griffes dégainées -->
+    <path d="M80 66 Q91 70 96 83" fill="none" stroke="#04201c" stroke-width="10.6" stroke-linecap="round"/>
+    <path d="M80 66 Q91 70 96 83" fill="none" stroke="url(#ecCoat)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M89 73.4 L94.2 81" stroke="#04201c" stroke-width="11" stroke-linecap="round"/><path d="M89 73.4 L94.2 81" stroke="url(#ecGold)" stroke-width="8.4" stroke-linecap="round"/>
+    <g class="p-claw">
+      <g stroke="#2a2a3a" stroke-width="1.5" stroke-linejoin="round">
+        <path d="M97 80 Q108 66 122 60 Q113 70 101 86Z" fill="url(#ecClaw)"/>
+        <path d="M98 85 Q111 76 125 76 Q114 84 102 91Z" fill="url(#ecClaw)"/>
+        <path d="M95 76 Q103 60 114 50 Q108 64 99 82Z" fill="url(#ecClaw)"/>
+      </g>
+      <circle cx="96" cy="85" r="6" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.8"/>
+      <path d="M93.4 83 l4.6 -1.4 M93.2 86 l5 -.6 M94 89 l4 .8" stroke="#7a3e0c" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(5 7)"><path d="M71 62 Q81 50 94 60 Q96 71 83 73 Q70 71 71 62Z" fill="url(#ecGold)" stroke="#04201c" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M75 56 L79 51 L83 56 M83 55 L87 50 L90 57" fill="url(#ecGold)" stroke="#04201c" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M74 60 Q80 54 88 59" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.8" stroke-linecap="round"/></g>
+    <path class="p-slash" d="M99 44 Q148 56 130 100 Q130 70 99 44Z" fill="#8dffe0" opacity="0"/>
+    <path class="p-slash2" d="M104 96 Q150 80 128 34 Q134 70 104 96Z" fill="#fff" opacity="0"/>
+
+    <!-- tête de chat joueur -->
+    <g class="p-face">
+      <g class="p-ears" stroke="#3a1c06" stroke-width="2" stroke-linejoin="round">
+        <path class="p-ear" d="M47 36 Q42 18 49 8 Q60 12 68 24Z" fill="url(#ecFur)"/>
+        <path class="p-ear2" d="M70 24 Q80 10 90 8 Q96 20 88 38Z" fill="url(#ecFur)"/>
+        <path d="M50 30 Q48 20 52 14 Q58 17 62 24Z" fill="#ff9aa8" stroke="none"/>
+        <path d="M76 24 Q82 16 87 14 Q90 22 86 31Z" fill="#ff9aa8" stroke="none"/>
+      </g>
+      <path d="M42 46 Q40 28 62 26 Q86 26 88 46 Q90 60 76 63 Q64 66 53 63 Q40 60 42 46Z" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M58 28 L60 36 M66 27 L66 36 M74 28 L72 36" stroke="#7a3e0c" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M42 50 L35 51 L41 55 L36 59 L44 58 M88 50 L95 51 L89 55 L94 59 L86 58" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M49 56 Q64 50 80 56 Q80 66 65 66 Q50 66 49 56Z" fill="url(#ecBelly)" stroke="#3a1c06" stroke-width="1.6" stroke-linejoin="round"/>
+      <ellipse cx="64" cy="55" rx="3.6" ry="2.6" fill="#ff7a96" stroke="#3a1c06" stroke-width="1.3"/>
+      <path class="p-mouth" d="M55 59 Q60 66 64.6 58.6 Q69 66 75 59" fill="none" stroke="#3a1c06" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M58.6 62 l1.6 3.4 l1.6 -3.2Z M68.6 62 l1.6 3.4 l1.6 -3.2Z" fill="#fff" stroke="#3a1c06" stroke-width=".9"/>
+      <g class="p-whisk" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-opacity=".95"><path d="M52 57 L36 53 M52 59.4 L35 60.6 M52 61.6 L38 67 M77 57 L94 52 M77 59.4 L96 60 M77 61.6 L92 67"/></g>
+      <g class="p-eye">
+        <path d="M51 44 Q57 38 65 43 Q64 51 57 51 Q51 50 51 44Z" fill="#fff" stroke="#3a1c06" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M70 43 Q78 38 84 44 Q84 50 77 51 Q70 50 70 43Z" fill="#fff" stroke="#3a1c06" stroke-width="1.6" stroke-linejoin="round"/>
+        <ellipse cx="58.4" cy="45.6" rx="4" ry="4.8" fill="url(#ecEye)"/><ellipse cx="76.4" cy="45.6" rx="4" ry="4.8" fill="url(#ecEye)"/>
+        <ellipse cx="58.8" cy="45.6" rx="1.3" ry="4.4" fill="#10240a"/><ellipse cx="76.8" cy="45.6" rx="1.3" ry="4.4" fill="#10240a"/>
+        <circle cx="60" cy="43.6" r="1.1" fill="#fff"/><circle cx="78" cy="43.6" r="1.1" fill="#fff"/>
+      </g>
+      <g class="p-brow" fill="none" stroke="#7a3e0c" stroke-width="3" stroke-linecap="round"><path d="M50 38.6 Q57 35 65 41"/><path d="M71 41 Q78 35 85 38.6"/></g>
+      <!-- petit haut-de-forme porte-bonheur -->
+      <g class="p-hat" stroke="#04201c" stroke-width="1.8" stroke-linejoin="round" transform="rotate(8 66 22)">
+        <path d="M56 24 L58 6 Q66 2 74 6 L76 24Z" fill="url(#ecHat)"/>
+        <path d="M54 25 Q66 30 78 25 L77 22 Q66 26 55 22Z" fill="url(#ecHat)"/>
+        <path d="M57 19.6 Q66 23 75.6 19.6 L75.2 15.6 Q66 19 57.4 15.6Z" fill="url(#ecCoat)"/>
+        <g transform="translate(66 17.6) scale(.7)" fill="#5aff8c" stroke="#1a6a36" stroke-width="1"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/></g>
+      </g>
+    </g>
+    <!-- trèfles de chance (un par Trèfle) -->
+    <g class="p-clvs" fill="#5aff8c" stroke="#1a6a36" stroke-width="1">
+<g class="clv c1" transform="translate(27.4 25.9)"><g class="clv-i"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/><path d="M0 2 Q1 5 3.4 6.6" fill="none" stroke="#1a6a36" stroke-width="1.2" stroke-linecap="round"/></g></g>
+<g class="clv c2" transform="translate(37.7 11.9)"><g class="clv-i"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/><path d="M0 2 Q1 5 3.4 6.6" fill="none" stroke="#1a6a36" stroke-width="1.2" stroke-linecap="round"/></g></g>
+<g class="clv c3" transform="translate(55.6 3.9)"><g class="clv-i"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/><path d="M0 2 Q1 5 3.4 6.6" fill="none" stroke="#1a6a36" stroke-width="1.2" stroke-linecap="round"/></g></g>
+<g class="clv c4" transform="translate(76.4 3.9)"><g class="clv-i"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/><path d="M0 2 Q1 5 3.4 6.6" fill="none" stroke="#1a6a36" stroke-width="1.2" stroke-linecap="round"/></g></g>
+<g class="clv c5" transform="translate(94.3 11.9)"><g class="clv-i"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/><path d="M0 2 Q1 5 3.4 6.6" fill="none" stroke="#1a6a36" stroke-width="1.2" stroke-linecap="round"/></g></g>
+<g class="clv c6" transform="translate(104.6 25.9)"><g class="clv-i"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/><path d="M0 2 Q1 5 3.4 6.6" fill="none" stroke="#1a6a36" stroke-width="1.2" stroke-linecap="round"/></g></g>
+    </g>
+    <!-- dés du Quitte ou Double -->
+    <g class="p-dice" opacity="0">
+      <g transform="translate(48 -4)"><rect x="-6" y="-6" width="12" height="12" rx="2.4" fill="#fff" stroke="#04201c" stroke-width="1.6"/><g fill="#c0301e"><circle cx="-2.6" cy="-2.6" r="1.3"/><circle cx="2.6" cy="2.6" r="1.3"/><circle cx="0" cy="0" r="1.3"/><circle cx="2.6" cy="-2.6" r="1.3"/><circle cx="-2.6" cy="2.6" r="1.3"/></g></g>
+      <g transform="translate(78 -4)"><rect x="-6" y="-6" width="12" height="12" rx="2.4" fill="#fff" stroke="#04201c" stroke-width="1.6"/><g fill="#c0301e"><circle cx="-2.4" cy="-2.4" r="1.4"/><circle cx="2.4" cy="2.4" r="1.4"/></g></g>
+    </g>
+    <!-- étoiles de la déveine -->
+    <g class="p-stars" opacity="0" fill="#ffe27a" stroke="#6a4208" stroke-width=".9"><path d="M46 14 l2 4 4 .6 -3 3 .8 4 -3.8 -2 -3.8 2 .8 -4 -3 -3 4 -.6Z"/><path d="M86 8 l1.6 3.4 3.6 .5 -2.6 2.6 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.6 3.6 -.5Z"/><path d="M66 -2 l1.4 3 3.2 .4 -2.3 2.3 .6 3.2 -2.9 -1.5 -2.9 1.5 .6 -3.2 -2.3 -2.3 3.2 -.4Z"/></g>
+  </g>
+</svg>`,
 };
 
 function hasHeroArt(cls) { return !!HERO_ART[cls]; }

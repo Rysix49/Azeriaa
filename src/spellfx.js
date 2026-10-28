@@ -221,10 +221,10 @@ function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
   unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
   let variant = '';
-  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : '') : '';
+  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : '') : '';
   if (art) { // le Iop (coup d'en haut, tourbillon, plongeon) et le Sram (fente, pas d'ombre, rafale) varient leurs coups
-    const v = (unit._combo = ((unit._combo || 0) + 1) % 3); variant = ['atk-a', 'atk-b', 'atk-c'][v];
-    unit.classList.add(variant); (art === 'iop' ? iopFlourish : sramFlourish)(unit, v);
+    const v = (unit._combo = ((unit._combo == null ? -1 : unit._combo) + 1 + (Math.random() < .5 ? 1 : 0)) % 3); /* jamais deux fois le même coup d'affilée */ variant = ['atk-a', 'atk-b', 'atk-c'][v];
+    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : ecaFlourish)(unit, v);
   }
   setTimeout(() => {
     unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
@@ -270,6 +270,21 @@ function sramSparks(sp, n) {
     e.style.cssText = `--dx:${(Math.cos(a) * (22 + Math.random() * 40)).toFixed(0)}px;--dy:${(Math.sin(a) * (20 + Math.random() * 36)).toFixed(0)}px;--s:${(3 + Math.random() * 4).toFixed(1)}px;animation-delay:${(Math.random() * 90).toFixed(0)}ms`;
     sp.appendChild(e); setTimeout(() => e.remove(), 1000);
   }
+}
+/* Effets de l'Ecaflip : images fantômes (dorées si Face, bleutées si Pile), éclairs de griffes, pièces et pattes */
+function ecaFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-ecaflip'); if (!svg) return;
+  const face = unit.classList.contains('eca-face'), col = face ? 'gold' : 'teal';
+  for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'ec-ghost ' + col; g.style.cssText = `--gx:${[18, 26, 10][v] * i}px;--gd:${i * 45}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 900 + i * 45);
+  }
+  const line = (r, d) => { const l = document.createElement('i'); l.className = 'ec-line ' + col; l.style.cssText = `--r:${r}deg;--d:${d}ms`; sp.appendChild(l); setTimeout(() => l.remove(), d + 500); };
+  if (v === 0) [0, 1, 2].forEach(i => line(-30 + i * 28, 120 + i * 110));  // triple griffe
+  if (v === 1) { line(-10, 330); line(20, 380); setTimeout(() => coinBurst(sp, 7, '🪙'), 300); } // pièce éclair
+  if (v === 2) { line(-45, 330); line(35, 360); setTimeout(() => coinBurst(sp, 6, '🐾'), 420); } // pirouette
 }
 function iopEmbers(sp, n) {
   for (let i = 0; i < n; i++) {

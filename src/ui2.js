@@ -353,6 +353,18 @@ function cloverHtml(h) {
   const side = f && f.coin === 'face' ? '😼' : f && f.coin === 'pile' ? '🙀' : '🪙';
   return n >= ECA_CLOVER_MAX ? `${side} 🎲 QUITTE OU DOUBLE` : `${side} 🍀 ${Array.from({ length: ECA_CLOVER_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`;
 }
+/* Classe d'état temporaire sur le héros (animation de passif) */
+function ecaState(el, cls, ms) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); clearTimeout(el['_t' + cls]); el['_t' + cls] = setTimeout(() => el.classList.remove(cls), ms); }
+/* Neuf Vies : neuf petits esprits de chat s'élèvent autour du héros */
+function ecaSpirits(sp) {
+  if (!sp || !FX_OK()) return;
+  for (let i = 0; i < 9; i++) {
+    const s = document.createElement('span'); s.className = 'eca-spirit'; s.textContent = '🐱';
+    const a = (i / 9) * Math.PI * 2;
+    s.style.cssText = `--dx:${(Math.cos(a) * 46).toFixed(0)}px;--dy:${(Math.sin(a) * 30 - 46).toFixed(0)}px;animation-delay:${i * 70}ms`;
+    sp.appendChild(s); setTimeout(() => s.remove(), 1700);
+  }
+}
 function ecaText(card, text, cls) {
   const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
   const t = document.createElement('span'); t.className = 'fnum eca ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
@@ -550,7 +562,9 @@ function patchCombat() {
     if (h.fight && scene) {
       const seen = +(scene.dataset.fx || 0);
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
-      if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
+      let lead = 0; // l'Ecaflip lance sa pièce (ou joue son Quitte ou Double) AVANT de frapper
+      if (h.cls === 'ecaflip') { const cf0 = h.fight.coinFx, gf0 = h.fight.gambleFx; if (gf0 && gf0.n > +(scene.dataset.gm || 0)) lead = 1300; else if (cf0 && cf0.n > +(scene.dataset.co || 0)) lead = 450; }
+      if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280)); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
       if (h.cls === 'sram') {
@@ -560,8 +574,9 @@ function patchCombat() {
       }
       if (h.cls === 'ecaflip') {
         const cf = h.fight.coinFx; if (cf && cf.n > +(scene.dataset.co || 0)) { scene.dataset.co = cf.n; coinFlip(card, cf.face); }
-        const gf = h.fight.gambleFx; if (gf && gf.n > +(scene.dataset.gm || 0)) { scene.dataset.gm = gf.n; setTimeout(() => gambleFx(card, scene, gf.win), 200); }
-        const nv = h.fight.lifeSeq || 0; if (nv > +(scene.dataset.nv || 0)) { scene.dataset.nv = nv; ecaText(card, '🐾 NEUF VIES !', 'face'); coinBurst(card.querySelector('[data-k="fighter"]'), 8, '🐾'); }
+        const gf = h.fight.gambleFx; if (gf && gf.n > +(scene.dataset.gm || 0)) { scene.dataset.gm = gf.n; setTimeout(() => gambleFx(card, scene, gf.win), 200); ecaState(card.querySelector('[data-k="fighter"]'), gf.win ? 'ecg-win' : 'ecg-lose', 1500); }
+        const nv = h.fight.lifeSeq || 0; if (nv > +(scene.dataset.nv || 0)) { scene.dataset.nv = nv; ecaText(card, '🐾 NEUF VIES !', 'face'); coinBurst(card.querySelector('[data-k="fighter"]'), 8, '🐾'); ecaState(card.querySelector('[data-k="fighter"]'), 'ecg-life', 1700); ecaSpirits(card.querySelector('[data-k="fighter"] .sprite')); }
+        const dg = h.fight.dodgeSeq || 0; if (dg > +(scene.dataset.dg || 0)) { scene.dataset.dg = dg; ecaState(card.querySelector('[data-k="fighter"]'), 'eca-dodge', 520); ecaText(card, 'ESQUIVE !', 'pile'); }
       }
       if (h.cls === 'enutrof') {
         const ch = h.fight.chestSeq || 0; if (ch > +(scene.dataset.ch || 0)) { scene.dataset.ch = ch; goldFx(card, 'Coffre !', card.querySelector(`[data-mon="${h.fight.treasure}"] .sprite`), 12); }
@@ -606,6 +621,11 @@ function patchCombat() {
       const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
       const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="trap"]'); if (tr) tr.classList.toggle('armed', !!m && m.hp > 0 && h.fight.trap === i); });
+    }
+    if (h.cls === 'ecaflip') { // l'allure du chat suit ses passifs : Face / Pile, Trèfles, Quitte ou Double
+      const sp = fg && fg.querySelector('.sprite'), fo = h.fight;
+      if (sp) sp.dataset.clv = Math.min(ECA_CLOVER_MAX, h.clover || 0);
+      if (fg) { fg.classList.toggle('eca-face', !!(fo && fo.coin === 'face')); fg.classList.toggle('eca-pile', !!(fo && fo.coin === 'pile')); fg.classList.toggle('eca-double', !!(fo && fo.double)); }
     }
     if (h.cls === 'ecaflip') { const cl = q('clover'); if (cl) { const tx = cloverHtml(h); if (cl.innerHTML !== tx) cl.innerHTML = tx; cl.classList.toggle('full', (h.clover || 0) >= ECA_CLOVER_MAX); } }
     if (h.cls === 'enutrof') {
