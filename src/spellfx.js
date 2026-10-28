@@ -221,9 +221,10 @@ function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
   unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
   let variant = '';
-  if (k === 'atk' && unit.querySelector('.hs-iop')) { // le Iop varie ses coups : coup d'en haut, tourbillon, plongeon
+  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : '') : '';
+  if (art) { // le Iop (coup d'en haut, tourbillon, plongeon) et le Sram (fente, pas d'ombre, rafale) varient leurs coups
     const v = (unit._combo = ((unit._combo || 0) + 1) % 3); variant = ['atk-a', 'atk-b', 'atk-c'][v];
-    unit.classList.add(variant); iopFlourish(unit, v);
+    unit.classList.add(variant); (art === 'iop' ? iopFlourish : sramFlourish)(unit, v);
   }
   setTimeout(() => {
     unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
@@ -245,6 +246,30 @@ function iopFlourish(unit, v) {
   if (v === 0) setTimeout(wave, 300);
   if (v === 1) { setTimeout(wave, 230); setTimeout(wave, 430); }
   if (v === 2) setTimeout(() => wave(true), 470);
+}
+/* Effets du Sram : images fantômes violettes, fumée au pas d'ombre, éclats de poison, traits de lame */
+function sramFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-sram'); if (!svg) return;
+  if (v !== 1) for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'sr-ghost'; g.style.cssText = `--gx:${[18, 0, 14][v] * i}px;--gd:${i * 45}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 900 + i * 45);
+  }
+  if (v === 1) { smokePuff(sp, true); setTimeout(() => smokePuff(sp, true), 330); }
+  const line = (r, d) => { const l = document.createElement('i'); l.className = 'sr-slashline'; l.style.cssText = `--r:${r}deg;--d:${d}ms`; sp.appendChild(l); setTimeout(() => l.remove(), d + 500); };
+  if (v === 0) { line(-28, 250); line(30, 290); }
+  if (v === 1) { line(-18, 380); line(24, 420); }
+  if (v === 2) [0, 1, 2, 3, 4].forEach(i => line(-40 + i * 20, 140 + i * 90));
+  setTimeout(() => sramSparks(sp, v === 2 ? 14 : 9), v === 1 ? 380 : v === 2 ? 300 : 260);
+}
+function sramSparks(sp, n) {
+  for (let i = 0; i < n; i++) {
+    const e = document.createElement('i'); e.className = 'sr-spark';
+    const a = -Math.PI * (.05 + Math.random() * .9);
+    e.style.cssText = `--dx:${(Math.cos(a) * (22 + Math.random() * 40)).toFixed(0)}px;--dy:${(Math.sin(a) * (20 + Math.random() * 36)).toFixed(0)}px;--s:${(3 + Math.random() * 4).toFixed(1)}px;animation-delay:${(Math.random() * 90).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1000);
+  }
 }
 function iopEmbers(sp, n) {
   for (let i = 0; i < n; i++) {

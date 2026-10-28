@@ -1461,3 +1461,69 @@ label.btn { cursor: pointer; }
 @keyframes clbs { 0% { opacity: 0; transform: rotate(-24deg) scaleX(.2); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(-24deg) scaleX(1.5) translateY(-16px); } }
 @keyframes clbs2 { 0% { opacity: 0; transform: rotate(18deg) scaleX(.2); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(18deg) scaleX(1.5) translateY(-16px); } }
 @media (prefers-reduced-motion: reduce) { .cl-ghost, .cl-speed, .cl-bigslash { display: none; } .unit.hero.cl-leap .sprite { animation: none; } }
+
+/* ===================== Sram : assassin des ombres (sprite de combat) ===================== */
+.hs-sram .p-cape { transform-origin: 90% 10%; animation: srcape 2.4s ease-in-out infinite; }
+.hs-sram .p-scarf { transform-origin: 100% 40%; animation: srscarf 1.5s ease-in-out infinite; }
+.hs-sram .p-hoodtip { transform-origin: 100% 70%; animation: srhood 2.8s ease-in-out infinite; }
+.hs-sram .p-dagger { transform-origin: 50% 82%; animation: srdag 3.2s ease-in-out infinite; }
+.hs-sram .p-dagger2 { transform-origin: 50% 90%; animation: srdag2 3.8s ease-in-out infinite; }
+.hs-sram .p-poison { animation: srpoison 1.8s ease-in-out infinite; }
+.hs-sram .p-drip { animation: srdrip 2.2s ease-in infinite; }
+.hs-sram .p-mist { transform-origin: 50% 100%; animation: srmist 3.6s ease-in-out infinite; }
+.hs-sram .p-eye { filter: drop-shadow(0 0 3px #9bff3a); }
+.hs-sram .p-slash, .hs-sram .p-slash2 { transform-origin: 20% 60%; }
+@keyframes srcape { 50% { transform: rotate(-2.6deg) skewY(-1.2deg); } }
+@keyframes srscarf { 0%, 100% { transform: rotate(0) scaleX(1); } 50% { transform: rotate(-6deg) scaleX(.93); } }
+@keyframes srhood { 50% { transform: rotate(-5deg) translateY(1px); } }
+@keyframes srdag { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(3deg); } 72% { transform: rotate(-5deg); } }
+@keyframes srdag2 { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+@keyframes srpoison { 50% { opacity: .45; } }
+@keyframes srdrip { 0%, 40% { transform: translateY(0) scale(.6); opacity: 0; } 55% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(16px) scale(.7); opacity: 0; } }
+@keyframes srmist { 50% { transform: scaleX(1.08) translateY(-1px); opacity: .75; } }
+/* A — Fente croisée : bond en avant, les deux lames se croisent */
+.hero.atk-a .hs-sram { animation: sra-lunge .6s cubic-bezier(.45, 0, .2, 1); }
+.hero.atk-a .hs-sram .p-dagger { animation: sra-dag .6s cubic-bezier(.45, 0, .2, 1); }
+.hero.atk-a .hs-sram .p-dagger2 { animation: sra-dag2 .6s cubic-bezier(.45, 0, .2, 1); }
+.hero.atk-a .hs-sram .p-slash { animation: sra-slash .6s ease-out; }
+.hero.atk-a .hs-sram .p-slash2 { animation: sra-slash .6s ease-out .05s; }
+.hero.atk-a .hs-sram .p-cape, .hero.atk-b .hs-sram .p-cape, .hero.atk-c .hs-sram .p-cape { animation: srcape-a .6s ease-out; }
+.hero.atk-a .hs-sram .p-scarf, .hero.atk-b .hs-sram .p-scarf, .hero.atk-c .hs-sram .p-scarf { animation: srscarf-a .6s ease-out; }
+@keyframes sra-lunge { 0% { transform: none; } 22% { transform: translateX(-6px) rotate(-2deg) scale(.97, 1.03); } 42% { transform: translateX(30px) skewX(-9deg) scale(1.06, .96); } 64% { transform: translateX(28px) skewX(-4deg); } 100% { transform: none; } }
+@keyframes sra-dag { 0% { transform: rotate(0); } 22% { transform: rotate(-52deg); } 42%, 62% { transform: rotate(98deg); } 100% { transform: rotate(0); } }
+@keyframes sra-dag2 { 0% { transform: rotate(0); } 22% { transform: rotate(34deg); } 42%, 62% { transform: rotate(-120deg); } 100% { transform: rotate(0); } }
+@keyframes sra-slash { 0%, 36% { opacity: 0; transform: scale(.5) rotate(-30deg); } 46% { opacity: 1; transform: scale(1.15) rotate(24deg); } 100% { opacity: 0; transform: scale(1.5) rotate(90deg); } }
+@keyframes srcape-a { 0% { transform: none; } 40% { transform: rotate(8deg) skewY(3deg) scaleX(1.12); } 100% { transform: none; } }
+@keyframes srscarf-a { 0% { transform: none; } 40% { transform: rotate(10deg) scaleX(1.25); } 100% { transform: none; } }
+/* B — Pas d'ombre : il se dissout, réapparaît devant l'ennemi et frappe */
+.hero.atk-b .hs-sram { animation: srb-step .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-sram .p-dagger { animation: srb-dag .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-sram .p-dagger2 { animation: sra-dag2 .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-sram .p-slash { animation: sra-slash .64s ease-out .08s; }
+.hero.atk-b .hs-sram .p-slash2 { animation: sra-slash .64s ease-out .14s; }
+@keyframes srb-step { 0% { opacity: 1; transform: none; filter: none; } 20% { opacity: 0; transform: translateX(-8px) scale(.82, 1.1); filter: blur(3px); } 48% { opacity: 0; transform: translateX(40px) scale(.9); filter: blur(3px); } 58% { opacity: 1; transform: translateX(38px) scale(1.06, .96); filter: none; } 80% { transform: translateX(30px); } 100% { opacity: 1; transform: none; } }
+@keyframes srb-dag { 0%, 50% { transform: rotate(-40deg); } 62% { transform: rotate(104deg); } 82% { transform: rotate(80deg); } 100% { transform: rotate(0); } }
+/* C — Rafale : une grêle de coups de dague à la suite */
+.hero.atk-c .hs-sram { animation: src-rush .64s ease-in-out; }
+.hero.atk-c .hs-sram .p-dagger { animation: src-dag .64s linear; }
+.hero.atk-c .hs-sram .p-dagger2 { animation: src-dag2 .64s linear; }
+.hero.atk-c .hs-sram .p-slash { animation: src-slash .64s linear; }
+.hero.atk-c .hs-sram .p-slash2 { animation: src-slash .64s linear .1s; }
+@keyframes src-rush { 0% { transform: none; } 20% { transform: translateX(10px) rotate(2deg); } 40% { transform: translateX(6px) rotate(-1deg); } 62% { transform: translateX(18px) scale(1.05, .97); } 100% { transform: none; } }
+@keyframes src-dag { 0% { transform: rotate(0); } 10% { transform: rotate(-44deg); } 20% { transform: rotate(62deg); } 30% { transform: rotate(-32deg); } 40% { transform: rotate(70deg); } 52% { transform: rotate(-22deg); } 62% { transform: rotate(84deg); } 100% { transform: rotate(0); } }
+@keyframes src-dag2 { 0% { transform: rotate(0); } 15% { transform: rotate(30deg); } 25% { transform: rotate(-70deg); } 36% { transform: rotate(24deg); } 46% { transform: rotate(-80deg); } 58% { transform: rotate(16deg); } 66% { transform: rotate(-96deg); } 100% { transform: rotate(0); } }
+@keyframes src-slash { 0%, 14% { opacity: 0; } 20% { opacity: 1; transform: scale(1) rotate(0); } 28% { opacity: 0; } 38% { opacity: 1; transform: scale(1.1) rotate(40deg); } 46% { opacity: 0; } 58% { opacity: 1; transform: scale(1.2) rotate(70deg); } 74%, 100% { opacity: 0; } }
+/* sort de soutien : la lame se dresse, les yeux s'embrasent */
+.hero.cheer .hs-sram .p-dagger { animation: srraise .6s cubic-bezier(.45, 0, .25, 1); }
+.hero.cheer .hs-sram .p-eye { animation: sreyes .6s ease-out; }
+@keyframes srraise { 0% { transform: rotate(0); } 35%, 70% { transform: rotate(-26deg) translateY(-3px); } 100% { transform: rotate(0); } }
+@keyframes sreyes { 40% { filter: drop-shadow(0 0 7px #9bff3a) brightness(1.5); transform: scale(1.12); } }
+/* effets autour du sprite */
+.sr-ghost { position: absolute; inset: 0; pointer-events: none; opacity: 0; filter: brightness(.7) sepia(1) hue-rotate(220deg) saturate(5); animation: srghost .55s ease-out var(--gd) both; }
+.sr-ghost .hs { width: 100%; height: 100%; filter: none; }
+.sr-ghost .hs, .sr-ghost .hs * { animation: none !important; }
+@keyframes srghost { 0% { opacity: 0; transform: translateX(0); } 18% { opacity: .6; } 100% { opacity: 0; transform: translateX(calc(var(--gx) * -1)) scale(.97); } }
+.sr-spark { position: absolute; left: 50%; bottom: 20px; z-index: 4; width: var(--s); height: var(--s); border-radius: 50% 50% 50% 0; rotate: 45deg; pointer-events: none; background: radial-gradient(circle at 35% 35%, #f4ffd0, #9bff3a 55%, #2a7a0a); box-shadow: 0 0 6px #9bff3a; animation: ipember .9s ease-out forwards; }
+.sr-slashline { position: absolute; left: 50%; top: 38%; z-index: 4; width: 70px; height: 3px; margin-left: -10px; pointer-events: none; border-radius: 3px; background: linear-gradient(90deg, transparent, #fff 40%, #9bff3a 70%, transparent); box-shadow: 0 0 8px #9bff3a, 0 0 14px #8f6bff; opacity: 0; transform: rotate(var(--r)) scaleX(.2); transform-origin: 0 50%; animation: srline .38s ease-out var(--d) both; }
+@keyframes srline { 0% { opacity: 0; transform: rotate(var(--r)) scaleX(.2); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--r)) scaleX(1.3); } }
+@media (prefers-reduced-motion: reduce) { .hs-sram *, .hero .hs-sram { animation: none !important; } .sr-ghost, .sr-spark, .sr-slashline { display: none; } }

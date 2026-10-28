@@ -272,6 +272,134 @@ iop: `<svg class="hs hs-iop" viewBox="0 0 128 128" aria-hidden="true">
     </g>
   </g>
 </svg>`,
+
+/* ---- SRAM ---- assassin des ombres : capuche pointue, masque-crâne, dagues empoisonnées, bandoulière de couteaux ---- */
+sram: `<svg class="hs hs-sram" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <linearGradient id="srTunic" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a3b8c"/><stop offset=".55" stop-color="#2a2152"/><stop offset="1" stop-color="#140d2c"/></linearGradient>
+    <linearGradient id="srCape" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3c2e78"/><stop offset=".6" stop-color="#1e1640"/><stop offset="1" stop-color="#0c0720"/></linearGradient>
+    <linearGradient id="srHood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a47b0"/><stop offset=".5" stop-color="#34286e"/><stop offset="1" stop-color="#190f3a"/></linearGradient>
+    <linearGradient id="srScarf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9a0ff"/><stop offset=".5" stop-color="#7c4dff"/><stop offset="1" stop-color="#4222a8"/></linearGradient>
+    <radialGradient id="srBone" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#fffdf2"/><stop offset=".6" stop-color="#e6dcc0"/><stop offset="1" stop-color="#a99d7e"/></radialGradient>
+    <linearGradient id="srBlade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f4f2ff"/><stop offset=".45" stop-color="#b9b6d8"/><stop offset="1" stop-color="#5d5a82"/></linearGradient>
+    <linearGradient id="srLeather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a3f66"/><stop offset="1" stop-color="#21122c"/></linearGradient>
+    <linearGradient id="srBoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#42306e"/><stop offset="1" stop-color="#120a26"/></linearGradient>
+    <radialGradient id="srSkin" cx="42%" cy="32%" r="78%"><stop offset="0" stop-color="#e2c4f0"/><stop offset=".7" stop-color="#b790d4"/><stop offset="1" stop-color="#7d5aa0"/></radialGradient>
+    <radialGradient id="srGold" cx="36%" cy="30%" r="80%"><stop offset="0" stop-color="#fff2c4"/><stop offset=".5" stop-color="#d8b45a"/><stop offset="1" stop-color="#7a5a1c"/></radialGradient>
+    <radialGradient id="srMist" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#9b7bff" stop-opacity=".6"/><stop offset="1" stop-color="#9b7bff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="srEye" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f4ffd0"/><stop offset=".45" stop-color="#9bff3a"/><stop offset="1" stop-color="#3a8a10"/></radialGradient>
+    <filter id="srGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="119" rx="33" ry="5.5" fill="#000" opacity=".34"/>
+  <g class="p-mist">
+    <ellipse cx="40" cy="116" rx="22" ry="7" fill="url(#srMist)"/><ellipse cx="82" cy="117" rx="26" ry="7.5" fill="url(#srMist)"/><ellipse cx="62" cy="112" rx="30" ry="6" fill="url(#srMist)" opacity=".7"/>
+  </g>
+
+  <!-- dague arrière (prise inversée) -->
+  <g transform="rotate(-24 33 92)"><g class="p-dagger2" stroke="#150c2a" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M30 86 Q28 70 33 54 Q38 70 36 86Z" fill="url(#srBlade)"/>
+    <path d="M33 58 Q32 72 33 84" fill="none" stroke="#9bff3a" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M26 87 h14 v3.4 h-14Z" fill="url(#srGold)"/>
+    <path d="M31 90 h4 v8 h-4Z" fill="url(#srLeather)"/>
+  </g></g>
+
+  <!-- jambes et bottes -->
+  <g stroke="#150c2a" stroke-width="2" stroke-linejoin="round">
+    <path d="M49 96 h13 v10 h-13Z M68 96 h13 v10 h-13Z" fill="#20163f"/>
+    <path d="M48 102 h15 v8 q8 1 8 5 q0 4.4 -6 4.4 h-19 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#srBoot)"/>
+    <path d="M67 102 h15 v8 q8 1 8 5 q0 4.4 -6 4.4 h-19 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#srBoot)"/>
+    <path d="M48 103.4 h15 M67 103.4 h15 M48.4 107 h14.4 M67.4 107 h14.4" stroke="#8f6bff" stroke-width="1.6" fill="none"/>
+    <path d="M41 117 h24 M61 117 h24" stroke="#0a0618" stroke-width="2"/>
+  </g>
+
+  <g class="p-torso">
+    <!-- cape déchiquetée -->
+    <g class="p-cape" stroke="#150c2a" stroke-width="2" stroke-linejoin="round">
+      <path d="M52 58 Q30 60 20 86 L10 108 L24 100 L24 114 L36 104 L42 116 L48 98 Q56 82 60 62Z" fill="url(#srCape)"/>
+      <path d="M50 66 Q36 72 28 90 M54 74 Q46 88 42 104" fill="none" stroke="#a58cff" stroke-opacity=".35" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+    <!-- foulard : la queue flotte derrière -->
+    <g class="p-scarf" stroke="#150c2a" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M50 62 Q34 56 20 66 Q32 66 38 72 Q26 76 20 88 Q38 82 52 70Z" fill="url(#srScarf)"/>
+    </g>
+    <!-- tunique -->
+    <path d="M46 62 Q62 55 80 62 L84 97 Q62 105 41 97Z" fill="url(#srTunic)" stroke="#150c2a" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M44 72 Q42 85 44 94" fill="none" stroke="#c3b0ff" stroke-opacity=".3" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M47 61 Q62 71 80 59.4 L82 66.4 Q62 79 45 68Z" fill="url(#srScarf)" stroke="#150c2a" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M52 66 Q62 73 74 65.4" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- bandoulière de couteaux de lancer -->
+    <path d="M49 62 L80 98" stroke="#150c2a" stroke-width="7.6" stroke-linecap="round"/>
+    <path d="M49 62 L80 98" stroke="url(#srLeather)" stroke-width="5.2" stroke-linecap="round"/>
+    <g stroke="#150c2a" stroke-width="1.1" stroke-linejoin="round">
+      <g transform="translate(57 72) rotate(-48)"><path d="M-1.6 0 h3.2 v-9 l-1.6 -4 l-1.6 4Z" fill="url(#srBlade)"/><circle cx="0" cy="1.6" r="1.5" fill="#9bff3a"/></g>
+      <g transform="translate(64.5 81) rotate(-48)"><path d="M-1.6 0 h3.2 v-9 l-1.6 -4 l-1.6 4Z" fill="url(#srBlade)"/><circle cx="0" cy="1.6" r="1.5" fill="#9bff3a"/></g>
+      <g transform="translate(72 90) rotate(-48)"><path d="M-1.6 0 h3.2 v-9 l-1.6 -4 l-1.6 4Z" fill="url(#srBlade)"/><circle cx="0" cy="1.6" r="1.5" fill="#9bff3a"/></g>
+    </g>
+    <!-- ceinture, boucle-crâne, bourses -->
+    <path d="M41 93 Q62 100 85 93 L86 100 Q62 107 40 100Z" fill="url(#srLeather)" stroke="#150c2a" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M41 96 Q62 103 85 96" fill="none" stroke="#8f6bff" stroke-width="1.2" stroke-opacity=".8"/>
+    <path d="M56 93 h12 v8 q-6 4 -12 0Z" fill="url(#srBone)" stroke="#150c2a" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="59.4" cy="96.6" r="1.4" fill="#150c2a"/><circle cx="64.6" cy="96.6" r="1.4" fill="#150c2a"/><path d="M60 100.4 v-1.6 M62 100.6 v-1.8 M64 100.4 v-1.6" stroke="#150c2a" stroke-width="1"/>
+    <g stroke="#150c2a" stroke-width="1.5" stroke-linejoin="round">
+      <path d="M43 100 Q47 99 52 101 L51 110 Q47 112 44 109Z" fill="url(#srLeather)"/><path d="M72 101 Q78 99 82 100 L81 109 Q77 112 73 110Z" fill="url(#srLeather)"/>
+      <circle cx="47.6" cy="102.6" r="1.3" fill="url(#srGold)" stroke-width="1"/><circle cx="77.4" cy="102.6" r="1.3" fill="url(#srGold)" stroke-width="1"/>
+    </g>
+
+    <!-- bras avant, gantelet, épaulière à pointes -->
+    <path d="M80 66 Q91 70 96 84" fill="none" stroke="#150c2a" stroke-width="11" stroke-linecap="round"/>
+    <path d="M80 66 Q91 70 96 84" fill="none" stroke="url(#srTunic)" stroke-width="8.2" stroke-linecap="round"/>
+    <path d="M89 73 L94.6 81.4" fill="none" stroke="#150c2a" stroke-width="11.4" stroke-linecap="round"/>
+    <path d="M89 73 L94.6 81.4" fill="none" stroke="url(#srLeather)" stroke-width="8.6" stroke-linecap="round"/>
+    <path d="M86.6 74 L91.6 70.6 M89.2 78.2 L94.2 74.8" stroke="#8f6bff" stroke-width="1.4" stroke-linecap="round"/>
+
+    <!-- dague principale (pivot : la main) -->
+    <g class="p-dagger" stroke="#150c2a" stroke-width="2" stroke-linejoin="round">
+      <path d="M93 78 Q89 56 100 28 Q108 52 103 78Z" fill="url(#srBlade)"/>
+      <path d="M100 34 Q96 56 98 76" fill="none" stroke="#5d5a82" stroke-width="2" stroke-linecap="round"/>
+      <path d="M95.4 40 Q92.8 58 95 74" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.3" stroke-linecap="round"/>
+      <path class="p-poison" d="M103.4 46 Q106 60 103 76" fill="none" stroke="#9bff3a" stroke-width="2" stroke-linecap="round" filter="url(#srGlow)"/>
+      <circle class="p-drip" cx="103.6" cy="80" r="1.8" fill="#9bff3a" stroke="none"/>
+      <path d="M88 78 Q95 72 98 76 Q101 72 108 78 L106 83 Q98 80 90 83Z" fill="url(#srGold)"/>
+      <path d="M96 83 h4.4 v11 h-4.4Z" fill="url(#srLeather)"/>
+      <path d="M96 86 L100.4 87.4 M96 89.4 L100.4 90.8" stroke="#8f6bff" stroke-width="1"/>
+      <circle cx="98.2" cy="96.4" r="3.4" fill="url(#srGold)"/>
+      <circle cx="98.2" cy="85.6" r="5.4" fill="url(#srLeather)" stroke-width="1.8"/>
+      <path d="M94.6 83.4 h7.2 M94.4 86.2 h7.4 M94.8 88.8 h6.6" stroke="#8f6bff" stroke-width="1"/>
+    </g>
+    <g transform="translate(4 7)">
+      <path d="M71 62 Q81 49 94 60 Q96 72 83 74 Q70 72 71 62Z" fill="url(#srLeather)" stroke="#150c2a" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M75 55.4 L77 46 L81 53 M83 52.4 L88 45 L90 56" fill="url(#srBlade)" stroke="#150c2a" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M74 60 Q80 54 88 59" fill="none" stroke="#c3b0ff" stroke-opacity=".55" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+    <path class="p-slash" d="M99 4 Q146 22 128 92 Q130 44 99 4Z" fill="#9bff3a" opacity="0"/>
+    <path class="p-slash2" d="M104 90 Q150 70 126 18 Q130 60 104 90Z" fill="#c3b0ff" opacity="0"/>
+
+    <!-- tête : capuche pointue, crâne, yeux phosphorescents -->
+    <g class="p-face">
+      <g class="p-hoodtip" stroke="#150c2a" stroke-width="1.9" stroke-linejoin="round">
+        <path d="M50 24 Q38 10 18 16 Q30 20 32 28 Q22 32 14 44 Q32 40 46 36Z" fill="url(#srHood)"/>
+        <path d="M32 18 Q24 22 20 28" fill="none" stroke="#a58cff" stroke-opacity=".4" stroke-width="1.4" stroke-linecap="round"/>
+      </g>
+      <path d="M43 52 Q38 30 55 17 Q70 7 86 20 Q96 33 89 54 Q80 64 65 64 Q50 63 43 52Z" fill="url(#srHood)" stroke="#150c2a" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M50 22 Q60 11 74 13 M46 40 Q45 30 52 24" fill="none" stroke="#c3b0ff" stroke-opacity=".5" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M50 38 Q66 29 85 39 Q88 52 78 60 Q64 66 53 57Z" fill="#0c0618" stroke="#150c2a" stroke-width="1.6" stroke-linejoin="round"/>
+      <!-- crâne -->
+      <path d="M54 49 Q67 45 82 50 L81 58 Q76 64 66 64.4 Q57 63 53.6 57Z" fill="url(#srBone)" stroke="#150c2a" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M64.6 51.6 l1.6 3.4 l1.6 -3.4Z" fill="#150c2a"/>
+      <path d="M56 58.6 Q67 61.6 79 57.4" fill="none" stroke="#150c2a" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M59 58.6 v3 M63 59.6 v3.4 M67 60 v3.4 M71 59.6 v3.2 M75 58.8 v2.8" stroke="#150c2a" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M58 49.4 l3 3.6" stroke="#8a7e60" stroke-width="1.1" stroke-linecap="round"/>
+      <g class="p-eye" filter="url(#srGlow)">
+        <path d="M57 44.4 Q62 40.4 68.4 45.6 Q63 47.8 57 44.4Z" fill="url(#srEye)"/>
+        <path d="M73 45.6 Q79 40.4 84 44.2 Q78 47.8 73 45.6Z" fill="url(#srEye)"/>
+        <ellipse cx="63.2" cy="44.6" rx="1" ry="1.5" fill="#102a04"/><ellipse cx="78.6" cy="44.4" rx="1" ry="1.5" fill="#102a04"/>
+      </g>
+      <g class="p-brow" fill="none" stroke="#150c2a" stroke-width="2.6" stroke-linecap="round">
+        <path d="M55 40.6 Q62 37.2 69.4 43"/><path d="M72 43 Q79 37.2 86 40.6"/>
+      </g>
+    </g>
+  </g>
+</svg>`,
 };
 
 function hasHeroArt(cls) { return !!HERO_ART[cls]; }
