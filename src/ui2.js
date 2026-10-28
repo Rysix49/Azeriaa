@@ -866,13 +866,13 @@ function placeDetail(p, type) {
   const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
   const tier = type === 'zone' ? ((ui.zoneTier || {})[p.id] || 0) : 0; const T = SUBZONES[tier];
   const best = st.heroes.reduce((m, h) => Math.max(m, heroTotals(st, h).ppTotal), 100);
-  const rows = mons.map(mid => {
-    const d = MONSTERS[mid]; const gd = GEAR_DROPS[mid] || []; const ms = monsterStats(mid);
-    const gr = gd.length ? (d.boss ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
+  const rows = (type === 'zone' && ARCHIS[p.id] ? [...mons, ARCHIS[p.id]] : mons).map(mid => {
+    const d = MONSTERS[mid]; const ar = !!d.archi, src = d.base || mid, ab = ar ? 3 : 1; const gd = GEAR_DROPS[src] || []; const ms = monsterStats(mid);
+    const gr = gd.length ? (d.boss || ar ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
     const key = p.id + ':' + mid; const mo = !!(ui.openMons || {})[key];
-    const rl = (RELIC_DROPS[mid] || []).map(([r, c]) => [r, c * T.drop]);
+    const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
     const detail = mo ? `<tr class="dr-detail"><td colspan="5"><div class="dr-items">
-      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c))}</b></div>`).join('')}
+      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
       ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
         <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
       ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
@@ -880,10 +880,10 @@ function placeDetail(p, type) {
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
         <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
     </div></td></tr>` : '';
-    return `<tr class="dr-row${mo ? ' open' : ''}" data-act="togglemon" data-k="${key}" tabindex="0" title="Voir les objets">
-      <td><div class="dr-mon"><span class="chev" aria-hidden="true">▸</span><span class="dr-ico" aria-hidden="true">${monIcon(mid)}</span><div><b>${d.name}</b> <span class="sub">${d.lvl}${d.boss ? ' · Boss' : ''}</span>
-        <div class="dr-meta">${fmt(ms.hp * T.hp)} PV · ${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)} dégâts</div></div></div></td>
-      <td><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c))}</b></span>`).join('')}</div></td>
+    return `<tr class="dr-row${mo ? ' open' : ''}${ar ? ' archi-row' : ''}" data-act="togglemon" data-k="${key}" tabindex="0" title="Voir les objets">
+      <td><div class="dr-mon"><span class="chev" aria-hidden="true">▸</span><span class="dr-ico" aria-hidden="true">${monIcon(mid)}</span><div><b>${ar ? '👑 ' : ''}${d.name}</b> <span class="sub">${d.lvl}${d.boss ? ' · Boss' : ''}${ar ? ' · Archimonstre' : ''}</span>
+        <div class="dr-meta">${fmt(ms.hp * T.hp)} PV · ${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)} dégâts</div>${ar ? `<div class="dr-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone · ×${ARCHI_MULT} de ${MONSTERS[d.base].name} · XP et kamas ×${ARCHI_REWARD}</div>` : ''}</div></div></td>
+      <td><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></td>
       <td>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span></div>` : '<span class="dim">—</span>'}</td>
       <td>${gd.length ? `<span class="dr-stasis">${pct(STASIS_RATE * T.drop)}</span>` : '<span class="dim">—</span>'}</td>
       <td>${rl.length ? rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('') : '<span class="dim">—</span>'}</td>
