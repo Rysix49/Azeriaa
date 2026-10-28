@@ -480,10 +480,10 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
     <path d="M80 66 Q91 70 96 83" fill="none" stroke="url(#ecCoat)" stroke-width="8" stroke-linecap="round"/>
     <path d="M89 73.4 L94.2 81" stroke="#04201c" stroke-width="11" stroke-linecap="round"/><path d="M89 73.4 L94.2 81" stroke="url(#ecGold)" stroke-width="8.4" stroke-linecap="round"/>
     <g class="p-claw">
-      <g stroke="#2a2a3a" stroke-width="1.5" stroke-linejoin="round">
-        <path d="M97 80 Q108 66 122 60 Q113 70 101 86Z" fill="url(#ecClaw)"/>
-        <path d="M98 85 Q111 76 125 76 Q114 84 102 91Z" fill="url(#ecClaw)"/>
-        <path d="M95 76 Q103 60 114 50 Q108 64 99 82Z" fill="url(#ecClaw)"/>
+      <g stroke-linejoin="round">
+        <g transform="translate(97 86) rotate(34)"><path d="M-7 -28 h14 q2 0 2 2 v18 q0 2 -2 2 h-14 q-2 0 -2 -2 v-18 q0 -2 2 -2Z" fill="#fffdf4" stroke="#1c1c2c" stroke-width="1.6" stroke-linejoin="round"/><path d="M-5.4 -26 h10.8" stroke="#d8c9a4" stroke-width="1"/><g transform="translate(0 -17)" fill="#1c1c2c"><path d="M0 -5 C-7 0 -6 5 -2.4 5 C-1.2 5 -.4 4.4 0 3.8 L-1.2 7.4 H1.2 L0 3.8 C.4 4.4 1.2 5 2.4 5 C6 5 7 0 0 -5Z"/></g><g transform="translate(-4.6 -24.2) scale(.34)" fill="#1c1c2c"><path d="M0 -5 C-7 0 -6 5 -2.4 5 C-1.2 5 -.4 4.4 0 3.8 L-1.2 7.4 H1.2 L0 3.8 C.4 4.4 1.2 5 2.4 5 C6 5 7 0 0 -5Z"/></g></g>
+        <g transform="translate(97 86) rotate(72)"><path d="M-7 -28 h14 q2 0 2 2 v18 q0 2 -2 2 h-14 q-2 0 -2 -2 v-18 q0 -2 2 -2Z" fill="#fffdf4" stroke="#1c1c2c" stroke-width="1.6" stroke-linejoin="round"/><path d="M-5.4 -26 h10.8" stroke="#d8c9a4" stroke-width="1"/><g transform="translate(0 -17)" fill="#d02a2a"><path d="M0 4.4 C-7 -.6 -6 -6 -2.8 -6 C-1.2 -6 0 -5 0 -3.8 C0 -5 1.2 -6 2.8 -6 C6 -6 7 -.6 0 4.4Z"/></g><g transform="translate(-4.6 -24.2) scale(.34)" fill="#d02a2a"><path d="M0 4.4 C-7 -.6 -6 -6 -2.8 -6 C-1.2 -6 0 -5 0 -3.8 C0 -5 1.2 -6 2.8 -6 C6 -6 7 -.6 0 4.4Z"/></g></g>
+        <g transform="translate(97 86) rotate(110)"><path d="M-7 -28 h14 q2 0 2 2 v18 q0 2 -2 2 h-14 q-2 0 -2 -2 v-18 q0 -2 2 -2Z" fill="#fffdf4" stroke="#1c1c2c" stroke-width="1.6" stroke-linejoin="round"/><path d="M-5.4 -26 h10.8" stroke="#d8c9a4" stroke-width="1"/><g transform="translate(0 -17)" fill="#d02a2a"><path d="M0 -6 L4.6 0 L0 6 L-4.6 0Z"/></g><g transform="translate(-4.6 -24.2) scale(.34)" fill="#d02a2a"><path d="M0 -6 L4.6 0 L0 6 L-4.6 0Z"/></g></g>
       </g>
       <circle cx="96" cy="85" r="6" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.8"/>
       <path d="M93.4 83 l4.6 -1.4 M93.2 86 l5 -.6 M94 89 l4 .8" stroke="#7a3e0c" stroke-width="1.2" stroke-linecap="round"/>
