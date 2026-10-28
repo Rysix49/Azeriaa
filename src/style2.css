@@ -2019,3 +2019,155 @@ label.btn { cursor: pointer; }
 .fnum.cra { color: #e8ffd0; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 2px 0 #0c2a06, 0 0 10px #6aff2a; font-weight: 900; letter-spacing: .06em; }
 @media (prefers-reduced-motion: reduce) { .hs-cra *, .hero .hs-cra { animation: none !important; } .cr-ring, .cr-leaf, .cr-streak, .cr-spark, .cr-charge, .cr-dust, .cr-wave, .cr-ghost { display: none; } }
 /* ===== fin Cra ===== */
+
+/* ===================== Xélor : mage du temps (sprite de combat) ===================== */
+.hs-xelor .p-halo { transform-box: view-box; transform-origin: 58px 62px; opacity: calc(.38 + var(--gr, 0) * .62); transition: opacity .6s; }
+.hs-xelor .p-ticks { transform-box: view-box; transform-origin: 58px 62px; animation: xl-spin 46s linear infinite; }
+.hs-xelor .p-cogA { transform-box: view-box; transform-origin: 36px 92px; animation: xl-spin 9s linear infinite reverse; }
+.hs-xelor .p-cogB { transform-box: view-box; transform-origin: 86px 38px; animation: xl-spin 7s linear infinite; }
+.hs-xelor .p-cog1 { transform-box: view-box; transform-origin: 49px 58px; animation: xl-spin 6s linear infinite; }
+.hs-xelor .p-cog2 { transform-box: view-box; transform-origin: 63px 90px; animation: xl-spin 5s linear infinite reverse; }
+.hs-xelor .p-mh { transform-box: view-box; transform-origin: 58px 62px; animation: xl-spin 16s linear infinite; }
+.hs-xelor .p-hh { transform-box: view-box; transform-origin: 58px 62px; animation: xl-spin 96s linear infinite; }
+.hs-xelor .p-wmh { transform-box: view-box; transform-origin: 30px 66px; animation: xl-spin 12s steps(12) infinite; }
+.hs-xelor .p-wh { transform-box: view-box; transform-origin: 30px 66px; animation: xl-spin 72s linear infinite; }
+.hs-xelor .p-hmh { transform-box: view-box; transform-origin: 66px 22.6px; animation: xl-spin 9s steps(36) infinite; }
+.hs-xelor .p-hhh { transform-box: view-box; transform-origin: 66px 22.6px; animation: xl-spin 54s linear infinite; }
+@keyframes xl-spin { to { transform: rotate(360deg); } }
+/* les 12 heures du cadran s'allument avec les grains du sablier */
+.hs-xelor .p-pip { fill: #2a3874; stroke: #6a7ab8; transition: fill .35s, filter .35s; }
+.hs-xelor .p-pip.lit { fill: #ffd96a; stroke: #6a4208; filter: drop-shadow(0 0 2.4px #ffcf4a); }
+.hs-xelor .p-sandU { transform-origin: 50% 100%; transform: scaleY(calc(1 - var(--gr, 0) * .85)); transition: transform .7s; }
+.hs-xelor .p-sandD { transform-origin: 50% 100%; transform: scaleY(calc(.22 + var(--gr, 0) * .78)); transition: transform .7s; }
+.hs-xelor .p-drip { animation: xl-drip .5s linear infinite; }
+@keyframes xl-drip { to { stroke-dashoffset: -4.6; } }
+.hs-xelor .p-glow { transform-origin: 50% 50%; animation: xl-glow 2.6s ease-in-out infinite; }
+@keyframes xl-glow { 0%, 100% { opacity: .04; } 50% { opacity: .2; } }
+.hs-xelor .p-gem { animation: xl-gem 2s ease-in-out infinite; }
+@keyframes xl-gem { 0%, 100% { opacity: .75; } 50% { opacity: 1; filter: drop-shadow(0 0 3px #9fe0ff); } }
+.hs-xelor .p-spark { transform-origin: 50% 50%; animation: xl-tw 2.4s ease-in-out infinite; }
+@keyframes xl-tw { 0%, 100% { opacity: .15; } 45% { opacity: 1; } }
+.hs-xelor .p-cape { transform-box: view-box; transform-origin: 52px 58px; animation: xl-cape 3.2s ease-in-out infinite; }
+@keyframes xl-cape { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-3.6deg) skewX(-2deg); } }
+.hs-xelor .p-armB { transform-box: view-box; transform-origin: 48px 64px; animation: xl-float 3.4s ease-in-out infinite; }
+@keyframes xl-float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2.4px) rotate(3deg); } }
+.hs-xelor .p-watch { transform-box: view-box; transform-origin: 30px 66px; animation: xl-swing 4.2s ease-in-out infinite; }
+.hs-xelor .p-charm { transform-box: view-box; transform-origin: 25px 5px; animation: xl-swing 2.6s ease-in-out infinite; }
+.hs-xelor .p-fob { transform-box: view-box; transform-origin: 70px 100px; animation: xl-swing 3.2s ease-in-out infinite; }
+@keyframes xl-swing { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+.hs-xelor .p-aura { transform-box: view-box; transform-origin: 58px 62px; opacity: calc(var(--gr, 0) * .7); transition: opacity .6s; animation: xl-aura 2.8s ease-in-out infinite; }
+@keyframes xl-aura { 0%, 100% { transform: scale(.96); } 50% { transform: scale(1.06); } }
+.hs-xelor .p-eye { filter: drop-shadow(0 0 1.6px #6fb4ff); }
+/* douze grains : le Rembobinage est prêt, le cadran s'emballe */
+.hero.xel-full .hs-xelor .p-halo { opacity: 1; filter: drop-shadow(0 0 5px #ffd96a); animation: xl-halofull 1.4s ease-in-out infinite; }
+@keyframes xl-halofull { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.hero.xel-full .hs-xelor .p-ticks { animation-duration: 7s; }
+.hero.xel-full .hs-xelor .p-mh { animation-duration: 3.6s; }
+.hero.xel-full .hs-xelor .p-hh { animation-duration: 20s; }
+.hero.xel-full .hs-xelor .p-aura { opacity: .95; }
+.hero.xel-full .hs-xelor .p-glow { animation-duration: 1.1s; }
+/* gestes de sort : un différent à chaque lancer, comme pour les autres classes */
+.hero.atk-a .hs-xelor { animation: xla-lunge .6s cubic-bezier(.45, 0, .2, 1); }
+@keyframes xla-lunge { 0% { transform: none; } 30% { transform: translateX(-5px) rotate(-2deg); } 55% { transform: translateX(12px) rotate(3deg); } 100% { transform: none; } }
+.hero.atk-a .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xla-arm .6s cubic-bezier(.45, 0, .2, 1); }
+@keyframes xla-arm { 0% { transform: rotate(0); } 30% { transform: rotate(-26deg); } 58% { transform: rotate(22deg); } 100% { transform: rotate(0); } }
+.hero.atk-a .hs-xelor .p-glow { animation: xl-flare .6s ease-out; }
+@keyframes xl-flare { 0% { opacity: 0; transform: scale(.6); } 40% { opacity: .85; transform: scale(1.35); } 100% { opacity: 0; transform: scale(1.7); } }
+.hero.atk-b .hs-xelor { animation: xlb-step .64s cubic-bezier(.4, 0, .25, 1); }
+@keyframes xlb-step { 0% { transform: none; } 35% { transform: translateX(-6px) rotate(-3deg); } 70% { transform: translateX(4px) rotate(1deg); } 100% { transform: none; } }
+.hero.atk-b .hs-xelor .p-armB { animation: xlb-armb .64s cubic-bezier(.4, 0, .25, 1); }
+@keyframes xlb-armb { 0% { transform: rotate(0); } 40% { transform: rotate(46deg) translateY(-3px); } 75% { transform: rotate(40deg) translateY(-2px); } 100% { transform: rotate(0); } }
+.hero.atk-b .hs-xelor .p-watch { animation: xlb-watch .64s ease-out; }
+@keyframes xlb-watch { 0% { transform: scale(1); filter: none; } 40% { transform: scale(1.55); filter: drop-shadow(0 0 4px #9fd4ff); } 100% { transform: scale(1); filter: none; } }
+.hero.atk-b .hs-xelor .p-halo { opacity: 1; animation: xlb-halo .64s ease-out; }
+@keyframes xlb-halo { 0% { transform: rotate(0) scale(1); } 100% { transform: rotate(150deg) scale(1.04); } }
+.hero.atk-c .hs-xelor { animation: xlc-jump .6s cubic-bezier(.3, .6, .4, 1); }
+@keyframes xlc-jump { 0% { transform: none; } 40% { transform: translateY(-12px) rotate(-3deg); } 70% { transform: translateY(2px) rotate(2deg); } 100% { transform: none; } }
+.hero.atk-c .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xlc-arm .6s cubic-bezier(.4, 0, .25, 1); }
+@keyframes xlc-arm { 0% { transform: rotate(0); } 35% { transform: rotate(-40deg); } 62% { transform: rotate(30deg); } 100% { transform: rotate(0); } }
+.hero.atk-c .hs-xelor .p-glass { transform-box: view-box; transform-origin: 94px 17px; animation: xlc-flip .6s ease-in-out; }
+@keyframes xlc-flip { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+.hero.atk-c .hs-xelor .p-cape { animation: xlc-cape .6s ease-out; }
+@keyframes xlc-cape { 0% { transform: rotate(0); } 35% { transform: rotate(-10deg); } 100% { transform: rotate(0); } }
+.hero.cheer .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xl-cheer .6s cubic-bezier(.45, 0, .25, 1); }
+@keyframes xl-cheer { 0% { transform: rotate(0); } 45% { transform: rotate(-38deg); } 100% { transform: rotate(0); } }
+.hero.cheer .hs-xelor .p-halo { opacity: 1; filter: drop-shadow(0 0 5px #9fd4ff); }
+.hero.dead .hs-xelor .p-halo { opacity: .08 !important; filter: none; animation: none; }
+.hero.dead .hs-xelor .p-aura { opacity: 0; }
+/* images rémanentes : l'écho du temps derrière le mage, et ses grains de sable */
+.xl-ghost { position: absolute; inset: 0; pointer-events: none; opacity: 0; filter: hue-rotate(-18deg) saturate(1.5) brightness(1.35); animation: xl-ghost .8s ease-out var(--gd, 0ms) both; }
+.xl-ghost svg { width: 100%; height: 100%; display: block; overflow: visible; }
+@keyframes xl-ghost { 0% { opacity: .55; translate: 0 0; } 100% { opacity: 0; translate: calc(var(--gx, 18px) * -1) -2px; } }
+.xl-ring { position: absolute; left: 46%; top: 48%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; border: 2px dashed #ffe08a; box-shadow: 0 0 10px #8fc4ff, inset 0 0 8px #8fc4ff88; pointer-events: none; opacity: 0; animation: xl-ring .7s ease-out var(--d, 0ms) both; }
+@keyframes xl-ring { 0% { opacity: .9; transform: scale(.4) rotate(0); } 100% { opacity: 0; transform: scale(5.4) rotate(-120deg); } }
+.xl-sand { position: absolute; left: 46%; top: 48%; width: var(--s, 4px); height: var(--s, 4px); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fffbd0, #ffc83a); box-shadow: 0 0 5px #ffd96a; pointer-events: none; opacity: 0; animation: xl-sand .95s ease-out var(--d, 0ms) both; }
+@keyframes xl-sand { 0% { opacity: 1; translate: 0 0; } 100% { opacity: 0; translate: var(--dx) var(--dy); } }
+.fnum.xel { color: #ffe9a0; text-shadow: 0 0 8px #5a8cff, 0 1px 0 #0a1442; font-weight: 800; letter-spacing: .04em; }
+/* ----- Rembobinage : le Xélor renverse son sablier et remonte le temps ----- */
+.hero.xel-rewind .hs-xelor { animation: xlr-body 3.3s cubic-bezier(.4, 0, .3, 1) both; }
+@keyframes xlr-body { 0% { transform: none; } 14% { transform: translateY(-12px) scale(1.06); } 80% { transform: translateY(-12px) scale(1.06); } 100% { transform: none; } }
+.hero.xel-rewind .hs-xelor .p-arm { transform-box: view-box; transform-origin: 74px 58px; animation: xlr-arm 3.3s ease-in-out both; }
+@keyframes xlr-arm { 0% { transform: rotate(0); } 14% { transform: rotate(-34deg); } 86% { transform: rotate(-34deg); } 100% { transform: rotate(0); } }
+.hero.xel-rewind .hs-xelor .p-glass { transform-box: view-box; transform-origin: 94px 17px; animation: xlr-flip 3.3s ease-in-out both; }
+@keyframes xlr-flip { 0%, 12% { transform: rotate(0); } 28% { transform: rotate(180deg); } 72% { transform: rotate(180deg); } 88%, 100% { transform: rotate(360deg); } }
+.hero.xel-rewind .hs-xelor .p-glow { animation: xlr-glow 3.3s ease-in-out both; }
+@keyframes xlr-glow { 0% { opacity: 0; transform: scale(.6); } 20% { opacity: .95; transform: scale(2.2); } 50% { opacity: .7; transform: scale(2.8); } 85% { opacity: .9; transform: scale(2.2); } 100% { opacity: 0; transform: scale(1); } }
+.hero.xel-rewind .hs-xelor .p-halo { opacity: 1; filter: drop-shadow(0 0 7px #ffd96a); animation: xlr-halo 3.3s cubic-bezier(.45, 0, .25, 1) both; }
+@keyframes xlr-halo { 0% { transform: rotate(0) scale(1); } 24% { transform: rotate(-60deg) scale(1.22); } 70% { transform: rotate(-1260deg) scale(1.3); } 100% { transform: rotate(-1440deg) scale(1); } }
+.hero.xel-rewind .hs-xelor .p-mh { animation: xl-spin .5s linear infinite reverse; }
+.hero.xel-rewind .hs-xelor .p-hh { animation: xl-spin 4s linear infinite reverse; }
+.hero.xel-rewind .hs-xelor .p-hmh { animation: xl-spin .6s linear infinite reverse; }
+.hero.xel-rewind .hs-xelor .p-wmh { animation: xl-spin .8s linear infinite reverse; }
+.hero.xel-rewind .hs-xelor .p-ticks { animation: xl-spin 1s linear infinite reverse; }
+.hero.xel-rewind .hs-xelor .p-cog1, .hero.xel-rewind .hs-xelor .p-cogB { animation: xl-spin .7s linear infinite reverse; }
+.hero.xel-rewind .hs-xelor .p-cog2, .hero.xel-rewind .hs-xelor .p-cogA { animation: xl-spin .7s linear infinite; }
+.hero.xel-rewind .hs-xelor .p-aura { opacity: 1; }
+.hero.xel-rewind .hs-xelor .p-cape { animation: xlr-cape 3.3s ease-in-out both; }
+@keyframes xlr-cape { 0% { transform: rotate(0); } 18% { transform: rotate(-12deg) skewX(-5deg); } 82% { transform: rotate(-12deg) skewX(-5deg); } 100% { transform: rotate(0); } }
+.hero.xel-rewind .hs-xelor .p-eye { filter: drop-shadow(0 0 4px #ffe08a) brightness(1.4); }
+.scene > .rewind { position: absolute; inset: 0; z-index: 14; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.rewind > * { position: absolute; pointer-events: none; }
+.rw-dim { inset: 0; background: radial-gradient(ellipse at 30% 62%, #1b3aa055 0%, #0a1450b8 60%, #040a28dd 100%); opacity: 0; }
+.rw-tint { inset: 0; background: #5a8cff; mix-blend-mode: color; opacity: 0; }
+.rw-scan { inset: 0; background: repeating-linear-gradient(0deg, #ffffff14 0 1px, transparent 1px 3px); opacity: 0; mix-blend-mode: screen; }
+.rw-clock { left: 50%; top: 50%; width: var(--cs, 320px); height: var(--cs, 320px); margin: calc(var(--cs, 320px) / -2) 0 0 calc(var(--cs, 320px) / -2); opacity: 0; }
+.rw-clock svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.rw-clock .ring { transform-box: view-box; transform-origin: 100px 100px; }
+.rw-clock .mh { transform-box: view-box; transform-origin: 100px 100px; }
+.rw-clock .hh { transform-box: view-box; transform-origin: 100px 100px; }
+.rw-title { left: 0; right: 0; top: 13%; text-align: center; font-weight: 900; font-size: clamp(20px, 5.4vw, 34px); letter-spacing: .26em; color: #f2f8ff; text-shadow: 0 0 12px #6fa8ff, 0 0 26px #3a6aff, 2px 0 0 #ff8a5a99, -2px 0 0 #5affd099; opacity: 0; white-space: nowrap; }
+.rw-title small { display: block; font-size: .42em; letter-spacing: .5em; color: #ffe9a0; margin-top: 6px; text-shadow: 0 0 8px #ffb62e; }
+.rw-band { left: -10%; width: 120%; height: 9%; background: linear-gradient(90deg, transparent, #cfe6ff55 30%, #ffffffaa 50%, #cfe6ff55 70%, transparent); mix-blend-mode: screen; opacity: 0; }
+.rw-flash { inset: 0; background: radial-gradient(circle at 50% 50%, #fff 0%, #cfe6ff 40%, #8fb4ff 100%); opacity: 0; }
+.rw-ring { left: var(--hx); top: var(--hy); width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 3px solid #ffe08a; box-shadow: 0 0 16px #8fc4ff, inset 0 0 14px #8fc4ff88; opacity: 0; }
+.rw-grain { left: 0; top: 0; width: var(--s, 5px); height: var(--s, 5px); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fffbd0, #ffc83a); box-shadow: 0 0 7px #ffd96a, 0 0 14px #ffb62e88; opacity: 0; }
+.rewind.go .rw-dim { animation: rw-dim 3.3s ease-in-out both; --o: .8; }
+.rewind.go .rw-tint { animation: rw-dim 3.3s ease-in-out both; --o: .35; }
+.rewind.go .rw-scan { animation: rw-dim 3.3s linear both; --o: .8; }
+@keyframes rw-dim { 0% { opacity: 0; } 12% { opacity: var(--o, 1); } 84% { opacity: var(--o, 1); } 100% { opacity: 0; } }
+.rewind.go .rw-clock { animation: rw-clock 3.3s cubic-bezier(.4, 0, .3, 1) both; }
+@keyframes rw-clock { 0% { opacity: 0; transform: scale(.35) rotate(40deg); } 16% { opacity: .62; transform: scale(1) rotate(0); } 80% { opacity: .62; transform: scale(1.06) rotate(-8deg); } 100% { opacity: 0; transform: scale(1.5) rotate(-30deg); } }
+.rewind.go .rw-clock .mh { animation: rw-mh 3.3s cubic-bezier(.5, 0, .2, 1) both; }
+@keyframes rw-mh { 0%, 8% { transform: rotate(0); } 78%, 100% { transform: rotate(-2520deg); } }
+.rewind.go .rw-clock .hh { animation: rw-hh 3.3s cubic-bezier(.5, 0, .2, 1) both; }
+@keyframes rw-hh { 0%, 8% { transform: rotate(0); } 78%, 100% { transform: rotate(-210deg); } }
+.rewind.go .rw-clock .ring { animation: rw-ring-spin 3.3s linear both; }
+@keyframes rw-ring-spin { to { transform: rotate(-200deg); } }
+.rewind.go .rw-title { animation: rw-title 3.3s steps(1, end) both; }
+@keyframes rw-title { 0% { opacity: 0; } 9% { opacity: 1; transform: translateX(-6px); } 11% { transform: translateX(5px); } 13% { transform: none; } 30% { transform: translateX(3px); } 31% { transform: none; } 55% { transform: translateX(-4px) skewX(-6deg); } 56% { transform: none; } 80% { opacity: 1; } 84% { opacity: 0; } 100% { opacity: 0; } }
+.rewind.go .rw-band { animation: rw-band 1.1s linear var(--d, 0ms) infinite; }
+@keyframes rw-band { 0% { transform: translateX(60%); opacity: 0; } 12% { opacity: .8; } 88% { opacity: .8; } 100% { transform: translateX(-60%); opacity: 0; } }
+.rewind.go .rw-flash { animation: rw-flash 3.3s ease-out both; }
+@keyframes rw-flash { 0%, 43% { opacity: 0; } 46% { opacity: .95; } 60% { opacity: 0; } 100% { opacity: 0; } }
+.rewind.go .rw-ring { animation: rw-ringout 1.1s ease-out var(--d, 0ms) both; }
+@keyframes rw-ringout { 0% { opacity: .95; transform: scale(.3); } 100% { opacity: 0; transform: scale(18); } }
+.rewind.go .rw-grain { animation: rw-grain var(--t, 900ms) cubic-bezier(.5, 0, .75, .4) var(--d, 0ms) both; }
+@keyframes rw-grain { 0% { opacity: 0; translate: var(--x0) var(--y0); scale: .4; } 18% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; translate: var(--x1) var(--y1); scale: 1.1; } }
+/* le héros reste au-dessus du voile : c'est lui qui remonte le temps */
+.scene.rw-on .unit.hero { z-index: 21; }
+/* pendant la cinématique les monstres se « rembobinent » : teinte bleutée, tressautements à rebours, leurs PV remontent */
+.scene.rw-on .unit.mon:not(.hit) .sprite { animation: rw-mon 3.3s steps(1, end) both !important; filter: sepia(.55) hue-rotate(185deg) saturate(1.6) brightness(1.15); }
+@keyframes rw-mon { 0% { translate: 0 0; } 15% { translate: 5px 0; } 27% { translate: -3px 1px; } 40% { translate: 8px -1px; } 52% { translate: 2px 0; } 63% { translate: 10px 1px; } 76% { translate: 3px 0; } 88% { translate: 6px -1px; } 100% { translate: 0 0; } }
+.scene.rw-on .unit.mon .sprite { transition: filter .4s; }
+@media (prefers-reduced-motion: reduce) { .xl-ghost, .xl-ring, .xl-sand, .rewind { display: none; } }
+/* ===== fin Xélor ===== */

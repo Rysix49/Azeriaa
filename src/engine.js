@@ -278,8 +278,9 @@ function heroTurn(st, h, t, ev) {
     enuChest(h, f, actions);
     if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
   }
+  const rwPre = rewind ? f.mons.map(m => m.hp) : null;
   phase(true);
-  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);

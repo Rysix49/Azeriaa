@@ -493,6 +493,56 @@ function startPerfect(h, card, scene, fresh) {
   post.forEach((c, j) => setTimeout(() => playSpellFx(card, c), T0 + dur + 150 + j * 280));
   setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T0 + dur + 250 + post.length * 280);
 }
+/* ---------------------- Xélor : Rembobinage ----------------------
+   Au 12e grain, le Xélor renverse son sablier : le temps recule (les monstres abattus se relèvent, leurs PV remontent), puis il rejoue son tour.
+   Les sorts du premier jet se jouent, la cinématique prend le relais en figeant tout le combat, puis le tour rejoué suit. */
+const RW_MS = 3300, RW_MID = 1500;
+const RW_ROMAN = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+const RW_CLOCK = (() => {
+  const p = (a, r) => { const t = (a - 90) * Math.PI / 180; return [100 + r * Math.cos(t), 100 + r * Math.sin(t)]; };
+  let ticks = '', nums = '';
+  for (let i = 0; i < 60; i++) { const [x1, y1] = p(i * 6, 86), [x2, y2] = p(i * 6, i % 5 ? 90 : 93); ticks += `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}" stroke="${i % 5 ? '#bfe0ff' : '#ffe08a'}" stroke-width="${i % 5 ? 1 : 2.4}" stroke-linecap="round"/>`; }
+  RW_ROMAN.forEach((n, i) => { const [x, y] = p(i * 30, 72); nums += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="800" font-family="Georgia,serif" fill="#ffe9a0">${n}</text>`; });
+  return `<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="97" fill="#0a1a5a33" stroke="#ffe08a" stroke-width="3"/><circle cx="100" cy="100" r="82" fill="none" stroke="#bfe0ff" stroke-width="1" stroke-dasharray="3 5" opacity=".7"/>
+  <g class="ring">${ticks}${nums}</g>
+  <g class="hh"><path d="M100 108V58" stroke="#ffe08a" stroke-width="6" stroke-linecap="round"/><path d="M100 50l-6 12h12z" fill="#ffe08a"/></g>
+  <g class="mh"><path d="M100 114V22" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/><path d="M100 14l-5 11h10z" fill="#fff"/></g>
+  <circle cx="100" cy="100" r="7" fill="#ffd24a" stroke="#6a4208" stroke-width="2"/><circle cx="100" cy="100" r="2.6" fill="#c8301a"/></svg>`;
+})();
+function playRewind(card, scene) {
+  const fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite'); if (!sp) return;
+  const hp = relPos(sp, scene), hx = hp.x + sp.offsetWidth * .23, hy = hp.y - sp.offsetHeight * .37; // le sablier au bout du bâton aspire les grains
+  let grains = '';
+  const add = (x0, y0, d) => { grains += `<i class="rw-grain" style="--x0:${x0.toFixed(0)}px;--y0:${y0.toFixed(0)}px;--x1:${(hx + Math.random() * 8 - 4).toFixed(0)}px;--y1:${(hy + Math.random() * 8 - 4).toFixed(0)}px;--d:${d.toFixed(0)}ms;--t:${(650 + Math.random() * 500).toFixed(0)}ms;--s:${(3 + Math.random() * 4).toFixed(1)}px"></i>`; };
+  card.querySelectorAll('.unit.mon .sprite').forEach(el => { const m = relPos(el, scene); for (let i = 0; i < 9; i++) add(m.x + Math.random() * 50 - 25, m.y + Math.random() * 60 - 30, 450 + Math.random() * 1500); });
+  for (let i = 0; i < 12; i++) add(Math.random() * hp.w, Math.random() * hp.h, 300 + Math.random() * 1700);
+  const ov = document.createElement('div'); ov.className = 'rewind';
+  ov.style.cssText = `--cs:${Math.max(240, Math.round(hp.h * 1.2))}px;--hx:${hx.toFixed(0)}px;--hy:${hy.toFixed(0)}px`;
+  ov.innerHTML = `<div class="rw-dim"></div><div class="rw-tint"></div><div class="rw-clock">${RW_CLOCK}</div><div class="rw-scan"></div>
+    <div class="rw-band" style="top:18%;--d:0ms"></div><div class="rw-band" style="top:46%;--d:380ms"></div><div class="rw-band" style="top:72%;--d:700ms"></div>${grains}
+    <div class="rw-ring" style="--d:0ms"></div><div class="rw-ring" style="--d:${RW_MID - 120}ms"></div><div class="rw-ring" style="--d:${RW_MS - 700}ms"></div>
+    <div class="rw-title">◀◀ REMBOBINAGE<small>le temps recule</small></div><div class="rw-flash"></div>`;
+  scene.appendChild(ov); scene.classList.add('rw-on'); ecaState(fu, 'xel-rewind', RW_MS + 40);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  setTimeout(() => { ov.remove(); scene.classList.remove('rw-on'); }, RW_MS + 60);
+}
+function startRewind(h, card, scene, fresh) {
+  const info = h.fight.rwInfo, quick = !FX_OK();
+  const p1 = fresh.filter(c => c.n <= info.at).slice(-3), p2 = fresh.filter(c => c.n > info.at).slice(-3);
+  const hold = o => { const r = {}; (o || []).forEach((v, i) => { r[i] = v; }); return r; };
+  PF_HOLD[h.id] = hold(info.mid); // le premier jet frappe, les monstres tombent aux PV « du milieu »
+  FURY_ANIM[h.id] = 1;
+  p1.forEach((c, j) => setTimeout(() => playSpellFx(card, c), 60 + j * 280));
+  const T0 = p1.length ? 60 + (p1.length - 1) * 280 + 820 : 120, dur = quick ? 1200 : RW_MS;
+  setTimeout(() => {
+    if (quick) sceneFx(scene, 'rewind', 'Rembobinage !'); else playRewind(card, scene);
+    setTimeout(() => { PF_HOLD[h.id] = hold(info.pre); patchCombat(); }, quick ? 300 : RW_MID); // à mi-course : le temps a reculé, les PV remontent, les morts se relèvent
+  }, T0);
+  const T1 = T0 + dur + 100;
+  setTimeout(() => { delete PF_HOLD[h.id]; ecaText(card, 'TOUR REJOUÉ !', '', 'xel'); patchCombat(); }, T1);
+  p2.forEach((c, j) => setTimeout(() => playSpellFx(card, c), T1 + 160 + j * 280));
+  setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T1 + 260 + p2.length * 280);
+}
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
 const FURY_ANIM = {};
 let FURY_FREEZE = 0; // > 0 pendant la cinématique de la Colère de Iop : plus personne n'agit (héros, ennemis, autres joueurs)
@@ -625,9 +675,11 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       let lead = 0; // l'Ecaflip lance sa pièce (ou joue son Quitte ou Double) AVANT de frapper
       if (h.cls === 'ecaflip') { const cf0 = h.fight.coinFx, gf0 = h.fight.gambleFx; if (gf0 && gf0.n > +(scene.dataset.gm || 0)) lead = 1300; else if (cf0 && cf0.n > +(scene.dataset.co || 0)) lead = 450; }
+      const rwNew = h.cls === 'xelor' && !!h.fight.rwInfo && (h.fight.rewinds || 0) > +(scene.dataset.rw || 0) && fresh.length > 0;
       const pfNew = h.cls === 'cra' && h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0);
       if (fresh.length) scene.dataset.fx = fresh[fresh.length - 1].n;
       if (pfNew) { scene.dataset.pf = h.fight.perfect.n; startPerfect(h, card, scene, fresh); } // Tir Parfait : cinématique, combat figé
+      else if (rwNew) startRewind(h, card, scene, fresh); // Rembobinage : cinématique, combat figé, puis le tour est rejoué
       else if (fresh.length) fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280));
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
@@ -647,7 +699,7 @@ function patchCombat() {
         const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
         const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
       }
-      if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
+      if (+(scene.dataset.rw || 0) < rw && !rwNew) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
     }
@@ -705,6 +757,11 @@ function patchCombat() {
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
         const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
+    }
+    if (h.cls === 'xelor') { // le cadran fantôme, le sablier et l'aura suivent les grains
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), g = h.fight ? Math.min(12, h.fight.grains || 0) : 0, gv = (g / 12).toFixed(2);
+      if (fsp) { if (fsp.style.getPropertyValue('--gr') !== gv) { fsp.style.setProperty('--gr', gv); fsp.querySelectorAll('.p-pip').forEach((el, i) => el.classList.toggle('lit', i < g)); } }
+      if (fu) fu.classList.toggle('xel-full', g >= 12 && !!h.fight && h.fight.mons.some(m => m.hp > 0));
     }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
