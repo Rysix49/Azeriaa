@@ -1387,8 +1387,9 @@ function render(force) {
   if (force) { renderMain(true); lastSlow = now; return; }
   if (ui.view === 'combat' && st.heroes.length) {
     if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) { if (!redrawCards()) renderMain(); patchCombat(); } else patchCombat();
-  } else if (now - lastSlow > 1500 && ui.view !== 'options') {
-    renderMain(); lastSlow = now;
+  } else {
+    if (harvestViewFx(ui.view === 'recolte')) lastSlow = now; // un petit effet sur la carte de la plante : on retarde le redessin pour le laisser finir
+    if (now - lastSlow > 1500 && ui.view !== 'options') { renderMain(); lastSlow = now; }
   }
 }
 function scrollTop() { try { window.scrollTo(0, 0); } catch (e) {} }

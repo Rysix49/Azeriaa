@@ -84,7 +84,7 @@ function harvestFx(scene, h, c, unit) {
   const pl = scene.querySelector('.plants'); if (!pl) return;
   const plants = [...pl.querySelectorAll('.pl')], pts = plants.map(e => fxPos(scene, e)).filter(Boolean); if (!pts.length) return;
   const col = PLANT_COL[c.id] || '#9ae860', paysan = c.job === 'paysan', mir = last.miracle;
-  if (unit) heroGesture(unit, paysan ? 'atk' : 'cheer');
+  const head = unit ? heroPick(scene, unit, c, last, pts[0]) : null;
   const first = pts[0], lastP = pts[pts.length - 1], mid = { x: Math.max(80, Math.min(scene.offsetWidth - 80, (first.x + lastP.x) / 2)), y: first.y - 4 };
   // coup de faux / glissement lumineux
   if (paysan) { const s = fxEl(scene, 'hv-slash', first.x - 14, first.y - 18); fxAnim(s, [{ transform: 'translate(0,0) rotate(-14deg) scale(.5,1)', opacity: 0 }, { transform: `translate(${(lastP.x - first.x) * .5}px,-4px) rotate(-6deg) scale(1.1,1)`, opacity: 1, offset: .4 }, { transform: `translate(${lastP.x - first.x + 20}px,6px) rotate(8deg) scale(.7,1)`, opacity: 0 }], { duration: 420, easing: 'ease-in-out' }); }
@@ -102,7 +102,7 @@ function harvestFx(scene, h, c, unit) {
   setTimeout(() => {
     if (!scene.isConnected) return;
     for (let k = 0; k < nIc; k++) setTimeout(() => {
-      if (!scene.isConnected) return; const from = pts[k % pts.length], to = sp || { x: mid.x, y: mid.y + 40 };
+      if (!scene.isConnected) return; const from = head || pts[k % pts.length], to = sp || { x: mid.x, y: mid.y + 40 };
       const ic = fxEl(scene, 'hv-loot' + (last.alm ? ' alm' : '') + (mir ? ' mir' : ''), from.x, from.y - 6, plantSvg(c.id)), dx = to.x - from.x, dy = to.y - from.y;
       fxAnim(ic, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 }, { transform: `translate(calc(-50% + ${dx * .15}px),calc(-50% - 34px)) scale(1.1)`, opacity: 1, offset: .3 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.35)`, opacity: .9 }], { duration: 640, easing: 'cubic-bezier(.4,0,.6,1)' });
     }, k * 60);
@@ -110,7 +110,7 @@ function harvestFx(scene, h, c, unit) {
     const t = fxEl(scene, 'hv-txt', mid.x, mid.y - 30, `+${last.n} ${c.name}`, `--c:${mir ? '#fff3b0' : '#d8f6a0'}`);
     fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.5)', opacity: 0 }, { transform: 'translate(-50%,-110%) scale(1.1)', opacity: 1, offset: .22 }, { transform: 'translate(-50%,-240%) scale(1)', opacity: 0 }], { duration: 1300 });
     if (unit) { const up = fxPos(scene, unit.querySelector('.sprite') || unit); if (up) { const x = fxEl(scene, 'hv-txt xp', up.x, up.y - 56, `+${last.xp} XP`); fxAnim(x, [{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 }, { transform: 'translate(-50%,-120%) scale(1)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-230%)', opacity: 0 }], { duration: 1200 }); } }
-  }, 260);
+  }, head ? 760 : 260);
   if (last.alm) setTimeout(() => { if (!scene.isConnected) return; const t = fxEl(scene, 'hv-txt alm', mid.x, mid.y + 10, '★ Almanax ×2'); fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.5)', opacity: 0 }, { transform: 'translate(-50%,-130%) scale(1)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-220%)', opacity: 0 }], { duration: 1200 }); }, 520);
   if (mir) { // Récolte miraculeuse
     pl.classList.add('mir'); setTimeout(() => pl.classList.remove('mir'), 1100);
@@ -120,6 +120,54 @@ function harvestFx(scene, h, c, unit) {
     const t = fxEl(scene, 'hv-txt mir', mid.x, mid.y - 14, '✨ MIRACLE ×3 ✨'); fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 }, { transform: 'translate(-50%,-90%) scale(1.15)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-110%) scale(1)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-170%)', opacity: 0 }], { duration: 1700 });
   }
   if (last.rankUp) setTimeout(() => { if (!scene.isConnected) return; const t = fxEl(scene, 'hv-txt rank', mid.x, mid.y + 30, `Maîtrise : ${last.rankUp} !`); fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 }, { transform: 'translate(-50%,-100%) scale(1.1)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-190%)', opacity: 0 }], { duration: 1800 }); }, 700);
+}
+
+/* Le héros se penche, fauche / cueille, puis brandit sa récolte au-dessus de sa tête */
+const HV_TOOL = (blade, handle) => `<svg viewBox="0 0 40 40" width="38" height="38" aria-hidden="true"><path d="M6 35L23 13" stroke="${handle}" stroke-width="3.4" stroke-linecap="round"/><path d="M21 15C29 3 39 9 36 21C33 13 28 12 21 15Z" fill="${blade}" stroke="#1e2a14" stroke-width="1.1" stroke-linejoin="round"/><path d="M26 11C31 9 34 12 34 16" stroke="#fff9" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>`;
+function heroPick(scene, unit, c, last, plantPt) {
+  const sp = unit.querySelector('.sprite'); if (!sp || !scene.isConnected) return null;
+  const p = fxPos(scene, sp); if (!p) return null;
+  const paysan = c.job === 'paysan', mir = last.miracle, head = { x: p.x + 54, y: p.y - sp.offsetHeight * .5 };
+  if (sp.animate) sp.animate([
+    { transform: 'translate(0,0) rotate(0deg) scale(1,1)' },
+    { transform: 'translate(-4px,2px) rotate(-8deg) scale(1.03,.96)', offset: .24 },
+    { transform: 'translate(11px,8px) rotate(13deg) scale(1.05,.88)', offset: .5 },
+    { transform: 'translate(0,-7px) rotate(-2deg) scale(.97,1.06)', offset: .78 },
+    { transform: 'translate(0,0) rotate(0deg) scale(1,1)' }], { duration: 680, easing: 'ease-in-out' });
+  // l'outil : faux du Paysan, serpette dorée de l'Alchimiste
+  const tool = fxEl(scene, 'hv-tool', p.x + 24, p.y + 2, HV_TOOL(paysan ? '#dfe6ea' : '#ffe58a', paysan ? '#8a5a2a' : '#6a4a22'));
+  fxAnim(tool, [{ transform: 'translate(-20%,-85%) rotate(-95deg) scale(.7)', opacity: 0 }, { transform: 'translate(-20%,-85%) rotate(-60deg) scale(1)', opacity: 1, offset: .2 }, { transform: 'translate(-8%,-70%) rotate(35deg) scale(1.05)', opacity: 1, offset: .5 }, { transform: 'translate(-8%,-70%) rotate(55deg) scale(.9)', opacity: 0 }], { duration: 640, easing: 'ease-in-out' });
+  const arc = fxEl(scene, 'hv-arc', p.x + 30, p.y - 4); fxAnim(arc, [{ transform: 'translate(-30%,-80%) rotate(-30deg) scale(.4)', opacity: 0 }, { transform: 'translate(-30%,-80%) rotate(10deg) scale(1)', opacity: .95, offset: .45 }, { transform: 'translate(-30%,-60%) rotate(40deg) scale(1.05)', opacity: 0 }], { duration: 520, delay: 120 });
+  // la récolte est brandie au-dessus de la tête
+  setTimeout(() => {
+    if (!scene.isConnected) return;
+    const from = plantPt || { x: p.x + 60, y: p.y }, it = fxEl(scene, 'hv-held' + (mir ? ' mir' : ''), from.x, from.y - 6, plantSvg(c.id)), dx = head.x - from.x, dy = head.y - from.y;
+    fxAnim(it, [{ transform: 'translate(-50%,-50%) scale(.3) rotate(-30deg)', opacity: 0 }, { transform: `translate(calc(-50% + ${dx * .55}px),calc(-50% + ${dy - 22}px)) scale(1.2) rotate(12deg)`, opacity: 1, offset: .38 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(1.45) rotate(0deg)`, opacity: 1, offset: .55 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy - 4}px)) scale(1.35)`, opacity: 1, offset: .86 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy - 12}px)) scale(.6)`, opacity: 0 }], { duration: 900, easing: 'cubic-bezier(.3,.7,.4,1)' });
+    const n = fxEl(scene, 'hv-held-n', head.x + 18, head.y + 8, '×' + last.n); fxAnim(n, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-70%) scale(1.25)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-100%) scale(1)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-150%) scale(.9)', opacity: 0 }], { duration: 900, delay: 160 });
+    for (let k = 0; k < (mir ? 12 : 5); k++) { const a = -Math.PI * (.15 + Math.random() * .7), dd = 16 + Math.random() * 22, s = fxEl(scene, 'sfx-spark', head.x, head.y, '', `--c:${mir ? '#ffd24a' : PLANT_COL[c.id] || '#d8f6a0'}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.4)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.4)', opacity: 1, offset: .3 }, { transform: `translate(calc(-50% + ${Math.cos(a) * dd}px),calc(-50% + ${Math.sin(a) * dd}px)) scale(.1)`, opacity: 0 }], { duration: 650, delay: 340 }); }
+  }, 280);
+  return head;
+}
+/* Vue Récolte : chaque récolte fait réagir la carte de la plante (la vue se redessine seulement toutes les 1,5 s) */
+const HV_SEEN = {};
+function harvestViewFx(on) {
+  if (!on) { for (const k in HV_SEEN) delete HV_SEEN[k]; return false; }
+  let played = false;
+  for (const h of st.heroes) {
+    if (!h.act || h.act.type !== 'harvest') { delete HV_SEEN[h.id]; continue; }
+    const seq = h.hseq || 0, prev = HV_SEEN[h.id]; HV_SEEN[h.id] = seq;
+    const last = h.hlast; if (prev === undefined || prev === seq || !last || last.id !== h.act.id) continue;
+    const card = document.querySelector(`.pcard[data-crop="${last.id}"]`), art = card && card.querySelector('.pc-art'); if (!art || !FX_OK()) continue;
+    played = true;
+    const col = last.miracle ? '#ffd24a' : PLANT_COL[last.id] || '#9ae860', svg = art.querySelector('.plant');
+    if (svg && svg.animate) svg.animate([{ transform: 'scale(1,1) rotate(0deg)' }, { transform: 'scale(1.22,.8) rotate(-4deg)', offset: .2 }, { transform: 'scale(.88,1.2) translateY(-6px) rotate(5deg)', offset: .5 }, { transform: 'scale(1,1) rotate(0deg)' }], { duration: 560, easing: 'ease-out' });
+    const t = document.createElement('span'); t.className = 'pc-pop' + (last.miracle ? ' mir' : last.alm ? ' alm' : ''); t.textContent = (last.miracle ? '✨ ' : '+') + last.n; art.appendChild(t); setTimeout(() => t.remove(), 1300);
+    for (let k = 0; k < (last.miracle ? 16 : 7); k++) { const e = document.createElement('i'); e.className = 'pc-leaf'; e.style.setProperty('--c', col); art.appendChild(e); const a = Math.random() * 6.28, d = 28 + Math.random() * 34;
+      if (e.animate) { const an = e.animate([{ transform: 'translate(-50%,-50%) scale(1.2)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d * .7 - 14}px)) scale(.1)`, opacity: 0 }], { duration: 520 + Math.random() * 300, easing: 'ease-out' }); an.onfinish = () => e.remove(); } else e.remove(); }
+    if (last.miracle) { const f = document.createElement('b'); f.className = 'pc-flash'; art.appendChild(f); setTimeout(() => f.remove(), 800); }
+    const stk = card.querySelector('.pc-stock'); if (stk) { stk.textContent = short(st.res[last.id] || 0); stk.classList.remove('hv-pulse'); void stk.offsetWidth; stk.classList.add('hv-pulse'); }
+  }
+  return played;
 }
 
 /* ---------------------------- Vue : Récolte (Champs & Herbier) ---------------------------- */
@@ -143,7 +191,7 @@ function renderRecolte() {
     const wk = workers.map(h => { const tot = harvestMs(st, h), el = clamp(tot - h.wait, 0, tot); return `<div class="pc-w"><span class="pc-wn">${esc(h.name)}</span><div class="bar job thin"><i class="hv-pbar" style="animation-duration:${tot}ms;animation-delay:-${Math.round(el)}ms"></i></div></div>`; }).join('');
     const sends = locked ? `<span class="lockt">🔒 ${jd.name} niveau ${c.lvl}</span>` : st.heroes.length ? st.heroes.map(h => { const there = h.act && h.act.type === 'harvest' && h.act.id === c.id;
       return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="harvest" data-id="${c.id}" ${there ? 'disabled' : ''}`, there ? 'Récolte ici' : h.act ? `Quitte ${esc(placeName(h.act))}` : 'Disponible', (there ? 'here' : '') + ' sm'); }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
-    return `<article class="pcard${locked ? ' locked' : ''}${isAlm ? ' is-alm' : ''}${workers.length ? ' busy' : ''}${m.i >= 3 ? ' master' : ''}">
+    return `<article data-crop="${c.id}" class="pcard${locked ? ' locked' : ''}${isAlm ? ' is-alm' : ''}${workers.length ? ' busy' : ''}${m.i >= 3 ? ' master' : ''}">
       <div class="pc-art"><div class="pc-glow" style="--c:${PLANT_COL[c.id]}"></div>${plantSvg(c.id, locked ? 'sil' : '')}<span class="pc-lv">Niv. ${c.lvl}</span>${isAlm && !locked ? '<span class="pc-star">★ ×2</span>' : ''}${locked ? '' : `<span class="pc-stock num" title="En stock">${short(st.res[c.id] || 0)}</span>`}</div>
       <div class="pc-main"><b class="pc-name">${locked ? '???' : esc(c.name)}</b><small class="sub">${locked ? 'Plante à découvrir' : esc(c.where)}</small>
         ${locked ? '' : `<div class="pc-rank"><span class="mrank m${m.i}"><span class="pips">${Array.from({ length: 4 }, (_, k) => `<i class="${k < m.i ? 'on' : ''}"></i>`).join('')}</span>${m.name}</span><small class="sub num">${m.next ? `${fmt(m.n)} / ${fmt(m.next.at)}` : `${fmt(m.n)} récoltes`}</small></div><div class="bar mast thin"><i style="width:${(prog * 100).toFixed(0)}%"></i></div>
