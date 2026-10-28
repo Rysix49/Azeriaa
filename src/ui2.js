@@ -1391,6 +1391,7 @@ function render(force) {
     if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) { if (!redrawCards()) renderMain(); patchCombat(); } else patchCombat();
   } else {
     if (harvestViewFx(ui.view === 'recolte')) lastSlow = now; // un petit effet sur la carte de la plante : on retarde le redessin pour le laisser finir
+    if (ui.view === 'talents') { const h = selHero(), sg = h ? `${h.id}|${h.lvl}|${st.heroes.length}|${skillFree(h)}` : ''; if (sg !== ui._skSig) { ui._skSig = sg; renderMain(); lastSlow = now; } return; }
     if (now - lastSlow > 1500 && ui.view !== 'options') { renderMain(); lastSlow = now; }
   }
 }
