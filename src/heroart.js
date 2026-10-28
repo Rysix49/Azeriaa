@@ -955,6 +955,111 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
   </g>
   <g class="p-spark"><path d="M104 40 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6Z" fill="#fff6c0"/><path d="M18 52 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2Z" fill="#bfe6ff"/></g>
 </svg>`,
+
+/* ---- SACRIEUR ---- berserker : crâne cornu en Berserk à 6 Stigmates, runes-cicatrices, grande lame crantée ---- */
+sacrieur: `<svg class="hs hs-sacrieur" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <radialGradient id="scSkin" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#f6c49a"/><stop offset=".65" stop-color="#d98c5c"/><stop offset="1" stop-color="#a85a38"/></radialGradient>
+    <linearGradient id="scRed" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e04040"/><stop offset=".55" stop-color="#a32226"/><stop offset="1" stop-color="#5a0c12"/></linearGradient>
+    <linearGradient id="scDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6a1a22"/><stop offset="1" stop-color="#2a060c"/></linearGradient>
+    <linearGradient id="scSteel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a727e"/><stop offset=".45" stop-color="#e4e9f0"/><stop offset="1" stop-color="#58606c"/></linearGradient>
+    <linearGradient id="scBone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6dc"/><stop offset="1" stop-color="#c8b088"/></linearGradient>
+    <linearGradient id="scLeather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4a2a"/><stop offset="1" stop-color="#3e1c0e"/></linearGradient>
+    <linearGradient id="scFire" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff2a1a"/><stop offset=".6" stop-color="#ff8a2a"/><stop offset="1" stop-color="#ffe08a"/></linearGradient>
+    <radialGradient id="scAura" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#ff5a3a" stop-opacity=".55"/><stop offset=".6" stop-color="#d81a1a" stop-opacity=".3"/><stop offset="1" stop-color="#d81a1a" stop-opacity="0"/></radialGradient>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="120" rx="30" ry="5" fill="#000" opacity=".34"/>
+  <circle class="p-aura" cx="62" cy="64" r="62" fill="url(#scAura)" opacity="0"/>
+  <!-- crinière de flammes (Berserk) -->
+  <g class="p-rage p-mane"><path d="M38 36 L26 14 L40 24 L36 2 L50 20 L54 -2 L62 18 L74 0 L74 22 L90 8 L82 30 L98 26 L84 44Z" fill="url(#scFire)" stroke="#7a1408" stroke-width="1.4" stroke-linejoin="round"/><path d="M50 30 L46 14 L56 24 L60 8 L66 24 L76 12 L74 30Z" fill="#ffe9a0" opacity=".7"/></g>
+  <!-- cape en lambeaux -->
+  <g class="p-cape" stroke="#2a0608" stroke-width="2" stroke-linejoin="round">
+    <path d="M42 54 Q24 62 18 92 L10 114 L26 106 L32 118 L44 102 L54 80Z" fill="url(#scDark)"/>
+    <path d="M30 70 l4 8 M24 86 l5 6 M36 90 l2 9" stroke="#e04040" stroke-opacity=".5" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- jambes, bandages, bottes cloutées -->
+  <g stroke="#2a0608" stroke-width="2" stroke-linejoin="round">
+    <path d="M50 92 h12 l-1 19 h-11Z" fill="url(#scDark)"/>
+    <path d="M65 92 h13 l1 19 h-13Z" fill="url(#scDark)"/>
+    <path d="M49 100 h13 M49 105 h12 M66 100 h13 M66 105 h13" stroke="#e9d9b8" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <path d="M46 110 h16 v5 q9 0 12 5 h-28 q-2 -2 0 -10Z" fill="url(#scLeather)"/>
+    <path d="M64 110 h16 v5 q9 0 12 5 h-28 q-2 -2 0 -10Z" fill="url(#scLeather)"/>
+    <path d="M49 110 l2 -4 l2 4 M68 110 l2 -4 l2 4" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1.2"/>
+  </g>
+  <!-- bras arrière : poing serré, brassard à pointes -->
+  <g class="p-armB">
+    <path d="M42 58 Q30 62 25 77 L35 83 Q38 71 47 66Z" fill="url(#scSkin)" stroke="#2a0608" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M28 70 L38 66 M27 74 L37 71 M26 78 L36 76" stroke="#e9d9b8" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <path d="M24 72 L35 68 L36 78 L26 82Z" fill="url(#scLeather)" stroke="#2a0608" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M27 71 l-3 -5 l5 2 M30 69 l-1 -6 l4 4" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1"/>
+    <circle cx="27" cy="85" r="6.5" fill="url(#scSkin)" stroke="#2a0608" stroke-width="2"/>
+    <path d="M23 83 h8 M23 86 h8" stroke="#2a0608" stroke-width="1.2" opacity=".6"/>
+    <g class="p-rage p-veins" fill="none" stroke="#ff3a2a" stroke-width="1.6" stroke-linecap="round"><path d="M44 62 L36 70 L40 78 M30 84 l4 -2"/></g>
+  </g>
+  <g class="p-torso">
+    <!-- torse massif -->
+    <path d="M37 56 Q62 47 88 56 L82 90 Q62 97 44 90Z" fill="url(#scSkin)" stroke="#2a0608" stroke-width="2.2" stroke-linejoin="round"/>
+    <g class="p-runes" fill="none" stroke-linecap="round" stroke-linejoin="round"><path class="p-rune" style="--i:0" d="M48 62 l5 3 l-3 4 l6 3"/><path class="p-rune" style="--i:1" d="M76 62 l-5 3 l3 4 l-6 3"/><path class="p-rune" style="--i:2" d="M56 74 l4 2 l-2 4 l5 2"/><path class="p-rune" style="--i:3" d="M70 74 l-4 2 l2 4 l-5 2"/><path class="p-rune" style="--i:4" d="M46 78 l4 3 l-3 3"/><path class="p-rune" style="--i:5" d="M80 78 l-4 3 l3 3"/></g>
+    <path d="M62 58 V90" stroke="#a85a38" stroke-opacity=".5" stroke-width="1.4"/>
+    <path d="M52 66 Q62 71 72 66 M53 74 Q62 79 71 74" fill="none" stroke="#a85a38" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>
+    <!-- harnais de cuir -->
+    <path d="M40 55 L52 55 L76 90 L64 92Z" fill="url(#scLeather)" stroke="#2a0608" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M84 55 L72 55 L52 90 L62 92Z" fill="url(#scLeather)" stroke="#2a0608" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="62" cy="72" r="5" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1.6"/><circle cx="62" cy="72" r="1.8" fill="#8a0c14"/>
+    <g class="p-calm"><path d="M44 58 Q50 80 60 76 M80 58 Q74 80 64 76" fill="none" stroke="url(#scSteel)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 2"/></g>
+    <g class="p-rage p-cracks" fill="none" stroke="#ffcf5a" stroke-width="1.8" stroke-linecap="round"><path d="M62 58 L58 66 L64 72 L59 82 M46 70 L52 74 M78 70 L72 74"/></g>
+    <!-- ceinture, boucle-crâne -->
+    <path d="M44 88 h38 v8 h-38Z" fill="url(#scLeather)" stroke="#2a0608" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="63" cy="92" r="5" fill="url(#scBone)" stroke="#2a0608" stroke-width="1.4"/><circle cx="61.2" cy="91.4" r="1.2" fill="#2a0608"/><circle cx="64.8" cy="91.4" r="1.2" fill="#2a0608"/><path d="M62 94.4 h2" stroke="#2a0608" stroke-width="1"/>
+    <g class="p-chain"><path d="M48 96 Q46 104 50 108 M78 96 Q80 104 76 108" fill="none" stroke="url(#scSteel)" stroke-width="2.4" stroke-dasharray="3 1.6" stroke-linecap="round"/></g>
+    <!-- épaulière gauche (arrière) et collier de pointes -->
+    <circle cx="41" cy="57" r="7.4" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1.8"/><path d="M36 53 l-4 -6 l7 3 M41 50 l0 -7 l4 6" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1.2"/>
+    <g class="p-rage"><path d="M36 60 l-8 -3 l7 -4 M44 50 l-3 -9 l6 5" fill="url(#scBone)" stroke="#2a0608" stroke-width="1.2" stroke-linejoin="round"/></g>
+    <path d="M52 52 Q62 60 74 52 L75 46 Q62 54 51 46Z" fill="url(#scLeather)" stroke="#2a0608" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M55 52 l-1 -5 l3 3 M62 55 l0 -6 l3 5 M70 52 l1 -5 l2 4" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1"/>
+    <g class="p-rageskin" fill="#ff2a1a" opacity="0"><path d="M37 56 Q62 47 88 56 L82 90 Q62 97 44 90Z"/></g>
+  </g>
+  <!-- bras avant et grande lame crantée -->
+  <g class="p-arm">
+    <g class="p-blade">
+      <path d="M90 84 V76 M98 84 V76" stroke="#2a0608" stroke-width="8" stroke-linecap="round"/>
+      <rect x="91" y="72" width="6" height="22" rx="2.4" fill="url(#scLeather)" stroke="#2a0608" stroke-width="1.6"/>
+      <path d="M86 72 Q94 66 102 72 L100 76 Q94 72 88 76Z" fill="url(#scDark)" stroke="#2a0608" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M88 70 L87 26 L91 8 L95 3 L100 10 L101 26 L100 70Z" fill="url(#scSteel)" stroke="#2a0608" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M100 66 l5 -4 l-5 -3 l5 -5 l-5 -3 l5 -5 l-5 -3 l5 -5 l-5 -3 l4 -5 l-4 -2" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M94 8 V68" stroke="#7a828e" stroke-width="1.6"/>
+      <path class="p-bladeglow" d="M94 12 V66 M90 30 L98 34 M90 48 L98 52" fill="none" stroke="#ff3a2a" stroke-width="2.4" stroke-linecap="round" opacity="0"/>
+      <path class="p-drip" d="M91 62 V68 M97 50 V58 M89 40 V44" stroke="#c81420" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 5"/>
+      <path d="M90 46 q-2 4 0 6 q2 -2 0 -6" fill="#c81420"/>
+    </g>
+    <path d="M82 56 Q92 62 94 76 L102 78 Q104 68 98 60 Q90 50 78 50Z" fill="url(#scSkin)" stroke="#2a0608" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M86 66 L96 62 M88 70 L98 67 M90 74 L100 72" stroke="#e9d9b8" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <circle cx="84" cy="56" r="9" fill="url(#scSteel)" stroke="#2a0608" stroke-width="2"/><path d="M78 52 l-4 -8 l8 4 M85 47 l1 -9 l5 7 M90 54 l8 -4 l-3 8" fill="url(#scSteel)" stroke="#2a0608" stroke-width="1.3" stroke-linejoin="round"/>
+    <g class="p-rage"><path d="M92 58 l9 -2 l-5 6 M78 62 l-8 1 l6 -5" fill="url(#scBone)" stroke="#2a0608" stroke-width="1.2" stroke-linejoin="round"/><path d="M86 62 L92 70 L90 78" fill="none" stroke="#ff3a2a" stroke-width="1.6" stroke-linecap="round"/></g>
+    <path d="M88 78 q-3 -2 -1 -6 q4 -2 8 0 q3 3 0 7 q-3 2 -7 -1Z" fill="url(#scSkin)" stroke="#2a0608" stroke-width="1.6" stroke-linejoin="round"/>
+    <g fill="url(#scSkin)" stroke="#2a0608" stroke-width="1.2"><rect x="89" y="72.4" width="9" height="3" rx="1.5"/><rect x="89.4" y="75.8" width="9" height="3" rx="1.5"/><rect x="89.8" y="79.2" width="8" height="3" rx="1.5"/></g>
+  </g>
+  <!-- tête -->
+  <g class="p-face">
+    <ellipse cx="63" cy="37" rx="11.6" ry="12.2" fill="url(#scSkin)" stroke="#2a0608" stroke-width="2"/>
+    <path class="p-war" d="M54 42 l4 2 M54 45 l4 1.6 M72 42 l-4 2 M72 45 l-4 1.6" stroke="#b81822" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <path d="M54 28 L58 42" stroke="#8a1c24" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M53 33 l3 .8 M55 38 l3 .8" stroke="#e9d9b8" stroke-width="1" stroke-linecap="round"/>
+    <g class="p-brow" stroke="#2a0608" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M54 33 L61 36"/><path d="M73 33 L65.4 36"/></g>
+    <g class="p-eye"><ellipse cx="58" cy="38.4" rx="2.9" ry="2.6" fill="#fff" stroke="#2a0608" stroke-width="1.2"/><circle cx="58.6" cy="38.6" r="1.7" fill="#d81a1a"/><circle cx="58.6" cy="38.6" r=".8" fill="#2a0608"/>
+      <ellipse cx="69" cy="38.2" rx="3" ry="2.7" fill="#fff" stroke="#2a0608" stroke-width="1.2"/><circle cx="69.8" cy="38.4" r="1.8" fill="#d81a1a"/><circle cx="69.8" cy="38.4" r=".9" fill="#2a0608"/></g>
+    <g class="p-rage p-eyeglow"><circle cx="58.6" cy="38.6" r="5" fill="#ff5a2a" opacity=".6"/><circle cx="69.8" cy="38.4" r="5.2" fill="#ff5a2a" opacity=".6"/></g>
+    <path d="M65 40 l-1 5 l3 .6" fill="none" stroke="#2a0608" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <g class="p-mouth"><path d="M57 47 Q63 51 70 47 L69 50.6 Q63 54 58 50.6Z" fill="#3a0a10" stroke="#2a0608" stroke-width="1.4" stroke-linejoin="round"/><path d="M59 47.8 l1 2.4 l1.4 -2.2 M64 49 l1.2 2.4 l1.4 -2.4" fill="#fff6dc" stroke="none"/></g>
+    <!-- bandeau rouge et crête de pointes -->
+    <path d="M51 31 Q63 24 76 31 L76 35 Q63 29 51 35Z" fill="url(#scRed)" stroke="#2a0608" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M53 29 L50 17 L58 25 L60 12 L66 24 L72 14 L72 26 L80 20 L76 31Z" fill="url(#scDark)" stroke="#2a0608" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M58 24 L60 16 M66 23 L70 17" stroke="#c83a40" stroke-width="1.2" stroke-linecap="round"/>
+    <g class="p-calm"><path d="M52 31 l-1 -3 l3 1 M76 31 l1 -3 l-3 1" fill="url(#scBone)" stroke="#2a0608" stroke-width="1"/></g>
+    <g class="p-rage p-horns"><path d="M52 31 Q42 26 40 12 Q38 4 44 2 Q41 12 50 22 Q54 26 56 28Z" fill="url(#scBone)" stroke="#2a0608" stroke-width="1.8" stroke-linejoin="round"/><path d="M76 31 Q86 26 88 12 Q90 4 84 2 Q87 12 78 22 Q74 26 72 28Z" fill="url(#scBone)" stroke="#2a0608" stroke-width="1.8" stroke-linejoin="round"/><path d="M45 8 Q43 14 50 22 M83 8 Q85 14 78 22" fill="none" stroke="#c8b088" stroke-width="1.2" stroke-linecap="round"/></g>
+    <g class="p-rageskin" fill="#ff2a1a" opacity="0"><ellipse cx="63" cy="37" rx="11.6" ry="12.2"/></g>
+  </g>
+  <g class="p-steam"><path d="M46 20 q-3 -6 0 -10 q3 -4 0 -9 M80 22 q4 -6 0 -11 q-3 -4 0 -9" fill="none" stroke="#ffd0c0" stroke-width="2" stroke-linecap="round" opacity="0"/></g>
+</svg>`,
 };
 
 function hasHeroArt(cls) { return !!HERO_ART[cls]; }

@@ -252,6 +252,20 @@ function passiveHtml(c) {
   const body = p.points ? `<ul class="pv-list">${p.points.map(([ic, t, d]) => `<li><span class="pv-ic" aria-hidden="true">${ic}</span><div><b>${t}</b><span>${d}</span></div></li>`).join('')}</ul>` : `<span>${p.desc}</span>`;
   return `<div class="passive" style="--c:${c.color}"><span class="label">Passif · ${p.name}</span>${body}</div>`;
 }
+const SAC_RAGE = {};
+/* Transformation en Berserk : onde rouge, gouttes de sang, secousse, texte */
+function sacBerserk(card, fu) {
+  const sp = fu.querySelector('.sprite'), scene = card.querySelector('.scene');
+  ecaState(fu, 'sac-trans', 1250); ecaText(card, 'BERSERK !', '', 'sac');
+  if (!FX_OK() || !sp) return;
+  for (let k = 0; k < 2; k++) { const r = document.createElement('i'); r.className = 'sc-ring'; r.style.setProperty('--d', k * 220 + 'ms'); sp.appendChild(r); setTimeout(() => r.remove(), 1500); }
+  for (let i = 0; i < 16; i++) {
+    const e = document.createElement('i'); e.className = 'sc-drop'; e.style.left = '45%'; const a = -Math.PI * (.05 + Math.random() * .9);
+    e.style.cssText += `--dx:${(Math.cos(a) * (30 + Math.random() * 60)).toFixed(0)}px;--dy:${(Math.sin(a) * (30 + Math.random() * 50)).toFixed(0)}px;--s:${(3 + Math.random() * 5).toFixed(1)}px;--d:${(Math.random() * 300).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1600);
+  }
+  if (scene) { scene.classList.remove('cb-shake'); void scene.offsetWidth; scene.classList.add('cb-shake'); setTimeout(() => scene.classList.remove('cb-shake'), 800); }
+}
 function stigHtml(h) { const f = h.fight, n = (f && f.stig) || 0; return `🩸 ${'◆'.repeat(n)}${'◇'.repeat(SAC_STIG_MAX - n)}${f && f.martyr ? ' · ☠✗' : ''}`; }
 function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
@@ -857,6 +871,12 @@ function patchCombat() {
     }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
+    if (h.cls === 'sacrieur') { // les runes-cicatrices s'allument avec les Stigmates ; au maximum : BERSERK
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), n = h.fight ? Math.min(SAC_STIG_MAX, h.fight.stig || 0) : 0, v = (n / SAC_STIG_MAX).toFixed(2);
+      if (fsp && fsp.style.getPropertyValue('--st') !== v) { fsp.style.setProperty('--st', v); fsp.querySelectorAll('.p-rune').forEach((el, i) => el.classList.toggle('lit', i < n)); }
+      const rage = !!h.fight && n >= SAC_STIG_MAX && !(h.hp <= 0);
+      if (fu) { fu.classList.toggle('sac-rage', rage); if (rage && !SAC_RAGE[h.id]) sacBerserk(card, fu); SAC_RAGE[h.id] = rage; }
+    }
     const sg = q('stig'); if (sg) { const tx = stigHtml(h); if (sg.textContent !== tx) sg.textContent = tx; sg.classList.toggle('full', !!(h.fight && h.fight.stig >= SAC_STIG_MAX)); }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
