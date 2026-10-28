@@ -1289,7 +1289,8 @@ const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '
 const gearStatChips = g => Object.entries(g.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k] || 'var(--fg)'}">+${v} ${STAT_LABEL[k]}</i>`).join('');
 function gearTile(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
-  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}${by ? ' worn' : ''}"${by ? ` style="--c:${CLASSES[by.cls].color}"` : ''} data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)} · niv. ${d.lvl}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" aria-label="Porté par ${esc(by.name)}">${emblem(by.cls, true)}<b>${esc(by.name.slice(0, 1).toUpperCase())}</b></span>` : ''}</button>`;
+  const sc = d.set ? SET_COL[d.set] : '';
+  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}${by ? ' worn' : ''}${sc ? ' has-set' : ''}" style="${by ? `--c:${CLASSES[by.cls].color};` : ''}${sc ? `--sc:${sc}` : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)} · niv. ${d.lvl}${d.set ? ' · ' + esc(SETS[d.set].name) : ''}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" aria-label="Porté par ${esc(by.name)}">${emblem(by.cls, true)}<b>${esc(by.name.slice(0, 1).toUpperCase())}</b></span>` : ''}</button>`;
 }
 function resTile(id) {
   const r = RESOURCES[id]; const sel = ui.sel && ui.sel.k === 'res' && ui.sel.id === id;
@@ -1299,7 +1300,7 @@ function gearRow(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
   const type = d.relic ? 'Relique' : d.harvest ? HARVEST_SLOT_LABEL[d.slot] : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
   return `<button class="iv-row ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}"><span class="tile sm ${qClass(g)}">${itemIcon(g.id)}</span>
-    <span class="iv-n"><b>${esc(d.name)}</b><small>${type} · niv. ${d.lvl}</small></span><span class="iv-st">${gearStatChips(g)}</span>
+    <span class="iv-n"><b>${esc(d.name)}</b><small>${type} · niv. ${d.lvl}${d.set ? ` · <u class="setn" style="--sc:${SET_COL[d.set]}">${esc(SETS[d.set].name.replace('Panoplie ', '').replace('de l’', '').replace('du ', '').replace("de l'", ''))}</u>` : ''}</small></span><span class="iv-st">${gearStatChips(g)}</span>
     <span class="iv-r">${qualityTag(g)}${by ? `<span class="iv-by" style="--c:${CLASSES[by.cls].color}">${emblem(by.cls, true)}${esc(by.name)}</span>` : `<small class="iv-v">${fmt(itemValue(g))} K</small>`}</span></button>`;
 }
 function resRow(id) {
@@ -1381,7 +1382,7 @@ function gearInspector(g) {
     return `<div class="s" style="--c:${STAT_COLOR[k] || 'var(--fg)'}"><span>+${v} ${STAT_LABEL[k]}</span><small>${a}–${b}</small><i class="roll"><b style="width:${Math.max(4, pc)}%"></b></i></div>`; };
   const rows = st.heroes.map(h => { const on = by && by.id === h.id, ok = canFor(h), cur = gearCurrent(d, h), cd = cur ? ITEMS[gearById(st, cur).id] : null, diff = on ? '' : gearDiff(g, cur);
     return `<button class="iv-eq${on ? ' here' : ''}" ${on || !ok ? 'disabled' : ''} data-act="equipon" data-uid="${g.uid}" data-hero="${h.id}" style="--c:${CLASSES[h.cls].color}">${emblem(h.cls, true)}<span class="iv-eqt"><b>${esc(h.name)}</b><small>${on ? 'Le porte déjà' : !ok ? `${req} requis` : cd ? `Remplace ${esc(cd.name)}` : 'Emplacement libre'}</small>${diff && ok ? `<span class="iv-diff">${diff}</span>` : ''}</span><span class="iv-go">${on ? '✓' : ok ? 'Équiper' : '🔒'}</span></button>`; }).join('');
-  return `<div class="insp-card ${qClass(g)}"><div class="insp-head"><div class="tile lg ${qClass(g)}">${itemIcon(g.id)}</div><div class="ih-t"><b class="display">${esc(d.name)}</b><small>${type} · ${req}</small>${qualityTag(g)}</div></div></div>
+  return `<div class="insp-card ${qClass(g)}"><div class="insp-head"><div class="tile lg ${qClass(g)}">${itemIcon(g.id)}</div><div class="ih-t"><b class="display">${esc(d.name)}</b><small>${type} · ${req}</small><span class="ih-tags">${qualityTag(g)}${d.set ? `<span class="set-tag" style="--sc:${SET_COL[d.set]}">◆ ${esc(SETS[d.set].name)}</span>` : ''}</span></div></div></div>
     <div class="insp-stats">${Object.entries(g.stats).map(stat).join('')}</div>
     ${d.set ? setBlock(d.set, by) : ''}
     ${by ? `<div class="eqby-line">${emblem(by.cls, true)}<span>Porté par <b>${esc(by.name)}</b></span><button class="btn sm ghost" data-act="unequipuid" data-uid="${g.uid}">Retirer</button></div>` : ''}

@@ -3236,3 +3236,11 @@ label.btn { cursor: pointer; }
 .iv-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } .iv-stat { overflow: hidden; } .iv-stat > div { overflow: hidden; } .iv-stat small { overflow: hidden; text-overflow: ellipsis; } .iv-stat b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 700px) { .iv-row { flex-wrap: wrap; row-gap: 3px; } .iv-st { display: flex; flex-basis: 100%; order: 5; padding-left: 58px; font-size: 11.5px; } .iv-stat > span { display: none; } .iv-search input { height: 38px; } .iv-stat b { font-size: 17px; } }
 @media (max-width: 700px) { .iv-cats { flex-wrap: wrap; overflow: visible; } .iv-cats .fchip { padding: 7px 11px; } }
+
+/* Identité de panoplie */
+.tile.has-set::after { content: ""; position: absolute; left: 4px; bottom: 4px; width: 9px; height: 9px; background: var(--sc); transform: rotate(45deg); border-radius: 2px; border: 1px solid #000a; box-shadow: 0 0 7px var(--sc); pointer-events: none; }
+.tile.has-set { background: radial-gradient(circle at 50% 110%, color-mix(in srgb, var(--sc) 20%, transparent), transparent 70%), linear-gradient(180deg, #2b3223, #1b2016); }
+.tile.has-set.q-stasis { background: radial-gradient(circle at 50% 110%, color-mix(in srgb, var(--sc) 20%, transparent), transparent 70%), linear-gradient(180deg, #3d2465, var(--stasis-bg)); }
+.setn { text-decoration: none; color: var(--sc); font-weight: 900; }
+.ih-tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.set-tag { padding: 1px 9px; border-radius: 99px; font-size: 11px; font-weight: 900; color: var(--sc); border: 1px solid color-mix(in srgb, var(--sc) 60%, transparent); background: color-mix(in srgb, var(--sc) 14%, #00000060); }
