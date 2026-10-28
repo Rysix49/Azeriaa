@@ -551,6 +551,256 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
     <g class="p-stars" opacity="0" fill="#ffe27a" stroke="#6a4208" stroke-width=".9"><path d="M46 14 l2 4 4 .6 -3 3 .8 4 -3.8 -2 -3.8 2 .8 -4 -3 -3 4 -.6Z"/><path d="M86 8 l1.6 3.4 3.6 .5 -2.6 2.6 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.6 3.6 -.5Z"/><path d="M66 -2 l1.4 3 3.2 .4 -2.3 2.3 .6 3.2 -2.9 -1.5 -2.9 1.5 .6 -3.2 -2.3 -2.3 3.2 -.4Z"/></g>
   </g>
 </svg>`,
+
+/* ---- CRA ---- archère aux yeux de lynx : capuche de feuillage, faucon perché sur l'arc, carquois, lentille de visée ---- */
+cra: `<svg class="hs hs-cra" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <radialGradient id="crSkin" cx="42%" cy="32%" r="78%"><stop offset="0" stop-color="#ffe3c2"/><stop offset=".7" stop-color="#f1b783"/><stop offset="1" stop-color="#c98458"/></radialGradient>
+    <linearGradient id="crHair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#d4deea"/><stop offset="1" stop-color="#8d9db4"/></linearGradient>
+    <linearGradient id="crHood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58c25f"/><stop offset=".55" stop-color="#2f8a3d"/><stop offset="1" stop-color="#14502a"/></linearGradient>
+    <linearGradient id="crJerk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fb85a"/><stop offset=".55" stop-color="#2a7a3a"/><stop offset="1" stop-color="#124624"/></linearGradient>
+    <linearGradient id="crCloak" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f9a4a"/><stop offset=".6" stop-color="#1f6a32"/><stop offset="1" stop-color="#0c3a1c"/></linearGradient>
+    <linearGradient id="crCloakIn" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8d9a0"/><stop offset="1" stop-color="#9a8a52"/></linearGradient>
+    <radialGradient id="crGold" cx="36%" cy="30%" r="80%"><stop offset="0" stop-color="#fff8c0"/><stop offset=".45" stop-color="#ffd24a"/><stop offset="1" stop-color="#b8791a"/></radialGradient>
+    <linearGradient id="crLeather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6638"/><stop offset="1" stop-color="#4a2a14"/></linearGradient>
+    <linearGradient id="crBoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a32"/><stop offset="1" stop-color="#32180a"/></linearGradient>
+    <linearGradient id="crPants" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a6a3a"/><stop offset="1" stop-color="#1c3c22"/></linearGradient>
+    <linearGradient id="crFur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d8cba8"/></linearGradient>
+    <linearGradient id="crWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d49a52"/><stop offset=".5" stop-color="#9a5a26"/><stop offset="1" stop-color="#5a2e10"/></linearGradient>
+    <radialGradient id="crLens" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="#e8ffe0" stop-opacity=".5"/><stop offset=".55" stop-color="#7dff6a" stop-opacity=".22"/><stop offset="1" stop-color="#1f8a3a" stop-opacity=".4"/></radialGradient>
+    <radialGradient id="crAmber" cx="40%" cy="32%" r="72%"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffb62e"/><stop offset="1" stop-color="#a85a0a"/></radialGradient>
+    <radialGradient id="crAura" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#b6ff7a" stop-opacity=".7"/><stop offset=".55" stop-color="#4fe05a" stop-opacity=".35"/><stop offset="1" stop-color="#2fe05a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="crScarf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ee6a44"/><stop offset="1" stop-color="#a02a18"/></linearGradient>
+    <linearGradient id="crSteel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#b6c4d4"/><stop offset="1" stop-color="#62728a"/></linearGradient>
+    <linearGradient id="crHawk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c98a4a"/><stop offset=".6" stop-color="#8a5226"/><stop offset="1" stop-color="#4a280e"/></linearGradient>
+    <linearGradient id="crHawkW" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a86a34"/><stop offset="1" stop-color="#2e1a0a"/></linearGradient>
+    <linearGradient id="crFeather" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#1fb8a0"/><stop offset=".5" stop-color="#8ef0d8"/><stop offset="1" stop-color="#fff6d8"/></linearGradient>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="119" rx="32" ry="5.5" fill="#000" opacity=".32"/>
+  <circle class="p-aura" cx="62" cy="68" r="58" fill="url(#crAura)" opacity="0"/>
+
+  <!-- manteau de feuillage -->
+  <g class="p-cloak" stroke="#0d2412" stroke-width="2" stroke-linejoin="round">
+    <path d="M54 58 Q34 60 24 82 L10 106 L25 100 L24 113 L38 103 L44 117 L53 99 L62 72Z" fill="url(#crCloak)"/>
+    <path d="M52 66 Q40 72 34 88 L40 99 L48 90 L52 98 L58 78Z" fill="url(#crCloakIn)" stroke="none" opacity=".55"/>
+    <path d="M44 70 Q34 82 28 100 M50 74 Q44 88 40 104" fill="none" stroke="#9fe08a" stroke-opacity=".4" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M22 88 l4 -1 M26 96 l4 -2 M33 92 l3 -3" stroke="#0d2412" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- queue-de-cheval argentée -->
+  <g class="p-pony" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M46 36 Q34 36 30 48 Q27 60 31 74 Q33 64 36 58 Q36 68 35 78 Q42 66 41 52 Q44 46 48 42Z" fill="url(#crHair)"/>
+    <path d="M33 52 Q31 62 33 70 M38 50 Q37 58 37 66" fill="none" stroke="#8d9db4" stroke-opacity=".7" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M43 35 l-5 -1 -1 7 6 1Z" fill="url(#crScarf)"/>
+    <circle cx="39.5" cy="41" r="2.4" fill="url(#crGold)" stroke="#6a4208" stroke-width="1"/>
+  </g>
+
+  <!-- carquois et flèches -->
+  <g transform="translate(-7 7)"><g class="p-qarrows" stroke="#26180a" stroke-linejoin="round" stroke-linecap="round">
+    <g transform="rotate(-32 44 52)"><path d="M44 52 L44 30" stroke-width="3.6"/><path d="M44 52 L44 30" stroke="#e8d6a0" stroke-width="1.8"/>
+      <path d="M44 30 L40 22 L47.4 22Z" fill="#d6402a" stroke-width="1.2"/></g>
+    <g transform="rotate(-10 44 52)"><path d="M44 52 L44 27" stroke-width="3.6"/><path d="M44 52 L44 27" stroke="#e8d6a0" stroke-width="1.8"/>
+      <path d="M44 27 L40 19 L47.4 19Z" fill="#fff6d8" stroke-width="1.2"/></g>
+    <g transform="rotate(12 44 52)"><path d="M44 52 L44 31" stroke-width="3.6"/><path d="M44 52 L44 31" stroke="#e8d6a0" stroke-width="1.8"/>
+      <path d="M44 31 L40 23 L47.4 23Z" fill="#2fb8a0" stroke-width="1.2"/></g>
+  </g></g>
+  <g class="p-quiver" stroke="#26180a" stroke-width="2" stroke-linejoin="round" transform="translate(-7 7)">
+    <g transform="rotate(-16 46 70)">
+      <rect x="39.5" y="46" width="13" height="50" rx="4.5" fill="url(#crLeather)"/>
+      <rect x="38.5" y="45" width="15" height="6" rx="2.6" fill="url(#crGold)" stroke-width="1.5"/>
+      <path d="M40 62 h12 M40 76 h12" stroke="#e0b25a" stroke-width="1.4"/>
+      <path d="M46 55 q3 4 0 9 q-3 -5 0 -9Z" fill="#7dff6a" stroke="#1a6a36" stroke-width="1"/>
+    </g>
+  </g>
+
+  <!-- jambes et bottes à revers de fourrure -->
+  <g stroke="#26180a" stroke-width="2" stroke-linejoin="round">
+    <path d="M50 94 h13 v11 h-13Z M68 94 h13 v11 h-13Z" fill="url(#crPants)" stroke="#0d2412"/>
+    <path d="M49 101 h14 v8 q7 1 7 5 q0 4.6 -6 4.6 h-19 q-4 0 -4 -4 q0 -4 8 -5Z" fill="url(#crBoot)"/>
+    <path d="M68 101 h14 v8 q7 1 7 5 q0 4.6 -6 4.6 h-19 q-4 0 -4 -4 q0 -4 8 -5Z" fill="url(#crBoot)"/>
+    <path d="M47 99 Q56 94 65 99 L65 105 Q56 101 47 105Z" fill="url(#crFur)"/>
+    <path d="M66 99 Q75 94 84 99 L84 105 Q75 101 66 105Z" fill="url(#crFur)"/>
+    <path d="M51 100 l1 3 M55 99 l1 3 M59 99 l1 3 M70 100 l1 3 M74 99 l1 3 M78 99 l1 3" stroke="#a89a78" stroke-width="1" fill="none"/>
+    <path d="M52 112 h8 M70 112 h8" stroke="#e0b25a" stroke-width="1.6" fill="none"/>
+    <path d="M43 118 h25 M62 118 h25" stroke="#1a0f06" stroke-width="2"/>
+  </g>
+
+  <g class="p-torso">
+    <!-- veste de chasse -->
+    <path d="M46 62 Q62 54 80 62 L85 97 Q62 105 41 97Z" fill="url(#crJerk)" stroke="#0d2412" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M43 70 Q41 84 44 94" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M82 68 Q85 82 84 94" fill="none" stroke="#9fe08a" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
+    <path d="M53 61 L62 76 L73 61Z" fill="#f4ecd0" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M57 64 l5 4 l5 -4 M59 68 l3 2.6 l3 -2.6" fill="none" stroke="#8a5a32" stroke-width="1.2" stroke-linecap="round"/>
+    <!-- foulard rouge -->
+    <g class="p-scarf" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M52 62 Q40 66 30 62 Q22 62 16 70 Q26 68 30 74 Q36 70 42 72 Q50 72 54 68Z" fill="url(#crScarf)"/>
+      <path d="M22 66 l6 2 M30 68 l4 2" stroke="#ffd0b0" stroke-opacity=".6" stroke-width="1.1" fill="none"/>
+    </g>
+    <path d="M47 61 Q62 70 79 61 L78 66 Q62 75 48 67Z" fill="url(#crScarf)" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round"/>
+    <!-- baudrier et fermoir feuille -->
+    <path d="M76 60 L50 96" stroke="#26180a" stroke-width="6.4" stroke-linecap="round"/><path d="M76 60 L50 96" stroke="url(#crLeather)" stroke-width="4.2" stroke-linecap="round"/>
+    <g fill="url(#crGold)" stroke="#6a4208" stroke-width="1"><circle cx="70" cy="68.4" r="1.5"/><circle cx="56" cy="87.6" r="1.5"/></g>
+    <path d="M63 72 Q71 76 63 85 Q55 76 63 72Z" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.4" stroke-linejoin="round"/><path d="M63 74 L63 83" stroke="#6a4208" stroke-width="1"/>
+    <!-- ceinture, boucle feuille -->
+    <path d="M41 93 Q62 100 85 93 L86 100 Q62 107 40 100Z" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M63 93.6 Q70 98.4 63 106 Q56 98.4 63 93.6Z" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.5" stroke-linejoin="round"/><circle cx="63" cy="99.4" r="2" fill="#7dff6a" stroke="#1a6a36" stroke-width=".9"/>
+    <!-- tassettes en feuilles -->
+    <g class="p-tass" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M44 100 Q52 104 50 114 Q43 117 40 110 Q40 104 44 100Z" fill="url(#crJerk)"/>
+      <path d="M72 101 Q80 99 84 104 Q84 112 79 115 Q72 112 72 101Z" fill="url(#crJerk)"/>
+      <path d="M44.5 103 L46.4 112 M77.4 102.6 L79.2 111.4" stroke="#9fe08a" stroke-opacity=".6" stroke-width="1" fill="none"/>
+    </g>
+    <path d="M48 99 l-5 12 l4 1.4 l4 -9.4Z" fill="#c9d4e0" stroke="#26180a" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M47 101 l-2.4 8" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+
+    <!-- bras avant (tient l'arc) -->
+    <g class="p-armF">
+      <path d="M82 66 Q99 74 112 72" fill="none" stroke="#0d2412" stroke-width="11.4" stroke-linecap="round"/>
+      <path d="M82 66 Q99 74 112 72" fill="none" stroke="url(#crJerk)" stroke-width="8.6" stroke-linecap="round"/>
+      <path d="M98 72 L108 72.6" fill="none" stroke="#26180a" stroke-width="11" stroke-linecap="round"/>
+      <path d="M98 72 L108 72.6" fill="none" stroke="url(#crLeather)" stroke-width="8.2" stroke-linecap="round"/>
+      <path d="M100 68.2 v8.8 M105 68.4 v8.8" stroke="url(#crGold)" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+
+    <!-- épaulière à plumes -->
+    <g stroke="#0d2412" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M72 66 Q73 53 87 56 Q94 63 89 72 Q79 73 72 66Z" fill="url(#crHood)"/>
+      <path d="M75 70 Q74 62 82 59 Q88 62 88 69Z" fill="url(#crJerk)"/>
+      <path d="M76 71 l-1 8 M80 72.6 l0 8 M85 72 l1 7" stroke="#0d2412" stroke-width="3" stroke-linecap="round"/>
+      <path d="M76 71 l-1 8 M80 72.6 l0 8 M85 72 l1 7" stroke="url(#crFeather)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M77 60 Q82 56 88 60" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+
+    <!-- l'arc, sa corde, la flèche encochée et le faucon -->
+    <g class="p-bowasm">
+      <path class="p-bowflex" d="M96 36 C109 44 123 58 118 72 C123 86 109 100 96 108" fill="none" stroke="#26180a" stroke-width="7.6" stroke-linecap="round" opacity="0"/>
+      <path class="p-bowflex" d="M96 36 C109 44 123 58 118 72 C123 86 109 100 96 108" fill="none" stroke="url(#crWood)" stroke-width="5" stroke-linecap="round" opacity="0"/>
+      <path class="p-bowbase" d="M96 36 C108 46 119 58 115 72 C119 86 108 98 96 108" fill="none" stroke="#26180a" stroke-width="7.6" stroke-linecap="round"/>
+      <path class="p-bowbase" d="M96 36 C108 46 119 58 115 72 C119 86 108 98 96 108" fill="none" stroke="url(#crWood)" stroke-width="5" stroke-linecap="round"/>
+      <path class="p-runes" d="M99 41 C108 49 116 59 113.2 72 C116 85 108 95 99 103" fill="none" stroke="#9dff7a" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3.4 3.6"/>
+      <circle cx="96" cy="36" r="3.4" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.3"/>
+      <circle cx="96" cy="108" r="3.4" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.3"/>
+      <rect x="111" y="62" width="7" height="20" rx="2.4" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.6"/>
+      <path d="M111 66 h7 M111 70 h7 M111 74 h7 M111 78 h7" stroke="#e0b25a" stroke-width="1"/>
+      <!-- corde en deux brins : on la tend en tournant et en allongeant chaque brin -->
+      <line class="p-strU" x1="96" y1="36" x2="96" y2="68" stroke="#fff6dc" stroke-width="1.3" stroke-linecap="round"/>
+      <line class="p-strD" x1="96" y1="108" x2="96" y2="68" stroke="#fff6dc" stroke-width="1.3" stroke-linecap="round"/>
+      <!-- flèche encochée (cachée au repos) -->
+      <g class="p-arrow" opacity="0">
+        <path d="M96 68 L142 68" stroke="#26180a" stroke-width="4.4" stroke-linecap="round"/>
+        <path d="M97 68 L140 68" stroke="#f0e0b0" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M97 68 L104 62.4 L112 62.4 L108 68Z" fill="#d6402a" stroke="#26180a" stroke-width="1.1" stroke-linejoin="round"/>
+        <path d="M97 68 L104 73.6 L112 73.6 L108 68Z" fill="#fff6d8" stroke="#26180a" stroke-width="1.1" stroke-linejoin="round"/>
+        <circle class="p-arrowglow" cx="143" cy="68" r="8" fill="#9dff7a" opacity="0"/>
+        <path class="p-arrowhead" d="M133 63.4 L148 68 L133 72.6 L136.4 68Z" fill="url(#crSteel)" stroke="#26180a" stroke-width="1.2" stroke-linejoin="round"/>
+      </g>
+      <!-- faucon perché sur le bout de l'arc : l'Œil de Lynx -->
+      <g transform="translate(97 35) scale(.82)">
+        <g class="p-hawk">
+          <g stroke="#26180a" stroke-width="1.6" stroke-linejoin="round">
+            <path class="p-htail" d="M-4 -9 L-13 7 L-9 9 L-7 14 L-1 8 L3 -7Z" fill="#b8683a"/>
+            <path d="M-11.4 4 l4 -1 M-9.6 8.6 l4.6 -1" stroke="#2e1a0a" stroke-width="1.3" fill="none"/>
+            <path d="M-8 -11 Q-11 -27 2 -29 Q13 -27 10.6 -12 Q6.6 -4 -2 -4 Q-7 -5 -8 -11Z" fill="url(#crHawk)"/>
+            <path d="M3 -27 Q10.6 -24.6 9.6 -12.6 Q6 -6.4 0 -6.4 Q4.6 -14 3 -27Z" fill="#fff0d0" stroke="none"/>
+            <path d="M6 -22 l1.6 1.4 M4.4 -17 l1.8 1 M6.8 -14 l1.4 1.4" stroke="#9a5a2a" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+            <g class="p-hwingB"><path d="M-9 -24 Q-17 -17 -14 -3 Q-10 -9 -7 -14Z" fill="url(#crHawkW)"/></g>
+            <g class="p-hwing"><path d="M-3 -25 Q-10 -15 -7 -1 Q-3 -8 1 -16Z" fill="url(#crHawkW)"/><path d="M-8.6 -8 l2 -1 M-8 -4 l2 -.6" stroke="#fff0d0" stroke-width="1" stroke-linecap="round" fill="none"/></g>
+            <g class="p-hhead">
+              <circle cx="3.4" cy="-32" r="5.8" fill="url(#crHawk)"/>
+              <path d="M3.6 -32 Q8.4 -31.6 8.6 -28 Q4.6 -27.4 2.4 -29Z" fill="#fff0d0" stroke="none"/>
+              <path d="M4 -28.4 q2 2 1.4 4.6" stroke="#2e1a0a" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <path d="M8 -33 Q14.4 -32 12.6 -26.6 Q11 -29 8 -29Z" fill="#ffc83a"/>
+              <g class="p-heye"><circle cx="5.6" cy="-33.4" r="2.1" fill="#ffe27a" stroke-width="1"/><circle cx="6" cy="-33.4" r=".95" fill="#10100a" stroke="none"/></g>
+              <path d="M-1 -37 l-2 -3 M2 -38 l0 -4" stroke="#8a5226" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+            </g>
+          </g>
+          <path d="M-4 -4 L-3 1 M0 -4 L1 1 M3.4 -4 L3.4 1.4" stroke="#26180a" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+          <path d="M-4 -4 L-3 1 M0 -4 L1 1 M3.4 -4 L3.4 1.4" stroke="#ffc83a" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- main avant : gant de cuir serré sur la poignée -->
+    <g class="p-gripF">
+      <circle cx="113" cy="72" r="6.2" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.9"/>
+      <path d="M114.4 67 Q118.8 66.4 119 70 Q116.6 70.4 114.4 70Z" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M109.6 69.4 h6 M109.2 72.4 h6.4 M109.8 75.2 h5.6" stroke="#2a1606" stroke-opacity=".7" stroke-width="1" stroke-linecap="round"/>
+    </g>
+
+    <!-- bras de corde : épaule A, coude, main (deux segments emboîtés) -->
+    <g class="p-upB">
+      <path d="M54 66 L46 80" stroke="#0d2412" stroke-width="10" stroke-linecap="round"/>
+      <path d="M54 66 L46 80" stroke="url(#crJerk)" stroke-width="7.6" stroke-linecap="round"/>
+      <path d="M50 70 L47.6 76" stroke="#9fe08a" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
+      <g class="p-loB">
+        <path d="M46 80 L54 93" stroke="#0d2412" stroke-width="9.4" stroke-linecap="round"/>
+        <path d="M46 80 L54 93" stroke="url(#crJerk)" stroke-width="7" stroke-linecap="round"/>
+        <path d="M49.4 85.6 L53 90" stroke="#26180a" stroke-width="9" stroke-linecap="round"/>
+        <path d="M49.4 85.6 L53 90" stroke="url(#crLeather)" stroke-width="6.4" stroke-linecap="round"/>
+        <path d="M51 85.4 l4.6 2.6" stroke="url(#crGold)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="54" cy="93" r="4.8" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.7"/>
+        <path d="M55.8 90 q3.6 1.2 3.4 5 M54.4 89.6 q3.8 1 3.8 5.2" fill="none" stroke="#2a1606" stroke-opacity=".7" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- tête de l'archère -->
+    <g class="p-face">
+      <!-- oreilles pointues -->
+      <path d="M44 46 L33 36 L42 54Z" fill="url(#crSkin)" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M42.4 46 L36.6 40.6 L41.6 50Z" fill="#ff9aa0" stroke="none"/>
+      <path d="M81 46 L91 36 L83 54Z" fill="url(#crSkin)" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M82.4 46 L88 40.6 L83.4 50Z" fill="#ff9aa0" stroke="none"/>
+      <circle cx="40" cy="52" r="2.2" fill="none" stroke="#ffd24a" stroke-width="1.6"/>
+      <!-- visage -->
+      <path d="M43 46 Q42 30 62 28 Q82 30 82 46 Q82 60 70 65 Q62 68 54 65 Q43 60 43 46Z" fill="url(#crSkin)" stroke="#26180a" stroke-width="2" stroke-linejoin="round"/>
+      <!-- mèches argentées -->
+      <path d="M43 44 Q47 31 62 31.6 Q78 31 82 44 Q76 38 71 41.6 Q66 35 60 41 Q54 36 49 42 Q46 44 43 52Z" fill="url(#crHair)" stroke="#26180a" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M52 36 Q56 40 54 44 M64 35 Q67 39 66 42 M74 37 Q77 40 75 43" fill="none" stroke="#8d9db4" stroke-opacity=".8" stroke-width="1.1" stroke-linecap="round"/>
+      <!-- peinture de guerre -->
+      <path d="M47 56 l7 2.4 M48 59.6 l6.4 2" stroke="#3fd05a" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+      <path d="M77 57 l-5 1.6" stroke="#3fd05a" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+      <!-- nez et bouche -->
+      <path d="M61 54.4 q1.4 1.2 3 0" fill="none" stroke="#a8683c" stroke-width="1.4" stroke-linecap="round"/>
+      <path class="p-mouth" d="M56.6 59.6 Q62 63.6 67.6 59.2" fill="none" stroke="#7a2a1a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M67.2 59 q1.8 -.2 2.6 -1.6" fill="none" stroke="#7a2a1a" stroke-width="1.3" stroke-linecap="round"/>
+      <!-- yeux ambrés -->
+      <g class="p-eye">
+        <path d="M49 47.6 Q54 42 59.6 46.6 Q59 53 54.4 53 Q49.4 52.6 49 47.6Z" fill="#fff" stroke="#26180a" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M65 46.6 Q71 42 76 47.6 Q75.6 52.6 70.6 53 Q66 53 65 46.6Z" fill="#fff" stroke="#26180a" stroke-width="1.6" stroke-linejoin="round"/>
+        <ellipse cx="55" cy="48.6" rx="3.9" ry="4.5" fill="url(#crAmber)"/><ellipse cx="70.4" cy="48.6" rx="3.9" ry="4.5" fill="url(#crAmber)"/>
+        <ellipse cx="55.4" cy="48.8" rx="1.5" ry="2.6" fill="#1a1006"/><ellipse cx="70.8" cy="48.8" rx="1.5" ry="2.6" fill="#1a1006"/>
+        <circle cx="56.6" cy="46.8" r="1.2" fill="#fff"/><circle cx="72" cy="46.8" r="1.2" fill="#fff"/>
+        <path d="M49 47.6 Q53 43.4 58 44.8 M65.6 44.6 Q71 42.4 76 47.4" fill="none" stroke="#26180a" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+      <g class="p-brow" fill="none" stroke="#6a4e3a" stroke-width="2.4" stroke-linecap="round"><path d="M48.6 42.4 Q54 38.2 60.6 41.6"/><path d="M64.6 41.6 Q71 38.2 76.6 42.4"/></g>
+      <!-- lentille d'Œil de Lynx -->
+      <g class="p-lens">
+        <path d="M78.4 42 Q82 38 83.6 32" fill="none" stroke="#26180a" stroke-width="2.6" stroke-linecap="round"/>
+        <circle class="p-lensglow" cx="70.6" cy="48.6" r="8.6" fill="#9dff7a" opacity="0"/>
+        <circle cx="70.6" cy="48.6" r="6.8" fill="url(#crLens)" stroke="#26180a" stroke-width="1.5"/>
+        <circle cx="70.6" cy="48.6" r="6.8" fill="none" stroke="url(#crGold)" stroke-width="1.9"/>
+        <g class="p-cross" stroke="#e8ffd0" stroke-width="1" stroke-linecap="round" opacity=".85"><path d="M70.6 43 v2.4 M70.6 51.8 v2.4 M64.8 48.6 h2.4 M74 48.6 h2.4"/></g>
+        <path class="p-glint" d="M66.6 45 L68.4 43" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".9"/>
+      </g>
+      <!-- capuche de feuillage, bordure de plumes -->
+      <g class="p-hood" stroke="#0d2412" stroke-width="2" stroke-linejoin="round">
+        <path d="M37 50 Q31 24 54 15 Q68 10 82 17 Q93 25 87 48 Q86 34 78 29 Q62 24 46 30 Q38 36 37 50Z" fill="url(#crHood)"/>
+        <path d="M44 22 Q56 14 70 15 M72 18 Q82 20 86 30" fill="none" stroke="#9fe08a" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M40 44 Q41 31 62 29.4 Q82 31 85 44" fill="none" stroke="#f6ecd0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M43 40 l-2 -2.4 M48 35 l-1.4 -3 M55 31.6 l-.6 -3.2 M63 30.2 l0 -3.2 M71 30.8 l.8 -3 M78 33.4 l1.8 -2.6 M83 39 l2.2 -2" stroke="#d8cba8" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M60 20 Q64 24 68 20 Q64 14 60 20Z" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.4"/>
+        <g class="p-feather" stroke-width="1.5"><path d="M48 19 Q41 8 28 7 Q36 12 37 18 Q31 15 26 17 Q36 20 41 26Z" fill="url(#crFeather)"/><path d="M46 19 Q38 12 30 9" fill="none" stroke="#0d6a5a" stroke-width="1.1" stroke-linecap="round"/></g>
+      </g>
+      <g class="p-reticle" opacity="0"><circle cx="70.6" cy="48.6" r="11.4" fill="none" stroke="#ff5a3a" stroke-width="1.1" stroke-dasharray="3 3"/></g>
+    </g>
+      </g>
+  <!-- étoiles de concentration -->
+  <g class="p-spark" fill="#e8ffd0" opacity="0">
+    <path d="M26 20 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4Z"/>
+    <path d="M104 94 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2Z"/>
+  </g>
+</svg>`,
 };
 
 function hasHeroArt(cls) { return !!HERO_ART[cls]; }

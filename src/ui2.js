@@ -295,7 +295,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -362,9 +362,9 @@ function ecaSpirits(sp) {
     sp.appendChild(s); setTimeout(() => s.remove(), 1700);
   }
 }
-function ecaText(card, text, cls) {
+function ecaText(card, text, cls, who = 'eca') {
   const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
-  const t = document.createElement('span'); t.className = 'fnum eca ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+  const t = document.createElement('span'); t.className = 'fnum ' + who + ' ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
 }
 function coinFlip(card, face) {
   if (!FX_OK()) { ecaText(card, face ? 'FACE !' : 'PILE !', face ? 'face' : 'pile'); return; }
@@ -430,6 +430,7 @@ function playPerfect(card, p) {
   const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
   if (!hero || !tgt) return;
   const a = relPos(hero, scene), b = relPos(tgt, scene);
+  if (hero.querySelector('.hs-cra')) { const r = hero.getBoundingClientRect(); a.x += r.width * .39; a.y += r.height * .06; }
   const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
   const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
   const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
@@ -599,7 +600,7 @@ function patchCombat() {
         const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
         const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
       }
-      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
+      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; if (h.cls === 'cra') ecaState(card.querySelector('[data-k="fighter"]'), 'cra-perfect', 1760); setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
@@ -649,6 +650,10 @@ function patchCombat() {
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="treasure"]'); if (tr) tr.classList.toggle('on', !!m && m.hp > 0 && h.fight.treasure === i); });
     }
     if (h.cls === 'cra') {
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), fv = clamp((h.focus || 0) / CRA_FOCUS_MAX, 0, 1).toFixed(2);
+      if (fsp && fsp.style.getPropertyValue('--focus') !== fv) fsp.style.setProperty('--focus', fv); // l'aura, la lentille et le faucon suivent la Concentration
+      if (fu) fu.classList.toggle('cra-ready', !!h.fight && (h.focus || 0) >= CRA_FOCUS_MAX && h.fight.mons.some(m => m.hp > 0)); // Concentration pleine : l'arc reste bandé
+      if (h.fight && scene) { const dg = h.fight.dodgeSeq || 0; if (dg > +(scene.dataset.dg || 0)) { ecaState(fu, 'cra-dodge', 540); ecaText(card, 'ESQUIVE !', '', 'cra'); } scene.dataset.dg = dg; }
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
         const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
@@ -1130,7 +1135,7 @@ const ACTIONS = {
   stop(d) { const h = heroById(d.hero); setActivity(st, h, null); },
   cramark(d) {
     const h = heroById(d.hero); if (!h) return 'keep';
-    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
+    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); const cu = document.querySelector(`[data-hero-card="${h.id}"] [data-k="fighter"]`); ecaState(cu, 'cra-mark', 720); }
     patchCombat(); return 'keep';
   },
   archifight() {

@@ -1692,6 +1692,299 @@ label.btn { cursor: pointer; }
 
 /* Fenêtre de combat un peu dézoomée */
 .scene { zoom: .82; }
+
+/* ===================== Cra : archère au faucon (sprite de combat) ===================== */
+/* origines de rotation en coordonnées du dessin (viewBox 128) : les parties ne dérivent plus quand la boîte englobante change */
+.hs-cra .p-torso, .hs-cra .p-face, .hs-cra .p-cloak, .hs-cra .p-pony, .hs-cra .p-scarf, .hs-cra .p-tass, .hs-cra .p-qarrows, .hs-cra .p-bowasm,
+.hs-cra .p-upB, .hs-cra .p-loB, .hs-cra .p-strU, .hs-cra .p-strD, .hs-cra .p-feather, .hs-cra .p-hawk, .hs-cra .p-hwing, .hs-cra .p-hwingB, .hs-cra .p-hhead, .hs-cra .p-htail,
+.hs-cra .p-armF, .hs-cra .p-gripF, .hs-cra .p-reticle, .hs-cra .p-arrow, .hs-cra .p-aura, .hs-cra .p-lensglow, .hs-cra .p-spark { transform-box: view-box; }
+.hs-cra .p-torso { transform-origin: 62px 104px; }
+.hs-cra .p-face { transform-origin: 62px 64px; }
+.hs-cra .p-cloak { transform-origin: 54px 60px; animation: crcloak 3s ease-in-out infinite; }
+.hs-cra .p-pony { transform-origin: 44px 38px; animation: crpony 2.6s ease-in-out infinite; }
+.hs-cra .p-scarf { transform-origin: 52px 64px; animation: crscarf 1.7s ease-in-out infinite; }
+.hs-cra .p-tass { transform-origin: 62px 100px; animation: crtass 3.4s ease-in-out infinite; }
+.hs-cra .p-qarrows { transform-origin: 46px 56px; animation: crqarr 3.8s ease-in-out infinite; }
+.hs-cra .p-feather { transform-origin: 48px 19px; animation: crfeather 2.9s ease-in-out infinite; }
+.hs-cra .p-bowasm { transform-origin: 114px 72px; animation: crbow 3.6s ease-in-out infinite; }
+.hs-cra .p-upB { transform-origin: 54px 66px; animation: crarmrest 2.4s ease-in-out infinite; }
+.hs-cra .p-loB { transform-origin: 46px 80px; }
+.hs-cra .p-strU { transform-origin: 96px 36px; }
+.hs-cra .p-strD { transform-origin: 96px 108px; }
+.hs-cra .p-aura { transform-origin: 62px 68px; animation: craura 2.2s ease-in-out infinite; }
+.hs-cra .p-reticle { transform-origin: 70.6px 48.6px; animation: crspin 4s linear infinite; }
+.hs-cra .p-runes { animation: crrunes 2.6s ease-in-out infinite; }
+.hs-cra .p-hawk { transform-origin: 0px 0px; animation: crhawk 4.4s ease-in-out infinite; }
+.hs-cra .p-hwing { transform-origin: -3px -25px; animation: crhwing 6s ease-in-out infinite; }
+.hs-cra .p-hwingB { transform-origin: -9px -24px; animation: crhwing 6s ease-in-out infinite .08s; }
+.hs-cra .p-hhead { transform-origin: 3px -28px; animation: crhhead 5.2s ease-in-out infinite; }
+.hs-cra .p-htail { transform-origin: -4px -9px; animation: crhtail 3.8s ease-in-out infinite; }
+.hs-cra .p-heye { transform-origin: 5.6px -33.4px; animation: msblink 5.4s infinite .8s; }
+.hs-cra .p-brow { transform-origin: 62px 40px; }
+.hs-cra .p-bowflex { opacity: 0; }
+.hs-cra .p-lensglow { transform-origin: 70.6px 48.6px; }
+.hs-cra .p-glint { animation: hsglint 3.4s ease-in-out infinite .6s; }
+/* Concentration : --focus (0 à 1) est posée par le jeu sur le sprite */
+.hs-cra .p-aura { opacity: calc(var(--focus, 0) * .9); }
+.hs-cra .p-lensglow { opacity: calc(var(--focus, 0) * .45); filter: blur(1.2px); animation: crlensglow 1.5s ease-in-out infinite; }
+.hs-cra .p-cross { opacity: calc(.5 + var(--focus, 0) * .5); }
+.hs-cra .p-reticle { opacity: calc(var(--focus, 0) * 1.5 - .5); }
+.hs-cra .p-spark { opacity: calc(var(--focus, 0) * 1.6 - .6); animation: crtwinkle 1.3s ease-in-out infinite; }
+.hs-cra .p-runes { filter: drop-shadow(0 0 calc(var(--focus, 0) * 3px) #7dff6a); }
+.hs-cra .p-hawk { filter: drop-shadow(0 0 calc(var(--focus, 0) * 3px) #c8ff9a); }
+@keyframes crcloak { 50% { transform: rotate(-2.4deg) skewY(-1.2deg); } }
+@keyframes crpony { 0%, 100% { transform: rotate(1.4deg); } 50% { transform: rotate(-3.6deg) skewX(2deg); } }
+@keyframes crscarf { 0%, 100% { transform: rotate(0) scaleX(1); } 50% { transform: rotate(-6deg) scaleX(.93) skewY(2deg); } }
+@keyframes crtass { 50% { transform: rotate(1.2deg) translateY(.5px); } }
+@keyframes crqarr { 0%, 100% { transform: rotate(0); } 35% { transform: rotate(1.6deg); } 70% { transform: rotate(-1.2deg); } }
+@keyframes crfeather { 50% { transform: rotate(-4deg) translateY(.6px); } }
+@keyframes crbow { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-1.8deg) translateY(.5px); } }
+@keyframes crarmrest { 50% { transform: rotate(1.4deg); } }
+@keyframes craura { 50% { transform: scale(1.05); } }
+@keyframes crspin { to { transform: rotate(360deg); } }
+@keyframes crrunes { 50% { opacity: .55; } }
+@keyframes crlensglow { 50% { transform: scale(1.18); } }
+@keyframes crtwinkle { 0%, 100% { transform: scale(.7); } 50% { transform: scale(1.15); } }
+@keyframes crhawk { 0%, 100% { transform: translateY(0) rotate(0); } 48% { transform: translateY(-.7px) rotate(.8deg); } 72% { transform: translateY(0) rotate(-1.6deg); } 78% { transform: translateY(.6px) rotate(2deg); } }
+@keyframes crhwing { 0%, 80%, 100% { transform: rotate(0); } 84% { transform: rotate(-26deg); } 88% { transform: rotate(6deg); } 92% { transform: rotate(-20deg); } 96% { transform: rotate(2deg); } }
+@keyframes crhhead { 0%, 100% { transform: rotate(0); } 24%, 34% { transform: rotate(-9deg); } 58%, 68% { transform: rotate(7deg) translateY(.4px); } }
+@keyframes crhtail { 50% { transform: rotate(5deg); } }
+@keyframes cra-a-up { 0% { transform: rotate(0) } 14% { transform: rotate(-103.2deg) } 46% { transform: rotate(-60.8deg) } 54% { transform: rotate(-60.8deg) } 57% { transform: rotate(-46.8deg) } 68% { transform: rotate(-55.2deg) } 100% { transform: rotate(0) } }
+@keyframes cra-a-lo { 0% { transform: rotate(0) } 14% { transform: rotate(35.0deg) } 46% { transform: rotate(-48.2deg) } 54% { transform: rotate(-48.2deg) } 57% { transform: rotate(-73.1deg) } 68% { transform: rotate(-58.6deg) } 100% { transform: rotate(0) } }
+@keyframes cra-a-su { 0% { transform: rotate(0.0deg) scaleY(1.000) } 14% { transform: rotate(19.0deg) scaleY(1.057) } 46% { transform: rotate(36.9deg) scaleY(1.250) } 54% { transform: rotate(36.9deg) scaleY(1.250) } 56% { transform: rotate(-10.6deg) scaleY(1.017) } 61% { transform: rotate(7.8deg) scaleY(1.009) } 66% { transform: rotate(-5.0deg) scaleY(1.004) } 71% { transform: rotate(2.9deg) scaleY(1.001) } 77% { transform: rotate(-1.4deg) scaleY(1.000) } 100% { transform: rotate(0.0deg) scaleY(1.000) } }
+@keyframes cra-a-sd { 0% { transform: rotate(-0.0deg) scaleY(1.000) } 14% { transform: rotate(-15.4deg) scaleY(1.037) } 46% { transform: rotate(-31.0deg) scaleY(1.166) } 54% { transform: rotate(-31.0deg) scaleY(1.166) } 56% { transform: rotate(8.5deg) scaleY(1.011) } 61% { transform: rotate(-6.3deg) scaleY(1.006) } 66% { transform: rotate(4.0deg) scaleY(1.002) } 71% { transform: rotate(-2.3deg) scaleY(1.001) } 77% { transform: rotate(1.1deg) scaleY(1.000) } 100% { transform: rotate(-0.0deg) scaleY(1.000) } }
+@keyframes cra-a-ar { 0% { opacity: 0; transform: translateX(0) } 3% { opacity: 1; transform: translateX(-1px) } 14% { opacity: 1; transform: translateX(-11px) } 46% { opacity: 1; transform: translateX(-24px) } 54% { opacity: 1; transform: translateX(-24px) } 54.6% { opacity: 0; transform: translateX(-20px) } 100% { opacity: 0 } }
+@keyframes cra-a-bow { 0% { transform: rotate(0) } 14% { transform: rotate(-1.0deg) } 46% { transform: rotate(-2.0deg) } 54% { transform: rotate(-2.0deg) } 56% { transform: rotate(-5deg) translateX(-2px) } 63% { transform: rotate(1.75deg) } 71% { transform: rotate(-0.6deg) } 100% { transform: rotate(0) } }
+@keyframes cra-a-fx { 0% { opacity: 0 } 14% { opacity: 0 } 42% { opacity: 1 } 55% { opacity: 1 } 56% { opacity: 0 } 100% { opacity: 0 } }
+@keyframes cra-a-fb { 0% { opacity: 1 } 14% { opacity: 1 } 42% { opacity: 0 } 55% { opacity: 0 } 56% { opacity: 1 } 100% { opacity: 1 } }
+@keyframes cra-a-to { 0% { transform: none } 14% { transform: translateX(-0.6400000000000001px) rotate(-0.8deg) } 46% { transform: translateX(-1.6px) translateY(0px) rotate(-1.6deg) } 54% { transform: translateX(-1.6px) translateY(0px) rotate(-1.6deg) } 57% { transform: translateX(0.96px) translateY(0.0px) rotate(1.4400000000000002deg) scale(1.02, .985) } 70% { transform: translateX(0) rotate(-0.32000000000000006deg) } 100% { transform: none } }
+@keyframes cra-a-fa { 0% { transform: none } 46% { transform: rotate(2.4deg) translateX(1.4px) } 54% { transform: rotate(2.4deg) translateX(1.4px) } 57% { transform: rotate(-3deg) translateY(1px) } 100% { transform: none } }
+@keyframes cra-a-ey { 0% { transform: none } 40% { transform: none } 46% { transform: scaleY(.55) } 56% { transform: scaleY(.55) } 61% { transform: none } 100% { transform: none } }
+@keyframes cra-a-cl { 0% { transform: none } 46% { transform: rotate(-3deg) skewY(-2deg) } 57% { transform: rotate(7deg) skewY(3deg) scaleX(1.1) } 68% { transform: rotate(-3deg) } 100% { transform: none } }
+@keyframes cra-a-sc { 0% { transform: none } 46% { transform: rotate(5deg) scaleX(1.12) } 57% { transform: rotate(-14deg) scaleX(.82) } 68% { transform: rotate(5deg) scaleX(1.05) } 100% { transform: none } }
+@keyframes cra-a-po { 0% { transform: none } 46% { transform: rotate(4deg) } 57% { transform: rotate(-8deg) skewX(4deg) } 70% { transform: rotate(3deg) } 100% { transform: none } }
+@keyframes cra-a-hk { 0% { transform: none } 46% { transform: translateY(1px) rotate(3deg) } 56% { transform: translateY(-4px) rotate(-6deg) } 64% { transform: translateY(1px) rotate(2deg) } 100% { transform: none } }
+@keyframes cra-a-hw { 0% { transform: rotate(0) } 55% { transform: rotate(0) } 59% { transform: rotate(-52deg) } 64% { transform: rotate(10deg) } 69% { transform: rotate(-40deg) } 75% { transform: rotate(4deg) } 100% { transform: rotate(0) } }
+@keyframes cra-a-ln { 0% { transform: none } 42% { transform: none } 54% { transform: scale(1.35) } 100% { transform: none } }
+.hero.atk-a .hs-cra .p-upB { animation: cra-a-up 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-a .hs-cra .p-loB { animation: cra-a-lo 300ms cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-a .hs-cra .p-strU { animation: cra-a-su 300ms linear; } .hero.atk-a .hs-cra .p-strD { animation: cra-a-sd 300ms linear; }
+.hero.atk-a .hs-cra .p-arrow { animation: cra-a-ar 300ms linear; } .hero.atk-a .hs-cra .p-bowasm { animation: cra-a-bow 300ms cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-a .hs-cra .p-bowflex { animation: cra-a-fx 300ms linear; } .hero.atk-a .hs-cra .p-bowbase { animation: cra-a-fb 300ms linear; }
+.hero.atk-a .hs-cra .p-torso { animation: cra-a-to 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-a .hs-cra .p-face { animation: cra-a-fa 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-a .hs-cra .p-eye { animation: cra-a-ey 300ms linear; }
+.hero.atk-a .hs-cra .p-cloak { animation: cra-a-cl 300ms ease-out; } .hero.atk-a .hs-cra .p-scarf { animation: cra-a-sc 300ms ease-out; } .hero.atk-a .hs-cra .p-pony { animation: cra-a-po 300ms ease-out; }
+.hero.atk-a .hs-cra .p-hawk { animation: cra-a-hk 300ms ease-out; } .hero.atk-a .hs-cra .p-hwing, .hero.atk-a .hs-cra .p-hwingB { animation: cra-a-hw 300ms ease-out; } .hero.atk-a .hs-cra .p-lensglow { animation: cra-a-ln 300ms ease-out; }
+@keyframes cra-b-up { 0% { transform: rotate(0) } 14% { transform: rotate(-103.2deg) } 46% { transform: rotate(-60.8deg) } 54% { transform: rotate(-60.8deg) } 57% { transform: rotate(-49.1deg) } 68% { transform: rotate(-56.1deg) } 100% { transform: rotate(0) } }
+@keyframes cra-b-lo { 0% { transform: rotate(0) } 14% { transform: rotate(35.0deg) } 46% { transform: rotate(-48.2deg) } 54% { transform: rotate(-48.2deg) } 57% { transform: rotate(-69.2deg) } 68% { transform: rotate(-56.9deg) } 100% { transform: rotate(0) } }
+@keyframes cra-b-su { 0% { transform: rotate(0.0deg) scaleY(1.000) } 14% { transform: rotate(19.0deg) scaleY(1.057) } 46% { transform: rotate(36.9deg) scaleY(1.250) } 54% { transform: rotate(36.9deg) scaleY(1.250) } 56% { transform: rotate(-10.6deg) scaleY(1.017) } 61% { transform: rotate(7.8deg) scaleY(1.009) } 66% { transform: rotate(-5.0deg) scaleY(1.004) } 71% { transform: rotate(2.9deg) scaleY(1.001) } 77% { transform: rotate(-1.4deg) scaleY(1.000) } 100% { transform: rotate(0.0deg) scaleY(1.000) } }
+@keyframes cra-b-sd { 0% { transform: rotate(-0.0deg) scaleY(1.000) } 14% { transform: rotate(-15.4deg) scaleY(1.037) } 46% { transform: rotate(-31.0deg) scaleY(1.166) } 54% { transform: rotate(-31.0deg) scaleY(1.166) } 56% { transform: rotate(8.5deg) scaleY(1.011) } 61% { transform: rotate(-6.3deg) scaleY(1.006) } 66% { transform: rotate(4.0deg) scaleY(1.002) } 71% { transform: rotate(-2.3deg) scaleY(1.001) } 77% { transform: rotate(1.1deg) scaleY(1.000) } 100% { transform: rotate(-0.0deg) scaleY(1.000) } }
+@keyframes cra-b-ar { 0% { opacity: 0; transform: translateX(0) } 3% { opacity: 1; transform: translateX(-1px) } 14% { opacity: 1; transform: translateX(-11px) } 46% { opacity: 1; transform: translateX(-24px) } 54% { opacity: 1; transform: translateX(-24px) } 54.6% { opacity: 0; transform: translateX(-20px) } 100% { opacity: 0 } }
+@keyframes cra-b-bow { 0% { transform: rotate(0) } 14% { transform: rotate(-1.0deg) } 46% { transform: rotate(-2.0deg) } 54% { transform: rotate(-2.0deg) } 56% { transform: rotate(-4deg) translateX(-2px) } 63% { transform: rotate(1.4deg) } 71% { transform: rotate(-0.48deg) } 100% { transform: rotate(0) } }
+@keyframes cra-b-fx { 0% { opacity: 0 } 14% { opacity: 0 } 42% { opacity: 1 } 55% { opacity: 1 } 56% { opacity: 0 } 100% { opacity: 0 } }
+@keyframes cra-b-fb { 0% { opacity: 1 } 14% { opacity: 1 } 42% { opacity: 0 } 55% { opacity: 0 } 56% { opacity: 1 } 100% { opacity: 1 } }
+@keyframes cra-b-to { 0% { transform: none } 14% { transform: translateX(-0.48px) rotate(-0.6deg) } 46% { transform: translateX(-1.2px) translateY(2.4px) rotate(-1.2deg) } 54% { transform: translateX(-1.2px) translateY(2.4px) rotate(-1.2deg) } 57% { transform: translateX(0.72px) translateY(-1.2px) rotate(1.08deg) scale(1.02, .985) } 70% { transform: translateX(0) rotate(-0.24deg) } 100% { transform: none } }
+@keyframes cra-b-fa { 0% { transform: none } 46% { transform: rotate(2.4deg) translateX(1.4px) } 54% { transform: rotate(2.4deg) translateX(1.4px) } 57% { transform: rotate(-3deg) translateY(1px) } 100% { transform: none } }
+@keyframes cra-b-ey { 0% { transform: none } 40% { transform: none } 46% { transform: scaleY(.55) } 56% { transform: scaleY(.55) } 61% { transform: none } 100% { transform: none } }
+@keyframes cra-b-cl { 0% { transform: none } 46% { transform: rotate(-3deg) skewY(-2deg) } 57% { transform: rotate(7deg) skewY(3deg) scaleX(1.1) } 68% { transform: rotate(-3deg) } 100% { transform: none } }
+@keyframes cra-b-sc { 0% { transform: none } 46% { transform: rotate(5deg) scaleX(1.12) } 57% { transform: rotate(-14deg) scaleX(.82) } 68% { transform: rotate(5deg) scaleX(1.05) } 100% { transform: none } }
+@keyframes cra-b-po { 0% { transform: none } 46% { transform: rotate(4deg) } 57% { transform: rotate(-8deg) skewX(4deg) } 70% { transform: rotate(3deg) } 100% { transform: none } }
+@keyframes cra-b-hk { 0% { transform: none } 46% { transform: translateY(1px) rotate(3deg) } 56% { transform: translateY(-4px) rotate(-6deg) } 64% { transform: translateY(1px) rotate(2deg) } 100% { transform: none } }
+@keyframes cra-b-hw { 0% { transform: rotate(0) } 55% { transform: rotate(0) } 59% { transform: rotate(-52deg) } 64% { transform: rotate(10deg) } 69% { transform: rotate(-40deg) } 75% { transform: rotate(4deg) } 100% { transform: rotate(0) } }
+@keyframes cra-b-ln { 0% { transform: none } 42% { transform: none } 54% { transform: scale(1.35) } 100% { transform: none } }
+.hero.atk-b .hs-cra .p-upB { animation: cra-b-up 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-b .hs-cra .p-loB { animation: cra-b-lo 300ms cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-cra .p-strU { animation: cra-b-su 300ms linear; } .hero.atk-b .hs-cra .p-strD { animation: cra-b-sd 300ms linear; }
+.hero.atk-b .hs-cra .p-arrow { animation: cra-b-ar 300ms linear; } .hero.atk-b .hs-cra .p-bowasm { animation: cra-b-bow 300ms cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-cra .p-bowflex { animation: cra-b-fx 300ms linear; } .hero.atk-b .hs-cra .p-bowbase { animation: cra-b-fb 300ms linear; }
+.hero.atk-b .hs-cra .p-torso { animation: cra-b-to 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-b .hs-cra .p-face { animation: cra-b-fa 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-b .hs-cra .p-eye { animation: cra-b-ey 300ms linear; }
+.hero.atk-b .hs-cra .p-cloak { animation: cra-b-cl 300ms ease-out; } .hero.atk-b .hs-cra .p-scarf { animation: cra-b-sc 300ms ease-out; } .hero.atk-b .hs-cra .p-pony { animation: cra-b-po 300ms ease-out; }
+.hero.atk-b .hs-cra .p-hawk { animation: cra-b-hk 300ms ease-out; } .hero.atk-b .hs-cra .p-hwing, .hero.atk-b .hs-cra .p-hwingB { animation: cra-b-hw 300ms ease-out; } .hero.atk-b .hs-cra .p-lensglow { animation: cra-b-ln 300ms ease-out; }
+@keyframes cra-c-up { 0% { transform: rotate(0) } 14% { transform: rotate(-103.2deg) } 44% { transform: rotate(-56.1deg) } 52% { transform: rotate(-56.1deg) } 55% { transform: rotate(-33.7deg) } 66% { transform: rotate(-47.7deg) } 100% { transform: rotate(0) } }
+@keyframes cra-c-lo { 0% { transform: rotate(0) } 14% { transform: rotate(35.0deg) } 44% { transform: rotate(-56.9deg) } 52% { transform: rotate(-56.9deg) } 55% { transform: rotate(-92.0deg) } 66% { transform: rotate(-71.6deg) } 100% { transform: rotate(0) } }
+@keyframes cra-c-su { 0% { transform: rotate(0.0deg) scaleY(1.000) } 14% { transform: rotate(19.0deg) scaleY(1.057) } 44% { transform: rotate(39.1deg) scaleY(1.288) } 52% { transform: rotate(39.1deg) scaleY(1.288) } 54% { transform: rotate(-10.6deg) scaleY(1.017) } 59% { transform: rotate(7.8deg) scaleY(1.009) } 64% { transform: rotate(-5.0deg) scaleY(1.004) } 69% { transform: rotate(2.9deg) scaleY(1.001) } 75% { transform: rotate(-1.4deg) scaleY(1.000) } 100% { transform: rotate(0.0deg) scaleY(1.000) } }
+@keyframes cra-c-sd { 0% { transform: rotate(-0.0deg) scaleY(1.000) } 14% { transform: rotate(-15.4deg) scaleY(1.037) } 44% { transform: rotate(-33.0deg) scaleY(1.193) } 52% { transform: rotate(-33.0deg) scaleY(1.193) } 54% { transform: rotate(8.5deg) scaleY(1.011) } 59% { transform: rotate(-6.3deg) scaleY(1.006) } 64% { transform: rotate(4.0deg) scaleY(1.002) } 69% { transform: rotate(-2.3deg) scaleY(1.001) } 75% { transform: rotate(1.1deg) scaleY(1.000) } 100% { transform: rotate(-0.0deg) scaleY(1.000) } }
+@keyframes cra-c-ar { 0% { opacity: 0; transform: translateX(0) } 3% { opacity: 1; transform: translateX(-1px) } 14% { opacity: 1; transform: translateX(-11px) } 44% { opacity: 1; transform: translateX(-26px) } 52% { opacity: 1; transform: translateX(-26px) } 52.6% { opacity: 0; transform: translateX(-22px) } 100% { opacity: 0 } }
+@keyframes cra-c-bow { 0% { transform: rotate(0) } 14% { transform: rotate(-1.0deg) } 44% { transform: rotate(-2.0deg) } 52% { transform: rotate(-2.0deg) } 54% { transform: rotate(-10deg) translateX(-2px) } 61% { transform: rotate(3.5deg) } 69% { transform: rotate(-1.2deg) } 100% { transform: rotate(0) } }
+@keyframes cra-c-fx { 0% { opacity: 0 } 14% { opacity: 0 } 40% { opacity: 1 } 53% { opacity: 1 } 54% { opacity: 0 } 100% { opacity: 0 } }
+@keyframes cra-c-fb { 0% { opacity: 1 } 14% { opacity: 1 } 40% { opacity: 0 } 53% { opacity: 0 } 54% { opacity: 1 } 100% { opacity: 1 } }
+@keyframes cra-c-to { 0% { transform: none } 14% { transform: translateX(-0.8800000000000001px) rotate(-1.1deg) } 44% { transform: translateX(-2.2px) translateY(1px) rotate(-2.2deg) } 52% { transform: translateX(-2.2px) translateY(1px) rotate(-2.2deg) } 55% { transform: translateX(1.32px) translateY(-0.5px) rotate(1.9800000000000002deg) scale(1.02, .985) } 68% { transform: translateX(0) rotate(-0.44000000000000006deg) } 100% { transform: none } }
+@keyframes cra-c-fa { 0% { transform: none } 44% { transform: rotate(2.4deg) translateX(1.4px) } 52% { transform: rotate(2.4deg) translateX(1.4px) } 55% { transform: rotate(-3deg) translateY(1px) } 100% { transform: none } }
+@keyframes cra-c-ey { 0% { transform: none } 38% { transform: none } 44% { transform: scaleY(.55) } 54% { transform: scaleY(.55) } 59% { transform: none } 100% { transform: none } }
+@keyframes cra-c-cl { 0% { transform: none } 44% { transform: rotate(-3deg) skewY(-2deg) } 55% { transform: rotate(7deg) skewY(3deg) scaleX(1.1) } 66% { transform: rotate(-3deg) } 100% { transform: none } }
+@keyframes cra-c-sc { 0% { transform: none } 44% { transform: rotate(5deg) scaleX(1.12) } 55% { transform: rotate(-14deg) scaleX(.82) } 66% { transform: rotate(5deg) scaleX(1.05) } 100% { transform: none } }
+@keyframes cra-c-po { 0% { transform: none } 44% { transform: rotate(4deg) } 55% { transform: rotate(-8deg) skewX(4deg) } 68% { transform: rotate(3deg) } 100% { transform: none } }
+@keyframes cra-c-hk { 0% { transform: none } 44% { transform: translateY(1px) rotate(3deg) } 54% { transform: translateY(-4px) rotate(-6deg) } 62% { transform: translateY(1px) rotate(2deg) } 100% { transform: none } }
+@keyframes cra-c-hw { 0% { transform: rotate(0) } 53% { transform: rotate(0) } 57% { transform: rotate(-52deg) } 62% { transform: rotate(10deg) } 67% { transform: rotate(-40deg) } 73% { transform: rotate(4deg) } 100% { transform: rotate(0) } }
+@keyframes cra-c-ln { 0% { transform: none } 40% { transform: none } 52% { transform: scale(1.35) } 100% { transform: none } }
+.hero.atk-c .hs-cra .p-upB { animation: cra-c-up 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-c .hs-cra .p-loB { animation: cra-c-lo 300ms cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-c .hs-cra .p-strU { animation: cra-c-su 300ms linear; } .hero.atk-c .hs-cra .p-strD { animation: cra-c-sd 300ms linear; }
+.hero.atk-c .hs-cra .p-arrow { animation: cra-c-ar 300ms linear; } .hero.atk-c .hs-cra .p-bowasm { animation: cra-c-bow 300ms cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-c .hs-cra .p-bowflex { animation: cra-c-fx 300ms linear; } .hero.atk-c .hs-cra .p-bowbase { animation: cra-c-fb 300ms linear; }
+.hero.atk-c .hs-cra .p-torso { animation: cra-c-to 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-c .hs-cra .p-face { animation: cra-c-fa 300ms cubic-bezier(.4, 0, .25, 1); } .hero.atk-c .hs-cra .p-eye { animation: cra-c-ey 300ms linear; }
+.hero.atk-c .hs-cra .p-cloak { animation: cra-c-cl 300ms ease-out; } .hero.atk-c .hs-cra .p-scarf { animation: cra-c-sc 300ms ease-out; } .hero.atk-c .hs-cra .p-pony { animation: cra-c-po 300ms ease-out; }
+.hero.atk-c .hs-cra .p-hawk { animation: cra-c-hk 300ms ease-out; } .hero.atk-c .hs-cra .p-hwing, .hero.atk-c .hs-cra .p-hwingB { animation: cra-c-hw 300ms ease-out; } .hero.atk-c .hs-cra .p-lensglow { animation: cra-c-ln 300ms ease-out; }
+@keyframes cra-d-up { 0% { transform: rotate(0) } 12% { transform: rotate(-103.2deg) } 40% { transform: rotate(-51.5deg) } 62% { transform: rotate(-51.5deg) } 65% { transform: rotate(-7.3deg) } 76% { transform: rotate(-39.9deg) } 100% { transform: rotate(0) } }
+@keyframes cra-d-lo { 0% { transform: rotate(0) } 12% { transform: rotate(35.0deg) } 40% { transform: rotate(-65.2deg) } 62% { transform: rotate(-65.2deg) } 65% { transform: rotate(-108.8deg) } 76% { transform: rotate(-83.9deg) } 100% { transform: rotate(0) } }
+@keyframes cra-d-su { 0% { transform: rotate(0.0deg) scaleY(1.000) } 12% { transform: rotate(19.0deg) scaleY(1.057) } 40% { transform: rotate(41.2deg) scaleY(1.329) } 62% { transform: rotate(41.2deg) scaleY(1.329) } 64% { transform: rotate(-10.6deg) scaleY(1.017) } 69% { transform: rotate(7.8deg) scaleY(1.009) } 74% { transform: rotate(-5.0deg) scaleY(1.004) } 79% { transform: rotate(2.9deg) scaleY(1.001) } 85% { transform: rotate(-1.4deg) scaleY(1.000) } 100% { transform: rotate(0.0deg) scaleY(1.000) } }
+@keyframes cra-d-sd { 0% { transform: rotate(-0.0deg) scaleY(1.000) } 12% { transform: rotate(-15.4deg) scaleY(1.037) } 40% { transform: rotate(-35.0deg) scaleY(1.221) } 62% { transform: rotate(-35.0deg) scaleY(1.221) } 64% { transform: rotate(8.5deg) scaleY(1.011) } 69% { transform: rotate(-6.3deg) scaleY(1.006) } 74% { transform: rotate(4.0deg) scaleY(1.002) } 79% { transform: rotate(-2.3deg) scaleY(1.001) } 85% { transform: rotate(1.1deg) scaleY(1.000) } 100% { transform: rotate(-0.0deg) scaleY(1.000) } }
+@keyframes cra-d-ar { 0% { opacity: 0; transform: translateX(0) } 3% { opacity: 1; transform: translateX(-1px) } 12% { opacity: 1; transform: translateX(-11px) } 40% { opacity: 1; transform: translateX(-28px) } 62% { opacity: 1; transform: translateX(-28px) } 62.6% { opacity: 0; transform: translateX(-24px) } 100% { opacity: 0 } }
+@keyframes cra-d-bow { 0% { transform: rotate(0) } 12% { transform: rotate(-1.0deg) } 40% { transform: rotate(-2.0deg) } 62% { transform: rotate(-2.0deg) } 64% { transform: rotate(-9deg) translateX(-2px) } 71% { transform: rotate(3.15deg) } 79% { transform: rotate(-1.08deg) } 100% { transform: rotate(0) } }
+@keyframes cra-d-fx { 0% { opacity: 0 } 12% { opacity: 0 } 36% { opacity: 1 } 63% { opacity: 1 } 64% { opacity: 0 } 100% { opacity: 0 } }
+@keyframes cra-d-fb { 0% { opacity: 1 } 12% { opacity: 1 } 36% { opacity: 0 } 63% { opacity: 0 } 64% { opacity: 1 } 100% { opacity: 1 } }
+@keyframes cra-d-to { 0% { transform: none } 12% { transform: translateX(-1.36px) rotate(-1.7deg) } 40% { transform: translateX(-3.4px) translateY(3px) rotate(-3.4deg) } 62% { transform: translateX(-4.1px) translateY(3px) rotate(-3.4deg) } 65% { transform: translateX(2.04px) translateY(-1.5px) rotate(3.06deg) scale(1.02, .985) } 78% { transform: translateX(0) rotate(-0.68deg) } 100% { transform: none } }
+@keyframes cra-d-fa { 0% { transform: none } 40% { transform: rotate(2.4deg) translateX(1.4px) } 62% { transform: rotate(2.4deg) translateX(1.4px) } 65% { transform: rotate(-3deg) translateY(1px) } 100% { transform: none } }
+@keyframes cra-d-ey { 0% { transform: none } 34% { transform: none } 40% { transform: scaleY(.55) } 64% { transform: scaleY(.55) } 69% { transform: none } 100% { transform: none } }
+@keyframes cra-d-cl { 0% { transform: none } 40% { transform: rotate(-3deg) skewY(-2deg) } 65% { transform: rotate(7deg) skewY(3deg) scaleX(1.1) } 76% { transform: rotate(-3deg) } 100% { transform: none } }
+@keyframes cra-d-sc { 0% { transform: none } 40% { transform: rotate(5deg) scaleX(1.12) } 65% { transform: rotate(-14deg) scaleX(.82) } 76% { transform: rotate(5deg) scaleX(1.05) } 100% { transform: none } }
+@keyframes cra-d-po { 0% { transform: none } 40% { transform: rotate(4deg) } 65% { transform: rotate(-8deg) skewX(4deg) } 78% { transform: rotate(3deg) } 100% { transform: none } }
+@keyframes cra-d-hk { 0% { transform: none } 40% { transform: translateY(1px) rotate(3deg) } 64% { transform: translateY(-4px) rotate(-6deg) } 72% { transform: translateY(1px) rotate(2deg) } 100% { transform: none } }
+@keyframes cra-d-hw { 0% { transform: rotate(0) } 63% { transform: rotate(0) } 67% { transform: rotate(-52deg) } 72% { transform: rotate(10deg) } 77% { transform: rotate(-40deg) } 83% { transform: rotate(4deg) } 100% { transform: rotate(0) } }
+@keyframes cra-d-ln { 0% { transform: none } 36% { transform: none } 62% { transform: scale(1.35) } 100% { transform: none } }
+.hero.atk-d .hs-cra .p-upB { animation: cra-d-up 760ms cubic-bezier(.3, .1, .2, 1); } .hero.atk-d .hs-cra .p-loB { animation: cra-d-lo 760ms cubic-bezier(.3, .1, .2, 1); }
+.hero.atk-d .hs-cra .p-strU { animation: cra-d-su 760ms linear; } .hero.atk-d .hs-cra .p-strD { animation: cra-d-sd 760ms linear; }
+.hero.atk-d .hs-cra .p-arrow { animation: cra-d-ar 760ms linear; } .hero.atk-d .hs-cra .p-bowasm { animation: cra-d-bow 760ms cubic-bezier(.3, .1, .2, 1); }
+.hero.atk-d .hs-cra .p-bowflex { animation: cra-d-fx 760ms linear; } .hero.atk-d .hs-cra .p-bowbase { animation: cra-d-fb 760ms linear; }
+.hero.atk-d .hs-cra .p-torso { animation: cra-d-to 760ms cubic-bezier(.3, .1, .2, 1); } .hero.atk-d .hs-cra .p-face { animation: cra-d-fa 760ms cubic-bezier(.3, .1, .2, 1); } .hero.atk-d .hs-cra .p-eye { animation: cra-d-ey 760ms linear; }
+.hero.atk-d .hs-cra .p-cloak { animation: cra-d-cl 760ms ease-out; } .hero.atk-d .hs-cra .p-scarf { animation: cra-d-sc 760ms ease-out; } .hero.atk-d .hs-cra .p-pony { animation: cra-d-po 760ms ease-out; }
+.hero.atk-d .hs-cra .p-hawk { animation: cra-d-hk 760ms ease-out; } .hero.atk-d .hs-cra .p-hwing, .hero.atk-d .hs-cra .p-hwingB { animation: cra-d-hw 760ms ease-out; } .hero.atk-d .hs-cra .p-lensglow { animation: cra-d-ln 760ms ease-out; }
+@keyframes cra-e-up { 0% { transform: rotate(0) } 12% { transform: rotate(-103.2deg) } 38% { transform: rotate(-60.8deg) } 52% { transform: rotate(-60.8deg) } 55% { transform: rotate(-41.9deg) } 66% { transform: rotate(-53.3deg) } 100% { transform: rotate(0) } }
+@keyframes cra-e-lo { 0% { transform: rotate(0) } 12% { transform: rotate(35.0deg) } 38% { transform: rotate(-48.2deg) } 52% { transform: rotate(-48.2deg) } 55% { transform: rotate(-80.9deg) } 66% { transform: rotate(-61.9deg) } 100% { transform: rotate(0) } }
+@keyframes cra-e-su { 0% { transform: rotate(0.0deg) scaleY(1.000) } 12% { transform: rotate(19.0deg) scaleY(1.057) } 38% { transform: rotate(36.9deg) scaleY(1.250) } 52% { transform: rotate(36.9deg) scaleY(1.250) } 54% { transform: rotate(-10.6deg) scaleY(1.017) } 59% { transform: rotate(7.8deg) scaleY(1.009) } 64% { transform: rotate(-5.0deg) scaleY(1.004) } 69% { transform: rotate(2.9deg) scaleY(1.001) } 75% { transform: rotate(-1.4deg) scaleY(1.000) } 100% { transform: rotate(0.0deg) scaleY(1.000) } }
+@keyframes cra-e-sd { 0% { transform: rotate(-0.0deg) scaleY(1.000) } 12% { transform: rotate(-15.4deg) scaleY(1.037) } 38% { transform: rotate(-31.0deg) scaleY(1.166) } 52% { transform: rotate(-31.0deg) scaleY(1.166) } 54% { transform: rotate(8.5deg) scaleY(1.011) } 59% { transform: rotate(-6.3deg) scaleY(1.006) } 64% { transform: rotate(4.0deg) scaleY(1.002) } 69% { transform: rotate(-2.3deg) scaleY(1.001) } 75% { transform: rotate(1.1deg) scaleY(1.000) } 100% { transform: rotate(-0.0deg) scaleY(1.000) } }
+@keyframes cra-e-ar { 0% { opacity: 0; transform: translateX(0) } 3% { opacity: 1; transform: translateX(-1px) } 12% { opacity: 1; transform: translateX(-11px) } 38% { opacity: 1; transform: translateX(-24px) } 52% { opacity: 1; transform: translateX(-24px) } 52.6% { opacity: 0; transform: translateX(-20px) } 100% { opacity: 0 } }
+@keyframes cra-e-bow { 0% { transform: rotate(0) } 12% { transform: rotate(-7.6deg) } 38% { transform: rotate(-15.2deg) } 52% { transform: rotate(-15.2deg) } 54% { transform: rotate(-8deg) translateX(-2px) } 61% { transform: rotate(2.8deg) } 69% { transform: rotate(-0.96deg) } 100% { transform: rotate(0) } }
+@keyframes cra-e-fx { 0% { opacity: 0 } 12% { opacity: 0 } 34% { opacity: 1 } 53% { opacity: 1 } 54% { opacity: 0 } 100% { opacity: 0 } }
+@keyframes cra-e-fb { 0% { opacity: 1 } 12% { opacity: 1 } 34% { opacity: 0 } 53% { opacity: 0 } 54% { opacity: 1 } 100% { opacity: 1 } }
+@keyframes cra-e-to { 0% { transform: none } 12% { transform: translateX(-0.96px) rotate(-23.2deg) } 38% { transform: translateX(-2.4px) translateY(0px) rotate(-24.4deg) } 52% { transform: translateX(-2.4px) translateY(0px) rotate(-24.4deg) } 55% { transform: translateX(1.44px) translateY(0.0px) rotate(-6.640000000000001deg) scale(1.02, .985) } 68% { transform: translateX(0) rotate(-0.48deg) } 100% { transform: none } }
+@keyframes cra-e-fa { 0% { transform: none } 38% { transform: rotate(2.4deg) translateX(1.4px) } 52% { transform: rotate(2.4deg) translateX(1.4px) } 55% { transform: rotate(-3deg) translateY(1px) } 100% { transform: none } }
+@keyframes cra-e-ey { 0% { transform: none } 32% { transform: none } 38% { transform: scaleY(.55) } 54% { transform: scaleY(.55) } 59% { transform: none } 100% { transform: none } }
+@keyframes cra-e-cl { 0% { transform: none } 38% { transform: rotate(-3deg) skewY(-2deg) } 55% { transform: rotate(7deg) skewY(3deg) scaleX(1.1) } 66% { transform: rotate(-3deg) } 100% { transform: none } }
+@keyframes cra-e-sc { 0% { transform: none } 38% { transform: rotate(5deg) scaleX(1.12) } 55% { transform: rotate(-14deg) scaleX(.82) } 66% { transform: rotate(5deg) scaleX(1.05) } 100% { transform: none } }
+@keyframes cra-e-po { 0% { transform: none } 38% { transform: rotate(4deg) } 55% { transform: rotate(-8deg) skewX(4deg) } 68% { transform: rotate(3deg) } 100% { transform: none } }
+@keyframes cra-e-hk { 0% { transform: none } 38% { transform: translateY(1px) rotate(3deg) } 54% { transform: translateY(-4px) rotate(-6deg) } 62% { transform: translateY(1px) rotate(2deg) } 100% { transform: none } }
+@keyframes cra-e-hw { 0% { transform: rotate(0) } 53% { transform: rotate(0) } 57% { transform: rotate(-52deg) } 62% { transform: rotate(10deg) } 67% { transform: rotate(-40deg) } 73% { transform: rotate(4deg) } 100% { transform: rotate(0) } }
+@keyframes cra-e-ln { 0% { transform: none } 34% { transform: none } 52% { transform: scale(1.35) } 100% { transform: none } }
+.hero.atk-e .hs-cra .p-upB { animation: cra-e-up 820ms cubic-bezier(.35, .1, .25, 1); } .hero.atk-e .hs-cra .p-loB { animation: cra-e-lo 820ms cubic-bezier(.35, .1, .25, 1); }
+.hero.atk-e .hs-cra .p-strU { animation: cra-e-su 820ms linear; } .hero.atk-e .hs-cra .p-strD { animation: cra-e-sd 820ms linear; }
+.hero.atk-e .hs-cra .p-arrow { animation: cra-e-ar 820ms linear; } .hero.atk-e .hs-cra .p-bowasm { animation: cra-e-bow 820ms cubic-bezier(.35, .1, .25, 1); }
+.hero.atk-e .hs-cra .p-bowflex { animation: cra-e-fx 820ms linear; } .hero.atk-e .hs-cra .p-bowbase { animation: cra-e-fb 820ms linear; }
+.hero.atk-e .hs-cra .p-torso { animation: cra-e-to 820ms cubic-bezier(.35, .1, .25, 1); } .hero.atk-e .hs-cra .p-face { animation: cra-e-fa 820ms cubic-bezier(.35, .1, .25, 1); } .hero.atk-e .hs-cra .p-eye { animation: cra-e-ey 820ms linear; }
+.hero.atk-e .hs-cra .p-cloak { animation: cra-e-cl 820ms ease-out; } .hero.atk-e .hs-cra .p-scarf { animation: cra-e-sc 820ms ease-out; } .hero.atk-e .hs-cra .p-pony { animation: cra-e-po 820ms ease-out; }
+.hero.atk-e .hs-cra .p-hawk { animation: cra-e-hk 820ms ease-out; } .hero.atk-e .hs-cra .p-hwing, .hero.atk-e .hs-cra .p-hwingB { animation: cra-e-hw 820ms ease-out; } .hero.atk-e .hs-cra .p-lensglow { animation: cra-e-ln 820ms ease-out; }
+/* variantes : la pointe de la flèche prend la couleur du sort, et la lueur d'encoche suit */
+.hero.atk-b .hs-cra .p-arrowhead { fill: #8dff3a; } .hero.atk-b .hs-cra .p-arrowglow { fill: #6dff3a; opacity: .75; animation: crarrowglow .3s ease-out; }
+.hero.atk-c .hs-cra .p-arrowhead { fill: #ffb03a; } .hero.atk-c .hs-cra .p-arrowglow { fill: #ff8a1e; opacity: .85; animation: crarrowglow .3s ease-out; }
+.hero.atk-d .hs-cra .p-arrowhead { fill: #e8ffd0; } .hero.atk-d .hs-cra .p-arrowglow { fill: #c8ff9a; opacity: .95; animation: crarrowglow .76s ease-in-out; }
+.hero.atk-e .hs-cra .p-arrowhead { fill: #c8ff9a; } .hero.atk-e .hs-cra .p-arrowglow { fill: #9dff7a; opacity: .7; }
+.hero.atk-d .hs-cra, .hero.atk-e .hs-cra { filter: drop-shadow(0 2px 2px #0007) drop-shadow(0 0 5px #7dff6a); }
+.hero.atk-d .hs-cra .p-runes, .hero.atk-e .hs-cra .p-runes { animation: crrunebright .76s ease-in-out; }
+@keyframes crarrowglow { 0% { transform: scale(.4); } 100% { transform: scale(1.3); } }
+@keyframes crrunebright { 0%, 100% { opacity: .6; } 50%, 60% { opacity: 1; filter: drop-shadow(0 0 5px #b6ff7a) brightness(1.6); } }
+@keyframes crr-up { 0% { transform: rotate(0) } 100% { transform: rotate(-60.8deg) } }
+@keyframes crr-lo { 0% { transform: rotate(0) } 100% { transform: rotate(-48.2deg) } }
+@keyframes crr-su { 0% { transform: rotate(0.0deg) scaleY(1.000) } 100% { transform: rotate(36.9deg) scaleY(1.250) } }
+@keyframes crr-sd { 0% { transform: rotate(-0.0deg) scaleY(1.000) } 100% { transform: rotate(-31.0deg) scaleY(1.166) } }
+@keyframes crr-ar { 0% { opacity: 0; transform: translateX(0) } 30% { opacity: 1; transform: translateX(-8px) } 100% { opacity: 1; transform: translateX(-24px) } }
+@keyframes crr-bow { 0% { transform: rotate(0) } 100% { transform: rotate(-2deg) } }
+@keyframes crr-to { 0% { transform: none } 100% { transform: translateX(-1.6px) rotate(-1.6deg) } }
+@keyframes crr-hold { 0% { transform: translateX(-1.6px) rotate(-1.6deg) } 100% { transform: translateX(-2.1px) translateY(.3px) rotate(-2deg) } }
+@keyframes crr-fa { 0% { transform: none } 100% { transform: rotate(2.4deg) translateX(1.4px) } }
+@keyframes crr-fx { 0% { opacity: 0 } 100% { opacity: 1 } }
+@keyframes crr-fb { 0% { opacity: 1 } 100% { opacity: 0 } }
+@keyframes crr-ey { 0% { transform: none } 100% { transform: scaleY(.55) } }
+@keyframes crr-hk { 0% { transform: none } 100% { transform: translateY(1px) rotate(3deg) } }
+@keyframes crr-ghost { 0% { opacity: .55 } 100% { opacity: 1 } }
+/* Concentration à 5 : l'arc reste bandé, la flèche rougeoie, l'œil de lynx se verrouille */
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-upB { animation: crr-up .5s cubic-bezier(.3, .7, .3, 1) forwards; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-loB { animation: crr-lo .5s cubic-bezier(.3, .7, .3, 1) forwards; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-strU { animation: crr-su .5s ease-out forwards; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-strD { animation: crr-sd .5s ease-out forwards; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-arrow { animation: crr-ar .5s ease-out forwards; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-bowasm { animation: crr-bow .5s ease-out forwards; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-bowflex { animation: crr-fx .4s linear forwards; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-bowbase { animation: crr-fb .4s linear forwards; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-torso { animation: crr-to .5s ease-out forwards, crr-hold .2s linear .5s infinite alternate; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-face { animation: crr-fa .5s ease-out forwards; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-eye { animation: crr-ey .4s linear forwards; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-hawk { animation: crr-hk .5s ease-out forwards; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-arrowhead { fill: #ffd0b0; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-arrowglow { fill: #ff5a3a; opacity: .9; animation: crarrowhold .8s ease-in-out infinite; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-cross { stroke: #ff7a5a; opacity: 1; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-lensglow { fill: #ff5a3a; } .hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-reticle circle { stroke: #ff5a3a; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-aura { opacity: .95; animation: craura .8s ease-in-out infinite; }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-runes { opacity: 1; animation: none; filter: drop-shadow(0 0 4px #9dff7a); }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra { filter: drop-shadow(0 2px 2px #0007) drop-shadow(0 0 6px #ff5a3a); }
+@keyframes crarrowhold { 50% { transform: scale(1.35); opacity: .55; } }
+.hero.cra-ready:not(.atk):not(.cra-perfect):not(.dead) .hs-cra .p-aura { fill: url(#crAura); }
+@keyframes crp-up { 0% { transform: rotate(-60.8deg) } 29% { transform: rotate(-56.1deg) } 32% { transform: rotate(-56.1deg) } 35% { transform: rotate(31.5deg) } 46% { transform: rotate(-41.9deg) } 72% { transform: rotate(-41.9deg) } 100% { transform: rotate(0) } }
+@keyframes crp-lo { 0% { transform: rotate(-48.2deg) } 29% { transform: rotate(-56.9deg) } 32% { transform: rotate(-56.9deg) } 35% { transform: rotate(-112.0deg) } 46% { transform: rotate(-80.9deg) } 72% { transform: rotate(-80.9deg) } 100% { transform: rotate(0) } }
+@keyframes crp-su { 0% { transform: rotate(36.9deg) scaleY(1.250) } 29% { transform: rotate(39.1deg) scaleY(1.288) } 32% { transform: rotate(39.1deg) scaleY(1.288) } 34% { transform: rotate(-12.3deg) scaleY(1.024) } 38% { transform: rotate(9.6deg) scaleY(1.014) } 42% { transform: rotate(-6.1deg) scaleY(1.006) } 47% { transform: rotate(3.6deg) scaleY(1.002) } 52% { transform: rotate(-1.8deg) scaleY(1.000) } 100% { transform: rotate(0.0deg) scaleY(1.000) } }
+@keyframes crp-sd { 0% { transform: rotate(-31.0deg) scaleY(1.166) } 29% { transform: rotate(-33.0deg) scaleY(1.193) } 32% { transform: rotate(-33.0deg) scaleY(1.193) } 34% { transform: rotate(9.9deg) scaleY(1.015) } 38% { transform: rotate(-7.7deg) scaleY(1.009) } 42% { transform: rotate(4.9deg) scaleY(1.004) } 47% { transform: rotate(-2.9deg) scaleY(1.001) } 52% { transform: rotate(1.4deg) scaleY(1.000) } 100% { transform: rotate(-0.0deg) scaleY(1.000) } }
+@keyframes crp-ar { 0% { opacity: 1; transform: translateX(-24px) } 29% { opacity: 1; transform: translateX(-26px) } 32% { opacity: 1; transform: translateX(-26px) } 32.6% { opacity: 0; transform: translateX(-22px) } 100% { opacity: 0 } }
+@keyframes crp-bow { 0% { transform: rotate(-2deg) } 29% { transform: rotate(-3deg) } 32% { transform: rotate(-3deg) } 34% { transform: rotate(-12deg) translateX(-3px) } 41% { transform: rotate(4deg) } 50% { transform: rotate(-2deg) } 72% { transform: rotate(-3deg) } 100% { transform: rotate(0) } }
+@keyframes crp-fx { 0% { opacity: 1 } 33% { opacity: 1 } 34% { opacity: 0 } 100% { opacity: 0 } }
+@keyframes crp-fb { 0% { opacity: 0 } 33% { opacity: 0 } 34% { opacity: 1 } 100% { opacity: 1 } }
+@keyframes crp-to { 0% { transform: translateX(-1.6px) rotate(-1.6deg) } 29% { transform: translateX(-4px) translateY(2px) rotate(-3.4deg) } 32% { transform: translateX(-4px) translateY(2px) rotate(-3.4deg) } 35% { transform: translateX(5px) translateY(-1px) rotate(5deg) scale(1.03, .98) } 46% { transform: translateX(1px) rotate(-1deg) } 72% { transform: translateX(0) rotate(-1deg) } 100% { transform: none } }
+@keyframes crp-fa { 0% { transform: rotate(2.4deg) translateX(1.4px) } 32% { transform: rotate(3deg) translateX(2px) } 35% { transform: rotate(-4deg) translateY(1px) } 72% { transform: rotate(-2deg) } 100% { transform: none } }
+@keyframes crp-ey { 0% { transform: scaleY(.55) } 37% { transform: scaleY(.55) } 41% { transform: scaleY(1.15) } 72% { transform: none } 100% { transform: none } }
+@keyframes crp-cl { 0% { transform: rotate(-2deg) } 34% { transform: rotate(-3deg) skewY(-2deg) } 36% { transform: rotate(10deg) skewY(4deg) scaleX(1.15) } 48% { transform: rotate(-4deg) } 100% { transform: none } }
+@keyframes crp-sc { 0% { transform: rotate(5deg) scaleX(1.1) } 36% { transform: rotate(-18deg) scaleX(.78) } 50% { transform: rotate(5deg) } 100% { transform: none } }
+@keyframes crp-po { 0% { transform: rotate(4deg) } 36% { transform: rotate(-12deg) skewX(6deg) } 50% { transform: rotate(3deg) } 100% { transform: none } }
+@keyframes crp-hk { 0% { transform: translateY(1px) rotate(3deg) } 30% { transform: translateY(-2px) rotate(-4deg) scale(1.06) } 35% { transform: translate(14px, 4px) rotate(18deg) scale(1.2) } 44% { transform: translate(70px, 22px) rotate(24deg) scale(1.3) } 52% { transform: translate(78px, 14px) rotate(-6deg) scale(1.25) } 80% { transform: translate(30px, -6px) rotate(-10deg) scale(1.1) } 92% { transform: translate(0, 2px) } 100% { transform: none } }
+@keyframes crp-hw { 0% { transform: rotate(0) } 30% { transform: rotate(-40deg) } 36% { transform: rotate(30deg) } 40% { transform: rotate(-46deg) } 44% { transform: rotate(28deg) } 48% { transform: rotate(-46deg) } 52% { transform: rotate(26deg) } 56% { transform: rotate(-40deg) } 62% { transform: rotate(14deg) } 86% { transform: rotate(-30deg) } 92% { transform: rotate(4deg) } 100% { transform: rotate(0) } }
+@keyframes crp-hh { 0% { transform: rotate(0) } 32% { transform: rotate(10deg) } 48% { transform: rotate(12deg) } 88% { transform: rotate(0) } 100% { transform: rotate(0) } }
+@keyframes crp-ln { 0% { transform: scale(1) } 30% { transform: scale(1.12) } 38% { transform: scale(1.3) } 56% { transform: scale(1) } 100% { transform: scale(1) } }
+/* Tir Parfait : 1750 ms, lâcher à 560 ms (calé sur la cinématique) ; l'archère passe au-dessus de l'obscurité */
+.unit.hero.cra-perfect { position: relative; z-index: 21; }
+.hero.cra-perfect .hs-cra .p-upB { animation: crp-up 1750ms cubic-bezier(.4, 0, .25, 1) both; } .hero.cra-perfect .hs-cra .p-loB { animation: crp-lo 1750ms cubic-bezier(.4, 0, .25, 1) both; }
+.hero.cra-perfect .hs-cra .p-strU { animation: crp-su 1750ms linear both; } .hero.cra-perfect .hs-cra .p-strD { animation: crp-sd 1750ms linear both; }
+.hero.cra-perfect .hs-cra .p-arrow { animation: crp-ar 1750ms linear both; } .hero.cra-perfect .hs-cra .p-bowasm { animation: crp-bow 1750ms ease-out both; }
+.hero.cra-perfect .hs-cra .p-bowflex { animation: crp-fx 1750ms linear both; } .hero.cra-perfect .hs-cra .p-bowbase { animation: crp-fb 1750ms linear both; }
+.hero.cra-perfect .hs-cra .p-torso { animation: crp-to 1750ms cubic-bezier(.4, 0, .25, 1) both; } .hero.cra-perfect .hs-cra .p-face { animation: crp-fa 1750ms ease-in-out both; } .hero.cra-perfect .hs-cra .p-eye { animation: crp-ey 1750ms linear both; }
+.hero.cra-perfect .hs-cra .p-cloak { animation: crp-cl 1750ms ease-out both; } .hero.cra-perfect .hs-cra .p-scarf { animation: crp-sc 1750ms ease-out both; } .hero.cra-perfect .hs-cra .p-pony { animation: crp-po 1750ms ease-out both; }
+.hero.cra-perfect .hs-cra .p-hawk { animation: crp-hk 1750ms cubic-bezier(.4, 0, .3, 1) both; } .hero.cra-perfect .hs-cra .p-hwing, .hero.cra-perfect .hs-cra .p-hwingB { animation: crp-hw 1750ms linear both; } .hero.cra-perfect .hs-cra .p-hhead { animation: crp-hh 1750ms ease-out both; }
+.hero.cra-perfect .hs-cra .p-lensglow { animation: crp-ln 1750ms ease-out both; fill: #ff5a3a; opacity: .5; } .hero.cra-perfect .hs-cra .p-cross { stroke: #ff7a5a; opacity: 1; } .hero.cra-perfect .hs-cra .p-reticle circle { stroke: #ff5a3a; }
+.hero.cra-perfect .hs-cra .p-arrowhead { fill: #ffe0c0; } .hero.cra-perfect .hs-cra .p-arrowglow { fill: #ff5a3a; opacity: .95; animation: crarrowhold .5s ease-in-out infinite; }
+.hero.cra-perfect .hs-cra .p-aura { opacity: 1; }
+.hero.cra-perfect .hs-cra { animation: crpglow 1750ms ease-in-out both; }
+@keyframes crpglow { 0%, 30% { filter: drop-shadow(0 2px 2px #0007) drop-shadow(0 0 9px #ff5a3a) brightness(1.1); } 34% { filter: drop-shadow(0 2px 2px #0007) drop-shadow(0 0 22px #ffe27a) brightness(1.5); } 60% { filter: drop-shadow(0 2px 2px #0007) drop-shadow(0 0 12px #9dff7a) brightness(1.15); } 100% { filter: drop-shadow(0 2px 2px #0007); } }
+@keyframes crm-to { 0% { transform: none } 25% { transform: translateX(2px) rotate(2.4deg) } 60% { transform: translateX(2px) rotate(2.4deg) } 100% { transform: none } }
+@keyframes crm-hk { 0% { transform: none } 18% { transform: translateY(-5px) rotate(-8deg) scale(1.1) } 36% { transform: translateY(0) rotate(4deg) } 54% { transform: translateY(-3px) rotate(-4deg) } 100% { transform: none } }
+@keyframes crm-hw { 0% { transform: rotate(0) } 16% { transform: rotate(-60deg) } 30% { transform: rotate(14deg) } 44% { transform: rotate(-50deg) } 62% { transform: rotate(6deg) } 100% { transform: rotate(0) } }
+@keyframes crm-ln { 0% { transform: scale(1) } 20% { transform: scale(1.35) } 100% { transform: scale(1) } }
+/* proie marquée : l'archère se tourne, le faucon s'ébroue, la lentille s'illumine */
+.hero.cra-mark .hs-cra .p-torso { animation: crm-to .7s ease-in-out; } .hero.cra-mark .hs-cra .p-hawk { animation: crm-hk .7s ease-out; } .hero.cra-mark .hs-cra .p-hwing, .hero.cra-mark .hs-cra .p-hwingB { animation: crm-hw .7s ease-out; }
+.hero.cra-mark .hs-cra .p-lensglow { animation: crm-ln .7s ease-out; opacity: .75; fill: #b6ff7a; }
+@keyframes crd-hs { 0% { transform: none; opacity: 1 } 22% { transform: translateX(-16px) rotate(-9deg) scale(.96); opacity: .55 } 64% { transform: translateX(-12px) rotate(-5deg); opacity: .7 } 100% { transform: none; opacity: 1 } }
+@keyframes crd-hk { 0% { transform: none } 20% { transform: translate(8px, -8px) rotate(-12deg) scale(1.12) } 100% { transform: none } }
+/* esquive : saut arrière, le faucon s'envole d'un battement */
+.hero.cra-dodge .hs-cra { animation: crd-hs .52s cubic-bezier(.3, .7, .3, 1); }
+.hero.cra-dodge .hs-cra .p-hawk { animation: crd-hk .52s ease-out; }
+.hero.cra-dodge .hs-cra .p-hwing, .hero.cra-dodge .hs-cra .p-hwingB { animation: crm-hw .52s ease-out; }
+.hero.cra-dodge .hs-cra .p-cloak { animation: crp-cl .52s ease-out; }
+@keyframes crdead-hk { 0% { transform: none; opacity: 1 } 100% { transform: translate(46px, -62px) rotate(-14deg) scale(.7); opacity: 0 } }
+/* défaite : le faucon quitte son perchoir */
+.hero.dead .hs-cra .p-hawk { animation: crdead-hk 1.2s ease-in .15s forwards; animation-play-state: running; }
+.hero.dead .hs-cra .p-hwing, .hero.dead .hs-cra .p-hwingB { animation: crm-hw .5s linear .15s 3; animation-play-state: running; }
+.hero.dead.still .hs-cra .p-hawk { animation-duration: 0s; animation-delay: 0s; }
+.hero.dead .hs-cra .p-aura, .hero.dead .hs-cra .p-lensglow { opacity: 0; }
+.hero.cheer .hs-cra .p-bowasm { animation: crcheer .6s cubic-bezier(.45, 0, .25, 1); }
+@keyframes crcheer { 0% { transform: rotate(0); } 40% { transform: rotate(-14deg) translateY(-3px); } 100% { transform: rotate(0); } }
+/* effets autour du sprite */
+.cr-ring { position: absolute; left: 89%; top: 56%; z-index: 4; width: 14px; height: 40px; margin: -20px 0 0 -7px; pointer-events: none; border: 2px solid #eaffd0; border-radius: 50%; opacity: 0; animation: crring .42s ease-out forwards; box-shadow: 0 0 8px #9dff7a; }
+.cr-ring.poison { border-color: #8dff3a; box-shadow: 0 0 10px #6dff3a; } .cr-ring.fire { border-color: #ffb03a; box-shadow: 0 0 12px #ff7a1e; } .cr-ring.big { width: 22px; height: 66px; margin: -33px 0 0 -11px; border-width: 3px; animation-duration: .6s; }
+@keyframes crring { 0% { opacity: 1; transform: scale(.4); } 100% { opacity: 0; transform: scale(2.3, 1.6) translateX(10px); } }
+.cr-leaf { position: absolute; left: 50%; top: 54%; z-index: 4; width: 7px; height: 11px; pointer-events: none; opacity: 0; border-radius: 80% 0 80% 0; background: linear-gradient(135deg, #c8ff9a, #3fb85a 70%, #14502a); box-shadow: 0 0 5px #7dff6a80; animation: crleaf var(--t, 900ms) cubic-bezier(.2, .7, .3, 1) var(--d, 0ms) forwards; }
+@keyframes crleaf { 0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.5); } 14% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--r)) scale(1); } }
+.cr-streak { position: absolute; left: 30%; top: var(--y, 56%); z-index: 3; width: 60px; height: 2px; pointer-events: none; opacity: 0; border-radius: 2px; background: linear-gradient(90deg, transparent, #eaffd0 60%, #9dff7a); box-shadow: 0 0 6px #9dff7a; animation: crstreak .34s ease-out var(--d, 0ms) forwards; }
+.cr-streak.poison { background: linear-gradient(90deg, transparent, #c8ff8a 60%, #6dff3a); box-shadow: 0 0 6px #6dff3a; } .cr-streak.fire { background: linear-gradient(90deg, transparent, #ffe0a0 60%, #ff8a1e); box-shadow: 0 0 7px #ff7a1e; }
+@keyframes crstreak { 0% { opacity: 0; transform: translateX(-14px) scaleX(.2); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateX(34px) scaleX(1.2); } }
+.cr-spark { position: absolute; left: 92%; top: 57%; z-index: 5; width: var(--s, 4px); height: var(--s, 4px); border-radius: 50%; pointer-events: none; background: radial-gradient(circle, #fff, #9dff7a 60%, transparent 70%); box-shadow: 0 0 6px #9dff7a; animation: crspark .6s ease-out var(--d, 0ms) forwards; opacity: 0; }
+.cr-spark.poison { background: radial-gradient(circle, #f0ffd0, #6dff3a 60%, transparent 70%); box-shadow: 0 0 6px #6dff3a; } .cr-spark.fire { background: radial-gradient(circle, #fff6d0, #ffb03a 60%, transparent 70%); box-shadow: 0 0 7px #ff7a1e; }
+@keyframes crspark { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); } }
+.cr-charge { position: absolute; left: 82%; top: 56%; z-index: 4; width: 46px; height: 46px; margin: -23px; pointer-events: none; border-radius: 50%; opacity: 0; background: radial-gradient(circle, #f4ffe0 0 14%, #9dff7a88 34%, transparent 68%); animation: crcharge var(--t, 460ms) ease-in forwards; }
+@keyframes crcharge { 0% { opacity: 0; transform: scale(2.2); } 60% { opacity: 1; transform: scale(.9); } 85% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; transform: scale(2.8); } }
+.cr-dust { position: absolute; left: 36%; bottom: 8px; z-index: 1; width: 16px; height: 10px; pointer-events: none; opacity: 0; border-radius: 50%; background: radial-gradient(#e8dcc0aa, transparent 70%); animation: crdust .6s ease-out var(--d, 0ms) forwards; }
+@keyframes crdust { 0% { opacity: .9; transform: translateX(0) scale(.5); } 100% { opacity: 0; transform: translateX(var(--dx, -16px)) translateY(-6px) scale(1.7); } }
+.cr-wave { position: absolute; left: 86%; top: 56%; z-index: 4; width: 26px; height: 26px; margin: -13px; pointer-events: none; border-radius: 50%; border: 3px solid #f4ffe0; box-shadow: 0 0 14px #9dff7a, inset 0 0 10px #9dff7a; opacity: 0; animation: crwave .7s ease-out var(--d, 0ms) forwards; }
+.cr-wave.fire { border-color: #ffe0b0; box-shadow: 0 0 14px #ff8a1e, inset 0 0 10px #ff8a1e; }
+@keyframes crwave { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(4.2); } }
+.cr-ghost { position: absolute; inset: 0; pointer-events: none; opacity: 0; filter: brightness(1.4) sepia(1) hue-rotate(60deg) saturate(3); animation: crghost .5s ease-out var(--gd, 0ms) both; }
+.cr-ghost .hs { width: 100%; height: 100%; filter: none; } .cr-ghost .hs, .cr-ghost .hs * { animation: none !important; }
+@keyframes crghost { 0% { opacity: 0; transform: translateX(0); } 20% { opacity: .5; } 100% { opacity: 0; transform: translateX(calc(var(--gx) * -1)); } }
+.fnum.cra { color: #e8ffd0; -webkit-text-stroke: 1px #0c2a06; text-shadow: 0 2px 0 #0c2a06, 0 0 10px #6aff2a; font-weight: 900; letter-spacing: .06em; }
+@media (prefers-reduced-motion: reduce) { .hs-cra *, .hero .hs-cra { animation: none !important; } .cr-ring, .cr-leaf, .cr-streak, .cr-spark, .cr-charge, .cr-dust, .cr-wave, .cr-ghost { display: none; } }
+/* ===== fin Cra ===== */
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1756,7 +2049,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793193837';
+const BUILD_ID = '1793201099';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -5168,6 +5461,51 @@ function heroGesture(unit, k) {
   }, k === 'atk' ? (variant ? 640 : 520) : 600);
 }
 
+/* Cra : un tir différent par sort (a magique, b empoisonnée, c explosive, d punitive, e pluie).
+   [classe, instant du lâcher en ms, durée en ms, élément]. Les tirs s'enchaînent sans se chevaucher ; la fonction rend le délai avant le lâcher
+   pour que la flèche de l'effet quitte l'arc au bon moment (-1 : pas de geste, le Tir Parfait occupe l'archère). */
+const CRA_SHOT = {
+  fleche_magique: ['atk-a', 162, 320, ''], fleche_empoisonnee: ['atk-b', 162, 320, 'poison'], fleche_explosive: ['atk-c', 156, 320, 'fire'],
+  fleche_punitive: ['atk-d', 471, 780, ''], pluie_fleches: ['atk-e', 426, 840, ''],
+};
+const CRA_CLS = ['atk', 'cheer', 'atk-a', 'atk-b', 'atk-c', 'atk-d', 'atk-e'];
+function craShoot(unit, id) {
+  if (unit.classList.contains('cra-perfect')) return -1;
+  const [cls, rel, dur, el] = CRA_SHOT[id] || CRA_SHOT.fleche_magique;
+  const now = performance.now(), start = Math.max(now, unit._cFree || 0);
+  if (start - now > 1600) return -1; // trop en retard : on laisse tomber le geste
+  unit._cFree = start + dur;
+  setTimeout(() => {
+    if (unit.classList.contains('cra-perfect')) return;
+    unit.classList.remove(...CRA_CLS); void unit.offsetWidth; unit.classList.add('atk', cls);
+    const tok = unit._cTok = (unit._cTok || 0) + 1;
+    setTimeout(() => { if (unit._cTok === tok) unit.classList.remove('atk', cls); }, dur);
+    craFlourish(unit, cls, el, rel);
+  }, start - now);
+  return start - now + rel;
+}
+/* Effets du Cra autour de son sprite : lueur d'encoche, poussière, anneau et traînées au lâcher, étincelles, feuilles soufflées, images fantômes */
+function craFlourish(unit, cls, el, rel) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-cra'); if (!sp || !svg) return;
+  const x = el ? ' ' + el : '', heavy = cls === 'atk-d' || cls === 'atk-e', rnd = (a, b) => a + Math.random() * (b - a);
+  const add = (c, style, ms) => { const e = document.createElement('i'); e.className = c; if (style) e.style.cssText = style; sp.appendChild(e); setTimeout(() => e.remove(), ms); return e; };
+  add('cr-charge' + x, `--t:${rel}ms`, rel + 80);
+  if (heavy) { add('cr-dust', `--d:0ms;--dx:-18px`, 700); add('cr-dust', `--d:120ms;--dx:-30px;left:30%`, 800); }
+  setTimeout(() => {
+    add('cr-ring' + x + (cls === 'atk-d' ? ' big' : ''), '', 700);
+    (heavy ? [-9, 0, 9] : [-5, 5]).forEach((o, i) => add('cr-streak' + x, `--y:${56 + o}%;--d:${i * 40}ms`, 520 + i * 40));
+    for (let i = 0, n = heavy ? 9 : 5; i < n; i++) add('cr-spark' + x, `--dx:${rnd(10, 44).toFixed(0)}px;--dy:${rnd(-22, 22).toFixed(0)}px;--s:${rnd(3, 5.5).toFixed(1)}px;--d:${rnd(0, 70).toFixed(0)}ms`, 800);
+    for (let i = 0, n = heavy ? 7 : 3; i < n; i++) add('cr-leaf', `--dx:${rnd(-52, -8).toFixed(0)}px;--dy:${rnd(-48, 6).toFixed(0)}px;--r:${rnd(-380, 380).toFixed(0)}deg;--t:${rnd(700, 1100).toFixed(0)}ms;--d:${rnd(0, 90).toFixed(0)}ms`, 1300);
+    if (cls === 'atk-d' || cls === 'atk-c') add('cr-wave' + x, '', 800);
+    if (heavy) for (let i = 1; i <= 2; i++) {
+      const g = document.createElement('div'); g.className = 'cr-ghost'; g.style.cssText = `--gx:${14 * i}px;--gd:${i * 45}ms`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+      sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 800 + i * 45);
+    }
+  }, rel);
+}
+
 /* Effets du Iop autour de son sprite : images fantômes, onde de choc au sol, braises */
 function iopFlourish(unit, v) {
   if (!FX_OK()) return;
@@ -5235,14 +5573,24 @@ function playSpellFx(card, cast) {
   if (!FX_OK()) return;
   const scene = card.querySelector('.scene'); if (!scene) return;
   const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
-  if (heroUnit) heroGesture(heroUnit, ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]) ? 'cheer' : 'atk');
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
-  const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
-  const from = fxPos(scene, heroSprite); if (!from) return;
-  const tos = cast.t.map(i => fxPos(scene, card.querySelector(`[data-mon="${i}"] .sprite`))).filter(Boolean);
-  const kind = FX_KIND[fx[0]] || FX_KIND.proj;
-  if (!tos.length && !['buff', 'heal'].includes(fx[0])) return;
-  kind(scene, from, tos, fx, heroSprite);
+  const support = ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]);
+  let lead = 0, isCra = false;
+  if (heroUnit) {
+    if (!support && heroUnit.querySelector('.hs-cra')) { isCra = true; lead = Math.max(0, craShoot(heroUnit, cast.id)); } // l'archère bande son arc : la flèche part au lâcher
+    else heroGesture(heroUnit, support ? 'cheer' : 'atk');
+  }
+  const go = () => {
+    if (!scene.isConnected) return;
+    const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
+    const from = fxPos(scene, heroSprite); if (!from) return;
+    if (isCra) { const r = heroSprite.getBoundingClientRect(); from.x += r.width * .39; from.y += r.height * .06; } // la flèche part de la corde, pas du centre du sprite
+    const tos = cast.t.map(i => fxPos(scene, card.querySelector(`[data-mon="${i}"] .sprite`))).filter(Boolean);
+    const kind = FX_KIND[fx[0]] || FX_KIND.proj;
+    if (!tos.length && !support) return;
+    kind(scene, from, tos, fx, heroSprite);
+  };
+  if (lead > 0) setTimeout(go, lead); else go();
 }
 /* =====================================================================
    AMAKNA IDLE — SPRITES DES PERSONNAGES EN COMBAT (dessins originaux)
@@ -5797,6 +6145,256 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
     <g class="p-stars" opacity="0" fill="#ffe27a" stroke="#6a4208" stroke-width=".9"><path d="M46 14 l2 4 4 .6 -3 3 .8 4 -3.8 -2 -3.8 2 .8 -4 -3 -3 4 -.6Z"/><path d="M86 8 l1.6 3.4 3.6 .5 -2.6 2.6 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.6 3.6 -.5Z"/><path d="M66 -2 l1.4 3 3.2 .4 -2.3 2.3 .6 3.2 -2.9 -1.5 -2.9 1.5 .6 -3.2 -2.3 -2.3 3.2 -.4Z"/></g>
   </g>
 </svg>`,
+
+/* ---- CRA ---- archère aux yeux de lynx : capuche de feuillage, faucon perché sur l'arc, carquois, lentille de visée ---- */
+cra: `<svg class="hs hs-cra" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <radialGradient id="crSkin" cx="42%" cy="32%" r="78%"><stop offset="0" stop-color="#ffe3c2"/><stop offset=".7" stop-color="#f1b783"/><stop offset="1" stop-color="#c98458"/></radialGradient>
+    <linearGradient id="crHair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#d4deea"/><stop offset="1" stop-color="#8d9db4"/></linearGradient>
+    <linearGradient id="crHood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58c25f"/><stop offset=".55" stop-color="#2f8a3d"/><stop offset="1" stop-color="#14502a"/></linearGradient>
+    <linearGradient id="crJerk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fb85a"/><stop offset=".55" stop-color="#2a7a3a"/><stop offset="1" stop-color="#124624"/></linearGradient>
+    <linearGradient id="crCloak" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f9a4a"/><stop offset=".6" stop-color="#1f6a32"/><stop offset="1" stop-color="#0c3a1c"/></linearGradient>
+    <linearGradient id="crCloakIn" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8d9a0"/><stop offset="1" stop-color="#9a8a52"/></linearGradient>
+    <radialGradient id="crGold" cx="36%" cy="30%" r="80%"><stop offset="0" stop-color="#fff8c0"/><stop offset=".45" stop-color="#ffd24a"/><stop offset="1" stop-color="#b8791a"/></radialGradient>
+    <linearGradient id="crLeather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6638"/><stop offset="1" stop-color="#4a2a14"/></linearGradient>
+    <linearGradient id="crBoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a32"/><stop offset="1" stop-color="#32180a"/></linearGradient>
+    <linearGradient id="crPants" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a6a3a"/><stop offset="1" stop-color="#1c3c22"/></linearGradient>
+    <linearGradient id="crFur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d8cba8"/></linearGradient>
+    <linearGradient id="crWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d49a52"/><stop offset=".5" stop-color="#9a5a26"/><stop offset="1" stop-color="#5a2e10"/></linearGradient>
+    <radialGradient id="crLens" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="#e8ffe0" stop-opacity=".5"/><stop offset=".55" stop-color="#7dff6a" stop-opacity=".22"/><stop offset="1" stop-color="#1f8a3a" stop-opacity=".4"/></radialGradient>
+    <radialGradient id="crAmber" cx="40%" cy="32%" r="72%"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffb62e"/><stop offset="1" stop-color="#a85a0a"/></radialGradient>
+    <radialGradient id="crAura" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#b6ff7a" stop-opacity=".7"/><stop offset=".55" stop-color="#4fe05a" stop-opacity=".35"/><stop offset="1" stop-color="#2fe05a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="crScarf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ee6a44"/><stop offset="1" stop-color="#a02a18"/></linearGradient>
+    <linearGradient id="crSteel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#b6c4d4"/><stop offset="1" stop-color="#62728a"/></linearGradient>
+    <linearGradient id="crHawk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c98a4a"/><stop offset=".6" stop-color="#8a5226"/><stop offset="1" stop-color="#4a280e"/></linearGradient>
+    <linearGradient id="crHawkW" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a86a34"/><stop offset="1" stop-color="#2e1a0a"/></linearGradient>
+    <linearGradient id="crFeather" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#1fb8a0"/><stop offset=".5" stop-color="#8ef0d8"/><stop offset="1" stop-color="#fff6d8"/></linearGradient>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="119" rx="32" ry="5.5" fill="#000" opacity=".32"/>
+  <circle class="p-aura" cx="62" cy="68" r="58" fill="url(#crAura)" opacity="0"/>
+
+  <!-- manteau de feuillage -->
+  <g class="p-cloak" stroke="#0d2412" stroke-width="2" stroke-linejoin="round">
+    <path d="M54 58 Q34 60 24 82 L10 106 L25 100 L24 113 L38 103 L44 117 L53 99 L62 72Z" fill="url(#crCloak)"/>
+    <path d="M52 66 Q40 72 34 88 L40 99 L48 90 L52 98 L58 78Z" fill="url(#crCloakIn)" stroke="none" opacity=".55"/>
+    <path d="M44 70 Q34 82 28 100 M50 74 Q44 88 40 104" fill="none" stroke="#9fe08a" stroke-opacity=".4" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M22 88 l4 -1 M26 96 l4 -2 M33 92 l3 -3" stroke="#0d2412" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- queue-de-cheval argentée -->
+  <g class="p-pony" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M46 36 Q34 36 30 48 Q27 60 31 74 Q33 64 36 58 Q36 68 35 78 Q42 66 41 52 Q44 46 48 42Z" fill="url(#crHair)"/>
+    <path d="M33 52 Q31 62 33 70 M38 50 Q37 58 37 66" fill="none" stroke="#8d9db4" stroke-opacity=".7" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M43 35 l-5 -1 -1 7 6 1Z" fill="url(#crScarf)"/>
+    <circle cx="39.5" cy="41" r="2.4" fill="url(#crGold)" stroke="#6a4208" stroke-width="1"/>
+  </g>
+
+  <!-- carquois et flèches -->
+  <g transform="translate(-7 7)"><g class="p-qarrows" stroke="#26180a" stroke-linejoin="round" stroke-linecap="round">
+    <g transform="rotate(-32 44 52)"><path d="M44 52 L44 30" stroke-width="3.6"/><path d="M44 52 L44 30" stroke="#e8d6a0" stroke-width="1.8"/>
+      <path d="M44 30 L40 22 L47.4 22Z" fill="#d6402a" stroke-width="1.2"/></g>
+    <g transform="rotate(-10 44 52)"><path d="M44 52 L44 27" stroke-width="3.6"/><path d="M44 52 L44 27" stroke="#e8d6a0" stroke-width="1.8"/>
+      <path d="M44 27 L40 19 L47.4 19Z" fill="#fff6d8" stroke-width="1.2"/></g>
+    <g transform="rotate(12 44 52)"><path d="M44 52 L44 31" stroke-width="3.6"/><path d="M44 52 L44 31" stroke="#e8d6a0" stroke-width="1.8"/>
+      <path d="M44 31 L40 23 L47.4 23Z" fill="#2fb8a0" stroke-width="1.2"/></g>
+  </g></g>
+  <g class="p-quiver" stroke="#26180a" stroke-width="2" stroke-linejoin="round" transform="translate(-7 7)">
+    <g transform="rotate(-16 46 70)">
+      <rect x="39.5" y="46" width="13" height="50" rx="4.5" fill="url(#crLeather)"/>
+      <rect x="38.5" y="45" width="15" height="6" rx="2.6" fill="url(#crGold)" stroke-width="1.5"/>
+      <path d="M40 62 h12 M40 76 h12" stroke="#e0b25a" stroke-width="1.4"/>
+      <path d="M46 55 q3 4 0 9 q-3 -5 0 -9Z" fill="#7dff6a" stroke="#1a6a36" stroke-width="1"/>
+    </g>
+  </g>
+
+  <!-- jambes et bottes à revers de fourrure -->
+  <g stroke="#26180a" stroke-width="2" stroke-linejoin="round">
+    <path d="M50 94 h13 v11 h-13Z M68 94 h13 v11 h-13Z" fill="url(#crPants)" stroke="#0d2412"/>
+    <path d="M49 101 h14 v8 q7 1 7 5 q0 4.6 -6 4.6 h-19 q-4 0 -4 -4 q0 -4 8 -5Z" fill="url(#crBoot)"/>
+    <path d="M68 101 h14 v8 q7 1 7 5 q0 4.6 -6 4.6 h-19 q-4 0 -4 -4 q0 -4 8 -5Z" fill="url(#crBoot)"/>
+    <path d="M47 99 Q56 94 65 99 L65 105 Q56 101 47 105Z" fill="url(#crFur)"/>
+    <path d="M66 99 Q75 94 84 99 L84 105 Q75 101 66 105Z" fill="url(#crFur)"/>
+    <path d="M51 100 l1 3 M55 99 l1 3 M59 99 l1 3 M70 100 l1 3 M74 99 l1 3 M78 99 l1 3" stroke="#a89a78" stroke-width="1" fill="none"/>
+    <path d="M52 112 h8 M70 112 h8" stroke="#e0b25a" stroke-width="1.6" fill="none"/>
+    <path d="M43 118 h25 M62 118 h25" stroke="#1a0f06" stroke-width="2"/>
+  </g>
+
+  <g class="p-torso">
+    <!-- veste de chasse -->
+    <path d="M46 62 Q62 54 80 62 L85 97 Q62 105 41 97Z" fill="url(#crJerk)" stroke="#0d2412" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M43 70 Q41 84 44 94" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M82 68 Q85 82 84 94" fill="none" stroke="#9fe08a" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
+    <path d="M53 61 L62 76 L73 61Z" fill="#f4ecd0" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M57 64 l5 4 l5 -4 M59 68 l3 2.6 l3 -2.6" fill="none" stroke="#8a5a32" stroke-width="1.2" stroke-linecap="round"/>
+    <!-- foulard rouge -->
+    <g class="p-scarf" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M52 62 Q40 66 30 62 Q22 62 16 70 Q26 68 30 74 Q36 70 42 72 Q50 72 54 68Z" fill="url(#crScarf)"/>
+      <path d="M22 66 l6 2 M30 68 l4 2" stroke="#ffd0b0" stroke-opacity=".6" stroke-width="1.1" fill="none"/>
+    </g>
+    <path d="M47 61 Q62 70 79 61 L78 66 Q62 75 48 67Z" fill="url(#crScarf)" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round"/>
+    <!-- baudrier et fermoir feuille -->
+    <path d="M76 60 L50 96" stroke="#26180a" stroke-width="6.4" stroke-linecap="round"/><path d="M76 60 L50 96" stroke="url(#crLeather)" stroke-width="4.2" stroke-linecap="round"/>
+    <g fill="url(#crGold)" stroke="#6a4208" stroke-width="1"><circle cx="70" cy="68.4" r="1.5"/><circle cx="56" cy="87.6" r="1.5"/></g>
+    <path d="M63 72 Q71 76 63 85 Q55 76 63 72Z" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.4" stroke-linejoin="round"/><path d="M63 74 L63 83" stroke="#6a4208" stroke-width="1"/>
+    <!-- ceinture, boucle feuille -->
+    <path d="M41 93 Q62 100 85 93 L86 100 Q62 107 40 100Z" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M63 93.6 Q70 98.4 63 106 Q56 98.4 63 93.6Z" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.5" stroke-linejoin="round"/><circle cx="63" cy="99.4" r="2" fill="#7dff6a" stroke="#1a6a36" stroke-width=".9"/>
+    <!-- tassettes en feuilles -->
+    <g class="p-tass" stroke="#0d2412" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M44 100 Q52 104 50 114 Q43 117 40 110 Q40 104 44 100Z" fill="url(#crJerk)"/>
+      <path d="M72 101 Q80 99 84 104 Q84 112 79 115 Q72 112 72 101Z" fill="url(#crJerk)"/>
+      <path d="M44.5 103 L46.4 112 M77.4 102.6 L79.2 111.4" stroke="#9fe08a" stroke-opacity=".6" stroke-width="1" fill="none"/>
+    </g>
+    <path d="M48 99 l-5 12 l4 1.4 l4 -9.4Z" fill="#c9d4e0" stroke="#26180a" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M47 101 l-2.4 8" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+
+    <!-- bras avant (tient l'arc) -->
+    <g class="p-armF">
+      <path d="M82 66 Q99 74 112 72" fill="none" stroke="#0d2412" stroke-width="11.4" stroke-linecap="round"/>
+      <path d="M82 66 Q99 74 112 72" fill="none" stroke="url(#crJerk)" stroke-width="8.6" stroke-linecap="round"/>
+      <path d="M98 72 L108 72.6" fill="none" stroke="#26180a" stroke-width="11" stroke-linecap="round"/>
+      <path d="M98 72 L108 72.6" fill="none" stroke="url(#crLeather)" stroke-width="8.2" stroke-linecap="round"/>
+      <path d="M100 68.2 v8.8 M105 68.4 v8.8" stroke="url(#crGold)" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+
+    <!-- épaulière à plumes -->
+    <g stroke="#0d2412" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M72 66 Q73 53 87 56 Q94 63 89 72 Q79 73 72 66Z" fill="url(#crHood)"/>
+      <path d="M75 70 Q74 62 82 59 Q88 62 88 69Z" fill="url(#crJerk)"/>
+      <path d="M76 71 l-1 8 M80 72.6 l0 8 M85 72 l1 7" stroke="#0d2412" stroke-width="3" stroke-linecap="round"/>
+      <path d="M76 71 l-1 8 M80 72.6 l0 8 M85 72 l1 7" stroke="url(#crFeather)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M77 60 Q82 56 88 60" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+
+    <!-- l'arc, sa corde, la flèche encochée et le faucon -->
+    <g class="p-bowasm">
+      <path class="p-bowflex" d="M96 36 C109 44 123 58 118 72 C123 86 109 100 96 108" fill="none" stroke="#26180a" stroke-width="7.6" stroke-linecap="round" opacity="0"/>
+      <path class="p-bowflex" d="M96 36 C109 44 123 58 118 72 C123 86 109 100 96 108" fill="none" stroke="url(#crWood)" stroke-width="5" stroke-linecap="round" opacity="0"/>
+      <path class="p-bowbase" d="M96 36 C108 46 119 58 115 72 C119 86 108 98 96 108" fill="none" stroke="#26180a" stroke-width="7.6" stroke-linecap="round"/>
+      <path class="p-bowbase" d="M96 36 C108 46 119 58 115 72 C119 86 108 98 96 108" fill="none" stroke="url(#crWood)" stroke-width="5" stroke-linecap="round"/>
+      <path class="p-runes" d="M99 41 C108 49 116 59 113.2 72 C116 85 108 95 99 103" fill="none" stroke="#9dff7a" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3.4 3.6"/>
+      <circle cx="96" cy="36" r="3.4" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.3"/>
+      <circle cx="96" cy="108" r="3.4" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.3"/>
+      <rect x="111" y="62" width="7" height="20" rx="2.4" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.6"/>
+      <path d="M111 66 h7 M111 70 h7 M111 74 h7 M111 78 h7" stroke="#e0b25a" stroke-width="1"/>
+      <!-- corde en deux brins : on la tend en tournant et en allongeant chaque brin -->
+      <line class="p-strU" x1="96" y1="36" x2="96" y2="68" stroke="#fff6dc" stroke-width="1.3" stroke-linecap="round"/>
+      <line class="p-strD" x1="96" y1="108" x2="96" y2="68" stroke="#fff6dc" stroke-width="1.3" stroke-linecap="round"/>
+      <!-- flèche encochée (cachée au repos) -->
+      <g class="p-arrow" opacity="0">
+        <path d="M96 68 L142 68" stroke="#26180a" stroke-width="4.4" stroke-linecap="round"/>
+        <path d="M97 68 L140 68" stroke="#f0e0b0" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M97 68 L104 62.4 L112 62.4 L108 68Z" fill="#d6402a" stroke="#26180a" stroke-width="1.1" stroke-linejoin="round"/>
+        <path d="M97 68 L104 73.6 L112 73.6 L108 68Z" fill="#fff6d8" stroke="#26180a" stroke-width="1.1" stroke-linejoin="round"/>
+        <circle class="p-arrowglow" cx="143" cy="68" r="8" fill="#9dff7a" opacity="0"/>
+        <path class="p-arrowhead" d="M133 63.4 L148 68 L133 72.6 L136.4 68Z" fill="url(#crSteel)" stroke="#26180a" stroke-width="1.2" stroke-linejoin="round"/>
+      </g>
+      <!-- faucon perché sur le bout de l'arc : l'Œil de Lynx -->
+      <g transform="translate(97 35) scale(.82)">
+        <g class="p-hawk">
+          <g stroke="#26180a" stroke-width="1.6" stroke-linejoin="round">
+            <path class="p-htail" d="M-4 -9 L-13 7 L-9 9 L-7 14 L-1 8 L3 -7Z" fill="#b8683a"/>
+            <path d="M-11.4 4 l4 -1 M-9.6 8.6 l4.6 -1" stroke="#2e1a0a" stroke-width="1.3" fill="none"/>
+            <path d="M-8 -11 Q-11 -27 2 -29 Q13 -27 10.6 -12 Q6.6 -4 -2 -4 Q-7 -5 -8 -11Z" fill="url(#crHawk)"/>
+            <path d="M3 -27 Q10.6 -24.6 9.6 -12.6 Q6 -6.4 0 -6.4 Q4.6 -14 3 -27Z" fill="#fff0d0" stroke="none"/>
+            <path d="M6 -22 l1.6 1.4 M4.4 -17 l1.8 1 M6.8 -14 l1.4 1.4" stroke="#9a5a2a" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+            <g class="p-hwingB"><path d="M-9 -24 Q-17 -17 -14 -3 Q-10 -9 -7 -14Z" fill="url(#crHawkW)"/></g>
+            <g class="p-hwing"><path d="M-3 -25 Q-10 -15 -7 -1 Q-3 -8 1 -16Z" fill="url(#crHawkW)"/><path d="M-8.6 -8 l2 -1 M-8 -4 l2 -.6" stroke="#fff0d0" stroke-width="1" stroke-linecap="round" fill="none"/></g>
+            <g class="p-hhead">
+              <circle cx="3.4" cy="-32" r="5.8" fill="url(#crHawk)"/>
+              <path d="M3.6 -32 Q8.4 -31.6 8.6 -28 Q4.6 -27.4 2.4 -29Z" fill="#fff0d0" stroke="none"/>
+              <path d="M4 -28.4 q2 2 1.4 4.6" stroke="#2e1a0a" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <path d="M8 -33 Q14.4 -32 12.6 -26.6 Q11 -29 8 -29Z" fill="#ffc83a"/>
+              <g class="p-heye"><circle cx="5.6" cy="-33.4" r="2.1" fill="#ffe27a" stroke-width="1"/><circle cx="6" cy="-33.4" r=".95" fill="#10100a" stroke="none"/></g>
+              <path d="M-1 -37 l-2 -3 M2 -38 l0 -4" stroke="#8a5226" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+            </g>
+          </g>
+          <path d="M-4 -4 L-3 1 M0 -4 L1 1 M3.4 -4 L3.4 1.4" stroke="#26180a" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+          <path d="M-4 -4 L-3 1 M0 -4 L1 1 M3.4 -4 L3.4 1.4" stroke="#ffc83a" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- main avant : gant de cuir serré sur la poignée -->
+    <g class="p-gripF">
+      <circle cx="113" cy="72" r="6.2" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.9"/>
+      <path d="M114.4 67 Q118.8 66.4 119 70 Q116.6 70.4 114.4 70Z" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M109.6 69.4 h6 M109.2 72.4 h6.4 M109.8 75.2 h5.6" stroke="#2a1606" stroke-opacity=".7" stroke-width="1" stroke-linecap="round"/>
+    </g>
+
+    <!-- bras de corde : épaule A, coude, main (deux segments emboîtés) -->
+    <g class="p-upB">
+      <path d="M54 66 L46 80" stroke="#0d2412" stroke-width="10" stroke-linecap="round"/>
+      <path d="M54 66 L46 80" stroke="url(#crJerk)" stroke-width="7.6" stroke-linecap="round"/>
+      <path d="M50 70 L47.6 76" stroke="#9fe08a" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
+      <g class="p-loB">
+        <path d="M46 80 L54 93" stroke="#0d2412" stroke-width="9.4" stroke-linecap="round"/>
+        <path d="M46 80 L54 93" stroke="url(#crJerk)" stroke-width="7" stroke-linecap="round"/>
+        <path d="M49.4 85.6 L53 90" stroke="#26180a" stroke-width="9" stroke-linecap="round"/>
+        <path d="M49.4 85.6 L53 90" stroke="url(#crLeather)" stroke-width="6.4" stroke-linecap="round"/>
+        <path d="M51 85.4 l4.6 2.6" stroke="url(#crGold)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="54" cy="93" r="4.8" fill="url(#crLeather)" stroke="#26180a" stroke-width="1.7"/>
+        <path d="M55.8 90 q3.6 1.2 3.4 5 M54.4 89.6 q3.8 1 3.8 5.2" fill="none" stroke="#2a1606" stroke-opacity=".7" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- tête de l'archère -->
+    <g class="p-face">
+      <!-- oreilles pointues -->
+      <path d="M44 46 L33 36 L42 54Z" fill="url(#crSkin)" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M42.4 46 L36.6 40.6 L41.6 50Z" fill="#ff9aa0" stroke="none"/>
+      <path d="M81 46 L91 36 L83 54Z" fill="url(#crSkin)" stroke="#26180a" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M82.4 46 L88 40.6 L83.4 50Z" fill="#ff9aa0" stroke="none"/>
+      <circle cx="40" cy="52" r="2.2" fill="none" stroke="#ffd24a" stroke-width="1.6"/>
+      <!-- visage -->
+      <path d="M43 46 Q42 30 62 28 Q82 30 82 46 Q82 60 70 65 Q62 68 54 65 Q43 60 43 46Z" fill="url(#crSkin)" stroke="#26180a" stroke-width="2" stroke-linejoin="round"/>
+      <!-- mèches argentées -->
+      <path d="M43 44 Q47 31 62 31.6 Q78 31 82 44 Q76 38 71 41.6 Q66 35 60 41 Q54 36 49 42 Q46 44 43 52Z" fill="url(#crHair)" stroke="#26180a" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M52 36 Q56 40 54 44 M64 35 Q67 39 66 42 M74 37 Q77 40 75 43" fill="none" stroke="#8d9db4" stroke-opacity=".8" stroke-width="1.1" stroke-linecap="round"/>
+      <!-- peinture de guerre -->
+      <path d="M47 56 l7 2.4 M48 59.6 l6.4 2" stroke="#3fd05a" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+      <path d="M77 57 l-5 1.6" stroke="#3fd05a" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+      <!-- nez et bouche -->
+      <path d="M61 54.4 q1.4 1.2 3 0" fill="none" stroke="#a8683c" stroke-width="1.4" stroke-linecap="round"/>
+      <path class="p-mouth" d="M56.6 59.6 Q62 63.6 67.6 59.2" fill="none" stroke="#7a2a1a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M67.2 59 q1.8 -.2 2.6 -1.6" fill="none" stroke="#7a2a1a" stroke-width="1.3" stroke-linecap="round"/>
+      <!-- yeux ambrés -->
+      <g class="p-eye">
+        <path d="M49 47.6 Q54 42 59.6 46.6 Q59 53 54.4 53 Q49.4 52.6 49 47.6Z" fill="#fff" stroke="#26180a" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M65 46.6 Q71 42 76 47.6 Q75.6 52.6 70.6 53 Q66 53 65 46.6Z" fill="#fff" stroke="#26180a" stroke-width="1.6" stroke-linejoin="round"/>
+        <ellipse cx="55" cy="48.6" rx="3.9" ry="4.5" fill="url(#crAmber)"/><ellipse cx="70.4" cy="48.6" rx="3.9" ry="4.5" fill="url(#crAmber)"/>
+        <ellipse cx="55.4" cy="48.8" rx="1.5" ry="2.6" fill="#1a1006"/><ellipse cx="70.8" cy="48.8" rx="1.5" ry="2.6" fill="#1a1006"/>
+        <circle cx="56.6" cy="46.8" r="1.2" fill="#fff"/><circle cx="72" cy="46.8" r="1.2" fill="#fff"/>
+        <path d="M49 47.6 Q53 43.4 58 44.8 M65.6 44.6 Q71 42.4 76 47.4" fill="none" stroke="#26180a" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+      <g class="p-brow" fill="none" stroke="#6a4e3a" stroke-width="2.4" stroke-linecap="round"><path d="M48.6 42.4 Q54 38.2 60.6 41.6"/><path d="M64.6 41.6 Q71 38.2 76.6 42.4"/></g>
+      <!-- lentille d'Œil de Lynx -->
+      <g class="p-lens">
+        <path d="M78.4 42 Q82 38 83.6 32" fill="none" stroke="#26180a" stroke-width="2.6" stroke-linecap="round"/>
+        <circle class="p-lensglow" cx="70.6" cy="48.6" r="8.6" fill="#9dff7a" opacity="0"/>
+        <circle cx="70.6" cy="48.6" r="6.8" fill="url(#crLens)" stroke="#26180a" stroke-width="1.5"/>
+        <circle cx="70.6" cy="48.6" r="6.8" fill="none" stroke="url(#crGold)" stroke-width="1.9"/>
+        <g class="p-cross" stroke="#e8ffd0" stroke-width="1" stroke-linecap="round" opacity=".85"><path d="M70.6 43 v2.4 M70.6 51.8 v2.4 M64.8 48.6 h2.4 M74 48.6 h2.4"/></g>
+        <path class="p-glint" d="M66.6 45 L68.4 43" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".9"/>
+      </g>
+      <!-- capuche de feuillage, bordure de plumes -->
+      <g class="p-hood" stroke="#0d2412" stroke-width="2" stroke-linejoin="round">
+        <path d="M37 50 Q31 24 54 15 Q68 10 82 17 Q93 25 87 48 Q86 34 78 29 Q62 24 46 30 Q38 36 37 50Z" fill="url(#crHood)"/>
+        <path d="M44 22 Q56 14 70 15 M72 18 Q82 20 86 30" fill="none" stroke="#9fe08a" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M40 44 Q41 31 62 29.4 Q82 31 85 44" fill="none" stroke="#f6ecd0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M43 40 l-2 -2.4 M48 35 l-1.4 -3 M55 31.6 l-.6 -3.2 M63 30.2 l0 -3.2 M71 30.8 l.8 -3 M78 33.4 l1.8 -2.6 M83 39 l2.2 -2" stroke="#d8cba8" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M60 20 Q64 24 68 20 Q64 14 60 20Z" fill="url(#crGold)" stroke="#6a4208" stroke-width="1.4"/>
+        <g class="p-feather" stroke-width="1.5"><path d="M48 19 Q41 8 28 7 Q36 12 37 18 Q31 15 26 17 Q36 20 41 26Z" fill="url(#crFeather)"/><path d="M46 19 Q38 12 30 9" fill="none" stroke="#0d6a5a" stroke-width="1.1" stroke-linecap="round"/></g>
+      </g>
+      <g class="p-reticle" opacity="0"><circle cx="70.6" cy="48.6" r="11.4" fill="none" stroke="#ff5a3a" stroke-width="1.1" stroke-dasharray="3 3"/></g>
+    </g>
+      </g>
+  <!-- étoiles de concentration -->
+  <g class="p-spark" fill="#e8ffd0" opacity="0">
+    <path d="M26 20 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4Z"/>
+    <path d="M104 94 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2Z"/>
+  </g>
+</svg>`,
 };
 
 function hasHeroArt(cls) { return !!HERO_ART[cls]; }
@@ -6099,7 +6697,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -6166,9 +6764,9 @@ function ecaSpirits(sp) {
     sp.appendChild(s); setTimeout(() => s.remove(), 1700);
   }
 }
-function ecaText(card, text, cls) {
+function ecaText(card, text, cls, who = 'eca') {
   const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
-  const t = document.createElement('span'); t.className = 'fnum eca ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+  const t = document.createElement('span'); t.className = 'fnum ' + who + ' ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
 }
 function coinFlip(card, face) {
   if (!FX_OK()) { ecaText(card, face ? 'FACE !' : 'PILE !', face ? 'face' : 'pile'); return; }
@@ -6234,6 +6832,7 @@ function playPerfect(card, p) {
   const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
   if (!hero || !tgt) return;
   const a = relPos(hero, scene), b = relPos(tgt, scene);
+  if (hero.querySelector('.hs-cra')) { const r = hero.getBoundingClientRect(); a.x += r.width * .39; a.y += r.height * .06; }
   const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
   const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
   const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
@@ -6403,7 +7002,7 @@ function patchCombat() {
         const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
         const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
       }
-      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
+      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; if (h.cls === 'cra') ecaState(card.querySelector('[data-k="fighter"]'), 'cra-perfect', 1760); setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
@@ -6453,6 +7052,10 @@ function patchCombat() {
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="treasure"]'); if (tr) tr.classList.toggle('on', !!m && m.hp > 0 && h.fight.treasure === i); });
     }
     if (h.cls === 'cra') {
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), fv = clamp((h.focus || 0) / CRA_FOCUS_MAX, 0, 1).toFixed(2);
+      if (fsp && fsp.style.getPropertyValue('--focus') !== fv) fsp.style.setProperty('--focus', fv); // l'aura, la lentille et le faucon suivent la Concentration
+      if (fu) fu.classList.toggle('cra-ready', !!h.fight && (h.focus || 0) >= CRA_FOCUS_MAX && h.fight.mons.some(m => m.hp > 0)); // Concentration pleine : l'arc reste bandé
+      if (h.fight && scene) { const dg = h.fight.dodgeSeq || 0; if (dg > +(scene.dataset.dg || 0)) { ecaState(fu, 'cra-dodge', 540); ecaText(card, 'ESQUIVE !', '', 'cra'); } scene.dataset.dg = dg; }
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
         const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
@@ -6934,7 +7537,7 @@ const ACTIONS = {
   stop(d) { const h = heroById(d.hero); setActivity(st, h, null); },
   cramark(d) {
     const h = heroById(d.hero); if (!h) return 'keep';
-    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
+    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); const cu = document.querySelector(`[data-hero-card="${h.id}"] [data-k="fighter"]`); ecaState(cu, 'cra-mark', 720); }
     patchCombat(); return 'keep';
   },
   archifight() {
