@@ -2025,8 +2025,8 @@ label.btn { cursor: pointer; }
 .hs-xelor .p-ticks { transform-box: view-box; transform-origin: 58px 62px; animation: xl-spin 46s linear infinite; }
 .hs-xelor .p-cogA { transform-box: view-box; transform-origin: 36px 92px; animation: xl-spin 9s linear infinite reverse; }
 .hs-xelor .p-cogB { transform-box: view-box; transform-origin: 86px 38px; animation: xl-spin 7s linear infinite; }
-.hs-xelor .p-cog1 { transform-box: view-box; transform-origin: 49px 58px; animation: xl-spin 6s linear infinite; }
-.hs-xelor .p-cog2 { transform-box: view-box; transform-origin: 63px 90px; animation: xl-spin 5s linear infinite reverse; }
+.hs-xelor .p-cog1 { transform-box: view-box; transform-origin: 54px 58px; animation: xl-spin 6s linear infinite; }
+.hs-xelor .p-cog2 { transform-box: view-box; transform-origin: 63px 83px; animation: xl-spin 5s linear infinite reverse; }
 .hs-xelor .p-mh { transform-box: view-box; transform-origin: 58px 62px; animation: xl-spin 16s linear infinite; }
 .hs-xelor .p-hh { transform-box: view-box; transform-origin: 58px 62px; animation: xl-spin 96s linear infinite; }
 .hs-xelor .p-wmh { transform-box: view-box; transform-origin: 30px 66px; animation: xl-spin 12s steps(12) infinite; }
@@ -2053,7 +2053,7 @@ label.btn { cursor: pointer; }
 @keyframes xl-float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2.4px) rotate(3deg); } }
 .hs-xelor .p-watch { transform-box: view-box; transform-origin: 30px 66px; animation: xl-swing 4.2s ease-in-out infinite; }
 .hs-xelor .p-charm { transform-box: view-box; transform-origin: 25px 5px; animation: xl-swing 2.6s ease-in-out infinite; }
-.hs-xelor .p-fob { transform-box: view-box; transform-origin: 70px 100px; animation: xl-swing 3.2s ease-in-out infinite; }
+.hs-xelor .p-fob { transform-box: view-box; transform-origin: 69px 90px; animation: xl-swing 3.2s ease-in-out infinite; }
 @keyframes xl-swing { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
 .hs-xelor .p-aura { transform-box: view-box; transform-origin: 58px 62px; opacity: calc(var(--gr, 0) * .7); transition: opacity .6s; animation: xl-aura 2.8s ease-in-out infinite; }
 @keyframes xl-aura { 0%, 100% { transform: scale(.96); } 50% { transform: scale(1.06); } }
