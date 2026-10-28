@@ -875,28 +875,6 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
     </g>
   </g>
 
-  <g class="p-torso">
-    <!-- redingote longue et fine -->
-    <path d="M54 56 Q51 70 55 80 Q51 88 49 97 Q63 102 77 97 Q75 88 71 80 Q75 70 72 56 Q63 51 54 56Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2.2" stroke-linejoin="round"/>
-    <path d="M63 70 Q62 84 62 98" fill="none" stroke="#bfe0ff" stroke-opacity=".35" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M50 94 Q63 99 76 94" fill="none" stroke="url(#xlGold)" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="M51 97 Q63 101 75 97" fill="none" stroke="#ffd24a" stroke-opacity=".5" stroke-width="1" stroke-dasharray="1 4" stroke-linecap="round"/>
-    <!-- gilet et ceinture -->
-    <path d="M57 59 Q63 65 69 59 L68 70 Q63 74 58 70Z" fill="url(#xlFace)" stroke="#0c1442" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M55 79 Q63 83 71 79 L71 84 Q63 88 55 84Z" fill="#0f1a5a" stroke="#0c1442" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M55 79 Q63 83 71 79" fill="none" stroke="url(#xlGold)" stroke-width="1.5"/>
-    <g class="p-cog2" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1"><path d="M68.0,83.0 L69.3,84.2 L68.9,85.4 L67.2,85.8 L66.5,86.5 L66.6,88.3 L65.4,88.9 L64.0,87.9 L63.0,88.0 L61.8,89.3 L60.6,88.9 L60.2,87.2 L59.5,86.5 L57.7,86.6 L57.1,85.4 L58.1,84.0 L58.0,83.0 L56.7,81.8 L57.1,80.6 L58.8,80.2 L59.5,79.5 L59.4,77.7 L60.6,77.1 L62.0,78.1 L63.0,78.0 L64.2,76.7 L65.4,77.1 L65.8,78.8 L66.5,79.5 L68.3,79.4 L68.9,80.6 L67.9,82.0Z M64.8,83 a1.8,1.8 0 1 0 -3.6,0 a1.8,1.8 0 1 0 3.6,0Z"/></g>
-    <circle cx="63" cy="83" r="1.1" fill="#ffe9a0"/>
-    <!-- chaîne de montre -->
-    <path d="M69 85 Q73 88 69 90" fill="none" stroke="url(#xlGold)" stroke-width="1.3" stroke-linecap="round"/>
-    <g class="p-fob"><circle cx="69" cy="92" r="3.2" fill="url(#xlFace)" stroke="#8a5a14" stroke-width="1.1"/><path d="M69 92 v-2 M69 92 h1.4" stroke="#2a3a8a" stroke-width=".9" stroke-linecap="round"/></g>
-    <!-- épaulette à engrenage et col -->
-    <path d="M50 59 Q55 52 61 55 L59 62 Q53 61 51 65Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.7" stroke-linejoin="round"/>
-    <g class="p-cog1" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1"><path d="M58.4,58.0 L59.7,59.1 L59.4,60.2 L57.7,60.4 L57.1,61.1 L57.2,62.8 L56.2,63.4 L54.9,62.3 L54.0,62.4 L52.9,63.7 L51.8,63.4 L51.6,61.7 L50.9,61.1 L49.2,61.2 L48.6,60.2 L49.7,58.9 L49.6,58.0 L48.3,56.9 L48.6,55.8 L50.3,55.6 L50.9,54.9 L50.8,53.2 L51.8,52.6 L53.1,53.7 L54.0,53.6 L55.1,52.3 L56.2,52.6 L56.4,54.3 L57.1,54.9 L58.8,54.8 L59.4,55.8 L58.3,57.1Z M55.5,58 a1.5,1.5 0 1 0 -3.0,0 a1.5,1.5 0 1 0 3.0,0Z"/></g>
-    <path d="M57 55 Q63 60 70 55 L71 50 Q63 54 56 50Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M56 51 Q63 55 71 51" fill="none" stroke="url(#xlGold)" stroke-width="1.4" stroke-linecap="round"/>
-  </g>
-
   <!-- bras avant et bâton au sablier -->
   <g class="p-arm">
     <g class="p-staff">
@@ -917,11 +895,33 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
       </g>
       <circle class="p-glow" cx="94" cy="17" r="14" fill="#9fd4ff" opacity="0"/>
     </g>
-    <path d="M70 61 Q78 63 84 74 Q86 80 90 82 L96 80 Q96 74 92 68 Q85 58 72 56Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M70 67 Q78 69 84 77 Q86 81 90 83 L96 81 Q96 75 92 71 Q85 63 72 61Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
     <path d="M84 76 Q88 84 98 82 L96 76Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.6" stroke-linejoin="round"/>
     <path d="M84 77 Q89 84 97 82" fill="none" stroke="url(#xlGold)" stroke-width="1.4"/>
     <path d="M90 78 q-3 -2 -1 -5 q4 -2 7 1 q2 3 -1 5 q-2 2 -5 -1Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.5" stroke-linejoin="round"/>
     <path d="M94 74 q3 1 4 4" fill="none" stroke="#2a1a0a" stroke-width="1.3" stroke-linecap="round"/>
+  </g>
+
+  <g class="p-torso">
+    <!-- redingote longue et fine -->
+    <path d="M54 56 Q51 70 55 80 Q51 88 49 97 Q63 102 77 97 Q75 88 71 80 Q75 70 72 56 Q63 51 54 56Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="M63 70 Q62 84 62 98" fill="none" stroke="#bfe0ff" stroke-opacity=".35" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M50 94 Q63 99 76 94" fill="none" stroke="url(#xlGold)" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M51 97 Q63 101 75 97" fill="none" stroke="#ffd24a" stroke-opacity=".5" stroke-width="1" stroke-dasharray="1 4" stroke-linecap="round"/>
+    <!-- gilet et ceinture -->
+    <path d="M57 59 Q63 65 69 59 L68 70 Q63 74 58 70Z" fill="url(#xlFace)" stroke="#0c1442" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M55 79 Q63 83 71 79 L71 84 Q63 88 55 84Z" fill="#0f1a5a" stroke="#0c1442" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M55 79 Q63 83 71 79" fill="none" stroke="url(#xlGold)" stroke-width="1.5"/>
+    <g class="p-cog2" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1"><path d="M68.0,83.0 L69.3,84.2 L68.9,85.4 L67.2,85.8 L66.5,86.5 L66.6,88.3 L65.4,88.9 L64.0,87.9 L63.0,88.0 L61.8,89.3 L60.6,88.9 L60.2,87.2 L59.5,86.5 L57.7,86.6 L57.1,85.4 L58.1,84.0 L58.0,83.0 L56.7,81.8 L57.1,80.6 L58.8,80.2 L59.5,79.5 L59.4,77.7 L60.6,77.1 L62.0,78.1 L63.0,78.0 L64.2,76.7 L65.4,77.1 L65.8,78.8 L66.5,79.5 L68.3,79.4 L68.9,80.6 L67.9,82.0Z M64.8,83 a1.8,1.8 0 1 0 -3.6,0 a1.8,1.8 0 1 0 3.6,0Z"/></g>
+    <circle cx="63" cy="83" r="1.1" fill="#ffe9a0"/>
+    <!-- chaîne de montre -->
+    <path d="M69 85 Q73 88 69 90" fill="none" stroke="url(#xlGold)" stroke-width="1.3" stroke-linecap="round"/>
+    <g class="p-fob"><circle cx="69" cy="92" r="3.2" fill="url(#xlFace)" stroke="#8a5a14" stroke-width="1.1"/><path d="M69 92 v-2 M69 92 h1.4" stroke="#2a3a8a" stroke-width=".9" stroke-linecap="round"/></g>
+    <!-- épaulette à engrenage et col -->
+    <path d="M50 59 Q55 52 61 55 L59 62 Q53 61 51 65Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="1.7" stroke-linejoin="round"/>
+    <g class="p-cog1" fill="url(#xlBrass)" stroke="#5a3a08" stroke-width="1"><path d="M58.4,58.0 L59.7,59.1 L59.4,60.2 L57.7,60.4 L57.1,61.1 L57.2,62.8 L56.2,63.4 L54.9,62.3 L54.0,62.4 L52.9,63.7 L51.8,63.4 L51.6,61.7 L50.9,61.1 L49.2,61.2 L48.6,60.2 L49.7,58.9 L49.6,58.0 L48.3,56.9 L48.6,55.8 L50.3,55.6 L50.9,54.9 L50.8,53.2 L51.8,52.6 L53.1,53.7 L54.0,53.6 L55.1,52.3 L56.2,52.6 L56.4,54.3 L57.1,54.9 L58.8,54.8 L59.4,55.8 L58.3,57.1Z M55.5,58 a1.5,1.5 0 1 0 -3.0,0 a1.5,1.5 0 1 0 3.0,0Z"/></g>
+    <path d="M57 55 Q63 60 70 55 L71 50 Q63 54 56 50Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M56 51 Q63 55 71 51" fill="none" stroke="url(#xlGold)" stroke-width="1.4" stroke-linecap="round"/>
   </g>
 
   <!-- tête -->
