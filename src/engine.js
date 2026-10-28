@@ -280,7 +280,7 @@ function heroTurn(st, h, t, ev) {
   }
   const rwPre = rewind ? f.mons.map(m => m.hp) : null;
   phase(true);
-  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
   if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
@@ -409,6 +409,27 @@ function ecaToss(h, t, f, actions) {
    pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
 const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour voir l'animation du dernier coup
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
+/* Xélor, Éclat du temps : 4 rembobinages remplissent le sablier ; plein, il se brise et le Xélor vit 10 combats d'un coup. */
+const CHRONO_MAX = 4, CHRONO_FIGHTS = 10;
+function chronoReady(h) { return h.cls === 'xelor' && (h.chrono || 0) >= CHRONO_MAX && !!h.act && h.act.type === 'zone'; }
+function chronoBurst(st, h, ev) {
+  const place = findPlace('zone', h.act.id);
+  const keep = { fight: h.fight, resting: h.resting, restTotal: h.restTotal, wait: h.wait };
+  const sum = { n: CHRONO_FIGHTS, xp: 0, kamas: 0, loot: {}, gear: [], lvl0: h.lvl };
+  const quiet = Object.assign({}, ev, { log() {}, reward(_h, xp, k, loot, gear) {
+    sum.xp += xp; sum.kamas += k; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; for (const g of gear) sum.gear.push(g);
+    ev.reward && ev.reward(_h, xp, k, loot, gear);
+  } });
+  h.chrono = 0;
+  for (let i = 0; i < CHRONO_FIGHTS; i++) {
+    h.fight = { mons: pickGroup(place, h).map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }), tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {} };
+    resolveWin(st, h, quiet);
+  }
+  h.fight = keep.fight; h.resting = keep.resting; h.restTotal = keep.restTotal; h.wait = keep.wait;
+  sum.lvlUps = h.lvl - sum.lvl0;
+  ev.log(h, `⌛ Éclat du temps : ${CHRONO_FIGHTS} combats d'un coup ! +${fmt(sum.xp)} XP, +${fmt(sum.kamas)} K${sum.gear.length ? `, ${sum.gear.length} objet(s)` : ''}`, 'win');
+  return sum;
+}
 const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
 const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
 function enuTarget(f, alive) {

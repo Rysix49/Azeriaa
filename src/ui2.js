@@ -295,11 +295,12 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
+          ${h.cls === 'xelor' ? chronoBtn(h) : ''}
           <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
@@ -492,6 +493,60 @@ function startPerfect(h, card, scene, fresh) {
   }, T0);
   post.forEach((c, j) => setTimeout(() => playSpellFx(card, c), T0 + dur + 150 + j * 280));
   setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T0 + dur + 250 + post.length * 280);
+}
+/* ---------------------- Xélor : Éclat du temps ----------------------
+   Chaque Rembobinage remplit le sablier au-dessus de la tête du Xélor. Plein, un clic le brise : 10 combats d'un coup (XP, kamas, butin). */
+const CHRONO_SVG = `<svg viewBox="0 0 40 52" aria-hidden="true"><path class="cs-glass" d="M9 7Q9 22 20 26Q9 30 9 45H31Q31 30 20 26Q31 22 31 7Z"/><path class="cs-u" d="M12 10Q12 21 20 25Q28 21 28 10Z"/><path class="cs-d" d="M20 29Q12 33 12 43H28Q28 33 20 29Z"/><path class="cs-drip" d="M20 25V43"/><rect class="cs-cap" x="5" y="2" width="30" height="5" rx="2"/><rect class="cs-cap" x="5" y="45" width="30" height="5" rx="2"/><path class="cs-shine" d="M12 10Q12 18 16 22"/></svg>`;
+function chronoBtn(h) {
+  const c = Math.min(CHRONO_MAX, h.chrono || 0);
+  return `<button class="chrono-btn${c >= CHRONO_MAX ? ' full' : ''}" data-act="xelchrono" data-hero="${h.id}" data-k="chrono" style="--p:${(c / CHRONO_MAX).toFixed(2)}" title="Éclat du temps : chaque Rembobinage remplit le sablier. Plein, clique dessus : 10 combats d’un coup !" aria-label="Éclat du temps">${CHRONO_SVG}<b>${c}/${CHRONO_MAX}</b></button>`;
+}
+const CB_MS = 4700;
+function playChrono(card, h, sum, done) {
+  const scene = card.querySelector('.scene'), fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite');
+  const N = sum.n;
+  const lootPanel = () => {
+    const chips = [`<span class="cl-chip xp">⭐ +${fmt(sum.xp)} XP</span>`, `<span class="cl-chip k">💰 +${fmt(sum.kamas)} K</span>`];
+    for (const [r, c] of Object.entries(sum.loot)) chips.push(`<span class="cl-chip${RESOURCES[r].rare ? ' rare' : ''}">${RESOURCES[r].icon} ${c}× ${esc(RESOURCES[r].name)}</span>`);
+    for (const g of sum.gear) chips.push(`<span class="cl-chip gear">${itemIcon(g.id)} ${esc(ITEMS[g.id].name)}${g.stasis ? ' ✦' : ''}</span>`);
+    if (sum.lvlUps > 0) chips.push(`<span class="cl-chip lvl">⬆ Niveau +${sum.lvlUps}</span>`);
+    const p = document.createElement('div'); p.className = 'cb-loot'; p.innerHTML = `<div class="cb-lt">⌛ ${N} combats gagnés</div><div class="cb-chips">${chips.join('')}</div>`;
+    scene.appendChild(p); setTimeout(() => p.classList.add('out'), 6500); setTimeout(() => p.remove(), 7200);
+  };
+  if (!scene || !sp || !FX_OK()) { if (scene) lootPanel(); setTimeout(done, 300); return; }
+  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight;
+  let grains = '';
+  for (let i = 0; i < 30; i++) { const a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 120; grains += `<i class="cb-grain" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r * .7).toFixed(0)}px;--s:${(3 + Math.random() * 5).toFixed(1)}px;--d:${(Math.random() * 120).toFixed(0)}ms"></i>`; }
+  const ov = document.createElement('div'); ov.className = 'cburst';
+  ov.style.cssText = `--hx:${hp.x.toFixed(0)}px;--hy:${hp.y.toFixed(0)}px;--gs:${Math.max(120, Math.round(hp.h * .82))}px`;
+  ov.innerHTML = `<div class="cb-dim"></div><div class="cb-tint"></div><div class="cb-rays"></div>
+    <div class="cb-ring"></div><div class="cb-ring r2"></div><div class="cb-ring r3"></div>
+    <div class="cb-glass" style="--p:1">${CHRONO_SVG}</div>
+    <div class="cb-count"><span class="n">0</span><small>/ ${N} combats</small></div>
+    <div class="cb-tick"><b class="xp">+0 XP</b><b class="k">+0 K</b></div>
+    <div class="cb-burst">${grains}</div>
+    <div class="cb-title">ÉCLAT DU TEMPS<small>${N} combats d’un coup</small></div><div class="cb-flash"></div>`;
+  scene.appendChild(ov); scene.classList.add('cb-on');
+  ecaState(fu, 'xel-chrono', CB_MS);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const nEl = ov.querySelector('.cb-count .n'), xpEl = ov.querySelector('.cb-tick .xp'), kEl = ov.querySelector('.cb-tick .k'), cnt = ov.querySelector('.cb-count');
+  const mons = [...card.querySelectorAll('.unit.mon .sprite')];
+  const svg = sp.querySelector('.hs-xelor');
+  const T0 = 950, DT = 215; // les 10 combats s'enchaînent comme des échos du temps
+  for (let i = 0; i < N; i++) setTimeout(() => {
+    if (!ov.isConnected) return;
+    const f = (i + 1) / N; nEl.textContent = i + 1; xpEl.textContent = '+' + fmt(Math.round(sum.xp * f)) + ' XP'; kEl.textContent = '+' + fmt(Math.round(sum.kamas * f)) + ' K';
+    cnt.classList.remove('beat'); void cnt.offsetWidth; cnt.classList.add('beat');
+    if (svg) { const g = document.createElement('div'); g.className = 'cb-echo'; const y = (Math.random() - .5) * hp.h * .5;
+      g.style.cssText = `left:${(hp.x - sw / 2).toFixed(0)}px;top:${(hp.y - sh / 2 + y).toFixed(0)}px;width:${sw}px;height:${sh}px;--tx:${(hp.w * (.38 + Math.random() * .34)).toFixed(0)}px`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 700); }
+    const m = mons.length ? mons[i % mons.length] : null; if (m) ecaState(m.closest('.unit'), 'cb-zap', 240);
+    if (m) { const r = relPos(m, scene), s = document.createElement('span'); s.className = 'cb-pop'; s.textContent = '✦'; s.style.cssText = `left:${r.x.toFixed(0)}px;top:${(r.y - 14).toFixed(0)}px`; ov.appendChild(s); setTimeout(() => s.remove(), 600); }
+  }, T0 + i * DT);
+  const TB = T0 + N * DT + 120; // éclatement final
+  setTimeout(() => { if (ov.isConnected) { ov.classList.add('boom'); nEl.textContent = N; xpEl.textContent = '+' + fmt(sum.xp) + ' XP'; kEl.textContent = '+' + fmt(sum.kamas) + ' K'; } }, TB);
+  setTimeout(lootPanel, TB + 500);
+  setTimeout(() => { ov.remove(); scene.classList.remove('cb-on'); done(); }, CB_MS + 250);
 }
 /* ---------------------- Xélor : Rembobinage ----------------------
    Au 12e grain, le Xélor renverse son sablier : le temps recule (les monstres abattus se relèvent, leurs PV remontent), puis il rejoue son tour.
@@ -762,6 +817,12 @@ function patchCombat() {
       const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), g = h.fight ? Math.min(12, h.fight.grains || 0) : 0, gv = (g / 12).toFixed(2);
       if (fsp) { if (fsp.style.getPropertyValue('--gr') !== gv) { fsp.style.setProperty('--gr', gv); fsp.querySelectorAll('.p-pip').forEach((el, i) => el.classList.toggle('lit', i < g)); } }
       if (fu) fu.classList.toggle('xel-full', g >= 12 && !!h.fight && h.fight.mons.some(m => m.hp > 0));
+      const cb = q('chrono');
+      if (cb && !FURY_ANIM[h.id]) { // le sablier se remplit après le Rembobinage (la cinématique garde l'affichage figé)
+        const c = Math.min(CHRONO_MAX, h.chrono || 0), pv = (c / CHRONO_MAX).toFixed(2);
+        if (cb.style.getPropertyValue('--p') !== pv) { const up = +pv > +cb.style.getPropertyValue('--p'); cb.style.setProperty('--p', pv); cb.querySelector('b').textContent = `${c}/${CHRONO_MAX}`; if (up) { cb.classList.remove('gain'); void cb.offsetWidth; cb.classList.add('gain'); setTimeout(() => cb.classList.remove('gain'), 1300); } }
+        cb.classList.toggle('full', c >= CHRONO_MAX);
+      }
     }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
@@ -1262,6 +1323,16 @@ const ACTIONS = {
       return hits;
     });
     setTimeout(() => { delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 600); }, 3300);
+    return 'keep';
+  },
+  xelchrono(d) {
+    const h = heroById(d.hero); if (!h || h.cls !== 'xelor' || FURY_ANIM[h.id]) return 'keep';
+    if ((h.chrono || 0) < CHRONO_MAX) { toast(`Le sablier se remplit à chaque Rembobinage (${h.chrono || 0}/${CHRONO_MAX}).`, 'warn'); return 'keep'; }
+    if (!chronoReady(h)) { toast('Envoie le Xélor dans une zone pour libérer l’Éclat du temps.', 'warn'); return 'keep'; }
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
+    const sum = chronoBurst(st, h, liveEv); saveGame();
+    playChrono(card, h, sum, () => { delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 600); patchCombat(); saveGame(); });
     return 'keep';
   },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
