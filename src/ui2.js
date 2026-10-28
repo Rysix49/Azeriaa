@@ -1217,67 +1217,6 @@ function defaultPlace() {
   return { type: 'zone', id: z.id };
 }
 function placeMons(p, type) { return type === 'dungeon' ? [...new Set([...p.rooms.flat(), ...p.boss])] : p.monsters; }
-function renderCarte() {
-  if (!ui.place || !findPlace(ui.place.type, ui.place.id)) ui.place = defaultPlace();
-  const row = (p, type) => {
-    const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-    const sel = ui.place.type === type && ui.place.id === p.id;
-    const mons = placeMons(p, type);
-    const icon = monIcon(type === 'dungeon' ? p.boss[0] : mons[0]);
-    return `<button class="mrow${sel ? ' sel' : ''}${type === 'dungeon' ? ' dj' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="${themeStyle(THEME[p.region] || THEME.idle)}">
-      <span class="mr-art" aria-hidden="true">${icon}</span><span class="mr-main"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : ''}${p.region} · niv. ${p.lvl[0]}–${p.lvl[1]}</small></span>
-      ${here.length ? `<span class="mr-here">${here.map(h => emblem(h.cls, true)).join('')}</span>` : ''}</button>`;
-  };
-  return `<div class="map-layout">
-    <aside class="map-list"><div class="ml-h">Zones</div>${ZONES.map(z => row(z, 'zone')).join('')}<div class="ml-h">Donjons</div>${DUNGEONS.map(d => row(d, 'dungeon')).join('')}</aside>
-    <section class="panel map-detail">${placeDetail(findPlace(ui.place.type, ui.place.id), ui.place.type)}</section></div>`;
-}
-function placeDetail(p, type) {
-  const mons = placeMons(p, type);
-  const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
-  const tier = type === 'zone' ? ((ui.zoneTier || {})[p.id] || 0) : 0; const T = SUBZONES[tier];
-  const best = st.heroes.reduce((m, h) => Math.max(m, heroTotals(st, h).ppTotal), 100);
-  const rows = (type === 'zone' && ARCHIS[p.id] ? [...mons, ARCHIS[p.id]] : mons).map(mid => {
-    const d = MONSTERS[mid]; const ar = !!d.archi, src = d.base || mid, ab = ar ? 3 : 1; const gd = GEAR_DROPS[src] || []; const ms = monsterStats(mid);
-    const gr = gd.length ? (d.boss || ar ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
-    const key = p.id + ':' + mid; const mo = !!(ui.openMons || {})[key];
-    const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
-    const detail = mo ? `<tr class="dr-detail"><td colspan="5"><div class="dr-items">
-      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
-      ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
-        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
-      ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
-        <div class="sub">${Object.entries(it.stats).map(([k, [a, b2]]) => `<span style="color:${STAT_COLOR[k]}">${a}–${b2} ${STAT_SHORT[k]}</span>`).join(' · ')}</div>
-        <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
-        <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
-    </div></td></tr>` : '';
-    return `<tr class="dr-row${mo ? ' open' : ''}${ar ? ' archi-row' : ''}" data-act="togglemon" data-k="${key}" tabindex="0" title="Voir les objets">
-      <td><div class="dr-mon"><span class="chev" aria-hidden="true">▸</span><span class="dr-ico" aria-hidden="true">${monIcon(mid)}</span><div><b>${ar ? '👑 ' : ''}${d.name}</b> <span class="sub">${d.lvl}${d.boss ? ' · Boss' : ''}${ar ? ' · Archimonstre' : ''}</span>
-        <div class="dr-meta">${fmt(ms.hp * T.hp)} PV · ${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)} dégâts</div>${ar ? `<div class="dr-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}</div></div></td>
-      <td><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></td>
-      <td>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span></div>` : '<span class="dim">—</span>'}</td>
-      <td>${gd.length ? `<span class="dr-stasis">${pct(STASIS_RATE * T.drop)}</span>` : '<span class="dim">—</span>'}</td>
-      <td>${rl.length ? rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('') : '<span class="dim">—</span>'}</td>
-    </tr>${detail}`;
-  }).join('');
-  const sends = st.heroes.length ? st.heroes.map(h => {
-    const there = h.act && h.act.type === type && h.act.id === p.id && (type !== 'zone' || (h.act.tier || 0) === tier);
-    const low = h.lvl < p.lvl[0] - 3;
-    const label = there ? 'Est ici' : low ? `Niveau conseillé ${p.lvl[0]}` : h.act ? `Quitte ${placeName(h.act)}` : 'Disponible';
-    return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="${type}" data-id="${p.id}" data-t="${tier}" ${there || (type === 'dungeon' && !keyN) ? 'disabled' : ''}`, esc(label), (there ? 'here' : '') + (low ? ' low' : ''));
-  }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
-  return `<div class="place-banner" style="${themeStyle(THEME[p.region] || THEME.idle)}">
-      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : ''}${p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
-      <div class="pb-side"><span class="lvl-badge">Niv. ${p.lvl[0]}–${p.lvl[1]}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map(m => `<span>${monIcon(m)}</span>`).join('')}</div></div>
-    </div>
-    ${type === 'zone' ? `<div class="tiers">${SUBZONES.map((s, i) => { const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === p.id && (h.act.tier || 0) === i).length;
-      return `<button data-act="ztier" data-id="${p.id}" data-t="${i}" aria-pressed="${i === tier}"><b>${p.name} ${i + 1}</b><span>${i ? `PV ×${s.hp} · Dégâts ×${String(s.dmg).replace('.', ',')} · Équip. ×${s.drop}` : 'Difficulté normale'}</span>${n ? `<i>${n} héros</i>` : ''}</button>`; }).join('')}</div>`
-      : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp} · une clef par entrée</span>${keyN ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
-    <div><div class="label" style="margin-bottom:6px">Envoyer un héros</div><div class="send-list">${sends}</div></div>
-    <div class="drop-wrap"><table class="drop-table"><thead><tr><th>Monstre</th><th>Ressources</th><th>Équipement</th><th>Stasifié</th><th>Relique</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="hint">Taux par monstre vaincu pour 100 de prospection (ta meilleure : ${best}, soit ×${(best / 100).toFixed(2).replace('.', ',')}). Équipement et stasifié : taux par objet. <span style="color:var(--relic)">En jaune</span> : reliques. Clique sur un monstre pour le détail.</p>`;
-}
-
 /* ---------------------------- Vue : Inventaire ---------------------------- */
 const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['res', 'Ressources', '🧺']];
 const INV_SORTS = [['lvl', 'Niveau'], ['q', 'Qualité'], ['val', 'Valeur'], ['name', 'Nom']];
@@ -1438,7 +1377,7 @@ function canRebuild() {
 function renderMain(force) {
   if (!force && !canRebuild()) return;
   // Les listes défilantes gardent leur position quand la vue est redessinée
-  const keep = ['.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
+  const keep = ['.wm-scroll', '.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
   // La page garde sa hauteur et sa position pendant le redessin : sans ça, le défilement saute quand le contenu change de taille
   const main = $('#main'), sy = window.scrollY, mh = main.offsetHeight; main.style.minHeight = mh + 'px';
   const ae = document.activeElement, fk = ae && ae.id === 'invq' ? [ae.selectionStart, ae.selectionEnd] : null;
@@ -1447,6 +1386,7 @@ function renderMain(force) {
   requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
   if (fk) { const e = $('#invq'); if (e) { e.focus(); try { e.setSelectionRange(fk[0], fk[1]); } catch (x) {} } }
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
+  if (ui.view === 'carte') wmAfter();
   if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); updateArchiBtn(); }
 }
 let lastSlow = 0;
@@ -1458,6 +1398,7 @@ function render(force) {
     if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) { if (!redrawCards()) renderMain(); patchCombat(); } else patchCombat();
   } else {
     if (harvestViewFx(ui.view === 'recolte')) lastSlow = now; // un petit effet sur la carte de la plante : on retarde le redessin pour le laisser finir
+    if (ui.view === 'carte') { const sg = carteSig(); if (sg !== ui._carteSig) { ui._carteSig = sg; renderMain(); lastSlow = now; } return; }
     if (ui.view === 'talents') { const h = selHero(), sg = h ? `${h.id}|${h.lvl}|${st.heroes.length}|${skillFree(h)}` : ''; if (sg !== ui._skSig) { ui._skSig = sg; renderMain(); lastSlow = now; } return; }
     if (now - lastSlow > 1500 && ui.view !== 'options') { renderMain(); lastSlow = now; }
   }
@@ -1466,13 +1407,13 @@ function scrollTop() { try { window.scrollTo(0, 0); } catch (e) {} }
 
 /* ---------------------------- Actions ---------------------------- */
 const ACTIONS = {
-  view(d) { ui.view = d.v; ui.resetStep = 0; ui.sellUid = null; ui.recruitOpen = false; scrollTop(); },
+  view(d) { if (d.v === 'carte') ui._wmCenter = true; ui.view = d.v; ui.resetStep = 0; ui.sellUid = null; ui.recruitOpen = false; scrollTop(); },
   gohero(d) { ui.view = 'heros'; ui.hero = d.hero; ui.recruitOpen = false; scrollTop(); },
   gomap(d) { ui.view = 'carte'; if (d.hero) ui.hero = d.hero; ui.place = null; scrollTop(); },
   recruitnav() { ui.view = 'heros'; ui.recruitOpen = true; scrollTop(); },
   recruitopen() { ui.recruitOpen = true; },
   recruitclose() { ui.recruitOpen = false; },
-  place(d) { ui.place = { type: d.type, id: d.id }; },
+  place(d) { ui.place = { type: d.type, id: d.id }; ui._wmCenter = true; },
   gocraftkey() { ui.view = 'ateliers'; ui.job = 'bricoleur'; ui.rtab = 'combat'; scrollTop(); },
   gorecipe(d) { ui.view = 'ateliers'; ui.job = d.job; ui.rtab = d.h === '1' ? 'recolte' : 'combat'; scrollTop(); },
   send(d) { const h = heroById(d.hero); setActivity(st, h, d.type, d.id, +d.t || 0); toast(`${h.name} part pour ${placeName(h.act)}.`); },

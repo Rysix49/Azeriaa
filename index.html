@@ -3271,6 +3271,72 @@ label.btn { cursor: pointer; }
 .iv-row.q-relic .tile.sm { animation: relic-glow 3s ease-in-out infinite; animation-delay: var(--ph, 0ms); }
 .iv-sec > h4 > span { filter: drop-shadow(0 0 4px #ffd45c88); }
 @media (prefers-reduced-motion: reduce) { .tile.q-relic, .slot-t.q-relic, .tile.q-relic::after, .slot-t.q-relic::after, .iv-row.q-relic .tile.sm { animation: none !important; } }
+
+/* ===== Carte : refonte ===== */
+.carte { display: flex; flex-direction: column; gap: 16px; }
+.wm-panel { padding: 14px 14px 12px; gap: 10px; overflow: hidden; background: linear-gradient(180deg, #1c2217, #12150e); }
+.wm-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; } .wm-h h3 { margin: 0; font-size: 22px; }
+.wm-scroll { overflow-x: auto; border-radius: 16px; border: 1px solid #000a; box-shadow: 0 8px 26px #0007, inset 0 0 0 1px #ffffff10; scrollbar-width: thin; scroll-snap-type: x proximity; }
+.wm { position: relative; min-width: 840px; aspect-ratio: 1000 / 360; background: #0e110b; }
+.wm-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.wm-march { animation: wm-march 1.4s linear infinite; } @keyframes wm-march { to { stroke-dashoffset: -16; } }
+.wm-cloud { animation: wm-cloud linear infinite; } @keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1180px); } }
+.wm-fly { animation: wm-fly 3.6s ease-in-out infinite; } @keyframes wm-fly { 0%, 100% { opacity: .15; transform: translate(0, 0); } 50% { opacity: 1; transform: translate(5px, -7px); } }
+.wm-blades { animation: wm-spin 7s linear infinite; transform-box: view-box; } @keyframes wm-spin { to { transform: rotate(360deg); } }
+.wn { position: absolute; transform: translate(-50%, -50%); width: 58px; height: 58px; padding: 0; border: 0; background: none; color: var(--fg); scroll-snap-align: center; transition: transform .18s cubic-bezier(.3, 1.6, .5, 1); z-index: 2; }
+.wn:hover, .wn.sel { transform: translate(-50%, -50%) scale(1.14); z-index: 5; }
+.wn-art { position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: end center; padding-bottom: 7px; font-size: 31px; line-height: 1; overflow: hidden;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sky) 60%, #0e110b) 0 56%, color-mix(in srgb, var(--ground) 70%, #0e110b) 56%); border: 3px solid #fff8dc; box-shadow: 0 5px 12px #000a, inset 0 -6px 10px #0006, inset 0 3px 6px #ffffff40; }
+.wn-art .ms { transform: scale(1.15); transform-origin: 50% 100%; }
+.wn.dungeon .wn-art { border-radius: 16px; border-color: #e8aa2e; box-shadow: 0 5px 12px #000a, 0 0 14px #e8aa2e66, inset 0 -6px 10px #0006, inset 0 3px 6px #ffffff40; transform: rotate(0); }
+.wn-ring { position: absolute; inset: -7px; border-radius: 50%; border: 2px solid #ffffff55; opacity: 0; pointer-events: none; }
+.wn.dungeon .wn-ring { border-radius: 22px; border-color: #e8aa2e99; }
+.wn.sel .wn-ring { opacity: 1; border-color: var(--gold-2); border-width: 3px; animation: wn-pulse 2.4s ease-out infinite; }
+@keyframes wn-pulse { 0% { transform: scale(.9); opacity: 1; } 70%, 100% { transform: scale(1.5); opacity: 0; } }
+.wn.sel .wn-art { border-color: var(--gold-2); box-shadow: 0 0 0 3px #e8aa2e66, 0 0 26px #ffd45ccc, 0 6px 14px #000a, inset 0 3px 6px #ffffff40; }
+.wn-dot { position: absolute; left: -4px; top: -4px; width: 21px; height: 21px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 900; color: #fff; border: 2px solid #0009; box-shadow: 0 2px 5px #0009; }
+.wn-dot.ok { background: #3fae4a; } .wn-dot.near { background: #e8a02e; color: #2a1c04; } .wn-dot.far { background: #d8402f; }
+.wn-key { position: absolute; right: -10px; top: -6px; padding: 1px 7px; border-radius: 99px; background: #1a1408; border: 1.5px solid #e8aa2e; font-size: 11px; font-weight: 900; color: var(--gold-2); box-shadow: 0 2px 5px #0009; } .wn-key.none { border-color: #d8402f; color: #ff9a8a; }
+.wn-heroes { position: absolute; left: 50%; bottom: calc(100% + 1px); display: flex; transform: translateX(-50%); }
+.wn-h { display: block; animation: wn-bob 2.2s ease-in-out infinite; filter: drop-shadow(0 3px 3px #000a); } .wn-h + .wn-h { margin-left: -9px; } .wn-h .emblem { --s: 26px; }
+@keyframes wn-bob { 50% { transform: translateY(-5px); } }
+.wn-lab { position: absolute; left: 50%; top: calc(100% + 6px); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; min-width: 110px; padding: 3px 11px 4px; border-radius: 10px; background: #0b0d08cc; border: 1px solid #ffffff22; backdrop-filter: blur(2px); pointer-events: none; white-space: nowrap; }
+.wn-lab b { font-family: var(--f-display); font-size: 14px; font-weight: 600; line-height: 1.15; text-shadow: 0 1px 2px #000; } .wn-lab small { color: var(--muted); font-size: 11px; line-height: 1.1; }
+.wn.sel .wn-lab { border-color: var(--gold); background: linear-gradient(180deg, #3a2c0acc, #1a1408dd); } .wn.sel .wn-lab b { color: var(--gold-2); }
+.wm-legend { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 3px 11px; border-radius: 99px; background: #0000004d; font-size: 11px; color: var(--muted); font-weight: 800; }
+.wm-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; } .wm-legend .ok { background: #3fae4a; } .wm-legend .near { background: #e8a02e; } .wm-legend .far { background: #d8402f; }
+/* détail */
+.place-banner { position: relative; overflow: hidden; min-height: 168px; box-shadow: inset 0 0 50px #0008, 0 6px 18px #0005; align-items: flex-end; }
+.place-banner > * { position: relative; z-index: 1; } .place-banner .pb-hills { position: absolute; inset: auto 0 0 0; width: 100%; height: 62%; z-index: 0; } .pb-motes { position: absolute !important; inset: 0; z-index: 0 !important; pointer-events: none; overflow: hidden; }
+.pb-motes i { position: absolute; bottom: -6px; width: 4px; height: 4px; border-radius: 50%; background: #fff8dc; box-shadow: 0 0 8px 2px #fff8dc99; opacity: 0; animation: wm-mote linear infinite; } @keyframes wm-mote { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .8; } 100% { transform: translateY(-190px) translateX(18px); opacity: 0; } }
+.place-banner h2 { font-size: 36px; letter-spacing: .01em; }
+.pb-mons { gap: 12px; font-size: 44px; } .pb-mons > span { display: inline-block; transform: none; animation: wn-bob 2.4s ease-in-out infinite; } .pb-mons > span > span { display: inline-block; transform: scaleX(-1); }
+.rd { padding: 2px 11px; border-radius: 99px; font-size: 11.5px; font-weight: 900; border: 1px solid #0009; box-shadow: 0 2px 6px #0007; } .rd.ok { background: #3fae4a; color: #fff; } .rd.near { background: #e8a02e; color: #2a1c04; } .rd.far { background: #d8402f; color: #fff; }
+.tiers button { position: relative; overflow: hidden; transition: transform .15s, border-color .2s, background .2s; } .tiers button:hover { transform: translateY(-2px); }
+.tiers button[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 40%, #ffffff22 50%, transparent 60%); transform: translateX(-120%); animation: relic-sweep 5s linear infinite; pointer-events: none; }
+.tr-pips { display: flex; gap: 4px; margin-bottom: 3px; } .tr-pips i { width: 14px; height: 5px; border-radius: 3px; background: #ffffff1c; } .tr-pips i.on { background: var(--tc); box-shadow: 0 0 6px var(--tc); }
+.tiers button[aria-pressed="true"] { border-color: var(--tc, var(--gold)); background: color-mix(in srgb, var(--tc, var(--gold)) 13%, #12150e); box-shadow: 0 0 0 1px var(--tc, var(--gold)), 0 6px 16px color-mix(in srgb, var(--tc, var(--gold)) 25%, transparent); }
+.tr-n { font-style: normal; }
+.mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 10px; align-items: start; }
+.mc { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, #1c2217, #141810); box-shadow: inset 0 1px 0 #ffffff0a; transition: border-color .2s, box-shadow .2s; }
+.mc:hover { border-color: var(--line-2); } .mc.open { border-color: #e8aa2e77; box-shadow: 0 0 0 1px #e8aa2e33, 0 6px 18px #0005; }
+.mc.boss { background: radial-gradient(ellipse at 0 0, #d8402f1c, transparent 60%), linear-gradient(180deg, #1f1a17, #151110); } .mc.archi { border-color: #e8aa2e66; background: radial-gradient(ellipse at 0 0, #e8aa2e24, transparent 60%), linear-gradient(180deg, #221d12, #15120a); }
+.mc-head { display: flex; align-items: center; gap: 11px; cursor: pointer; border-radius: 10px; } .mc-head:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 3px; }
+.mc-ico { flex: none; width: 54px; height: 54px; border-radius: 14px; display: grid; place-items: end center; padding-bottom: 5px; font-size: 32px; overflow: hidden; background: linear-gradient(180deg, #2c3524, #161a11); box-shadow: inset 0 0 0 1px #0008, inset 0 3px 8px #0008; }
+.mc-ico > span { display: inline-block; animation: wn-bob 2.6s ease-in-out infinite; }
+.mc-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; } .mc-id b { font-size: 15.5px; line-height: 1.15; }
+.mc-tags { display: flex; flex-wrap: wrap; gap: 4px; } .mc-tags em { font-style: normal; font-size: 10.5px; font-weight: 900; padding: 1px 8px; border-radius: 99px; background: #00000055; color: var(--muted); border: 1px solid #ffffff14; }
+.mc-tags .bs { color: #ff9a8a; border-color: #d8402f88; background: #d8402f22; } .mc-tags .ar { color: var(--gold-2); border-color: #e8aa2e88; background: #e8aa2e22; }
+.mc .chev { color: var(--gold); font-size: 12px; transition: transform .2s; } .mc.open .chev { transform: rotate(90deg); }
+.mc-stats { display: flex; flex-wrap: wrap; gap: 6px; } .mc-stats span { padding: 3px 10px; border-radius: 8px; background: #00000040; font-size: 12px; color: var(--muted); font-weight: 700; } .mc-stats .hp b { color: #ff8a78; } .mc-stats .dm b { color: #ffc27a; }
+.mc-archi { font-size: 12px; font-weight: 800; color: #ffb48a; padding: 4px 10px; border-radius: 8px; background: #d8402f1a; border: 1px solid #d8402f44; }
+.mc-row { display: flex; align-items: center; gap: 10px; min-height: 28px; } .mc-row > label { flex: none; width: 82px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); font-weight: 900; }
+.dr-stasis-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; background: var(--stasis-bg); border: 1px solid #9156e688; color: var(--stasis-fg); font-size: 12px; font-weight: 900; } .dr-stasis-chip b { color: var(--stasis-fg); }
+.mc-detail { border-top: 1px dashed var(--line-2); padding-top: 9px; } .mc-detail .dr-items { grid-template-columns: 1fr; }
+.mc-leg { margin-left: 8px; font-size: 10.5px; letter-spacing: 0; text-transform: none; color: var(--dim); font-weight: 700; }
+.map-detail { gap: 14px; }
+@media (max-width: 700px) { .wm { min-width: 820px; } .mgrid { grid-template-columns: 1fr; } .place-banner h2 { font-size: 28px; } .pb-mons { font-size: 36px; } .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .wm-march, .wm-cloud, .wm-fly, .wm-blades, .wn.sel .wn-ring, .wn-h, .pb-motes i, .pb-mons > span, .mc-ico > span { animation: none !important; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -3377,6 +3443,11 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .iv-stat b { font-size: 17px; }
 :root[data-layout="mobile"] .iv-cats { flex-wrap: wrap; overflow: visible; }
 :root[data-layout="mobile"] .iv-cats .fchip { padding: 7px 11px; }
+:root[data-layout="mobile"] .wm { min-width: 820px; }
+:root[data-layout="mobile"] .mgrid { grid-template-columns: 1fr; }
+:root[data-layout="mobile"] .place-banner h2 { font-size: 28px; }
+:root[data-layout="mobile"] .pb-mons { font-size: 36px; }
+:root[data-layout="mobile"] .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -3385,7 +3456,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793231212';
+const BUILD_ID = '1793231628';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -9683,6 +9754,168 @@ function skBranch(h, b, just) {
     <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie <small>(tous les 3 points)</small></h4>${skMilestones(h, b)}</div></aside></div>`;
 }
 /* =====================================================================
+   VUE CARTE — carte du monde illustrée et animée + fiches de monstres
+   (remplace renderCarte / placeDetail de ui2.js)
+   ===================================================================== */
+const WM_W = 1000, WM_H = 360;
+const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150] }, dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62] } };
+const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania' };
+const cph = p => `animation-delay:-${Date.now() % p}ms`;
+const _mx = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
+const _rn = s => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const WM_REG = [['Incarnam', 80], ['Astrub', 236], ['Amakna', 408], ['Cania', 580], ['Koalak', 752], ['Sidimote', 918]];
+const _wmTh = r => THEME[r] || THEME.idle;
+
+let _wmStatic = null;
+function wmScenery() {
+  if (_wmStatic) return _wmStatic;
+  const D = '#0e110b', skyC = WM_REG.map(([r]) => _mx(_wmTh(r)[0], D, .5)), grC = WM_REG.map(([r]) => _wmTh(r)[1]);
+  const hgrad = (id, cols, t, k) => `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">${cols.map((c, i) => `<stop offset="${(WM_REG[i][1] / 1000).toFixed(3)}" stop-color="${_mx(c, k || D, t)}"/>`).join('')}</linearGradient>`;
+  const hill = (id, y, amp, seed, grad) => { let d = `M0 ${WM_H} L0 ${y}`; for (let x = 0; x <= 1000; x += 125) { const y1 = y + (_rn(seed + x / 125) - .5) * amp * 2; d += ` S${x + 62} ${y1 - amp * .4} ${x + 125} ${y + (_rn(seed + x / 125 + 1) - .5) * amp * 2}`; } return `<path d="${d} L1000 ${WM_H}Z" fill="url(#${grad})"/>`; };
+  const bush = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="11" ry="3" fill="#000" opacity=".25"/><circle cx="-5" cy="-3" r="6" fill="${c}"/><circle cx="4" cy="-4" r="7" fill="${_mx(c, '#ffffff', .12)}"/><circle cx="0" cy="-8" r="5.5" fill="${_mx(c, '#ffffff', .22)}"/></g>`;
+  const oak = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="12" ry="3" fill="#000" opacity=".25"/><rect x="-2" y="-12" width="4" height="13" fill="#5a3a1c"/><circle cx="-7" cy="-16" r="8" fill="${c}"/><circle cx="7" cy="-17" r="9" fill="${_mx(c, '#ffffff', .1)}"/><circle cx="0" cy="-24" r="8.5" fill="${_mx(c, '#ffffff', .2)}"/></g>`;
+  const pine = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="9" ry="2.5" fill="#000" opacity=".3"/><rect x="-1.6" y="-6" width="3.2" height="7" fill="#4a2c14"/><path d="M0-34 9-17H4l8 11H-8l8-11h-5Z" fill="${c}"/><path d="M0-34 9-17H4l8 11H0Z" fill="${_mx(c, D, .35)}" opacity=".5"/></g>`;
+  const rock = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="12" ry="3" fill="#000" opacity=".25"/><path d="M-11 0-8-9-2-12 6-10 11-2 9 0Z" fill="${c}"/><path d="M-2-12 6-10 11-2 3-3Z" fill="${_mx(c, '#ffffff', .25)}"/><path d="M-11 0-8-9-5-3-3 0Z" fill="${_mx(c, D, .35)}"/></g>`;
+  const peak = (x, y, w, h, c, snow) => `<g transform="translate(${x} ${y})"><path d="M${-w / 2} 0 0 ${-h} ${w / 2} 0Z" fill="${c}"/><path d="M0 ${-h} ${w / 2} 0 ${w * .08} 0Z" fill="${_mx(c, D, .3)}" opacity=".6"/>${snow ? `<path d="M0 ${-h} ${-w * .17} ${-h * .66} ${-w * .06} ${-h * .72} 0 ${-h * .6} ${w * .08} ${-h * .72} ${w * .17} ${-h * .66}Z" fill="#f4f8ff"/>` : ''}</g>`;
+  const grave = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="8" ry="2" fill="#000" opacity=".3"/><path d="M-5 0v-11a5 5 0 0 1 10 0V0Z" fill="#8a8498"/><path d="M0-12v6M-2.4-9.4h4.8" stroke="#3a3548" stroke-width="1.2"/></g>`;
+  const dead = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0V-20M0-10-8-18M0-14 7-22M0-18-4-26M-8-18-11-20M7-22 10-21" stroke="#2a2438" stroke-width="2.2" stroke-linecap="round" fill="none"/></g>`;
+  const wheat = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="#e8c24a" stroke-width="1.3" stroke-linecap="round"><path d="M-6 0-7-9M-3 0-3-11M0 0V-10M3 0 3-11M6 0 7-9" fill="none"/><g fill="#f4d870" stroke="none"><ellipse cx="-7" cy="-10" rx="1.3" ry="2.4"/><ellipse cx="-3" cy="-12" rx="1.3" ry="2.4"/><ellipse cx="0" cy="-11" rx="1.3" ry="2.4"/><ellipse cx="3" cy="-12" rx="1.3" ry="2.4"/><ellipse cx="7" cy="-10" rx="1.3" ry="2.4"/></g></g>`;
+  let deco = '';
+  // Incarnam
+  deco += oak(36, 262, .9, '#8fd07a') + oak(142, 246, .7, '#9fdc88') + bush(20, 290, 1, '#7cc46a') + bush(118, 296, 1.1, '#86cc72') + bush(158, 270, .8, '#7cc46a');
+  for (let i = 0; i < 16; i++) deco += `<circle cx="${10 + _rn(i + 3) * 150}" cy="${270 + _rn(i + 9) * 40}" r="1.5" fill="${['#ffd6e8', '#fff', '#ffe58a'][i % 3]}" opacity=".85"/>`;
+  // Astrub : champs de blé + moulin
+  for (let r = 0; r < 3; r++) for (let i = 0; i < 9; i++) deco += wheat(176 + i * 15 + r * 6, 272 + r * 15, .9 + r * .12);
+  deco += `<g transform="translate(300 250)"><ellipse cx="0" cy="2" rx="14" ry="3" fill="#000" opacity=".3"/><path d="M-9 0-5-24H5L9 0Z" fill="#d9c9a0"/><path d="M-9 0-5-24H0L-2 0Z" fill="#fff" opacity=".18"/><path d="M-6-24 0-32 6-24Z" fill="#b0452a"/><rect x="-2" y="-9" width="4" height="9" rx="1.4" fill="#5a3a1c"/><g class="wm-blades" style="transform-origin:0 -21px;${cph(7000)}"><path d="M0-21V-44M0-21V-2M0-21-23-21M0-21 23-21" stroke="#6a4a2a" stroke-width="1.8"/><path d="M1-21 9-44 1-44ZM-1-21-9 2-1 2ZM-1-21-23-29-23-21ZM1-21 23-13 23-21Z" fill="#fff6da" opacity=".85"/></g><circle cx="0" cy="-21" r="2.4" fill="#3a2410"/></g>`;
+  // Forêt
+  for (const [x, y, s, c] of [[352, 282, 1.1, '#2f6a2a'], [376, 262, .9, '#3a7a30'], [398, 296, 1.2, '#2a5a26'], [440, 270, 1, '#357430'], [468, 292, 1.15, '#2f6a2a'], [492, 262, .85, '#3a7a30'], [420, 250, .75, '#2a5a26'], [340, 252, .7, '#3a7a30']]) deco += pine(x, y, s, c);
+  deco += oak(454, 252, .8, '#4a8a3a');
+  // Cania
+  for (const [x, y, s] of [[524, 288, 1.3], [556, 268, .9], [612, 294, 1.1], [646, 270, .8], [590, 252, .7]]) deco += rock(x, y, s, '#b09870');
+  for (let i = 0; i < 10; i++) deco += `<path d="M${520 + _rn(i + 20) * 150} ${300 - _rn(i + 5) * 25}l-2-6M${522 + _rn(i + 20) * 150} ${300 - _rn(i + 5) * 25}l1-7" stroke="#d6be8d" stroke-width="1.2" opacity=".8"/>`;
+  // Koalaks
+  deco += peak(704, 218, 70, 60, '#5a7a58', true) + peak(776, 210, 90, 78, '#4e6e4e', true) + peak(836, 224, 60, 50, '#5a7a58', false);
+  for (const [x, y, s] of [[690, 284, 1.2], [726, 266, .9], [790, 292, 1.1], [820, 270, .9]]) deco += bush(x, y, s, '#4f9a4a');
+  // Sidimote
+  deco += `<ellipse cx="920" cy="270" rx="90" ry="22" fill="#9a7ac0" opacity=".16"/><ellipse cx="880" cy="296" rx="70" ry="16" fill="#9a7ac0" opacity=".14"/>`;
+  for (const [x, y, s] of [[868, 280, 1.1], [905, 296, .9], [958, 274, 1], [985, 296, 1.1]]) deco += grave(x, y, s);
+  deco += dead(862, 260, 1.1) + dead(944, 256, .9) + dead(996, 264, 1);
+  return (_wmStatic = `<defs>${hgrad('wmSky', skyC, 0)}${hgrad('wmH1', grC, .55, '#c8d8e8')}${hgrad('wmH2', grC, .3)}${hgrad('wmH3', grC, .45)}
+    <linearGradient id="wmFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D}" stop-opacity=".55"/><stop offset=".55" stop-color="${D}" stop-opacity="0"/></linearGradient>
+    <linearGradient id="wmFog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D}" stop-opacity="0"/><stop offset="1" stop-color="${D}" stop-opacity=".6"/></linearGradient>
+    <radialGradient id="wmSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c8" stop-opacity=".95"/><stop offset=".4" stop-color="#ffe9a0" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a0" stop-opacity="0"/></radialGradient>
+    <radialGradient id="wmMoon" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e8e0ff" stop-opacity=".9"/><stop offset=".5" stop-color="#b8a8ff" stop-opacity=".25"/><stop offset="1" stop-color="#b8a8ff" stop-opacity="0"/></radialGradient></defs>
+    <rect width="1000" height="${WM_H}" fill="url(#wmSky)"/><rect width="1000" height="${WM_H}" fill="url(#wmFade)"/>
+    <circle cx="70" cy="52" r="46" fill="url(#wmSun)"/><circle cx="70" cy="52" r="13" fill="#fff6c8"/>
+    <circle cx="936" cy="46" r="40" fill="url(#wmMoon)"/><circle cx="936" cy="46" r="11" fill="#efeaff"/><circle cx="941" cy="43" r="9" fill="#5a4a80" opacity=".5"/>
+    ${Array.from({ length: 26 }, (_, i) => `<circle cx="${760 + _rn(i + 60) * 240}" cy="${8 + _rn(i + 80) * 120}" r="${.6 + _rn(i + 7) * .9}" fill="#fff" opacity="${.35 + _rn(i + 17) * .5}"/>`).join('')}
+    <g transform="translate(0 40)">${hill('wmB', 188, 14, 3, 'wmH1')}${hill('wmM', 214, 12, 11, 'wmH2')}${hill('wmF', 246, 10, 23, 'wmH3')}${deco}</g>`);
+}
+function wmRoad() {
+  const zs = ZONES.map(z => WM_POS.zone[z.id]);
+  let d = `M-20 ${zs[0][1] + 34} C ${zs[0][0] / 2} ${zs[0][1] + 34}, ${zs[0][0] / 2} ${zs[0][1]}, ${zs[0][0]} ${zs[0][1]}`;
+  for (let i = 1; i < zs.length; i++) { const [x0, y0] = zs[i - 1], [x1, y1] = zs[i], mx = (x0 + x1) / 2; d += ` C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`; }
+  d += ` C ${(zs[5][0] + 1020) / 2} ${zs[5][1]}, ${(zs[5][0] + 1020) / 2} ${zs[5][1] - 30}, 1020 ${zs[5][1] - 30}`;
+  const br = DUNGEONS.map(dj => { const [x, y] = WM_POS.dungeon[dj.id], [zx, zy] = WM_POS.zone[WM_LINK[dj.id]]; return `M${zx} ${zy} Q ${(x + zx) / 2 + 24} ${(y + zy) / 2} ${x} ${y}`; }).join(' ');
+  return `<path d="${d}" fill="none" stroke="#1a1208" stroke-width="15" stroke-linecap="round" opacity=".7"/><path d="${d}" fill="none" stroke="#a8844c" stroke-width="10.5" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#d9bc7e" stroke-width="7" stroke-linecap="round" opacity=".55"/><path d="${d}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#fff3c4" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 13"/>
+    <path d="${br}" fill="none" stroke="#1a1208" stroke-width="5.5" stroke-linecap="round" opacity=".6"/><path d="${br}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#ffd68a" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 9"/>`;
+}
+function wmClouds() {
+  return [[0, 34, 1, 80000], [0, 78, .7, 110000], [0, 20, .85, 95000], [0, 58, .6, 130000]].map(([x, y, s, T], i) => `<g class="wm-cloud" style="${cph(T)};animation-duration:${T}ms;opacity:${i % 2 ? .5 : .75}"><g transform="translate(0 ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="34" ry="9" fill="#fff"/><ellipse cx="-14" cy="-6" rx="16" ry="9" fill="#fff"/><ellipse cx="8" cy="-9" rx="19" ry="11" fill="#fff"/></g></g>`).join('')
+    + Array.from({ length: 9 }, (_, i) => { const f = i < 5; const x = f ? 340 + _rn(i + 40) * 160 : 860 + _rn(i + 40) * 130, y = f ? 236 + _rn(i + 50) * 56 : 236 + _rn(i + 51) * 50; return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="1.9" fill="${f ? '#ffe98a' : '#c8b0ff'}" class="wm-fly" style="animation-delay:-${(i * 713 + Date.now()) % 3600}ms"/>`; }).join('');
+}
+function readiness(p) {
+  const best = st.heroes.reduce((m, h) => Math.max(m, h.lvl), 0);
+  if (!st.heroes.length) return ['far', 'Recrute un héros'];
+  return best >= p.lvl[0] ? ['ok', 'Niveau adapté'] : best >= p.lvl[0] - 3 ? ['near', 'Un peu juste'] : ['far', 'Trop difficile'];
+}
+function wmNode(p, type) {
+  const [x, y] = WM_POS[type][p.id]; const sel = ui.place.type === type && ui.place.id === p.id;
+  const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
+  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : mons[0]); const [rd, rl] = readiness(p);
+  const th = _wmTh(p.region), keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
+  return `<button class="wn ${type}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / 10).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
+    <span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
+    ${type === 'dungeon' ? `<span class="wn-key${keyN ? '' : ' none'}" title="Clefs en stock">🗝 ${keyN}</span>` : ''}
+    ${here.length ? `<span class="wn-heroes">${here.map((h, i) => `<span class="wn-h" style="${cph(2200 + i * 130)}">${emblem(h.cls, true)}</span>`).join('')}</span>` : ''}
+    <span class="wn-lab"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : ''}niv. ${p.lvl[0]}–${p.lvl[1]}</small></span></button>`;
+}
+function wmMap() {
+  return `<div class="wm-scroll"><div class="wm"><svg class="wm-svg" viewBox="0 0 ${WM_W} ${WM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${wmScenery()}${wmRoad()}${wmClouds()}<rect width="1000" height="${WM_H}" fill="url(#wmFog)"/></svg>
+    ${ZONES.map(z => wmNode(z, 'zone')).join('')}${DUNGEONS.map(d => wmNode(d, 'dungeon')).join('')}
+</div></div>`;
+}
+
+function carteSig() {
+  return JSON.stringify([st.heroes.map(h => [h.id, h.lvl, h.act && [h.act.type, h.act.id, h.act.tier || 0]]), ui.place, ui.zoneTier, ui.openMons, DUNGEONS.map(d => st.res[d.key] | 0), st.heroes.length]);
+}
+let _wmFirst = true;
+function wmAfter() {
+  if (!_wmFirst && !ui._wmCenter) return; _wmFirst = false; ui._wmCenter = false;
+  const sc = document.querySelector('.wm-scroll'), n = sc && sc.querySelector('.wn.sel'); if (!sc || !n) return;
+  sc.scrollLeft = n.offsetLeft - sc.clientWidth / 2;
+}
+
+function renderCarte() {
+  if (!ui.place || !findPlace(ui.place.type, ui.place.id)) ui.place = defaultPlace();
+  return `<div class="carte"><section class="panel wm-panel"><div class="wm-h"><h3 class="display">Carte du monde</h3><span class="sub">Touche un lieu pour voir ses monstres et y envoyer tes héros.</span><div class="wm-legend"><span><i class="ok"></i>Niveau adapté</span><span><i class="near"></i>Un peu juste</span><span><i class="far"></i>Trop difficile</span></div></div>${wmMap()}</section>
+    <section class="panel map-detail">${placeDetail(findPlace(ui.place.type, ui.place.id), ui.place.type)}</section></div>`;
+}
+
+function monCard(p, type, mid, T) {
+  const d = MONSTERS[mid]; const ar = !!d.archi, src = d.base || mid, ab = ar ? 3 : 1; const gd = GEAR_DROPS[src] || []; const ms = monsterStats(mid);
+  const gr = gd.length ? (d.boss || ar ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
+  const key = p.id + ':' + mid; const mo = !!(ui.openMons || {})[key];
+  const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
+  const detail = mo ? `<div class="mc-detail"><div class="dr-items">
+      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
+      ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
+        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
+      ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
+        <div class="sub">${Object.entries(it.stats).map(([k, [a, b2]]) => `<span style="color:${STAT_COLOR[k]}">${a}–${b2} ${STAT_SHORT[k]}</span>`).join(' · ')}</div>
+        <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
+        <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
+    </div></div>` : '';
+  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}">
+    <div class="mc-head" data-act="togglemon" data-k="${key}" tabindex="0" role="button" aria-expanded="${mo}" title="Voir les objets">
+      <span class="mc-ico" aria-hidden="true"><span style="${cph(2600 + (key.length % 7) * 150)}">${monIcon(mid)}</span></span>
+      <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
+      <span class="chev" aria-hidden="true">▸</span></div>
+    <div class="mc-stats"><span class="hp">❤ <b class="num">${fmt(ms.hp * T.hp)}</b> PV</span><span class="dm">⚔ <b class="num">${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)}</b> dégâts</span></div>
+    ${ar ? `<div class="mc-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}
+    <div class="mc-row"><label>Ressources</label><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></div>
+    <div class="mc-row"><label>Équipement</label>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span><span class="dr-stasis-chip" title="Chance de stasifié (stats ×2)">✦ <b>${pct(STASIS_RATE * T.drop)}</b></span></div>` : '<span class="dim">—</span>'}</div>
+    <div class="mc-row"><label>Relique</label>${rl.length ? `<div class="dr-chips">${rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('')}</div>` : '<span class="dim">—</span>'}</div>
+    ${detail}</article>`;
+}
+
+function placeDetail(p, type) {
+  const mons = placeMons(p, type);
+  const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
+  const tier = type === 'zone' ? ((ui.zoneTier || {})[p.id] || 0) : 0; const T = SUBZONES[tier];
+  const best = st.heroes.reduce((m, h) => Math.max(m, heroTotals(st, h).ppTotal), 100);
+  const cards = (type === 'zone' && ARCHIS[p.id] ? [...mons, ARCHIS[p.id]] : mons).map(mid => monCard(p, type, mid, T)).join('');
+  const sends = st.heroes.length ? st.heroes.map(h => {
+    const there = h.act && h.act.type === type && h.act.id === p.id && (type !== 'zone' || (h.act.tier || 0) === tier);
+    const low = h.lvl < p.lvl[0] - 3;
+    const label = there ? 'Est ici' : low ? `Niveau conseillé ${p.lvl[0]}` : h.act ? `Quitte ${placeName(h.act)}` : 'Disponible';
+    return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="${type}" data-id="${p.id}" data-t="${tier}" ${there || (type === 'dungeon' && !keyN) ? 'disabled' : ''}`, esc(label), (there ? 'here' : '') + (low ? ' low' : ''));
+  }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
+  const [rd, rl] = readiness(p), th = _wmTh(p.region);
+  const hills = `<svg class="pb-hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100V58C60 36 110 66 170 50S290 30 400 56V100Z" fill="${_mx(th[1], '#c8d8e8', .3)}" opacity=".55"/><path d="M0 100V72C70 56 130 84 200 68S320 54 400 74V100Z" fill="${_mx(th[1], '#0e110b', .25)}"/></svg>`;
+  const motes = Array.from({ length: 7 }, (_, i) => `<i style="left:${8 + i * 13}%;animation-duration:${7000 + i * 900}ms;${cph(7000 + i * 900)}"></i>`).join('');
+  return `<div class="place-banner" style="${themeStyle(th)}">${hills}<span class="pb-motes" aria-hidden="true">${motes}</span>
+      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : ''}${p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
+      <div class="pb-side"><span class="lvl-badge">Niv. ${p.lvl[0]}–${p.lvl[1]}</span><span class="rd ${rd}">${rl}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map((m, i) => `<span style="${cph(2400 + i * 260)}"><span>${monIcon(m)}</span></span>`).join('')}</div></div>
+    </div>
+    ${type === 'zone' ? `<div class="tiers">${SUBZONES.map((s, i) => { const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === p.id && (h.act.tier || 0) === i).length;
+      return `<button data-act="ztier" data-id="${p.id}" data-t="${i}" aria-pressed="${i === tier}" style="--tc:${['#8fd65a', '#e8d04a', '#f09a3a', '#e8503a'][i]}"><span class="tr-pips">${[0, 1, 2, 3].map(k => `<i${k <= i ? ' class="on"' : ''}></i>`).join('')}</span><b>${p.name} ${i + 1}</b><span>${i ? `PV ×${s.hp} · Dégâts ×${String(s.dmg).replace('.', ',')} · Équip. ×${s.drop}` : 'Difficulté normale'}</span>${n ? `<i class="tr-n">${n} héros</i>` : ''}</button>`; }).join('')}</div>`
+      : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp} · une clef par entrée</span>${keyN ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
+    <div><div class="label" style="margin-bottom:6px">Envoyer un héros</div><div class="send-list">${sends}</div></div>
+    <div><div class="label" style="margin-bottom:8px">Monstres et butin <span class="mc-leg">❤ PV · ⚔ dégâts · ✦ stasifié</span></div><div class="mgrid">${cards}</div></div>
+    <p class="hint">Taux par monstre vaincu pour 100 de prospection (ta meilleure : ${best}, soit ×${(best / 100).toFixed(2).replace('.', ',')}). Équipement et stasifié : taux par objet. <span style="color:var(--relic)">En jaune</span> : reliques. Clique sur un monstre pour le détail.</p>`;
+}
+/* =====================================================================
    AMAKNA IDLE — INTERFACE v2
    Barre latérale (navigation + groupe), scènes de combat, poupée
    d'équipement, inventaire en cases avec inspecteur.
@@ -10901,67 +11134,6 @@ function defaultPlace() {
   return { type: 'zone', id: z.id };
 }
 function placeMons(p, type) { return type === 'dungeon' ? [...new Set([...p.rooms.flat(), ...p.boss])] : p.monsters; }
-function renderCarte() {
-  if (!ui.place || !findPlace(ui.place.type, ui.place.id)) ui.place = defaultPlace();
-  const row = (p, type) => {
-    const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-    const sel = ui.place.type === type && ui.place.id === p.id;
-    const mons = placeMons(p, type);
-    const icon = monIcon(type === 'dungeon' ? p.boss[0] : mons[0]);
-    return `<button class="mrow${sel ? ' sel' : ''}${type === 'dungeon' ? ' dj' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="${themeStyle(THEME[p.region] || THEME.idle)}">
-      <span class="mr-art" aria-hidden="true">${icon}</span><span class="mr-main"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : ''}${p.region} · niv. ${p.lvl[0]}–${p.lvl[1]}</small></span>
-      ${here.length ? `<span class="mr-here">${here.map(h => emblem(h.cls, true)).join('')}</span>` : ''}</button>`;
-  };
-  return `<div class="map-layout">
-    <aside class="map-list"><div class="ml-h">Zones</div>${ZONES.map(z => row(z, 'zone')).join('')}<div class="ml-h">Donjons</div>${DUNGEONS.map(d => row(d, 'dungeon')).join('')}</aside>
-    <section class="panel map-detail">${placeDetail(findPlace(ui.place.type, ui.place.id), ui.place.type)}</section></div>`;
-}
-function placeDetail(p, type) {
-  const mons = placeMons(p, type);
-  const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
-  const tier = type === 'zone' ? ((ui.zoneTier || {})[p.id] || 0) : 0; const T = SUBZONES[tier];
-  const best = st.heroes.reduce((m, h) => Math.max(m, heroTotals(st, h).ppTotal), 100);
-  const rows = (type === 'zone' && ARCHIS[p.id] ? [...mons, ARCHIS[p.id]] : mons).map(mid => {
-    const d = MONSTERS[mid]; const ar = !!d.archi, src = d.base || mid, ab = ar ? 3 : 1; const gd = GEAR_DROPS[src] || []; const ms = monsterStats(mid);
-    const gr = gd.length ? (d.boss || ar ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
-    const key = p.id + ':' + mid; const mo = !!(ui.openMons || {})[key];
-    const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
-    const detail = mo ? `<tr class="dr-detail"><td colspan="5"><div class="dr-items">
-      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
-      ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
-        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
-      ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
-        <div class="sub">${Object.entries(it.stats).map(([k, [a, b2]]) => `<span style="color:${STAT_COLOR[k]}">${a}–${b2} ${STAT_SHORT[k]}</span>`).join(' · ')}</div>
-        <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
-        <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
-    </div></td></tr>` : '';
-    return `<tr class="dr-row${mo ? ' open' : ''}${ar ? ' archi-row' : ''}" data-act="togglemon" data-k="${key}" tabindex="0" title="Voir les objets">
-      <td><div class="dr-mon"><span class="chev" aria-hidden="true">▸</span><span class="dr-ico" aria-hidden="true">${monIcon(mid)}</span><div><b>${ar ? '👑 ' : ''}${d.name}</b> <span class="sub">${d.lvl}${d.boss ? ' · Boss' : ''}${ar ? ' · Archimonstre' : ''}</span>
-        <div class="dr-meta">${fmt(ms.hp * T.hp)} PV · ${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)} dégâts</div>${ar ? `<div class="dr-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}</div></div></td>
-      <td><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></td>
-      <td>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span></div>` : '<span class="dim">—</span>'}</td>
-      <td>${gd.length ? `<span class="dr-stasis">${pct(STASIS_RATE * T.drop)}</span>` : '<span class="dim">—</span>'}</td>
-      <td>${rl.length ? rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('') : '<span class="dim">—</span>'}</td>
-    </tr>${detail}`;
-  }).join('');
-  const sends = st.heroes.length ? st.heroes.map(h => {
-    const there = h.act && h.act.type === type && h.act.id === p.id && (type !== 'zone' || (h.act.tier || 0) === tier);
-    const low = h.lvl < p.lvl[0] - 3;
-    const label = there ? 'Est ici' : low ? `Niveau conseillé ${p.lvl[0]}` : h.act ? `Quitte ${placeName(h.act)}` : 'Disponible';
-    return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="${type}" data-id="${p.id}" data-t="${tier}" ${there || (type === 'dungeon' && !keyN) ? 'disabled' : ''}`, esc(label), (there ? 'here' : '') + (low ? ' low' : ''));
-  }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
-  return `<div class="place-banner" style="${themeStyle(THEME[p.region] || THEME.idle)}">
-      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : ''}${p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
-      <div class="pb-side"><span class="lvl-badge">Niv. ${p.lvl[0]}–${p.lvl[1]}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map(m => `<span>${monIcon(m)}</span>`).join('')}</div></div>
-    </div>
-    ${type === 'zone' ? `<div class="tiers">${SUBZONES.map((s, i) => { const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === p.id && (h.act.tier || 0) === i).length;
-      return `<button data-act="ztier" data-id="${p.id}" data-t="${i}" aria-pressed="${i === tier}"><b>${p.name} ${i + 1}</b><span>${i ? `PV ×${s.hp} · Dégâts ×${String(s.dmg).replace('.', ',')} · Équip. ×${s.drop}` : 'Difficulté normale'}</span>${n ? `<i>${n} héros</i>` : ''}</button>`; }).join('')}</div>`
-      : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp} · une clef par entrée</span>${keyN ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
-    <div><div class="label" style="margin-bottom:6px">Envoyer un héros</div><div class="send-list">${sends}</div></div>
-    <div class="drop-wrap"><table class="drop-table"><thead><tr><th>Monstre</th><th>Ressources</th><th>Équipement</th><th>Stasifié</th><th>Relique</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="hint">Taux par monstre vaincu pour 100 de prospection (ta meilleure : ${best}, soit ×${(best / 100).toFixed(2).replace('.', ',')}). Équipement et stasifié : taux par objet. <span style="color:var(--relic)">En jaune</span> : reliques. Clique sur un monstre pour le détail.</p>`;
-}
-
 /* ---------------------------- Vue : Inventaire ---------------------------- */
 const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['res', 'Ressources', '🧺']];
 const INV_SORTS = [['lvl', 'Niveau'], ['q', 'Qualité'], ['val', 'Valeur'], ['name', 'Nom']];
@@ -11122,7 +11294,7 @@ function canRebuild() {
 function renderMain(force) {
   if (!force && !canRebuild()) return;
   // Les listes défilantes gardent leur position quand la vue est redessinée
-  const keep = ['.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
+  const keep = ['.wm-scroll', '.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
   // La page garde sa hauteur et sa position pendant le redessin : sans ça, le défilement saute quand le contenu change de taille
   const main = $('#main'), sy = window.scrollY, mh = main.offsetHeight; main.style.minHeight = mh + 'px';
   const ae = document.activeElement, fk = ae && ae.id === 'invq' ? [ae.selectionStart, ae.selectionEnd] : null;
@@ -11131,6 +11303,7 @@ function renderMain(force) {
   requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
   if (fk) { const e = $('#invq'); if (e) { e.focus(); try { e.setSelectionRange(fk[0], fk[1]); } catch (x) {} } }
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
+  if (ui.view === 'carte') wmAfter();
   if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); updateArchiBtn(); }
 }
 let lastSlow = 0;
@@ -11142,6 +11315,7 @@ function render(force) {
     if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) { if (!redrawCards()) renderMain(); patchCombat(); } else patchCombat();
   } else {
     if (harvestViewFx(ui.view === 'recolte')) lastSlow = now; // un petit effet sur la carte de la plante : on retarde le redessin pour le laisser finir
+    if (ui.view === 'carte') { const sg = carteSig(); if (sg !== ui._carteSig) { ui._carteSig = sg; renderMain(); lastSlow = now; } return; }
     if (ui.view === 'talents') { const h = selHero(), sg = h ? `${h.id}|${h.lvl}|${st.heroes.length}|${skillFree(h)}` : ''; if (sg !== ui._skSig) { ui._skSig = sg; renderMain(); lastSlow = now; } return; }
     if (now - lastSlow > 1500 && ui.view !== 'options') { renderMain(); lastSlow = now; }
   }
@@ -11150,13 +11324,13 @@ function scrollTop() { try { window.scrollTo(0, 0); } catch (e) {} }
 
 /* ---------------------------- Actions ---------------------------- */
 const ACTIONS = {
-  view(d) { ui.view = d.v; ui.resetStep = 0; ui.sellUid = null; ui.recruitOpen = false; scrollTop(); },
+  view(d) { if (d.v === 'carte') ui._wmCenter = true; ui.view = d.v; ui.resetStep = 0; ui.sellUid = null; ui.recruitOpen = false; scrollTop(); },
   gohero(d) { ui.view = 'heros'; ui.hero = d.hero; ui.recruitOpen = false; scrollTop(); },
   gomap(d) { ui.view = 'carte'; if (d.hero) ui.hero = d.hero; ui.place = null; scrollTop(); },
   recruitnav() { ui.view = 'heros'; ui.recruitOpen = true; scrollTop(); },
   recruitopen() { ui.recruitOpen = true; },
   recruitclose() { ui.recruitOpen = false; },
-  place(d) { ui.place = { type: d.type, id: d.id }; },
+  place(d) { ui.place = { type: d.type, id: d.id }; ui._wmCenter = true; },
   gocraftkey() { ui.view = 'ateliers'; ui.job = 'bricoleur'; ui.rtab = 'combat'; scrollTop(); },
   gorecipe(d) { ui.view = 'ateliers'; ui.job = d.job; ui.rtab = d.h === '1' ? 'recolte' : 'combat'; scrollTop(); },
   send(d) { const h = heroById(d.hero); setActivity(st, h, d.type, d.id, +d.t || 0); toast(`${h.name} part pour ${placeName(h.act)}.`); },
