@@ -471,13 +471,13 @@ function zobApotheose(scene0, unit) {
   // calque indépendant : la cinématique se joue jusqu'au bout même si le combat finit et que la scène est redessinée
   const rc = scene0.getBoundingClientRect(), sc = rc.width / (scene0.offsetWidth || 1), scene = document.createElement('div');
   scene.className = 'zb-overlay'; scene.style.cssText = `left:${rc.left}px;top:${rc.top}px;width:${scene0.offsetWidth}px;height:${scene0.offsetHeight}px;transform:scale(${sc})`;
-  document.body.appendChild(scene); setTimeout(() => scene.remove(), 3600);
+  document.body.appendChild(scene); setTimeout(() => scene.remove(), 4400);
   const sp = unit.querySelector('.sprite') || unit, p0 = fxPos(scene, sp);
   if (!p0) { scene.remove(); return; }
   const W = scene.offsetWidth, H = scene.offsetHeight, hd = { x: p0.x, y: p0.y - H * .12 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
   const mid = { x: W * .5, y: H * .42 };
   zbMark(unit, 'zob-apoint', 3000); zbMark(scene0, 'zb-shake', 3300);
-  const veil = fxEl(scene, 'zb-veil', 0, 0); fxAnim(veil, [{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .8 }, { opacity: 0 }], { duration: 3200, easing: 'linear' });
+  const veil = fxEl(scene, 'zb-veil', 0, 0); fxAnim(veil, [{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: 1, offset: .82 }, { opacity: 0 }], { duration: 3900, easing: 'linear' });
   const faces = [['😆', '#ffd24a'], ['😢', '#5ab0ff'], ['🤪', '#ff6ad0']], orbs = faces.map((f, i) => fxEl(scene, 'zb-orb', hd.x, hd.y, `<span>${f[0]}</span>`, `--c:${f[1]}`));
   const T0 = performance.now(), TC = 1500;
   (function spin(now) { // les masques tournent en spirale, de plus en plus vite, puis fondent vers le Zobal
@@ -489,20 +489,57 @@ function zobApotheose(scene0, unit) {
     if (t < TC) requestAnimationFrame(spin); else orbs.forEach(o => o.remove());
   })(T0);
   for (let i = 0; i < 14; i++) at(i * 100, () => { const a = Math.random() * 6.28, s = fxEl(scene, 'sfx-spark', hd.x + Math.cos(a) * 16, hd.y + 18, '', '--c:#ffe27a'); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.4)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * 14}px),calc(-50% - ${40 + Math.random() * 50}px)) scale(.1)`, opacity: 0 }], { duration: 700 }); });
-  at(TC - 80, () => { const f = fxEl(scene, 'zb-flash', 0, 0); fxAnim(f, [{ opacity: 0 }, { opacity: .95, offset: .2 }, { opacity: 0 }], { duration: 560, easing: 'linear' }); });
+  const mask = unit.dataset.mask || 'rire', TH = {
+    rire: { v1: '#4a2a08aa', v2: '#120600d8', fl: '#fff3b0', rings: ['#fff3b0', '#ffb02e', '#ff7a3a'], txt: 'APOTHÉOSE !', tc: '#fff3b0', to: '#7a2a00' },
+    larme: { v1: '#0a2a5aaa', v2: '#020a1ed8', fl: '#cfeaff', rings: ['#e8f8ff', '#5ab0ff', '#2a58c8'], txt: 'DÉLUGE !', tc: '#e8f8ff', to: '#0a2a5a' },
+    farce: { v1: '#6a1060aa', v2: '#10021ed8', fl: '#ffffff', rings: ['#ff6ad0', '#5ee0d4', '#ffd24a'], txt: 'CARNAVAL !', tc: '#fff', to: '#5a0a50' } }[mask] || {};
+  veil.style.setProperty('--v1', TH.v1); veil.style.setProperty('--v2', TH.v2);
+  at(TC - 80, () => { const f = fxEl(scene, 'zb-flash', 0, 0, '', `--fl:${TH.fl}`); fxAnim(f, [{ opacity: 0 }, { opacity: .95, offset: .2 }, { opacity: 0 }], { duration: 560, easing: 'linear' }); });
+  const burst = (x, y, cols, n, d0) => { for (let i = 0; i < n; i++) { const a = i / n * 6.28 + Math.random() * .3, d = d0 * (.6 + Math.random() * .6), s = fxEl(scene, 'sfx-spark', x, y, '', `--c:${cols[i % cols.length]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.8)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d * .8}px)) scale(.2)`, opacity: 0 }], { duration: 800 + Math.random() * 300, easing: 'cubic-bezier(.1,.7,.4,1)' }); } };
   at(TC, () => {
-    const sun = fxEl(scene, 'zb-sun mega', mid.x, mid.y);
-    fxAnim(sun, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(0deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1) rotate(40deg)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-50%) scale(1.3) rotate(120deg)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-50%) scale(1.8) rotate(180deg)', opacity: 0 }], { duration: 1500, easing: 'linear' });
-    const gm = fxEl(scene, 'zb-gmask', mid.x, mid.y, '<i></i>');
-    fxAnim(gm, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(-180deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.5) rotate(8deg)', opacity: 1, offset: .22 }, { transform: 'translate(-50%,-50%) scale(1.15) rotate(-4deg)', opacity: 1, offset: .38 }, { transform: 'translate(-50%,-50%) scale(1.25) rotate(3deg)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-50%) scale(2.6) rotate(0deg)', opacity: 0 }], { duration: 1500 });
-    [0, 1, 2].forEach(i => { const r = fxEl(scene, 'sfx-ring thick', mid.x, mid.y, '', `--c:${['#fff3b0', '#ffb02e', '#c58aff'][i]}`); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${14 + i * 3})`, opacity: 0 }], { duration: 900 + i * 150, delay: i * 120 }); });
-    const t = fxEl(scene, 'zb-txt zb-apotxt', mid.x, H * .78, 'APOTHÉOSE !', '--c:#fff3b0;--o:#7a2a00;--s:30px');
-    fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.35)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-50%) scale(1.04)', opacity: 1, offset: .85 }, { transform: 'translate(-50%,-62%) scale(1.1)', opacity: 0 }], { duration: 1500 });
-    for (let i = 0; i < 9; i++) { const ray = fxEl(scene, 'zb-pillar', W * (i + .5) / 9, H); fxAnim(ray, [{ transform: 'translate(-50%,-100%) scaleY(0)', opacity: 0 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: .9, offset: .3 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: 0 }], { duration: 1100, delay: Math.abs(i - 4) * 70 }); }
-    for (let i = 0; i < 46; i++) { const x = Math.random() * W, c = fxEl(scene, Math.random() < .5 ? 'zb-coin big' : 'zb-conf', x, -12, '', `background:${ZOB_CONF[i % 6]}`); fxAnim(c, [{ transform: 'translate(-50%,0) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * 50}px),${H + 20}px) rotate(${360 + Math.random() * 720}deg)`, opacity: 1 }], { duration: 900 + Math.random() * 700, delay: 150 + Math.random() * 900, easing: 'cubic-bezier(.3,.4,.6,1)' }); }
-    for (let i = 0; i < 24; i++) { const a = Math.random() * 6.28, d = 40 + Math.random() * 140, s = fxEl(scene, 'sfx-spark', mid.x, mid.y, '', `--c:${ZOB_CONF[i % 6]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.8)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.6}px),calc(-50% + ${Math.sin(a) * d * .6}px)) scale(.1)`, opacity: 0 }], { duration: 800 + Math.random() * 500 }); }
-    scene0.querySelectorAll('.unit.mon').forEach(m => zbMark(m, 'zb-glow', 700));
+    const gm = fxEl(scene, 'zb-gmask ' + mask, mid.x, mid.y, '<i></i>');
+    fxAnim(gm, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(-180deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.5) rotate(8deg)', opacity: 1, offset: .22 }, { transform: 'translate(-50%,-50%) scale(1.15) rotate(-4deg)', opacity: 1, offset: .38 }, { transform: 'translate(-50%,-50%) scale(1.25) rotate(3deg)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-50%) scale(2.6) rotate(0deg)', opacity: 0 }], { duration: 2100 });
+    TH.rings.forEach((c, i) => { const r = fxEl(scene, 'sfx-ring thick', mid.x, mid.y, '', `--c:${c}`); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${14 + i * 3})`, opacity: 0 }], { duration: 900 + i * 150, delay: i * 120 }); });
+    const t = fxEl(scene, 'zb-txt zb-apotxt ' + mask, mid.x, H * .8, TH.txt, `--c:${TH.tc};--o:${TH.to};--s:30px`);
+    fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.35)', opacity: 1, offset: .15 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-50%) scale(1.04)', opacity: 1, offset: .88 }, { transform: 'translate(-50%,-62%) scale(1.1)', opacity: 0 }], { duration: 2100 });
+    if (mask === 'larme') apoLarme(scene, W, H, mid, at, burst);
+    else if (mask === 'farce') apoFarce(scene, W, H, mid, at, burst);
+    else apoRire(scene, W, H, mid, at, burst);
+    scene0.querySelectorAll('.unit.mon').forEach(m => zbMark(m, mask === 'larme' ? 'zb-wet' : mask === 'farce' ? 'zb-boing' : 'zb-glow', 900));
   });
+}
+/* Rieur : soleil d'or, éclats de rire, pluie d'or */
+function apoRire(scene, W, H, mid, at, burst) {
+  const sun = fxEl(scene, 'zb-sun mega', mid.x, mid.y);
+  fxAnim(sun, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(0deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1) rotate(40deg)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-50%) scale(1.3) rotate(160deg)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-50%) scale(1.8) rotate(240deg)', opacity: 0 }], { duration: 2100, easing: 'linear' });
+  for (let i = 0; i < 9; i++) { const ray = fxEl(scene, 'zb-pillar', W * (i + .5) / 9, H); fxAnim(ray, [{ transform: 'translate(-50%,-100%) scaleY(0)', opacity: 0 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: .9, offset: .3 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: 0 }], { duration: 1300, delay: Math.abs(i - 4) * 70 }); }
+  for (let i = 0; i < 12; i++) at(100 + i * 130, () => { const e = fxEl(scene, 'zb-txt', mid.x + (Math.random() - .5) * W * .6, H * (.25 + Math.random() * .5), 'HA!', `--c:#ffe27a;--o:#7a4300;--s:${11 + Math.round(Math.random() * 6)}px`); fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-90%) scale(1.2)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-190%) scale(1)', opacity: 0 }], { duration: 800 }); });
+  for (let i = 0; i < 54; i++) { const c = fxEl(scene, Math.random() < .55 ? 'zb-coin big' : 'zb-conf', Math.random() * W, -12, '', `background:${['#ffd24a', '#ffe27a', '#ffb02e', '#fff3b0'][i % 4]}`); fxAnim(c, [{ transform: 'translate(-50%,0) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * 50}px),${H + 20}px) rotate(${360 + Math.random() * 720}deg)`, opacity: 1 }], { duration: 900 + Math.random() * 800, delay: 150 + Math.random() * 1100, easing: 'cubic-bezier(.3,.4,.6,1)' }); }
+  for (let i = 0; i < 4; i++) at(250 + i * 380, () => { const x = W * (.15 + Math.random() * .7), y = H * (.2 + Math.random() * .4); burst(x, y, ['#ffd24a', '#fff3b0', '#ffb02e'], 16, 46); });
+}
+/* Pleureur : DÉLUGE — orage, éclairs, marée géante, geysers */
+function apoLarme(scene, W, H, mid, at, burst) {
+  for (let i = 0; i < 7; i++) { const c = fxEl(scene, 'zb-bigcloud', W * (i + .5) / 7, -4); fxAnim(c, [{ transform: 'translate(-50%,-100%) scale(.6)', opacity: 0 }, { transform: 'translate(-50%,-30%) scale(1.1)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-30%) scale(1.15)', opacity: 1, offset: .85 }, { transform: 'translate(-50%,-100%) scale(1)', opacity: 0 }], { duration: 2400, delay: i * 40 }); }
+  for (let i = 0; i < 4; i++) at(200 + i * 420, () => {
+    const x = W * (.12 + Math.random() * .76), b = fxEl(scene, 'zb-bolt', x, 0); fxAnim(b, [{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: .2, offset: .25 }, { opacity: 1, offset: .35 }, { opacity: 0 }], { duration: 420, easing: 'linear' });
+    const f = fxEl(scene, 'zb-flash', 0, 0, '', '--fl:#cfeaff'); fxAnim(f, [{ opacity: .22 }, { opacity: 0 }], { duration: 200 }); burst(x, H * .78, ['#e8f8ff', '#8ed0ff'], 10, 30); });
+  for (let i = 0; i < 110; i++) { const e = fxEl(scene, 'zb-rain', Math.random() * W, -24); fxAnim(e, [{ transform: 'translateY(0)', opacity: .95 }, { transform: `translateY(${H + 50}px)`, opacity: .95 }], { duration: 380 + Math.random() * 240, delay: Math.random() * 1700, easing: 'linear' }); }
+  const tide = fxEl(scene, 'zb-tide', 0, H + 4); fxAnim(tide, [{ transform: 'translate(-60%,-100%)', opacity: 1 }, { transform: `translate(${W + 120}px,-100%)`, opacity: 1 }], { duration: 1500, delay: 250, easing: 'cubic-bezier(.4,.1,.5,1)' });
+  for (let i = 0; i < 8; i++) at(250 + (i / 8) * 1350 + 120, () => { const x = W * (i + .5) / 8, g = fxEl(scene, 'zb-geyser', x, H * .86);
+    fxAnim(g, [{ transform: 'translate(-50%,-100%) scaleY(.1)', opacity: 1 }, { transform: 'translate(-50%,-100%) scale(1.6,2.1)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-100%) scale(.7,2.4)', opacity: 0 }], { duration: 760, easing: 'ease-out' });
+    const rp = fxEl(scene, 'zb-ripple', x, H * .86); fxAnim(rp, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(3)', opacity: 0 }], { duration: 640 });
+    for (let q = 0; q < 6; q++) { const a = -Math.PI * (.1 + Math.random() * .8), d = 20 + Math.random() * 40, s = fxEl(scene, 'zb-tear sm', x, H * .8); fxAnim(s, [{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d - 20}px))`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.2}px),calc(-50% + ${Math.sin(a) * d + 30}px))`, opacity: 0 }], { duration: 700 }); } });
+  for (let i = 0; i < 16; i++) at(80 + i * 90, () => { const s = fxEl(scene, 'zb-tear big', mid.x + (i % 2 ? 11 : -11), mid.y + 12); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 1 }, { transform: `translate(calc(-50% + ${(i % 2 ? 1 : -1) * (6 + Math.random() * 20)}px),${H * .55}px) scale(1)`, opacity: 0 }], { duration: 760, easing: 'ease-in' }); });
+}
+/* Farceur : CARNAVAL — projecteurs, feux d'artifice, serpentins, ballons, masques fous */
+function apoFarce(scene, W, H, mid, at, burst) {
+  [[.12, -26, '#ff6ad0'], [.88, 26, '#5ee0d4'], [.5, 0, '#ffd24a']].forEach(([x, r, c], i) => { const s = fxEl(scene, 'zb-spot', W * x, 0, '', `--c:${c}`); fxAnim(s, [{ transform: `translate(-50%,0) rotate(${r - 30}deg)`, opacity: 0 }, { transform: `translate(-50%,0) rotate(${r + 20}deg)`, opacity: .85, offset: .3 }, { transform: `translate(-50%,0) rotate(${r - 20}deg)`, opacity: .85, offset: .65 }, { transform: `translate(-50%,0) rotate(${r + 25}deg)`, opacity: 0 }], { duration: 2200, delay: i * 80, easing: 'ease-in-out' }); });
+  for (let i = 0; i < 7; i++) at(150 + i * 300, () => burst(W * (.1 + Math.random() * .8), H * (.18 + Math.random() * .45), ZOB_CONF, 20, 54 + Math.random() * 20));
+  [0, 1].forEach(side => { for (let i = 0; i < 40; i++) at(i * 14 + 60, () => { const rb = Math.random() < .4, c = fxEl(scene, rb ? 'zb-ribbon' : 'zb-conf', side ? W : 0, H * .95, '', `background:${ZOB_CONF[i % 6]}`), dx = (side ? -1 : 1) * (60 + Math.random() * W * .45), up = H * (.55 + Math.random() * .6);
+    fxAnim(c, [{ transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx * .6}px),calc(-50% - ${up}px)) rotate(${Math.random() * 540}deg)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${H * .2}px)) rotate(${Math.random() * 900}deg)`, opacity: 0 }], { duration: 1300 + Math.random() * 500, easing: 'cubic-bezier(.2,.6,.4,1)' }); }); });
+  for (let i = 0; i < 11; i++) { const bl = fxEl(scene, 'zb-balloon', W * (i + .5) / 11 + (Math.random() - .5) * 30, H + 30, '', `--c:${ZOB_CONF[i % 6]}`), sw = (Math.random() - .5) * 40; fxAnim(bl, [{ transform: 'translate(-50%,0)', opacity: 1 }, { transform: `translate(calc(-50% + ${sw}px),${-H * .6}px)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% - ${sw}px),${-H * 1.4}px)`, opacity: 1 }], { duration: 1700 + Math.random() * 700, delay: 200 + Math.random() * 700, easing: 'ease-in-out' }); }
+  const cols = [['#ffc83a', '#d88a10'], ['#8ec4f4', '#3f78c8'], ['#9ae860', '#3f9a2a'], ['#ff7ab8', '#c83a7a'], ['#c58aff', '#6a30b8']];
+  for (let i = 0; i < 10; i++) { const m = fxEl(scene, 'zb-mini', mid.x, mid.y, '', `--c1:${cols[i % 5][0]};--c2:${cols[i % 5][1]}`), a = i / 10 * 6.28; fxAnim(m, [{ transform: 'translate(-50%,-50%) scale(.4) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * W * .36}px),calc(-50% + ${Math.sin(a) * H * .34}px)) scale(1.5) rotate(720deg)`, opacity: 1, offset: .55 }, { transform: `translate(calc(-50% + ${Math.cos(a + 1) * W * .1}px),calc(-50% + ${Math.sin(a + 1) * H * .1}px)) scale(.5) rotate(1400deg)`, opacity: 0 }], { duration: 1500, delay: i * 50, easing: 'ease-in-out' }); }
 }
 FX_KIND.zob = function (scene, from, tos, fx, hero) {
   const unit = hero.closest('.unit'), mask = (unit && unit.dataset.mask) || 'rire', pw = fx[3] || 1;
