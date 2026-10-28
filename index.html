@@ -3036,6 +3036,7 @@ label.btn { cursor: pointer; }
 .forge.bakery.is-perfect .bk-item { animation: bk-item 1s ease-out 2.5s both; }
 .bakery .fg-wait { top: 8px; bottom: auto; }
 @media (max-width: 400px) { .bk-oven-w { right: 8px; } .bk-dough { left: 18px; } .bk-pin { left: 20px; } .bk-flour { left: 50px; } .bk-loaf { left: 36px; } }
+.bk-reveal .bk-daily.big { position: absolute; left: 50%; top: -90px; transform: translateX(-50%); white-space: nowrap; z-index: 8; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -3123,7 +3124,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793227206';
+const BUILD_ID = '1793227904';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)

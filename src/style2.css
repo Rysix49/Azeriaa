@@ -3028,3 +3028,4 @@ label.btn { cursor: pointer; }
 .forge.bakery.is-perfect .bk-item { animation: bk-item 1s ease-out 2.5s both; }
 .bakery .fg-wait { top: 8px; bottom: auto; }
 @media (max-width: 400px) { .bk-oven-w { right: 8px; } .bk-dough { left: 18px; } .bk-pin { left: 20px; } .bk-flour { left: 50px; } .bk-loaf { left: 36px; } }
+.bk-reveal .bk-daily.big { position: absolute; left: 50%; top: -90px; transform: translateX(-50%); white-space: nowrap; z-index: 8; }
