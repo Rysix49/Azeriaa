@@ -534,7 +534,7 @@ function foodFxList(f) { return Object.entries(f.fx).map(([k, v]) => ({ k, v, la
 function defFood(id, lvl, name, icon, fx, min, ing, tale) {
   const food = { fx, ms: min * 60 * 1000 }; food.desc = foodFxList(food).map(x => x.txt).join(' · ') + ` pendant ${min} min`;
   const cost = Object.entries(ing).reduce((a, [k, n]) => a + RESOURCES[k].value * n, 0);
-  RESOURCES[id] = { name, icon, value: Math.round(cost * 3 / 10) * 10, food, tale };
+  RESOURCES[id] = { name, icon, value: Math.round(cost * 1.2 / 10) * 10, food, tale };
   RECIPES.push({ out: id, job: 'boulanger', lvl, ing });
 }
 defFood('pain_ble', 1, 'Pain de Blé', '🍞', { speed: 100 }, 10, { ble: 100 }, 'Le classique du matin. Croustillant, et ça file comme le vent.');
