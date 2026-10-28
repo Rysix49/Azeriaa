@@ -1555,8 +1555,9 @@ label.btn { cursor: pointer; }
 .unit.mon.archi.dead .sprite { filter: grayscale(1); }
 @media (prefers-reduced-motion: reduce) { .archi-btn { animation: none; } }
 
-.archibar { display: flex; justify-content: flex-end; padding: 8px 16px 0; }
-.archibar[hidden] { display: none; }
+.archi-btn.in-scene { position: absolute; top: 8px; right: 8px; z-index: 6; padding: 5px 10px; gap: 6px; }
+.archi-btn.in-scene[hidden] { display: none; }
+.archi-btn.in-scene b { font-size: 12px; }
 .archi-btn small { color: #ffd24a; font-size: 11.5px; font-weight: 800; }
 @media (max-width: 560px) { .archi-btn small { display: none; } }
 

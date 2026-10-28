@@ -176,7 +176,6 @@ function shell() {
       <div class="tb-title" id="tbtitle"></div>
       <div class="wallet" id="wallet"></div>
     </header>
-    <div class="archibar" id="archibar" hidden></div>
     <main id="main"></main>
     <footer class="foot">Jeu de fan non officiel et gratuit, inspiré de l'univers de Dofus. Dofus et tous les noms associés appartiennent à Ankama Games. Aucune image du jeu original n'est utilisée.</footer>
   </div>
@@ -203,9 +202,6 @@ function updateChrome() {
     ${acc.token ? `<button class="wchip acc-chip hide-sm" data-act="goaccount" title="Compte connecté">${avatarHtml(acc.name, acc.avatarAt, 'sm')}<b>${esc(acc.name)}</b></button>` : ''}
     <span class="wchip hide-sm" title="Monstres vaincus"><small>Vaincus</small><b class="num">${fmt(st.stats.totalKills)}</b></span>`;
   if (w !== ui._wallet) { $('#wallet').innerHTML = w; ui._wallet = w; }
-  const ar = st.archi && MONSTERS[st.archi.mid], arq = !!(ar && st.heroes.some(x => x.nextArchi || (x.fight && x.fight.archi))), arf = !!(ar && st.heroes.some(x => x.fight && x.fight.archi)), ab = $('#archibar');
-  const ah = ar ? `<button class="wchip archi-btn${arq ? ' queued' : ''}" data-act="archifight" title="${esc(ar.name)}"><span class="ab-ic">👹</span><b>${arf ? 'Combat contre l’archimonstre…' : arq ? 'Archimonstre au prochain combat…' : 'Combattre l’archimonstre'}</b><small>${esc(ar.name)}</small></button>` : '';
-  if (ab && ah !== ui._arch) { ab.innerHTML = ah; ab.hidden = !ah; ui._arch = ah; }
   renderParty();
 }
 function renderParty() {
@@ -306,6 +302,7 @@ function fightCard(h) {
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
           <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
         ${stage}
+        ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
       <div class="fc-log" data-k="log">${logHtml(h)}</div>
     </div>
@@ -552,6 +549,25 @@ function iceBurst(el) {
   }
   el.classList.remove('freeze-pop'); void el.offsetWidth; el.classList.add('freeze-pop');
 }
+/* Bouton « Combattre l'archimonstre » : dans la scène du héros qui se trouve dans la zone, en haut à droite */
+function updateArchiBtn() {
+  const btns = document.querySelectorAll('[data-k="archibtn"]'); if (!btns.length) return;
+  const a = st.archi, ar = a && MONSTERS[a.mid];
+  let tgt = null, state = 0;
+  if (ar) {
+    tgt = st.heroes.find(x => x.fight && x.fight.archi); if (tgt) state = 2;
+    if (!tgt) { tgt = st.heroes.find(x => x.nextArchi); if (tgt) state = 1; }
+    if (!tgt) { const inZone = x => x.act && x.act.type === 'zone' && x.act.id === a.zone; tgt = [heroById(a.hero), ...st.heroes].find(x => x && inZone(x)) || st.heroes.find(x => !(x.act && x.act.type === 'harvest')); }
+  }
+  for (const btn of btns) {
+    const card = btn.closest('[data-hero-card]'), mine = !!(tgt && card && card.dataset.heroCard === String(tgt.id));
+    const sg = mine ? state + ':' + a.mid : '';
+    if (btn.dataset.s === sg) continue;
+    btn.dataset.s = sg; btn.hidden = !mine; btn.classList.toggle('queued', state > 0);
+    btn.innerHTML = mine ? `<span class="ab-ic">👹</span><b>${state === 2 ? 'Combat contre l’archimonstre…' : state === 1 ? 'Archimonstre au prochain combat…' : 'Combattre l’archimonstre'}</b><small>${esc(ar.name)}</small>` : '';
+    btn.title = mine ? ar.name : '';
+  }
+}
 function patchCombat() {
   for (const h of st.heroes) {
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) continue;
@@ -651,6 +667,7 @@ function patchCombat() {
       setBar(q('jxb'), job.xp, jobXpToNext(job.lvl));
     }
   }
+  updateArchiBtn();
 }
 
 /* ---------------------------- Recrutement ---------------------------- */
@@ -1083,7 +1100,7 @@ function renderMain(force) {
   try { window.scrollTo(0, sy); } catch (e) {}
   requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
-  if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); }
+  if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); updateArchiBtn(); }
 }
 let lastSlow = 0;
 function render(force) {
