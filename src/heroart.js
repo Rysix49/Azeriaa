@@ -413,6 +413,9 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
     <radialGradient id="ecEye" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#f4ffd0"/><stop offset=".5" stop-color="#8dff5a"/><stop offset="1" stop-color="#2f9a22"/></radialGradient>
     <linearGradient id="ecBoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a4a28"/><stop offset="1" stop-color="#32180a"/></linearGradient>
     <linearGradient id="ecClaw" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8a95a8"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+    <linearGradient id="ecLining" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0523f"/><stop offset="1" stop-color="#7a1810"/></linearGradient>
+    <linearGradient id="ecFeather" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#ff5a6a"/><stop offset=".5" stop-color="#ffb02e"/><stop offset="1" stop-color="#fff2a0"/></linearGradient>
+    <radialGradient id="ecRuff" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#f6e6c8"/><stop offset="1" stop-color="#d8b886"/></radialGradient>
     <radialGradient id="ecShield" cx="50%" cy="50%" r="50%"><stop offset=".6" stop-color="#6fa8ff" stop-opacity="0"/><stop offset=".9" stop-color="#8fd0ff" stop-opacity=".55"/><stop offset="1" stop-color="#bfe6ff" stop-opacity=".8"/></radialGradient>
     <radialGradient id="ecLuck" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#ffe27a" stop-opacity=".85"/><stop offset=".5" stop-color="#2fe0b8" stop-opacity=".45"/><stop offset="1" stop-color="#2fe0b8" stop-opacity="0"/></radialGradient>
   </defs>
@@ -424,13 +427,13 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
   <g class="p-tail" stroke="#3a1c06" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
     <path d="M50 98 Q18 104 12 76 Q8 54 26 46 Q22 62 30 76 Q38 90 52 88Z" fill="url(#ecFur)"/>
     <path d="M14 66 Q20 66 24 70 M12 76 Q19 77 25 80 M20 88 Q26 86 31 88 M24 52 Q27 56 25 60" fill="none" stroke="#7a3e0c" stroke-width="2.6"/>
-    <path d="M26 46 Q30 42 34 46 Q30 50 26 46Z" fill="#fffaf0" stroke-width="1.6"/>
+    <path d="M26 47 Q18 36 28 34 Q38 36 34 48 Q30 52 26 47Z" fill="url(#ecRuff)" stroke-width="1.8"/><path d="M22 40 L19 36 M30 36 L30 31 M35 41 L39 38" stroke="#3a1c06" stroke-width="1.4" fill="none"/>
   </g>
 
   <!-- basques de l'habit -->
   <g class="p-coat" stroke="#04201c" stroke-width="2" stroke-linejoin="round">
-    <path d="M44 90 L36 112 L48 106 L56 116 L62 96Z" fill="url(#ecCoatD)"/>
-    <path d="M82 90 L92 112 L78 106 L70 116 L64 96Z" fill="url(#ecCoatD)"/>
+    <path d="M44 90 L36 112 L48 106 L56 116 L62 96Z" fill="url(#ecCoatD)"/><path d="M45 94 L40 108 L48 103 L54 110 L58 98Z" fill="url(#ecLining)" stroke="none"/>
+    <path d="M82 90 L92 112 L78 106 L70 116 L64 96Z" fill="url(#ecCoatD)"/><path d="M81 94 L88 108 L79 103 L72 110 L68 98Z" fill="url(#ecLining)" stroke="none"/>
     <path d="M38 108 L48 104 M90 108 L78 104" stroke="#ffd24a" stroke-width="1.8" fill="none"/>
   </g>
 
@@ -440,7 +443,7 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
     <path d="M49 103 h15 v7 q7 1 7 5 q0 4.4 -6 4.4 h-19 q-4 0 -4 -4 q0 -4 7 -5Z" fill="url(#ecBoot)"/>
     <path d="M67 103 h15 v7 q7 1 7 5 q0 4.4 -6 4.4 h-19 q-4 0 -4 -4 q0 -4 7 -5Z" fill="url(#ecBoot)"/>
     <path d="M49 105 h15 M67 105 h15" stroke="#ffd24a" stroke-width="2.4" fill="none"/>
-    <path d="M70 117 l2 2.2 M74 117 l2 2.2 M78 117 l2 2.2 M52 117 l2 2.2 M56 117 l2 2.2 M60 117 l2 2.2" stroke="#fffaf0" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <path d="M48 102 Q56 98 64 102 L64 106 Q56 103 48 106Z M66 102 Q74 98 82 102 L82 106 Q74 103 66 106Z" fill="url(#ecRuff)" stroke="#3a1c06" stroke-width="1.6" stroke-linejoin="round"/><path d="M70 117 l2 2.2 M74 117 l2 2.2 M78 117 l2 2.2 M52 117 l2 2.2 M56 117 l2 2.2 M60 117 l2 2.2" stroke="#fffaf0" stroke-width="1.5" stroke-linecap="round" fill="none"/>
   </g>
 
   <g class="p-torso">
@@ -464,11 +467,14 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
     <path d="M52 62 L60 90 M74 62 L64 90" stroke="#ffd24a" stroke-width="2.6" stroke-linecap="round" fill="none"/>
     <g fill="url(#ecGold)" stroke="#6a4208" stroke-width="1.2"><circle cx="62" cy="72" r="2"/><circle cx="62.6" cy="80" r="2"/></g>
     <path d="M54 59 Q58 66 62 62 Q66 68 70 62 Q74 66 76 59 Q66 56 54 59Z" fill="#fff" stroke="#04201c" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M48 62 L78 96" stroke="#04201c" stroke-width="6.6" stroke-linecap="round"/><path d="M48 62 L78 96" stroke="url(#ecBoot)" stroke-width="4.4" stroke-linecap="round"/>
+    <g fill="url(#ecGold)" stroke="#6a4208" stroke-width="1"><circle cx="53" cy="68" r="1.5"/><circle cx="60" cy="76" r="1.5"/><circle cx="72" cy="90" r="1.5"/></g>
     <path d="M41 93 Q62 100 85 93 L86 100 Q62 107 40 100Z" fill="url(#ecBoot)" stroke="#04201c" stroke-width="1.8" stroke-linejoin="round"/>
     <g class="p-die">
       <rect x="55.6" y="92.6" width="13" height="11" rx="2" fill="#fff" stroke="#04201c" stroke-width="1.6"/>
       <g fill="#c0301e"><circle cx="59" cy="96" r="1.3"/><circle cx="65.4" cy="96" r="1.3"/><circle cx="62.2" cy="98.2" r="1.3"/><circle cx="59" cy="100.6" r="1.3"/><circle cx="65.4" cy="100.6" r="1.3"/></g>
     </g>
+    <g class="p-cards"><rect x="72" y="90" width="11" height="13" rx="1.8" fill="url(#ecBoot)" stroke="#04201c" stroke-width="1.6"/><rect x="73.4" y="85.6" width="7" height="9.6" rx="1.2" fill="#fff" stroke="#04201c" stroke-width="1.1" transform="rotate(-10 77 91)"/><path d="M77 89.6 l1.6 2 -1.6 2 -1.6 -2Z" fill="#c0301e" transform="rotate(-10 77 91)"/><rect x="72" y="93" width="11" height="3.4" fill="url(#ecGold)" stroke="#04201c" stroke-width="1"/></g>
     <!-- bras avant : griffes dégainées -->
     <path d="M80 66 Q91 70 96 83" fill="none" stroke="#04201c" stroke-width="10.6" stroke-linecap="round"/>
     <path d="M80 66 Q91 70 96 83" fill="none" stroke="url(#ecCoat)" stroke-width="8" stroke-linecap="round"/>
@@ -490,18 +496,21 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
 
     <!-- tête de chat joueur -->
     <g class="p-face">
+      <path class="p-ruff" d="M42 57 Q37 63 41 70 L47 66 L52 74 L58 68 L64 75 L70 68 L76 74 L81 66 L88 70 Q92 63 87 56Z" fill="url(#ecRuff)" stroke="#3a1c06" stroke-width="1.9" stroke-linejoin="round"/>
       <g class="p-ears" stroke="#3a1c06" stroke-width="2" stroke-linejoin="round">
         <path class="p-ear" d="M47 36 Q42 18 49 8 Q60 12 68 24Z" fill="url(#ecFur)"/>
         <path class="p-ear2" d="M70 24 Q80 10 90 8 Q96 20 88 38Z" fill="url(#ecFur)"/>
         <path d="M50 30 Q48 20 52 14 Q58 17 62 24Z" fill="#ff9aa8" stroke="none"/>
         <path d="M76 24 Q82 16 87 14 Q90 22 86 31Z" fill="#ff9aa8" stroke="none"/>
+        <path d="M49 10 L46 3 L53 8 M89 10 L94 3 L90 11" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.6"/>
+        <circle cx="91" cy="22" r="3" fill="none" stroke="#ffd24a" stroke-width="1.8"/><circle cx="45" cy="26" r="2.4" fill="none" stroke="#ffd24a" stroke-width="1.6"/>
       </g>
       <path d="M42 46 Q40 28 62 26 Q86 26 88 46 Q90 60 76 63 Q64 66 53 63 Q40 60 42 46Z" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="2" stroke-linejoin="round"/>
       <path d="M58 28 L60 36 M66 27 L66 36 M74 28 L72 36" stroke="#7a3e0c" stroke-width="2.4" stroke-linecap="round"/>
       <path d="M42 50 L35 51 L41 55 L36 59 L44 58 M88 50 L95 51 L89 55 L94 59 L86 58" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.6" stroke-linejoin="round"/>
       <path d="M49 56 Q64 50 80 56 Q80 66 65 66 Q50 66 49 56Z" fill="url(#ecBelly)" stroke="#3a1c06" stroke-width="1.6" stroke-linejoin="round"/>
       <ellipse cx="64" cy="55" rx="3.6" ry="2.6" fill="#ff7a96" stroke="#3a1c06" stroke-width="1.3"/>
-      <path class="p-mouth" d="M55 59 Q60 66 64.6 58.6 Q69 66 75 59" fill="none" stroke="#3a1c06" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="p-mouth" d="M55 60 Q60 66 64.6 58.6 Q70 65 77 56" fill="none" stroke="#3a1c06" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M58.6 62 l1.6 3.4 l1.6 -3.2Z M68.6 62 l1.6 3.4 l1.6 -3.2Z" fill="#fff" stroke="#3a1c06" stroke-width=".9"/>
       <g class="p-whisk" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-opacity=".95"><path d="M52 57 L36 53 M52 59.4 L35 60.6 M52 61.6 L38 67 M77 57 L94 52 M77 59.4 L96 60 M77 61.6 L92 67"/></g>
       <g class="p-eye">
@@ -510,14 +519,18 @@ ecaflip: `<svg class="hs hs-ecaflip" viewBox="0 0 128 128" aria-hidden="true">
         <ellipse cx="58.4" cy="45.6" rx="4" ry="4.8" fill="url(#ecEye)"/><ellipse cx="76.4" cy="45.6" rx="4" ry="4.8" fill="url(#ecEye)"/>
         <ellipse cx="58.8" cy="45.6" rx="1.3" ry="4.4" fill="#10240a"/><ellipse cx="76.8" cy="45.6" rx="1.3" ry="4.4" fill="#10240a"/>
         <circle cx="60" cy="43.6" r="1.1" fill="#fff"/><circle cx="78" cy="43.6" r="1.1" fill="#fff"/>
+        <path d="M51 43.6 Q57 38.6 65 42.8 L64.6 44.6 Q57 41.4 51.8 45.6Z" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.5" stroke-linejoin="round"/><path d="M70 42.8 Q78 38.6 84 43.6 L83.2 45.6 Q78 41.4 70.4 44.6Z" fill="url(#ecFur)" stroke="#3a1c06" stroke-width="1.5" stroke-linejoin="round"/>
       </g>
+      <path d="M52 33 L56 52" stroke="#fff3e8" stroke-width="2.6" stroke-linecap="round" opacity=".95"/><path d="M52 33 L56 52" stroke="#c0505a" stroke-width="1" stroke-linecap="round"/>
       <g class="p-brow" fill="none" stroke="#7a3e0c" stroke-width="3" stroke-linecap="round"><path d="M50 38.6 Q57 35 65 41"/><path d="M71 41 Q78 35 85 38.6"/></g>
-      <!-- petit haut-de-forme porte-bonheur -->
-      <g class="p-hat" stroke="#04201c" stroke-width="1.8" stroke-linejoin="round" transform="rotate(8 66 22)">
-        <path d="M56 24 L58 6 Q66 2 74 6 L76 24Z" fill="url(#ecHat)"/>
-        <path d="M54 25 Q66 30 78 25 L77 22 Q66 26 55 22Z" fill="url(#ecHat)"/>
-        <path d="M57 19.6 Q66 23 75.6 19.6 L75.2 15.6 Q66 19 57.4 15.6Z" fill="url(#ecCoat)"/>
-        <g transform="translate(66 17.6) scale(.7)" fill="#5aff8c" stroke="#1a6a36" stroke-width="1"><circle cx="-2.3" cy="0" r="2.5"/><circle cx="2.3" cy="0" r="2.5"/><circle cx="0" cy="-2.3" r="2.5"/><circle cx="0" cy="2.3" r="2.5"/></g>
+      <!-- chapeau de flambeur : feutre incliné, plume, as de trèfle -->
+      <g class="p-hat" stroke="#04201c" stroke-width="1.8" stroke-linejoin="round" transform="rotate(12 66 22)">
+        <path class="p-feather" d="M72 14 Q88 -4 106 4 Q96 6 92 12 Q102 14 104 24 Q90 16 78 22Z" fill="url(#ecFeather)" stroke-width="1.5"/>
+        <path d="M57 22 Q57 8 66 7 Q75 8 76 22Z" fill="url(#ecHat)"/>
+        <path d="M49 25 Q66 17 84 23 Q66 31 49 25Z" fill="url(#ecHat)"/>
+        <path d="M57 21 Q66 25 76 20.6 L76 17 Q66 21 57 17.6Z" fill="url(#ecLining)"/>
+        <rect x="67" y="9.6" width="7" height="9.6" rx="1.3" fill="#fff" stroke-width="1.1" transform="rotate(8 70 14)"/><path d="M70.6 12.6 l1.6 2 -1.6 2 -1.6 -2Z" fill="#1a1a1a" transform="rotate(8 70 14)"/>
+        <path d="M51 24 Q66 18 82 22" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1.3" stroke-linecap="round"/>
       </g>
     </g>
     <!-- trèfles de chance (un par Trèfle) -->
