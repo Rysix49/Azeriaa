@@ -176,7 +176,7 @@ function startFight(st, h, ev) {
   };
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
-  if (h.cls === 'zobal') { h.mask = h.mask || 'rire'; h.fight.ferv = 1; }
+  if (h.cls === 'zobal') { h.mask = h.mask || 'rire'; h.ferv = Math.max(1, h.ferv || 1); }
   const names = group.map(m => MONSTERS[m].name);
   if (group.length === 1 && MONSTERS[group[0]].archi) { h.fight.archi = true; ev.log(h, `👹 ARCHIMONSTRE ! ${h.name} affronte ${names[0]}.`, 'boss'); }
   else ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
@@ -201,13 +201,13 @@ function spellPower(h, t, f, sp) {
 function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0) + (h.cls === 'zobal' && f && (f.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT : 0);
+  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0) + (h.cls === 'zobal' && f && (h.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
   if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
   if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
   if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + SAC_STIG_DMG * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
-  if (h.cls === 'zobal' && f && zobMask(h) === 'rire' && sp.type !== 'heal') v *= 1 + (ZOB_RIRE_DMG + ZOB_FERV_STEP * (f.ferv || 1)) / 100; // Masque Rieur
+  if (h.cls === 'zobal' && f && zobMask(h) === 'rire' && sp.type !== 'heal') v *= 1 + (ZOB_RIRE_DMG + ZOB_FERV_STEP * (h.ferv || 1)) / 100; // Masque Rieur
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }
@@ -272,7 +272,7 @@ function heroTurn(st, h, t, ev) {
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
     }
-    if (h.cls === 'zobal' && zobMask(h) === 'farce' && (best.type === 'dmg' || best.type === 'aoe') && Math.random() * 100 < ZOB_FARCE_CHANCE + ZOB_FERV_STEP * (f.ferv || 1)) { // Masque Farceur : le sort est lancé deux fois
+    if (h.cls === 'zobal' && zobMask(h) === 'farce' && (best.type === 'dmg' || best.type === 'aoe') && Math.random() * 100 < ZOB_FARCE_CHANCE + ZOB_FERV_STEP * (h.ferv || 1)) { // Masque Farceur : le sort est lancé deux fois
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) { f.farceSeq = (f.farceSeq || 0) + 1; actions.push('🤪×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2)); }
     }
@@ -294,7 +294,7 @@ function heroTurn(st, h, t, ev) {
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
   if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
-  if (h.cls === 'zobal') f.ferv = Math.min(ZOB_FERV_MAX, (f.ferv || 1) + 1); // Ferveur : +1 par tour passé avec le même masque
+  if (h.cls === 'zobal' && (h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = Math.min(ZOB_FERV_MAX, (h.ferv || 1) + ZOB_FERV_GAIN); if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } // Ferveur : +2 par tour passé avec le même masque ; pleine, elle tient 20 s
   if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
     const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
     if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
@@ -378,7 +378,7 @@ function monsterTurn(st, h, t, m, ev) {
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
-  if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (f.ferv || 1)) / 100))); // Masque Pleureur
+  if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100))); // Masque Pleureur
   if (h.cls === 'ecaflip') {
     if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
     if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
@@ -447,16 +447,17 @@ const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : 
 const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR = 0.4, SAC_REFLECT = 0.3, SAC_THIRST = 0.08, SAC_MARTYR_HP = 0.12, SAC_MARTYR_BLAST = 0.2;
 
 /* ---------------------- Zobal : masques, Ferveur et Rupture ----------------------
-   h.mask : 'rire' | 'larme' | 'farce' (persiste). f.ferv : Ferveur du combat (1..5), +4 % d'effet par point.
+   h.mask : 'rire' | 'larme' | 'farce' (persiste). h.ferv : Ferveur (1..10, persiste entre les combats), +4 % d'effet par point.
    Changer de masque en combat (setMask) programme une Rupture : au prochain tour, la Ferveur explose sur tous les ennemis. */
-const ZOB_FERV_MAX = 5, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.6, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 7;
+const ZOB_FERV_MAX = 10, ZOB_FERV_GAIN = 2, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
 const ZOB_MASKS = { rire: { name: 'Masque Rieur', icon: '😆' }, larme: { name: 'Masque Pleureur', icon: '😢' }, farce: { name: 'Masque Farceur', icon: '🤪' } };
 const ZOB_RUPTURE_SPELL = { id: 'rupture', name: 'Rupture', min: 1, max: 1, type: 'aoe' };
 function zobMask(h) { return ZOB_MASKS[h.mask] ? h.mask : 'rire'; }
 function setMask(h, m) {
   if (h.cls !== 'zobal' || !ZOB_MASKS[m] || zobMask(h) === m) return false;
-  const f = h.fight;
-  if (f && f.mons.some(x => x.hp > 0)) { f.rupt = (f.rupt || 0) + (f.ferv || 1); f.ferv = Math.max(1, Math.floor((f.ferv || 1) / 2)); f.maskSeq = (f.maskSeq || 0) + 1; }
+  const f = h.fight, n = h.ferv || 1;
+  if (f && f.mons.some(x => x.hp > 0)) { f.rupt = (f.rupt || 0) + n; f.maskSeq = (f.maskSeq || 0) + 1; }
+  h.ferv = Math.max(1, Math.floor(n / 2)); h.fervT = 0; // la moitié de la Ferveur passe au nouveau masque
   h.mask = m;
   return true;
 }
@@ -469,7 +470,7 @@ function zobTurnStart(h, t, f, ev) {
     for (const m of f.mons) if (m.hp > 0) { const v = Math.max(1, Math.round(ZOB_RUPTURE * n * scale * (1 - monsterStats(m.mid).res / 100))); m.hp = Math.max(0, m.hp - v); parts.push(v); }
     pre += `💥 RUPTURE (Ferveur ${n}) ${parts.join('/')} · `;
   }
-  if (zobMask(h) === 'larme' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * (ZOB_LARME_HEAL * (f.ferv || 1)) / 100))); h.hp += r; pre += `😢 Larmes +${r} PV · `; }
+  if (zobMask(h) === 'larme' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * (ZOB_LARME_HEAL * (h.ferv || 1)) / 100))); h.hp += r; pre += `😢 Larmes +${r} PV · `; }
   return pre;
 }
 
@@ -794,6 +795,7 @@ function doHarvest(st, h, ev) {
 function stepMs(st, h) { const sp = heroTotals(st, h).speed || 0; return STEP_MS / (1 + sp / 100); }
 
 function tickHero(st, h, dt, ev, maxActions = 200000) {
+  if (h.cls === 'zobal' && h.fervT > 0) { h.fervT -= dt; if (h.fervT <= 0) { h.fervT = 0; h.ferv = 1; } } // Ferveur pleine : elle retombe après 20 s
   if (h.food) { h.food.left -= dt; if (h.food.left <= 0) { h.food = null; ev.foodEnd && ev.foodEnd(h); } }
   if (!h.act) { h.hp = heroTotals(st, h).maxHp; return; }
   if (h.act.type === 'harvest') {
