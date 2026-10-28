@@ -1438,6 +1438,8 @@ bworkette: `<svg class="ms ms-bworkette" viewBox="0 0 128 128" aria-hidden="true
 </svg>`,
 
 };
+/* Les archimonstres reprennent le dessin de leur modèle (agrandi et nimbé d'or en CSS) */
+for (const [mid, m] of Object.entries(MONSTERS)) if (m.archi && MON_ART[m.base]) MON_ART[mid] = MON_ART[m.base];
 /* Sprite à afficher : dessin s'il existe, sinon emoji */
 function monSprite(mid, fallback) {
   const art = MON_ART[mid];

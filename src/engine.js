@@ -27,7 +27,8 @@ function monsterStats(mid) {
   const avg = (2.5 + l * 0.8 + l * l * 0.003) * (m.dm || 1);
   const xp = Math.round((10 + l * 6 + l * l * 1.9) * (m.hpm || 1) * (m.boss ? 1.5 : 1));
   const kamas = [Math.round(l * 1.5 + 2), Math.round(l * 3 + 6)].map(k => m.boss ? k * 8 : k);
-  return (_monCache[mid] = { hp, dmin: Math.max(1, Math.round(avg * 0.8)), dmax: Math.round(avg * 1.2), xp, kamas, res: m.res || 0 });
+  const mu = m.mult || 1, rw = m.archi ? ARCHI_REWARD : 1; // archimonstre : PV et dégâts ×2, XP et kamas ×6
+  return (_monCache[mid] = { hp: hp * mu, dmin: Math.max(1, Math.round(avg * 0.8 * mu)), dmax: Math.round(avg * 1.2 * mu), xp: xp * rw, kamas: kamas.map(k => k * rw), res: m.res || 0 });
 }
 
 /* ---------------------------- État ---------------------------- */
@@ -35,6 +36,7 @@ function newState() {
   return {
     v: SAVE_VERSION,
     kamas: 200,
+    archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
     gear: [],               // instances d'équipement : { uid, id, stats }
     jobs: Object.fromEntries([...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)].map(j => [j, { lvl: 1, xp: 0 }])),
@@ -110,11 +112,13 @@ function spellUnlocked(h, sp) { return h.lvl >= sp.lvl; }
 function findPlace(type, id) { return type === 'dungeon' ? DUNGEONS.find(d => d.id === id) : type === 'harvest' ? CROPS.find(c => c.id === id) : ZONES.find(z => z.id === id); }
 
 function setActivity(st, h, type, id, tier = 0) {
-  h.fight = null; h.resting = false; h.wait = 0; h.restTotal = 0;
+  h.fight = null; h.resting = false; h.wait = 0; h.restTotal = 0; h.nextArchi = null;
   h.hp = heroTotals(st, h).maxHp;
   h.act = type ? { type, id, room: 0, tier: type === 'zone' ? clamp(+tier || 0, 0, SUBZONES.length - 1) : 0 } : null;
   h.session = type ? { start: Date.now(), xp: 0, kamas: 0, kills: 0, runs: 0 } : null;
   h.log = [];
+  /* l'archimonstre s'enfuit quand plus aucun héros n'est dans sa zone */
+  if (st.archi && !st.heroes.some(x => x.act && x.act.type === 'zone' && x.act.id === st.archi.zone)) st.archi = null;
   if (type === 'harvest') h.wait = harvestMs(st, h);
 }
 
@@ -162,7 +166,9 @@ function startFight(st, h, ev) {
     }
     group = h.act.room < place.rooms.length ? place.rooms[h.act.room] : place.boss;
   } else {
-    group = pickGroup(place, h);
+    if (h.nextArchi && h.act.type === 'zone' && MONSTERS[h.nextArchi]) group = [h.nextArchi];
+    else group = pickGroup(place, h);
+    h.nextArchi = null;
   }
   h.fight = {
     mons: group.map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }),
@@ -171,7 +177,8 @@ function startFight(st, h, ev) {
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   const names = group.map(m => MONSTERS[m].name);
-  ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
+  if (group.length === 1 && MONSTERS[group[0]].archi) { h.fight.archi = true; ev.log(h, `👹 ARCHIMONSTRE ! ${h.name} affronte ${names[0]}.`, 'boss'); }
+  else ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
 }
 
@@ -251,6 +258,7 @@ function heroTurn(st, h, t, ev) {
     f.casts[best.id] = (f.casts[best.id] || 0) + 1;
     if (best.cd) f.cds[best.id] = best.cd + 1;
     const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
+    const pf0 = f.perfectSeq || 0;
     const line = castSpell(st, h, t, best, target, alive);
     actions.push(line);
     if (h.cls === 'ecaflip' && f.double && (best.type === 'dmg' || best.type === 'aoe')) { // Quitte ou Double gagné : le sort frappe deux fois
@@ -260,7 +268,7 @@ function heroTurn(st, h, t, ev) {
     enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
-    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
+    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts, pf: (f.perfectSeq || 0) > pf0 ? 1 : 0 }); // pf : ce tir est le Tir Parfait (la cinématique le joue à la place)
     if (f.fx.length > 16) f.fx.shift();
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
@@ -345,7 +353,7 @@ function monsterTurn(st, h, t, m, ev) {
     return;
   }
   if (h.cls === 'sram' && f.invis && Math.random() < 0.3) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
-  if (Math.random() * 100 < t.dodgePct) { ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
+  if (Math.random() * 100 < t.dodgePct) { f.dodgeSeq = (f.dodgeSeq || 0) + 1; ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
@@ -354,7 +362,7 @@ function monsterTurn(st, h, t, m, ev) {
   if (h.cls === 'ecaflip') {
     if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
     if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
-      f.lifeSeq = (f.lifeSeq || 0) + 1;
+      f.lifeSeq = (f.lifeSeq || 0) + 1; h.wait += ECA_LIFE_MS; // laisse la pirouette des Neuf Vies se jouer
       ev.log(h, line + `🐾 Neuf Vies ! ${h.name} retombe sur ses pattes : le coup de ${def.name} est évité.`, 'win');
       return;
     }
@@ -378,6 +386,7 @@ function monsterTurn(st, h, t, m, ev) {
    Chaque tour : pièce. Face = +40 % de dégâts ; Pile = −35 % de dégâts subis et +1 Trèfle
    (h.clover, gardés d'un combat à l'autre). À 6 Trèfles : Quitte ou Double. */
 const ECA_CLOVER_MAX = 6, ECA_FACE_DMG = 1.4, ECA_PILE_DEF = 0.65;
+const ECA_GAMBLE_MS = 900, ECA_LIFE_MS = 700; // pauses pour les animations de Quitte ou Double et de Neuf Vies
 function ecaToss(h, t, f, actions) {
   f.double = false;
   if ((h.clover || 0) >= ECA_CLOVER_MAX) {
@@ -397,6 +406,7 @@ function ecaToss(h, t, f, actions) {
    Un ennemi cache un trésor (f.treasure) que l'Enutrof vise en priorité.
    Chaque sort remplit la bourse (h.purse, gardée d'un combat à l'autre) :
    pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
+const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour voir l'animation du dernier coup
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
 const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
 const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
@@ -509,9 +519,10 @@ function fightStep(st, h, ev) {
   const f = h.fight, t = heroTotals(st, h);
   let jackpot = false;
   if (f.phase === 0) {
-    const jk0 = f.jackSeq || 0;
+    const jk0 = f.jackSeq || 0, gm0 = f.gambleSeq || 0;
     heroTurn(st, h, t, ev);
     jackpot = (f.jackSeq || 0) > jk0;
+    if ((f.gambleSeq || 0) > gm0) h.wait += ECA_GAMBLE_MS; // Quitte ou Double : on attend la fin du jeu de dés
     f.phase = 1;
   } else {
     // cherche le prochain monstre vivant à jouer
@@ -524,7 +535,9 @@ function fightStep(st, h, ev) {
   }
   if (f.mons.every(m => m.hp <= 0)) {
     // Un Jackpot vient d'achever le combat : on laisse la cinématique se jouer avant de conclure
-    if (jackpot) { h.wait += JACKPOT_ANIM_MS; return null; }
+    if (jackpot) { f.fin = true; h.wait += JACKPOT_ANIM_MS; return null; }
+    // Dernier coup (sort, poison, piège) : on laisse l'attaque et la chute des ennemis se jouer avant de conclure
+    if (!f.fin) { f.fin = true; h.wait += FINISH_ANIM_MS; return null; }
     return 'win';
   }
   if (h.hp <= 0) return 'lose';
@@ -567,12 +580,13 @@ function resolveWin(st, h, ev) {
     xp += ms.xp * pen;
     const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
     kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
-    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (chest && Math.random() < 0.35 ? 2 : 1);
-    for (const [rid, rc] of (RELIC_DROPS[m.mid] || [])) if (Math.random() < rc * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
+    const ab = def.archi ? 3 : 1; // archimonstre : ressources ×3 (et en double), équipement bien plus fréquent
+    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * ab * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (def.archi ? 2 : chest && Math.random() < 0.35 ? 2 : 1);
+    for (const [rid, rc] of (RELIC_DROPS[def.base || m.mid] || [])) if (Math.random() < rc * (def.archi ? 20 : 1) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(rid); st.gear.push(g); gearLoot.push(g);
     }
-    const gd = GEAR_DROPS[m.mid];
-    if (gd && Math.random() < (def.boss ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
+    const gd = GEAR_DROPS[def.base || m.mid];
+    if (gd && Math.random() < (def.boss || def.archi ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(gd[irnd(0, gd.length - 1)]); st.gear.push(g); gearLoot.push(g);
       st.stats.gearDropped = (st.stats.gearDropped || 0) + 1;
     }
@@ -592,6 +606,11 @@ function resolveWin(st, h, ev) {
   if (h.session) { h.session.xp += xp; h.session.kamas += kamas; h.session.kills += n; sessionEvent(h, xp, kamas, n); }
   const lootTxt = Object.entries(loot).map(([r, c]) => `${c}× ${RESOURCES[r].name}`).join(', ');
   ev.log(h, `Victoire ! +${fmt(xp)} XP, +${fmt(kamas)} K${lootTxt ? ' · ' + lootTxt : ''}`, 'win');
+  if (f.archi) { st.archi = null; st.stats.archis = (st.stats.archis || 0) + 1; ev.log(h, `🏆 ${MONSTERS[f.mons[0].mid].name} est vaincu !`, 'boss'); }
+  else if (h.act.type === 'zone' && !st.archi && ARCHIS[h.act.id] && Math.random() < ARCHI_RATE) { // 1 % : un archimonstre est repéré
+    st.archi = { zone: h.act.id, mid: ARCHIS[h.act.id], hero: h.id };
+    ev.log(h, `👹 Un archimonstre est repéré : ${MONSTERS[ARCHIS[h.act.id]].name} !`, 'boss'); ev.archiFound && ev.archiFound(h, ARCHIS[h.act.id]);
+  }
   for (const g of gearLoot) ev.log(h, `Objet trouvé : ${ITEMS[g.id].name}${g.stasis ? ' (STASIFIÉ)' : ''} !`, 'boss');
   ev.reward && ev.reward(h, xp, kamas, loot, gearLoot);
   gainXp(st, h, xp, ev);
@@ -614,7 +633,7 @@ function resolveWin(st, h, ev) {
 
 function resolveLose(st, h, ev) {
   st.stats.deaths++;
-  ev.log(h, `${h.name} est vaincu et doit se reposer.`, 'lose');
+  ev.log(h, `${h.name} est vaincu et doit se reposer.${h.fight && h.fight.archi ? ' L’archimonstre t’attend toujours.' : ''}`, 'lose');
   ev.defeat && ev.defeat(h);
   h.fight = null; h.hp = 0;
   if (h.act.type === 'dungeon') {
@@ -824,6 +843,40 @@ function equip(st, h, gearUid, wanted) {
 function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
 function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0 }; for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
+/* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
+function heroPower(st, h) {
+  const t = heroTotals(st, h);
+  const base = 10 * (1 + h.lvl * 0.045);
+  let off = (base * (1 + t.deg / 100) + t.dmg + (h.cls === 'eniripsa' ? t.soin * 0.6 : 0)) * (1 + t.critPct / 200) * (1 + (t.dmgPct || 0) / 100) * (t.pa / 6);
+  const def = t.maxHp / (1 - t.resPct / 100) / (1 - t.dodgePct / 100) * (1 + (t.regen || 0) / 20);
+  const util = 1 + t.pp / 100 * 0.12 + t.xpBonus / 100 * 0.08 + (t.kamas || 0) / 100 * 0.1;
+  return off * Math.sqrt(def) * util * (1 + (t.speed || 0) / 100 * 0.5);
+}
+/* Équipe pour chaque emplacement l'objet qui rend le héros le plus puissant (sans déséquiper les autres héros). Renvoie le nombre de changements. */
+function bestEquip(st, h) {
+  const before = { ...h.equip }; let changed = true, passes = 0;
+  const pool = st.gear.filter(g => { const d = ITEMS[g.id]; if (d.relic || d.harvest || h.lvl < d.lvl) return false; const by = equippedBy(st, g.uid); return !by || by.id === h.id; });
+  while (changed && passes++ < 5) {
+    changed = false;
+    for (const slot of SLOTS) {
+      const type = slot.startsWith('anneau') ? 'anneau' : slot;
+      const cur = h.equip[slot]; let best = cur, bestP = heroPower(st, h);
+      for (const g of pool) {
+        if (ITEMS[g.id].slot !== type || g.uid === cur) continue;
+        const other = Object.entries(h.equip).find(([s, u]) => u === g.uid && s !== slot);
+        if (other) continue; // déjà porté sur un autre emplacement
+        if (type === 'anneau') { const sib = slot === 'anneau1' ? 'anneau2' : 'anneau1'; const sg = h.equip[sib] && gearById(st, h.equip[sib]); if (sg && sg.id === g.id) continue; }
+        const keep = h.equip[slot]; h.equip[slot] = g.uid; const p = heroPower(st, h);
+        if (p > bestP * 1.0001) { bestP = p; best = g.uid; }
+        if (keep) h.equip[slot] = keep; else delete h.equip[slot];
+      }
+      if (best && best !== cur) { h.equip[slot] = best; changed = true; }
+    }
+  }
+  h.hp = Math.min(h.hp, heroTotals(st, h).maxHp);
+  if (!h.act) h.hp = heroTotals(st, h).maxHp;
+  return SLOTS.filter(s => before[s] !== h.equip[s]).length;
+}
 function unequipSlot(st, h, slot) { delete h.equip[slot]; h.hp = Math.min(h.hp, heroTotals(st, h).maxHp); }
 
 

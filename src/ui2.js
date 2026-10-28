@@ -76,6 +76,7 @@ const liveEv = {
   jobup(j, lv) { toast(`${GATHER_JOBS[j].name} passe niveau ${lv} !`, 'lvl'); },
   foodEnd(h) { toast(`L’effet du repas de ${h.name} est terminé.`, 'warn'); },
   stopped(h, why) { toast(`${h.name} s'arrête : ${why}.`, 'warn'); },
+  archiFound(h, mid) { toast(`👹 Archimonstre repéré : ${MONSTERS[mid].name} ! Bouton en haut à droite.`, 'quest'); },
   defeat() {},
 };
 function toast(text, cls = '') {
@@ -226,7 +227,19 @@ function renderParty() {
 }
 
 /* ---------------------------- Vue : Combats ---------------------------- */
-function combatSig() { return st.heroes.map(h => h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0)).join('|'); }
+function heroSig(h) { return h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0); }
+function combatSig() { return st.heroes.map(heroSig).join('|'); }
+/* Seules les cartes dont le contenu a changé sont redessinées : les ennemis morts de l'autre héros ne rejouent plus leur chute */
+function redrawCards() {
+  const cards = [...document.querySelectorAll('[data-hero-card]')];
+  if (cards.length !== st.heroes.length || !ui.lastHs) return false;
+  for (const h of st.heroes) {
+    const sg = heroSig(h); if (ui.lastHs[h.id] === sg) continue;
+    const old = document.querySelector(`[data-hero-card="${h.id}"]`); if (!old) return false;
+    const tmp = document.createElement('div'); tmp.innerHTML = fightCard(h); old.replaceWith(tmp.firstElementChild);
+  }
+  ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); ui.lastSig = combatSig(); return true;
+}
 function renderCombat() {
   if (!st.heroes.length) return renderRecruit(true);
   const more = st.heroes.length < RECRUIT_COST.length;
@@ -266,7 +279,7 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
@@ -282,13 +295,14 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
-        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
           <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
         ${stage}
+        ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
       <div class="fc-log" data-k="log">${logHtml(h)}</div>
     </div>
@@ -336,9 +350,21 @@ function cloverHtml(h) {
   const side = f && f.coin === 'face' ? '😼' : f && f.coin === 'pile' ? '🙀' : '🪙';
   return n >= ECA_CLOVER_MAX ? `${side} 🎲 QUITTE OU DOUBLE` : `${side} 🍀 ${Array.from({ length: ECA_CLOVER_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`;
 }
-function ecaText(card, text, cls) {
+/* Classe d'état temporaire sur le héros (animation de passif) */
+function ecaState(el, cls, ms) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); clearTimeout(el['_t' + cls]); el['_t' + cls] = setTimeout(() => el.classList.remove(cls), ms); }
+/* Neuf Vies : neuf petits esprits de chat s'élèvent autour du héros */
+function ecaSpirits(sp) {
+  if (!sp || !FX_OK()) return;
+  for (let i = 0; i < 9; i++) {
+    const s = document.createElement('span'); s.className = 'eca-spirit'; s.textContent = '🐱';
+    const a = (i / 9) * Math.PI * 2;
+    s.style.cssText = `--dx:${(Math.cos(a) * 46).toFixed(0)}px;--dy:${(Math.sin(a) * 30 - 46).toFixed(0)}px;animation-delay:${i * 70}ms`;
+    sp.appendChild(s); setTimeout(() => s.remove(), 1700);
+  }
+}
+function ecaText(card, text, cls, who = 'eca') {
   const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
-  const t = document.createElement('span'); t.className = 'fnum eca ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+  const t = document.createElement('span'); t.className = 'fnum ' + who + ' ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
 }
 function coinFlip(card, face) {
   if (!FX_OK()) { ecaText(card, face ? 'FACE !' : 'PILE !', face ? 'face' : 'pile'); return; }
@@ -399,28 +425,73 @@ function reticleHtml(h) {
     segs += `<path class="seg${i < n ? ' on' : ''}" d="M${p(a0)} A${r} ${r} 0 0 1 ${p(a1)}"/>`; }
   return `<svg class="reticle${n >= CRA_FOCUS_MAX ? ' ready' : ''}" data-k="ret" viewBox="0 0 64 64" aria-hidden="true">${segs}<path class="cross" d="M32 2v10M32 52v10M2 32h10M52 32h10"/><circle class="dot" cx="32" cy="32" r="2"/></svg>`;
 }
-function playPerfect(card, p) {
-  const scene = card.querySelector('.scene'); if (!scene) return;
+/* Tir Parfait : ~3,4 s. L'archère se penche en arrière, bande l'arc au maximum (il tremble), se redresse, vise, puis lâche au bout de 2,1 s ;
+   pendant ce temps le combat est figé (FURY_ANIM) et l'affichage des monstres retenu (PF_HOLD) jusqu'à l'impact de la flèche. */
+const PF_MS = 3400, PF_REL = 2100, PF_ARROW = 300, PF_HOLD = {};
+function playPerfect(card, p, onImpact) {
+  const scene = card.querySelector('.scene');
   const hero = card.querySelector('[data-k="fighter"] .sprite'), tgt = card.querySelector(`[data-mon="${p.t}"] .sprite`);
-  if (!hero || !tgt) return;
+  if (!scene || !hero || !tgt) { if (onImpact) onImpact(); return; }
   const a = relPos(hero, scene), b = relPos(tgt, scene);
+  if (hero.querySelector('.hs-cra')) { a.x += hero.offsetWidth * .39; a.y += hero.offsetHeight * .06; }
   const pi = p.pierce && card.querySelector(`[data-mon="${p.pierce.i}"] .sprite`); const c = pi ? relPos(pi, scene) : null;
   const end = c || { x: b.x + (b.x - a.x) * .6 + 40, y: b.y + (b.y - a.y) * .6 };
-  const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.hypot(b.x - a.x, b.y - a.y) / len;
+  const ang = Math.atan2(end.y - a.y, end.x - a.x) * 180 / Math.PI, len = Math.hypot(end.x - a.x, end.y - a.y), hit = Math.min(1, Math.hypot(b.x - a.x, b.y - a.y) / len);
+  const tHit = Math.round(PF_REL + PF_ARROW * hit);
+  const reduced = !FX_OK();
+  const num = (el, txt, cls, delay) => setTimeout(() => { if (!el || !el.parentElement) return; const n = document.createElement('span'); n.className = 'pf-num ' + cls; n.textContent = txt; el.parentElement.appendChild(n); setTimeout(() => n.remove(), 1500); }, delay);
+  if (reduced) { // mouvement réduit : pas de cinématique, juste les chiffres
+    setTimeout(() => { if (onImpact) onImpact(); }, 200);
+    num(tgt, '−' + fmt(p.v), 'main', 260); if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', 340);
+    return;
+  }
+  let motes = ''; // étincelles d'énergie aspirées par la flèche pendant que l'arc se bande
+  for (let i = 0; i < 28; i++) { const g = Math.random() * Math.PI * 2, r = 44 + Math.random() * 50; motes += `<i style="--dx:${(Math.cos(g) * r).toFixed(0)}px;--dy:${(Math.sin(g) * r).toFixed(0)}px;--d:${(620 + Math.random() * 1250).toFixed(0)}ms;--t:${(360 + Math.random() * 280).toFixed(0)}ms"></i>`; }
   const ov = document.createElement('div'); ov.className = 'perfect';
   ov.style.cssText = `--ax:${a.x}px;--ay:${a.y}px;--bx:${b.x}px;--by:${b.y}px;--ang:${ang}deg;--len:${len}px;--hit:${hit}`;
-  ov.innerHTML = `<div class="pf-dim"></div>
+  ov.innerHTML = `<div class="pf-dim"></div><div class="pf-vig"></div>
     <div class="pf-scope"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><circle cx="50" cy="50" r="30" class="in"/><path d="M50 0v38M50 62v38M0 50h38M62 50h38"/><path class="tick" d="M50 20v6M50 74v6M20 50h6M74 50h6"/></svg></div>
     <div class="pf-title">TIR PARFAIT</div>
-    <div class="pf-shot"><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>
-    <div class="pf-burst" style="left:var(--bx);top:var(--by)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`;
+    <div class="pf-charge"><b class="r r1"></b><b class="r r2"></b><b class="r r3"></b><b class="core"></b>${motes}</div>
+    <div class="pf-shot"><div class="pf-trail t2"></div><div class="pf-trail"></div><div class="pf-arrow"><svg viewBox="0 0 60 12"><path d="M0 6h46" stroke="#e8ffd0" stroke-width="2.4"/><path d="M44 1 L60 6 L44 11 L48 6 Z" fill="#f4ffe8" stroke="#2a4a14" stroke-width=".8"/><path d="M0 6 L-0 1 L8 6 L0 11 Z M4 6 L4 1 L12 6 L4 11 Z" fill="#8fd45a"/></svg></div></div>
+    <div class="pf-wave"></div><div class="pf-wave w2"></div>
+    <div class="pf-burst" style="left:var(--bx);top:var(--by)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b class="ring"></b></div>
+    <div class="pf-flash"></div><div class="pf-flash hit"></div>`;
   scene.appendChild(ov);
+  const ox = a.x + (b.x - a.x) * .3, oy = a.y + (b.y - a.y) * .3; // caméra : on zoome sur le contenu de la scène (pas sur la scène elle-même), autour d'un point proche de l'archère
+  const kids = [...scene.children]; kids.forEach(el => { el.style.transformOrigin = `${(ox - el.offsetLeft).toFixed(0)}px ${(oy - el.offsetTop).toFixed(0)}px`; });
+  scene.classList.add('pf-on', 'pf-cam'); // le monde se fige et la caméra s'approche
   requestAnimationFrame(() => ov.classList.add('go'));
-  const num = (el, txt, cls, delay) => setTimeout(() => { if (!el) return; const n = document.createElement('span'); n.className = 'pf-num ' + cls; n.textContent = txt; el.parentElement.appendChild(n); setTimeout(() => n.remove(), 1500); }, delay);
-  num(tgt, '−' + fmt(p.v), 'main', 760);
-  if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', 860);
-  setTimeout(() => { scene.classList.add('pf-kick'); setTimeout(() => scene.classList.remove('pf-kick'), 350); }, 740);
-  setTimeout(() => ov.remove(), 1900);
+  setTimeout(() => { // impact : la caméra se détend d'un coup, les monstres réagissent
+    scene.classList.remove('pf-cam', 'pf-on'); scene.classList.add('pf-kick');
+    if (onImpact) onImpact();
+  }, tHit);
+  num(tgt, '−' + fmt(p.v), 'main', tHit + 40);
+  if (pi) num(pi, '−' + fmt(p.pierce.v), 'pierce', tHit + 150);
+  setTimeout(() => scene.classList.remove('pf-kick'), tHit + 700);
+  setTimeout(() => { ov.remove(); scene.classList.remove('pf-on', 'pf-cam', 'pf-kick'); kids.forEach(el => { el.style.transformOrigin = ''; }); }, PF_MS + 100);
+}
+/* Déroulé d'un tour qui contient le Tir Parfait : les tirs d'avant se jouent normalement, puis la cinématique ; ceux d'après attendent la fin.
+   Tant qu'elle dure, plus personne n'agit dans le combat. */
+function startPerfect(h, card, scene, fresh) {
+  const p = h.fight.perfect, k = fresh.findIndex(c => c.pf);
+  const pre = (k >= 0 ? fresh.slice(0, k) : []).slice(-3), post = (k >= 0 ? fresh.slice(k + 1) : fresh).slice(-3);
+  const quick = !FX_OK();
+  let t = 0, end = 0;
+  pre.forEach(c => { const st = Math.max(t, end); setTimeout(() => playSpellFx(card, c), st); end = st + (CRA_SHOT[c.id] || CRA_SHOT.fleche_magique)[2]; t = st + 280; });
+  const T0 = pre.length ? end + 120 : 80, dur = quick ? 600 : PF_MS;
+  PF_HOLD[h.id] = {}; card.querySelectorAll('.unit.mon').forEach(el => { PF_HOLD[h.id][+el.dataset.mon] = +el.dataset.hp; }); // les PV affichés ne bougent qu'à l'impact
+  FURY_ANIM[h.id] = 1;
+  setTimeout(() => {
+    const fu = card.querySelector('[data-k="fighter"]'); if (fu && !quick) ecaState(fu, 'cra-perfect', PF_MS + 40);
+    playPerfect(card, p, () => {
+      delete PF_HOLD[h.id];
+      [p.t, p.pierce && p.pierce.i].forEach(i => { if (i == null) return; const el = card.querySelector(`[data-mon="${i}"]`), m = h.fight && h.fight.mons[i]; if (el && m) { el.dataset.hp = m.hp; el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 320); } }); // le chiffre est celui de la cinématique
+      patchCombat();
+    });
+  }, T0);
+  post.forEach((c, j) => setTimeout(() => playSpellFx(card, c), T0 + dur + 150 + j * 280));
+  setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T0 + dur + 250 + post.length * 280);
 }
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
 const FURY_ANIM = {};
@@ -445,7 +516,7 @@ const COLERE_SWORD = `<svg class="cl-sword-svg" viewBox="0 0 120 400" aria-hidde
     <path d="M60 72 L60 372" stroke="#8aa0b8" stroke-width="3"/><path d="M57 80 L57 340" stroke="#ffffffaa" stroke-width="1.5"/>
     <path d="M46 120 L52 112 M74 160 L68 152 M48 230 L54 222" stroke="#ff5a2a" stroke-width="2.5" opacity=".8"/>
   </g></svg>`;
-function relPos(el, scene) { const a = el.getBoundingClientRect(), b = scene.getBoundingClientRect(); return { x: a.left - b.left + a.width / 2, y: a.top - b.top + a.height / 2, w: b.width, h: b.height }; }
+function relPos(el, scene) { const a = el.getBoundingClientRect(), b = scene.getBoundingClientRect(), k = b.width && scene.offsetWidth ? scene.offsetWidth / b.width : 1; /* scène dézoomée : retour à ses pixels */ return { x: (a.left - b.left + a.width / 2) * k, y: (a.top - b.top + a.height / 2) * k, w: b.width * k, h: b.height * k }; }
 function playColere(card, h, done) {
   const scene = card.querySelector('.scene'); const hero = card.querySelector('[data-k="fighter"]');
   if (!scene || !hero) { done(); return; }
@@ -483,7 +554,7 @@ function playColere(card, h, done) {
     if (!svg || reduced) return;
     const gh = setInterval(() => {
       const r = sp.getBoundingClientRect(), b = scene.getBoundingClientRect(); const g = document.createElement('div'); g.className = 'cl-ghost';
-      g.style.cssText = `left:${r.left - b.left}px;top:${r.top - b.top}px;width:${r.width}px;height:${r.height}px`;
+      const k = b.width && scene.offsetWidth ? scene.offsetWidth / b.width : 1; g.style.cssText = `left:${(r.left - b.left) * k}px;top:${(r.top - b.top) * k}px;width:${r.width * k}px;height:${r.height * k}px`;
       const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 600);
     }, 70);
     setTimeout(() => clearInterval(gh), T.impact - T.leap + 120);
@@ -523,6 +594,25 @@ function iceBurst(el) {
   }
   el.classList.remove('freeze-pop'); void el.offsetWidth; el.classList.add('freeze-pop');
 }
+/* Bouton « Combattre l'archimonstre » : dans la scène du héros qui se trouve dans la zone, en haut à droite */
+function updateArchiBtn() {
+  const btns = document.querySelectorAll('[data-k="archibtn"]'); if (!btns.length) return;
+  const a = st.archi, ar = a && MONSTERS[a.mid];
+  let tgt = null, state = 0;
+  if (ar) {
+    tgt = st.heroes.find(x => x.fight && x.fight.archi); if (tgt) state = 2;
+    if (!tgt) { tgt = st.heroes.find(x => x.nextArchi); if (tgt) state = 1; }
+    if (!tgt) { const inZone = x => x.act && x.act.type === 'zone' && x.act.id === a.zone; tgt = [heroById(a.hero), ...st.heroes].find(x => x && inZone(x)); }
+  }
+  for (const btn of btns) {
+    const card = btn.closest('[data-hero-card]'), mine = !!(tgt && card && card.dataset.heroCard === String(tgt.id));
+    const sg = mine ? state + ':' + a.mid : '';
+    if (btn.dataset.s === sg) continue;
+    btn.dataset.s = sg; btn.hidden = !mine; btn.classList.toggle('queued', state > 0);
+    btn.innerHTML = mine ? `<span class="ab-ic">👹</span><b>${state === 2 ? 'Combat contre l’archimonstre…' : state === 1 ? 'Archimonstre au prochain combat…' : 'Combattre l’archimonstre'}</b><small>${esc(ar.name)}</small>` : '';
+    btn.title = mine ? ar.name : '';
+  }
+}
 function patchCombat() {
   for (const h of st.heroes) {
     const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) continue;
@@ -533,7 +623,12 @@ function patchCombat() {
     if (h.fight && scene) {
       const seen = +(scene.dataset.fx || 0);
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
-      if (fresh.length) { scene.dataset.fx = fresh[fresh.length - 1].n; fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), i * 280)); }
+      let lead = 0; // l'Ecaflip lance sa pièce (ou joue son Quitte ou Double) AVANT de frapper
+      if (h.cls === 'ecaflip') { const cf0 = h.fight.coinFx, gf0 = h.fight.gambleFx; if (gf0 && gf0.n > +(scene.dataset.gm || 0)) lead = 1300; else if (cf0 && cf0.n > +(scene.dataset.co || 0)) lead = 450; }
+      const pfNew = h.cls === 'cra' && h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0);
+      if (fresh.length) scene.dataset.fx = fresh[fresh.length - 1].n;
+      if (pfNew) { scene.dataset.pf = h.fight.perfect.n; startPerfect(h, card, scene, fresh); } // Tir Parfait : cinématique, combat figé
+      else if (fresh.length) fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280));
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
       if (h.cls === 'sram') {
@@ -543,15 +638,15 @@ function patchCombat() {
       }
       if (h.cls === 'ecaflip') {
         const cf = h.fight.coinFx; if (cf && cf.n > +(scene.dataset.co || 0)) { scene.dataset.co = cf.n; coinFlip(card, cf.face); }
-        const gf = h.fight.gambleFx; if (gf && gf.n > +(scene.dataset.gm || 0)) { scene.dataset.gm = gf.n; setTimeout(() => gambleFx(card, scene, gf.win), 200); }
-        const nv = h.fight.lifeSeq || 0; if (nv > +(scene.dataset.nv || 0)) { scene.dataset.nv = nv; ecaText(card, '🐾 NEUF VIES !', 'face'); coinBurst(card.querySelector('[data-k="fighter"]'), 8, '🐾'); }
+        const gf = h.fight.gambleFx; if (gf && gf.n > +(scene.dataset.gm || 0)) { scene.dataset.gm = gf.n; setTimeout(() => gambleFx(card, scene, gf.win), 200); ecaState(card.querySelector('[data-k="fighter"]'), gf.win ? 'ecg-win' : 'ecg-lose', 1500); }
+        const nv = h.fight.lifeSeq || 0; if (nv > +(scene.dataset.nv || 0)) { scene.dataset.nv = nv; ecaText(card, '🐾 NEUF VIES !', 'face'); coinBurst(card.querySelector('[data-k="fighter"]'), 8, '🐾'); ecaState(card.querySelector('[data-k="fighter"]'), 'ecg-life', 1700); ecaSpirits(card.querySelector('[data-k="fighter"] .sprite')); }
+        const dg = h.fight.dodgeSeq || 0; if (dg > +(scene.dataset.dg || 0)) { scene.dataset.dg = dg; ecaState(card.querySelector('[data-k="fighter"]'), 'eca-dodge', 520); ecaText(card, 'ESQUIVE !', 'pile'); }
       }
       if (h.cls === 'enutrof') {
         const ch = h.fight.chestSeq || 0; if (ch > +(scene.dataset.ch || 0)) { scene.dataset.ch = ch; goldFx(card, 'Coffre !', card.querySelector(`[data-mon="${h.fight.treasure}"] .sprite`), 12); }
         const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
         const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
       }
-      if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
       scene.dataset.rw = rw; scene.dataset.px = px;
@@ -565,24 +660,26 @@ function patchCombat() {
         else if (h.fight.turn > 1) floatNum(fg, '+' + fmt(hp - prev), 'heal');
       }
       fg.dataset.hp = hp;
-      fg.classList.toggle('dead', h.hp <= 0 && h.resting); fg.classList.toggle('active', !!h.fight);
+      const isDead = h.hp <= 0 && h.resting; fg.classList.toggle('dead', isDead); if (!isDead) fg.classList.remove('still'); fg.classList.toggle('active', !!h.fight); // 'still' : déjà à terre, on ne rejoue pas la chute quand la carte est redessinée
     }
     const hpt = q('hpt'); if (hpt) hpt.textContent = `${fmt(hp)} / ${fmt(t.maxHp)}`;
     setBar(q('hpb'), hp, t.maxHp);
     q('xpt').textContent = h.lvl >= MAX_LEVEL ? 'Max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))}`; setBar(q('xpb'), h.xp, xpToNext(h.lvl));
+    const held = PF_HOLD[h.id]; // Tir Parfait en cours : les monstres gardent leurs PV d'avant jusqu'à l'impact
     if (h.fight) h.fight.mons.forEach((m, i) => {
       const el = card.querySelector(`[data-mon="${i}"]`); if (!el) return;
+      const mhp = held && held[i] != null ? held[i] : m.hp;
       const prev = +el.dataset.hp;
-      if (!isNaN(prev) && m.hp < prev) floatNum(el, '−' + fmt(prev - m.hp), 'dmg');
-      el.dataset.hp = m.hp;
-      el.classList.toggle('dead', m.hp <= 0);
-      if (m.frozen && m.hp > 0 && !el.classList.contains('frozen')) iceBurst(el);
-      el.classList.toggle('frozen', !!m.frozen && m.hp > 0);
-      setBar(el, m.hp, m.max);
-      el.querySelector('[data-k="mhp"]').textContent = fmt(m.hp);
+      if (!isNaN(prev) && mhp < prev) floatNum(el, '−' + fmt(prev - mhp), 'dmg');
+      el.dataset.hp = mhp;
+      el.classList.toggle('dead', mhp <= 0); if (mhp > 0) el.classList.remove('still');
+      if (m.frozen && mhp > 0 && !el.classList.contains('frozen')) iceBurst(el);
+      el.classList.toggle('frozen', !!m.frozen && mhp > 0);
+      setBar(el, mhp, m.max);
+      el.querySelector('[data-k="mhp"]').textContent = fmt(mhp);
     });
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
-    if (lg && lg.dataset.lk !== lk) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
+    if (lg && lg.dataset.lk !== lk && !held) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
     if (h.cls === 'iop') { const sp = fg && fg.querySelector('.sprite'); if (sp) sp.style.setProperty('--rage', clamp(((h.fight && h.fight.rage) || 0) / 5 + (furyReady(h) ? .25 : 0), 0, 1).toFixed(2)); } // l'aura de flammes grandit avec la Rage
     if (h.cls === 'sram') {
@@ -590,12 +687,21 @@ function patchCombat() {
       const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="trap"]'); if (tr) tr.classList.toggle('armed', !!m && m.hp > 0 && h.fight.trap === i); });
     }
+    if (h.cls === 'ecaflip') { // l'allure du chat suit ses passifs : Face / Pile, Trèfles, Quitte ou Double
+      const sp = fg && fg.querySelector('.sprite'), fo = h.fight;
+      if (sp) sp.dataset.clv = Math.min(ECA_CLOVER_MAX, h.clover || 0);
+      if (fg) { fg.classList.toggle('eca-face', !!(fo && fo.coin === 'face')); fg.classList.toggle('eca-pile', !!(fo && fo.coin === 'pile')); fg.classList.toggle('eca-double', !!(fo && fo.double)); }
+    }
     if (h.cls === 'ecaflip') { const cl = q('clover'); if (cl) { const tx = cloverHtml(h); if (cl.innerHTML !== tx) cl.innerHTML = tx; cl.classList.toggle('full', (h.clover || 0) >= ECA_CLOVER_MAX); } }
     if (h.cls === 'enutrof') {
       const pu = q('purse'); if (pu) { const tx = purseHtml(h); if (pu.innerHTML !== tx) pu.innerHTML = tx; pu.classList.toggle('full', (h.purse || 0) >= ENU_PURSE_MAX); }
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="treasure"]'); if (tr) tr.classList.toggle('on', !!m && m.hp > 0 && h.fight.treasure === i); });
     }
     if (h.cls === 'cra') {
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), fv = clamp((h.focus || 0) / CRA_FOCUS_MAX, 0, 1).toFixed(2);
+      if (fsp && fsp.style.getPropertyValue('--focus') !== fv) fsp.style.setProperty('--focus', fv); // l'aura, la lentille et le faucon suivent la Concentration
+      if (fu) fu.classList.toggle('cra-ready', !!h.fight && (h.focus || 0) >= CRA_FOCUS_MAX && h.fight.mons.some(m => m.hp > 0)); // Concentration pleine : l'arc reste bandé
+      if (h.fight && scene) { const dg = h.fight.dodgeSeq || 0; if (dg > +(scene.dataset.dg || 0)) { ecaState(fu, 'cra-dodge', 540); ecaText(card, 'ESQUIVE !', '', 'cra'); } scene.dataset.dg = dg; }
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
         const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
@@ -614,6 +720,7 @@ function patchCombat() {
       setBar(q('jxb'), job.xp, jobXpToNext(job.lvl));
     }
   }
+  updateArchiBtn();
 }
 
 /* ---------------------------- Recrutement ---------------------------- */
@@ -743,7 +850,8 @@ function combatGear(h) {
         ${open ? `<div class="bg-more">${gs.slice(1).map(g => row(g, true)).join('')}</div>` : ''}</div>`;
     }).join('')}</div>` : `<div class="empty sm">Aucun objet de type ${SLOT_LABEL[ui.slot].toLowerCase()} dans le sac. <button class="btn sm" data-act="view" data-v="ateliers">Aller aux Ateliers</button></div>`;
   }
-  return `${doll}${detail}${sets ? `<div class="sets">${sets}</div>` : ''}
+  const bestBtn = `<div class="best-row"><button class="btn gold best-btn" data-act="bestequip" title="Équipe automatiquement, pour chaque emplacement, l'objet qui rend ${esc(h.name)} le plus puissant">⚡ Meilleur équipement</button></div>`;
+  return `${doll}${bestBtn}${detail}${sets ? `<div class="sets">${sets}</div>` : ''}
     <div class="list-h"><span class="label">${ui.slot ? `Sac · ${SLOT_LABEL[ui.slot]}` : 'Sac · choisis un type d’objet'}</span>
       ${ui.slot ? '<button class="btn sm ghost" data-act="pickslot" data-slot="">◂ Tous les types</button>' : '<span class="hint">▲ = un objet meilleur que celui porté</span>'}</div>
     ${body}`;
@@ -848,13 +956,13 @@ function placeDetail(p, type) {
   const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
   const tier = type === 'zone' ? ((ui.zoneTier || {})[p.id] || 0) : 0; const T = SUBZONES[tier];
   const best = st.heroes.reduce((m, h) => Math.max(m, heroTotals(st, h).ppTotal), 100);
-  const rows = mons.map(mid => {
-    const d = MONSTERS[mid]; const gd = GEAR_DROPS[mid] || []; const ms = monsterStats(mid);
-    const gr = gd.length ? (d.boss ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
+  const rows = (type === 'zone' && ARCHIS[p.id] ? [...mons, ARCHIS[p.id]] : mons).map(mid => {
+    const d = MONSTERS[mid]; const ar = !!d.archi, src = d.base || mid, ab = ar ? 3 : 1; const gd = GEAR_DROPS[src] || []; const ms = monsterStats(mid);
+    const gr = gd.length ? (d.boss || ar ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
     const key = p.id + ':' + mid; const mo = !!(ui.openMons || {})[key];
-    const rl = (RELIC_DROPS[mid] || []).map(([r, c]) => [r, c * T.drop]);
+    const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
     const detail = mo ? `<tr class="dr-detail"><td colspan="5"><div class="dr-items">
-      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c))}</b></div>`).join('')}
+      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
       ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
         <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
       ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
@@ -862,10 +970,10 @@ function placeDetail(p, type) {
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
         <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
     </div></td></tr>` : '';
-    return `<tr class="dr-row${mo ? ' open' : ''}" data-act="togglemon" data-k="${key}" tabindex="0" title="Voir les objets">
-      <td><div class="dr-mon"><span class="chev" aria-hidden="true">▸</span><span class="dr-ico" aria-hidden="true">${monIcon(mid)}</span><div><b>${d.name}</b> <span class="sub">${d.lvl}${d.boss ? ' · Boss' : ''}</span>
-        <div class="dr-meta">${fmt(ms.hp * T.hp)} PV · ${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)} dégâts</div></div></div></td>
-      <td><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c))}</b></span>`).join('')}</div></td>
+    return `<tr class="dr-row${mo ? ' open' : ''}${ar ? ' archi-row' : ''}" data-act="togglemon" data-k="${key}" tabindex="0" title="Voir les objets">
+      <td><div class="dr-mon"><span class="chev" aria-hidden="true">▸</span><span class="dr-ico" aria-hidden="true">${monIcon(mid)}</span><div><b>${ar ? '👑 ' : ''}${d.name}</b> <span class="sub">${d.lvl}${d.boss ? ' · Boss' : ''}${ar ? ' · Archimonstre' : ''}</span>
+        <div class="dr-meta">${fmt(ms.hp * T.hp)} PV · ${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)} dégâts</div>${ar ? `<div class="dr-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}</div></div></td>
+      <td><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></td>
       <td>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span></div>` : '<span class="dim">—</span>'}</td>
       <td>${gd.length ? `<span class="dr-stasis">${pct(STASIS_RATE * T.drop)}</span>` : '<span class="dim">—</span>'}</td>
       <td>${rl.length ? rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('') : '<span class="dim">—</span>'}</td>
@@ -942,7 +1050,7 @@ function resInspector(id) {
   const r = RESOURCES[id]; const n = st.res[id];
   const uses = RECIPES.filter(rc => rc.ing[id]).map(rc => { const o = RESOURCES[rc.out] || ITEMS[rc.out];
     return `<button class="use" data-act="gorecipe" data-job="${rc.job}" data-h="${ITEMS[rc.out] && ITEMS[rc.out].harvest ? 1 : 0}">${RESOURCES[rc.out] ? o.icon : itemIcon(rc.out)}<span>${o.name}</span><small>${JOBS[rc.job].name} ${rc.lvl} · ×${rc.ing[id]}</small></button>`; });
-  const from = Object.entries(MONSTERS).filter(([, m]) => m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
+  const from = Object.entries(MONSTERS).filter(([, m]) => !m.archi && m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
   const crop = CROPS.find(c => c.id === id);
   return `<div class="insp-head"><div class="tile lg res"><span class="t-emo">${r.icon}</span></div><div class="ih-t"><b class="display">${r.name}</b><small>${r.key ? 'Clef de donjon' : r.food ? 'Consommable' : r.crop ? 'Céréale' : r.rare ? 'Ressource rare' : 'Ressource'}</small><span class="qty num">×${fmt(n)}</span></div></div>
     <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Valeur du stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
@@ -1039,9 +1147,13 @@ function renderMain(force) {
   if (!force && !canRebuild()) return;
   // Les listes défilantes gardent leur position quand la vue est redessinée
   const keep = ['.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
-  $('#main').innerHTML = (RENDER[ui.view] || renderCombat)();
+  // La page garde sa hauteur et sa position pendant le redessin : sans ça, le défilement saute quand le contenu change de taille
+  const main = $('#main'), sy = window.scrollY, mh = main.offsetHeight; main.style.minHeight = mh + 'px';
+  main.innerHTML = (RENDER[ui.view] || renderCombat)();
+  try { window.scrollTo(0, sy); } catch (e) {}
+  requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
-  if (ui.view === 'combat') ui.lastSig = combatSig();
+  if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); updateArchiBtn(); }
 }
 let lastSlow = 0;
 function render(force) {
@@ -1049,7 +1161,7 @@ function render(force) {
   const now = Date.now();
   if (force) { renderMain(true); lastSlow = now; return; }
   if (ui.view === 'combat' && st.heroes.length) {
-    if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) renderMain(); else patchCombat();
+    if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) { if (!redrawCards()) renderMain(); patchCombat(); } else patchCombat();
   } else if (now - lastSlow > 1500 && ui.view !== 'options') {
     renderMain(); lastSlow = now;
   }
@@ -1071,8 +1183,16 @@ const ACTIONS = {
   stop(d) { const h = heroById(d.hero); setActivity(st, h, null); },
   cramark(d) {
     const h = heroById(d.hero); if (!h) return 'keep';
-    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); }
+    if (setPrey(h, +d.i)) { toast(`${h.name} traque ${MONSTERS[h.fight.mons[+d.i].mid].name} (Concentration remise à 0).`, 'info'); saveGame(); const cu = document.querySelector(`[data-hero-card="${h.id}"] [data-k="fighter"]`); ecaState(cu, 'cra-mark', 720); }
     patchCombat(); return 'keep';
+  },
+  archifight() {
+    const a = st.archi; if (!a) return;
+    if (st.heroes.some(x => x.nextArchi || (x.fight && x.fight.archi))) return;
+    const inZone = x => x.act && x.act.type === 'zone' && x.act.id === a.zone;
+    const h = [heroById(a.hero), ...st.heroes].find(x => x && inZone(x));
+    if (!h) { const z = findPlace('zone', a.zone); toast(`Envoie un héros dans ${z ? z.name : 'la zone de l’archimonstre'} pour le combattre.`, 'warn'); return; }
+    h.nextArchi = a.mid; toast(`${h.name} affrontera ${MONSTERS[a.mid].name} dès son prochain combat !`, 'quest'); saveGame();
   },
   iopfury(d) {
     const h = heroById(d.hero); if (!h || !furyReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
@@ -1092,6 +1212,7 @@ const ACTIONS = {
   resetstats() { resetStats(st, selHero()); selHero().auto = ''; },
   equip(d) { const err = equip(st, selHero(), d.uid, d.slot || null); if (err) toast(err, 'warn'); },
   equipon(d) { const h = heroById(d.hero); const err = equip(st, h, d.uid, null); if (err) toast(err, 'warn'); else toast(`${ITEMS[gearById(st, d.uid).id].name} équipé sur ${h.name}.`); },
+  bestequip() { const h = selHero(), n = bestEquip(st, h); toast(n ? `${n} pièce${n > 1 ? 's' : ''} d’équipement changée${n > 1 ? 's' : ''} sur ${h.name}.` : `${h.name} porte déjà le meilleur équipement disponible.`, n ? undefined : 'info'); saveGame(); },
   unequip(d) { unequipSlot(st, selHero(), d.slot); },
   unequipuid(d) { const by = equippedBy(st, d.uid); if (by) unequipUid(by, d.uid); },
   toggledetail() { ui.detailHidden = !ui.detailHidden; },

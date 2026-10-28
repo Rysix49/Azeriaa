@@ -67,7 +67,8 @@ const FX_OK = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: 
 function fxPos(scene, el) {
   if (!scene || !el) return null;
   const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect();
-  return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2 };
+  const k = s.width && scene.offsetWidth ? scene.offsetWidth / s.width : 1; // la scène est dézoomée (CSS zoom) : les rectangles écran sont ramenés à ses propres pixels
+  return { x: (r.left - s.left + r.width / 2) * k, y: (r.top - s.top + r.height / 2) * k };
 }
 function fxEl(scene, cls, x, y, html = '', style = '') {
   const e = document.createElement('div');
@@ -221,15 +222,61 @@ function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
   unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
   let variant = '';
-  if (k === 'atk' && unit.querySelector('.hs-iop')) { // le Iop varie ses coups : coup d'en haut, tourbillon, plongeon
-    const v = (unit._combo = ((unit._combo || 0) + 1) % 3); variant = ['atk-a', 'atk-b', 'atk-c'][v];
-    unit.classList.add(variant); iopFlourish(unit, v);
+  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : '') : '';
+  if (art) { // le Iop (coup d'en haut, tourbillon, plongeon) et le Sram (fente, pas d'ombre, rafale) varient leurs coups
+    const v = (unit._combo = ((unit._combo == null ? -1 : unit._combo) + 1 + (Math.random() < .5 ? 1 : 0)) % 3); /* jamais deux fois le même coup d'affilée */ variant = ['atk-a', 'atk-b', 'atk-c'][v];
+    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : ecaFlourish)(unit, v);
   }
   setTimeout(() => {
     unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
     const n = unit._gNext; unit._gNext = null;
     if (n) requestAnimationFrame(() => heroGesture(unit, n));
   }, k === 'atk' ? (variant ? 640 : 520) : 600);
+}
+
+/* Cra : un tir différent par sort (a magique, b empoisonnée, c explosive, d punitive, e pluie).
+   [classe, instant du lâcher en ms, durée en ms, élément]. Les tirs s'enchaînent sans se chevaucher ; la fonction rend le délai avant le lâcher
+   pour que la flèche de l'effet quitte l'arc au bon moment (-1 : pas de geste, le Tir Parfait occupe l'archère). */
+const CRA_SHOT = {
+  fleche_magique: ['atk-a', 162, 320, ''], fleche_empoisonnee: ['atk-b', 162, 320, 'poison'], fleche_explosive: ['atk-c', 156, 320, 'fire'],
+  fleche_punitive: ['atk-d', 471, 780, ''], pluie_fleches: ['atk-e', 426, 840, ''],
+};
+const CRA_CLS = ['atk', 'cheer', 'atk-a', 'atk-b', 'atk-c', 'atk-d', 'atk-e'];
+function craShoot(unit, id) {
+  if (unit.classList.contains('cra-perfect')) return -1;
+  const [cls, rel, dur, el] = CRA_SHOT[id] || CRA_SHOT.fleche_magique;
+  const now = performance.now(), start = Math.max(now, unit._cFree || 0);
+  if (start - now > 1600) return -1; // trop en retard : on laisse tomber le geste
+  unit._cFree = start + dur;
+  setTimeout(() => {
+    if (unit.classList.contains('cra-perfect')) return;
+    unit.classList.remove(...CRA_CLS); void unit.offsetWidth; unit.classList.add('atk', cls);
+    const tok = unit._cTok = (unit._cTok || 0) + 1;
+    setTimeout(() => { if (unit._cTok === tok) unit.classList.remove('atk', cls); }, dur);
+    craFlourish(unit, cls, el, rel);
+  }, start - now);
+  return start - now + rel;
+}
+/* Effets du Cra autour de son sprite : lueur d'encoche, poussière, anneau et traînées au lâcher, étincelles, feuilles soufflées, images fantômes */
+function craFlourish(unit, cls, el, rel) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-cra'); if (!sp || !svg) return;
+  const x = el ? ' ' + el : '', heavy = cls === 'atk-d' || cls === 'atk-e', rnd = (a, b) => a + Math.random() * (b - a);
+  const add = (c, style, ms) => { const e = document.createElement('i'); e.className = c; if (style) e.style.cssText = style; sp.appendChild(e); setTimeout(() => e.remove(), ms); return e; };
+  add('cr-charge' + x, `--t:${rel}ms`, rel + 80);
+  if (heavy) { add('cr-dust', `--d:0ms;--dx:-18px`, 700); add('cr-dust', `--d:120ms;--dx:-30px;left:30%`, 800); }
+  setTimeout(() => {
+    add('cr-ring' + x + (cls === 'atk-d' ? ' big' : ''), '', 700);
+    (heavy ? [-9, 0, 9] : [-5, 5]).forEach((o, i) => add('cr-streak' + x, `--y:${56 + o}%;--d:${i * 40}ms`, 520 + i * 40));
+    for (let i = 0, n = heavy ? 9 : 5; i < n; i++) add('cr-spark' + x, `--dx:${rnd(10, 44).toFixed(0)}px;--dy:${rnd(-22, 22).toFixed(0)}px;--s:${rnd(3, 5.5).toFixed(1)}px;--d:${rnd(0, 70).toFixed(0)}ms`, 800);
+    for (let i = 0, n = heavy ? 7 : 3; i < n; i++) add('cr-leaf', `--dx:${rnd(-52, -8).toFixed(0)}px;--dy:${rnd(-48, 6).toFixed(0)}px;--r:${rnd(-380, 380).toFixed(0)}deg;--t:${rnd(700, 1100).toFixed(0)}ms;--d:${rnd(0, 90).toFixed(0)}ms`, 1300);
+    if (cls === 'atk-d' || cls === 'atk-c') add('cr-wave' + x, '', 800);
+    if (heavy) for (let i = 1; i <= 2; i++) {
+      const g = document.createElement('div'); g.className = 'cr-ghost'; g.style.cssText = `--gx:${14 * i}px;--gd:${i * 45}ms`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+      sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 800 + i * 45);
+    }
+  }, rel);
 }
 
 /* Effets du Iop autour de son sprite : images fantômes, onde de choc au sol, braises */
@@ -246,6 +293,45 @@ function iopFlourish(unit, v) {
   if (v === 1) { setTimeout(wave, 230); setTimeout(wave, 430); }
   if (v === 2) setTimeout(() => wave(true), 470);
 }
+/* Effets du Sram : images fantômes violettes, fumée au pas d'ombre, éclats de poison, traits de lame */
+function sramFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-sram'); if (!svg) return;
+  if (v !== 1) for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'sr-ghost'; g.style.cssText = `--gx:${[18, 0, 14][v] * i}px;--gd:${i * 45}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 900 + i * 45);
+  }
+  if (v === 1) { smokePuff(sp, true); setTimeout(() => smokePuff(sp, true), 330); }
+  const line = (r, d) => { const l = document.createElement('i'); l.className = 'sr-slashline'; l.style.cssText = `--r:${r}deg;--d:${d}ms`; sp.appendChild(l); setTimeout(() => l.remove(), d + 500); };
+  if (v === 0) { line(-28, 250); line(30, 290); }
+  if (v === 1) { line(-18, 380); line(24, 420); }
+  if (v === 2) [0, 1, 2, 3, 4].forEach(i => line(-40 + i * 20, 140 + i * 90));
+  setTimeout(() => sramSparks(sp, v === 2 ? 14 : 9), v === 1 ? 380 : v === 2 ? 300 : 260);
+}
+function sramSparks(sp, n) {
+  for (let i = 0; i < n; i++) {
+    const e = document.createElement('i'); e.className = 'sr-spark';
+    const a = -Math.PI * (.05 + Math.random() * .9);
+    e.style.cssText = `--dx:${(Math.cos(a) * (22 + Math.random() * 40)).toFixed(0)}px;--dy:${(Math.sin(a) * (20 + Math.random() * 36)).toFixed(0)}px;--s:${(3 + Math.random() * 4).toFixed(1)}px;animation-delay:${(Math.random() * 90).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1000);
+  }
+}
+/* Effets de l'Ecaflip : images fantômes (dorées si Face, bleutées si Pile), éclairs de griffes, pièces et pattes */
+function ecaFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-ecaflip'); if (!svg) return;
+  const face = unit.classList.contains('eca-face'), col = face ? 'gold' : 'teal';
+  for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'ec-ghost ' + col; g.style.cssText = `--gx:${[18, 26, 10][v] * i}px;--gd:${i * 45}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 900 + i * 45);
+  }
+  const line = (r, d) => { const l = document.createElement('i'); l.className = 'ec-line ' + col; l.style.cssText = `--r:${r}deg;--d:${d}ms`; sp.appendChild(l); setTimeout(() => l.remove(), d + 500); };
+  if (v === 0) [0, 1, 2].forEach(i => line(-30 + i * 28, 120 + i * 110));  // triple griffe
+  if (v === 1) { line(-10, 330); line(20, 380); setTimeout(() => coinBurst(sp, 7, '🪙'), 300); } // pièce éclair
+  if (v === 2) { line(-45, 330); line(35, 360); setTimeout(() => coinBurst(sp, 6, '🐾'), 420); } // pirouette
+}
 function iopEmbers(sp, n) {
   for (let i = 0; i < n; i++) {
     const e = document.createElement('i'); e.className = 'ip-ember';
@@ -260,12 +346,22 @@ function playSpellFx(card, cast) {
   if (!FX_OK()) return;
   const scene = card.querySelector('.scene'); if (!scene) return;
   const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
-  if (heroUnit) heroGesture(heroUnit, ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]) ? 'cheer' : 'atk');
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
-  const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
-  const from = fxPos(scene, heroSprite); if (!from) return;
-  const tos = cast.t.map(i => fxPos(scene, card.querySelector(`[data-mon="${i}"] .sprite`))).filter(Boolean);
-  const kind = FX_KIND[fx[0]] || FX_KIND.proj;
-  if (!tos.length && !['buff', 'heal'].includes(fx[0])) return;
-  kind(scene, from, tos, fx, heroSprite);
+  const support = ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]);
+  let lead = 0, isCra = false;
+  if (heroUnit) {
+    if (!support && heroUnit.querySelector('.hs-cra')) { isCra = true; lead = Math.max(0, craShoot(heroUnit, cast.id)); } // l'archère bande son arc : la flèche part au lâcher
+    else heroGesture(heroUnit, support ? 'cheer' : 'atk');
+  }
+  const go = () => {
+    if (!scene.isConnected) return;
+    const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
+    const from = fxPos(scene, heroSprite); if (!from) return;
+    if (isCra) { from.x += heroSprite.offsetWidth * .39; from.y += heroSprite.offsetHeight * .06; } // la flèche part de la corde, pas du centre du sprite
+    const tos = cast.t.map(i => fxPos(scene, card.querySelector(`[data-mon="${i}"] .sprite`))).filter(Boolean);
+    const kind = FX_KIND[fx[0]] || FX_KIND.proj;
+    if (!tos.length && !support) return;
+    kind(scene, from, tos, fx, heroSprite);
+  };
+  if (lead > 0) setTimeout(go, lead); else go();
 }
