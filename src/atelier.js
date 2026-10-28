@@ -116,9 +116,9 @@ function atForgemage() {
   if (ui.fmSel && !gearById(st, ui.fmSel)) ui.fmSel = null;
   const sel = ui.fmSel && gearById(st, ui.fmSel);
   const list = bag.length ? bag.slice(0, 80).map(g => { const d = ITEMS[g.id], by = equippedBy(st, g.uid); return `<button class="fm-it${sel && sel.uid === g.uid ? ' on' : ''}" data-act="fmsel" data-uid="${g.uid}"><div class="tile ${qClass(g)}">${itemIcon(g.id)}</div><span class="fm-itn"><b>${esc(d.name)}</b><small>Niv. ${d.lvl}${by ? ' · équipé' : ''}${g.fm ? ' · forgé' : ''}</small></span>${qualityTag(g)}</button>`; }).join('') : `<div class="empty sm">Ton sac ne contient aucun équipement à travailler.<br>Fabrique-en dans les autres ateliers ou trouve-en en combat.</div>`;
-  return `<div class="fm-runes">${runes}</div>
+  return `<div class="fm-top"><div class="fm-runes">${runes}</div><button class="btn fm-breakbtn" data-act="brkopen">💥 Briser<small>des objets en runes</small></button></div>
     <div class="fm-main"><div class="fm-bag"><h4 class="at-h">Sac · ${bag.length}</h4><div class="fm-list">${list}</div></div>
-    <div class="fm-bench-w">${sel ? atBench(sel, fm) : `<div class="fm-bench empty-bench"><div class="fm-anvil">🔮</div><b class="display">L’établi du Forgemage</b><p>Choisis un objet dans ton sac. Tu pourras le <b>forger</b> avec des runes pour augmenter ses jets (au-delà du maximum, mais les risques augmentent), ou le <b>briser</b> pour récupérer des runes.</p></div>`}</div></div>
+    <div class="fm-bench-w">${sel ? atBench(sel, fm) : `<div class="fm-bench empty-bench"><div class="fm-anvil">🔮</div><b class="display">L’établi du Forgemage</b><p>Choisis un objet dans ton sac. Tu pourras le <b>forger</b> avec des runes pour augmenter ses jets (au-delà du maximum, mais les risques augmentent). Pour récupérer des runes, utilise le bouton <b>Briser</b>.</p></div>`}</div></div>
     <p class="hint">Niveau de Forgemage : +${Math.min(12, (fm.lvl * 0.12)).toFixed(1).replace('.', ',')} % de réussite et +${(fm.lvl * 0.5).toFixed(1).replace('.', ',')} % de runes au brisage.</p>`;
 }
 function atBench(g, fm) {
@@ -130,14 +130,9 @@ function atBench(g, fm) {
     const btn = r ? `<button class="btn sm gold fm-go" data-act="fmforge" data-k="${k}" ${inf.ok ? '' : 'disabled'} title="${inf.ok ? '' : esc(inf.why)}">${r.icon} +${inf.gain || r.step}<span class="fm-ch ${inf.chance >= .6 ? 'hi' : inf.chance >= .3 ? 'mid' : 'lo'}">${Math.round((inf.chance || 0) * 100)} %</span></button>` : '<span class="sub">—</span>';
     return `<div class="fm-row${cur > b ? ' over' : ''}"><div class="fm-lab"><span style="color:${col}">${STAT_LABEL[k] || k}</span><b class="num">${cur}${cur > b ? '<sup>Surjet</sup>' : ''}</b><small>${a}–${b}</small></div>${track}<div class="fm-act">${btn}${r ? `<small class="sub">${inf.have} rune${inf.have > 1 ? 's' : ''} · ${fmt(inf.cost)} k</small>` : ''}</div></div>`;
   }).join('');
-  const avg = brisageRunes(g), mul = 1 + fm.lvl * 0.005;
-  const pred = Object.entries(avg).map(([k, v]) => `<span style="--c:${RUNES[k].col}">${RUNES[k].icon} ${Math.max(0, Math.round(v * .7 * mul))}–${Math.max(1, Math.round(v * 1.3 * mul))}</span>`).join('');
-  const conf = ui.fmConfirm === g.uid;
   const log = (ui.fmLog || []).slice(-6).reverse().map(l => `<li class="${l[0]}">${l[1]}</li>`).join('');
   return `<div class="fm-bench"><header class="fm-bh"><div class="tile big ${qClass(g)}">${itemIcon(g.id)}</div><div><b class="display">${esc(d.name)}</b><div class="fm-tags">${qualityTag(g)}<span class="qtag">Niv. ${d.lvl}</span>${by ? `<span class="qtag">Équipé : ${esc(by.name)}</span>` : ''}${g.fm ? '<span class="qtag q-high">Forgé</span>' : ''}</div></div></header>
     <div class="fm-rows">${rows}</div>
-    <div class="fm-break"><div><h4 class="at-h">Brisage</h4><div class="fm-pred">${pred || '<span class="sub">Aucune rune</span>'}</div></div>
-      <button class="btn ${conf ? 'danger' : ''}" data-act="fmbreak" data-uid="${g.uid}" ${by ? 'disabled title="Déséquipe l’objet d’abord"' : ''}>${conf ? 'Confirmer : briser !' : '💥 Briser l’objet'}</button></div>
     ${log ? `<ul class="fm-log">${log}</ul>` : ''}</div>`;
 }
 function atForge(d) {
@@ -155,19 +150,70 @@ function atForge(d) {
   if (bn && bn.animate) bn.animate(out.kind === 'fail' || out.kind === 'cfail' ? [{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }] : [{ filter: 'brightness(1)' }, { filter: 'brightness(1.5)' }, { filter: 'brightness(1)' }], { duration: 380 });
   if (out.lvUp) toast(`Forgemage passe niveau ${st.jobs.forgemage.lvl} !`, 'lvl');
 }
-function atBreak(d) {
-  if (ui.fmConfirm !== d.uid) { ui.fmConfirm = d.uid; return; }
-  ui.fmConfirm = null;
-  const res = brisage(st, d.uid); if (typeof res === 'string') { toast(res, 'warn'); return; }
-  st.stats.broken = (st.stats.broken || 0) + 1;
-  ui.fmSel = null; ui.fmLog = [];
-  const it = ITEMS[res.id], chips = Object.entries(res.runes).map(([k, n]) => `<span class="fg-rune" style="--c:${RUNES[k].col}">${RUNES[k].icon} +${n}</span>`).join('');
+/* ---------- Briser : menu de brisage en série (filtres) ---------- */
+function brkState() { if (!ui.brk) ui.brk = { jet: 20, lvl: 999, slots: [], protect: true, off: {}, confirm: false }; return ui.brk; }
+function brkPool() { return st.gear.filter(g => forgeable(g) && !g.stasis && !equippedBy(st, g.uid)); }
+function brkMatches() {
+  const f = brkState();
+  return brkPool().filter(g => { const d = ITEMS[g.id]; return Math.round(itemQuality(g) * 100) <= f.jet && d.lvl <= f.lvl && (!f.slots.length || f.slots.includes(d.slot)) && !(f.protect && g.fm); })
+    .sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl || itemQuality(a) - itemQuality(b));
+}
+function brkSelected() { const f = brkState(); return brkMatches().filter(g => !f.off[g.uid]); }
+function brkSummary() {
+  const sel = brkSelected(), tot = {}, mul = 1 + st.jobs.forgemage.lvl * 0.005; let xp = 0;
+  for (const g of sel) { for (const [k, v] of Object.entries(brisageRunes(g))) tot[k] = (tot[k] || 0) + v * mul; xp += Math.round(6 + ITEMS[g.id].lvl * 1.6); }
+  return { sel, tot, xp };
+}
+function brkListHtml() {
+  const f = brkState(), all = brkMatches(), s = brkSummary();
+  const list = all.length ? all.map(g => { const d = ITEMS[g.id], on = !f.off[g.uid]; return `<button class="brk-it${on ? ' on' : ''}" data-act="brktoggle" data-uid="${g.uid}" aria-pressed="${on}"><span class="brk-ck">${on ? '✓' : ''}</span><div class="tile sm ${qClass(g)}">${itemIcon(g.id)}</div><span class="fm-itn"><b>${esc(d.name)}</b><small>Niv. ${d.lvl} · ${SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot]}${g.fm ? ' · forgé' : ''}</small></span>${qualityTag(g)}</button>`; }).join('')
+    : `<div class="empty sm">Aucun objet ne correspond à ces filtres.</div>`;
+  const runes = Object.entries(s.tot).map(([k, v]) => `<span style="--c:${RUNES[k].col}">${RUNES[k].icon} ~${Math.max(1, Math.round(v))}</span>`).join('');
+  const n = s.sel.length;
+  return { list, sum: `<div class="brk-sum"><div><b>${n} objet${n > 1 ? 's' : ''}</b> sur ${all.length} · <span class="sub">+${fmt(s.xp)} XP Forgemage</span><div class="fm-pred">${runes || '<span class="sub">Aucune rune</span>'}</div></div>
+    <button class="btn ${f.confirm ? 'danger' : 'gold'}" data-act="brkgo" ${n ? '' : 'disabled'}>${f.confirm ? `Confirmer : briser ${n} objet${n > 1 ? 's' : ''} !` : '💥 Briser la sélection'}</button></div>` };
+}
+function brkRender() {
+  const box = $('#modal'); if (!box) return;
+  const f = brkState(), pool = brkPool();
+  const maxLvl = Math.max(1, ...pool.map(g => ITEMS[g.id].lvl)); if (f.lvl > maxLvl) f.lvl = maxLvl;
+  const slots = [...new Set(pool.map(g => ITEMS[g.id].slot))];
+  f.slots = f.slots.filter(s => slots.includes(s));
+  const b = brkListHtml();
+  box.hidden = false;
+  box.innerHTML = `<div class="brk-back" data-act="brkclose"></div><div class="panel brk" role="dialog" aria-label="Briser des objets">
+    <header class="brk-h"><div><h3 class="display">💥 Briser des objets</h3><small class="sub">Choisis ce que tu veux transformer en runes. Les objets équipés et stasifiés ne sont jamais brisés.</small></div><button class="btn sm ghost" data-act="brkclose" aria-label="Fermer">✕</button></header>
+    <div class="brk-filters">
+      <label class="brk-f"><span>Jet maximum <b id="brk-jv">${f.jet} %</b></span><input type="range" min="0" max="100" step="5" value="${f.jet}" data-input="brk-jet"></label>
+      <label class="brk-f"><span>Niveau maximum <b id="brk-lv">${f.lvl >= maxLvl ? 'Tous' : f.lvl}</b></span><input type="range" min="1" max="${maxLvl}" step="1" value="${f.lvl}" data-input="brk-lvl"></label>
+      <div class="at-chips"><button data-act="brkslot" data-v="" aria-pressed="${!f.slots.length}">Tous les emplacements</button>${slots.map(s => `<button data-act="brkslot" data-v="${s}" aria-pressed="${f.slots.includes(s)}">${SLOT_LABEL[s === 'anneau' ? 'anneau1' : s] || s}</button>`).join('')}</div>
+      <button class="toggle" data-act="brkprotect" aria-pressed="${f.protect}"><span class="tg" aria-hidden="true"></span>Protéger les objets déjà forgés</button>
+    </div>
+    <div class="brk-list" id="brk-list">${b.list}</div><div id="brk-sum">${b.sum}</div></div>`;
+}
+function brkRefresh() { const f = brkState(); f.confirm = false; const b = brkListHtml(); const l = $('#brk-list'), s = $('#brk-sum'); if (l) l.innerHTML = b.list; if (s) s.innerHTML = b.sum; const jv = $('#brk-jv'), lv = $('#brk-lv'); if (jv) jv.textContent = f.jet + ' %'; if (lv) { const m = Math.max(1, ...brkPool().map(g => ITEMS[g.id].lvl)); lv.textContent = f.lvl >= m ? 'Tous' : f.lvl; } }
+function atBrkOpen() { ui.brk = null; brkState(); brkRender(); }
+function atBrkClose() { const b = $('#modal'); b.hidden = true; b.innerHTML = ''; ui.brk = null; }
+function atBrkGo() {
+  const f = brkState(), sel = brkSelected(); if (!sel.length) return 'keep';
+  if (!f.confirm) { f.confirm = true; const b = brkListHtml(); $('#brk-sum').innerHTML = b.sum; return 'keep'; }
+  const runes = {}; let xp = 0, lv = false, n = 0; const icons = [];
+  for (const g of sel) { const res = brisage(st, g.uid); if (typeof res === 'string') continue; n++; xp += res.xp; lv = lv || res.lvUp; icons.push(res.id); for (const [k, v] of Object.entries(res.runes)) runes[k] = (runes[k] || 0) + v; }
+  st.stats.broken = (st.stats.broken || 0) + n;
+  atBrkClose(); ui.fmSel = ui.fmSel && gearById(st, ui.fmSel) ? ui.fmSel : null; ui.fmLog = [];
+  const chips = Object.entries(runes).map(([k, v]) => `<span class="fg-rune" style="--c:${RUNES[k].col}">${RUNES[k].icon} +${v}</span>`).join('');
   const old = document.getElementById('forge'); if (old) old.remove();
   const el = document.createElement('div'); el.id = 'forge'; el.className = 'forge breaking';
-  el.innerHTML = `<div class="forge-card"><div class="fg-stage"><div class="fg-glow"></div><div class="fg-work big">${itemIcon(res.id)}</div><div class="fg-hammer">🔨</div><div class="fg-flash"></div>${Array.from({ length: 16 }, (_, k) => { const a = k / 16 * 6.28, dd = 40 + Math.random() * 60; return `<i class="fg-sp" style="--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd - 10).toFixed(0)}px;--t:.32s;--c:${Object.values(RUNES)[k % 6].col}"></i>`; }).join('')}</div>
-    <div class="fg-reveal"><b class="fg-name">${esc(it.name)} brisé</b><div class="fg-runes">${chips || '<span class="sub">Aucune rune…</span>'}</div><div class="fg-foot"><span class="pop-xp">+${res.xp} XP 🔮</span></div></div></div>`;
+  const shown = icons.slice(0, 5);
+  el.innerHTML = `<div class="forge-card"><div class="fg-stage"><div class="fg-glow"></div>${shown.map((id, i) => `<div class="fg-work big" style="margin-left:${(i - (shown.length - 1) / 2) * 38}px;animation-delay:${i * .08}s">${itemIcon(id)}</div>`).join('')}<div class="fg-hammer">🔨</div><div class="fg-flash"></div>${Array.from({ length: 20 }, (_, k) => { const a = k / 20 * 6.28, dd = 40 + Math.random() * 70; return `<i class="fg-sp" style="--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd - 10).toFixed(0)}px;--t:.32s;--c:${Object.values(RUNES)[k % 6].col}"></i>`; }).join('')}</div>
+    <div class="fg-reveal"><b class="fg-name">${n} objet${n > 1 ? 's' : ''} brisé${n > 1 ? 's' : ''}</b><div class="fg-runes">${chips || '<span class="sub">Aucune rune…</span>'}</div><div class="fg-foot"><span class="pop-xp">+${fmt(xp)} XP 🔮</span></div></div></div>`;
   document.body.appendChild(el);
   const kill = () => { el.classList.add('out'); setTimeout(() => el.remove(), 320); };
-  el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, 4200);
-  if (res.lvUp) toast(`Forgemage passe niveau ${st.jobs.forgemage.lvl} !`, 'lvl');
+  el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, 4800);
+  if (lv) toast(`Forgemage passe niveau ${st.jobs.forgemage.lvl} !`, 'lvl');
 }
+document.addEventListener('input', e => {
+  const t = e.target.dataset && e.target.dataset.input; if (t !== 'brk-jet' && t !== 'brk-lvl') return;
+  const f = brkState(); if (t === 'brk-jet') f.jet = +e.target.value; else f.lvl = +e.target.value;
+  brkRefresh();
+});
