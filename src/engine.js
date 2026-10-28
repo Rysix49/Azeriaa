@@ -364,6 +364,7 @@ function monsterTurn(st, h, t, m, ev) {
    Un ennemi cache un trésor (f.treasure) que l'Enutrof vise en priorité.
    Chaque sort remplit la bourse (h.purse, gardée d'un combat à l'autre) :
    pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
+const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
 const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
 const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
 function enuTarget(f, alive) {
@@ -473,8 +474,11 @@ function unleashFury(st, h, ev) {
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
 function fightStep(st, h, ev) {
   const f = h.fight, t = heroTotals(st, h);
+  let jackpot = false;
   if (f.phase === 0) {
+    const jk0 = f.jackSeq || 0;
     heroTurn(st, h, t, ev);
+    jackpot = (f.jackSeq || 0) > jk0;
     f.phase = 1;
   } else {
     // cherche le prochain monstre vivant à jouer
@@ -485,7 +489,11 @@ function fightStep(st, h, ev) {
       f.buffs.forEach(b => b.turns--); f.buffs = f.buffs.filter(b => b.turns > 0);
     }
   }
-  if (f.mons.every(m => m.hp <= 0)) return 'win';
+  if (f.mons.every(m => m.hp <= 0)) {
+    // Un Jackpot vient d'achever le combat : on laisse la cinématique se jouer avant de conclure
+    if (jackpot) { h.wait += JACKPOT_ANIM_MS; return null; }
+    return 'win';
+  }
   if (h.hp <= 0) return 'lose';
   if (f.turn > MAX_TURNS) return 'lose';
   return null;
