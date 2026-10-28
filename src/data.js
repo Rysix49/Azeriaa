@@ -87,7 +87,13 @@ const CLASSES = {
   enutrof: {
     name: 'Enutrof', role: 'Chercheur de trésors', main: 'deg', elem: 'cha', hpMult: 1.1, color: '#c9962e',
     desc: 'Trouve plus de butin et de kamas que quiconque.',
-    passive: { name: 'Flair du Trésor', points: [['🔎','Prospection','+40 Prospection.'],['💰','Double butin','12 % de chance qu’un monstre lâche ses ressources en double.']], desc: '+40 Prospection. 12 % de chance qu’un monstre vaincu lâche ses ressources en double.', stats: { pp: 40 } },
+    passive: { name: 'Fièvre de l’Or', points: [
+      ['🔎','L’or fait la force','+40 Prospection. Chaque tranche de 10 Prospection ajoute +1 % de dégâts : plus il est riche en butin, plus il frappe fort.'],
+      ['🗺️','Carte au trésor','Au début de chaque combat, un ennemi au hasard cache un trésor 💰 et l’Enutrof le vise en priorité. Quand il tombe, le coffre s’ouvre : +2 pièces, Ruée vers l’or (+30 Dégâts pendant 3 tours), kamas de ce monstre ×1,5 et 35 % de ses ressources en double.'],
+      ['🪙','Cupidité','Chaque tour où il lance un sort offensif, 1 pièce tombe dans sa bourse (1 de plus s’il fait un coup critique). 10 pièces maximum, la bourse se garde d’un combat à l’autre.'],
+      ['🎰','Jackpot','Bourse pleine : au début de son tour, elle éclate en Pluie d’Or qui frappe tous les ennemis. Chaque Jackpot rapporte +10 % de kamas à la victoire.'],
+      ['🤝','Pot-de-vin','Une fois par combat, un coup fatal avec au moins 5 pièces est évité : il jette sa bourse, survit avec 15 % de ses PV et les ennemis se jettent sur l’or en perdant leur prochain tour.']
+    ], desc: '+40 Prospection (+1 % de dégâts par 10). Un ennemi cache un trésor : l’ouvrir donne une Ruée vers l’or et un meilleur butin. Chaque tour offensif remplit la bourse ; pleine, elle éclate en Jackpot. Une fois par combat, un Pot-de-vin évite le coup fatal.', stats: { pp: 40 } },
     spells: [
       { id: 'lancer_pieces', name: 'Lancer de Pièces', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
       { id: 'pelle_animee', name: 'Pelle Animée', lvl: 6, pa: 4, min: 15, max: 20, stat: 'cha', type: 'dmg', max_: 1 },

@@ -1190,6 +1190,21 @@ label.btn { cursor: pointer; }
 /* Lueur (craqueleur, fantôme) */
 .ms .p-glow { animation: msglow 2s ease-in-out infinite; }
 @keyframes msglow { 50% { opacity: .7; } }
+
+/* ---------------------- Fièvre de l'Or de l'Enutrof ---------------------- */
+.vs .purse { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #c9962e33; border: 1px solid #c9962e88; color: #ffe9a8 !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vs .purse i { display: inline-block; width: 4px; height: 8px; border-radius: 2px; background: #ffffff22; box-shadow: inset 0 0 0 1px #0005; }
+.vs .purse i.on { background: linear-gradient(#fff3b0, #e8b52e); box-shadow: 0 0 5px #ffd24a; }
+.vs .purse.full { background: linear-gradient(90deg, #b8791a, #ffd24a, #b8791a); background-size: 200% 100%; color: #3a2400 !important; font-weight: 900; border-color: #fff1a8; box-shadow: 0 0 12px #ffd24a; animation: furyshine 1.4s linear infinite; }
+.treasure { position: absolute; top: -4px; right: 4px; z-index: 4; font-size: 17px; line-height: 1; pointer-events: none; opacity: 0; transform: scale(.4); transition: opacity .25s, transform .25s; filter: drop-shadow(0 0 5px #ffd24a) drop-shadow(0 1px 1px #000); }
+.treasure.on { opacity: 1; transform: scale(1); animation: treasurebob 1.6s ease-in-out infinite; }
+@keyframes treasurebob { 50% { transform: translateY(-4px) rotate(8deg) scale(1.08); } }
+.coin-pop { position: absolute; left: 50%; top: 40%; z-index: 7; font-size: 15px; pointer-events: none; filter: drop-shadow(0 0 5px #ffd24a); animation: coinpop 1s cubic-bezier(.2, .8, .3, 1) forwards; }
+@keyframes coinpop { 0% { transform: translate(-50%, 0) scale(.3); opacity: 0; } 15% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(var(--dy) + 36px)) scale(1) rotate(540deg); opacity: 0; } }
+.fnum.gold { color: #ffe27a; font-size: 19px; letter-spacing: .06em; -webkit-text-stroke: 1px #5a3a00; text-shadow: 0 2px 0 #5a3a00, 0 0 12px #ffd24a; }
+.scene.gold-flash::after { content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none; background: radial-gradient(circle at 50% 50%, #ffe27acc, #ffd24a33 55%, transparent 75%); animation: goldflash .9s ease-out forwards; }
+@keyframes goldflash { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .treasure.on, .vs .purse.full, .coin-pop, .scene.gold-flash::after { animation: none; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1250,7 +1265,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793145161';
+const BUILD_ID = '1793146213';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -1340,7 +1355,13 @@ const CLASSES = {
   enutrof: {
     name: 'Enutrof', role: 'Chercheur de trésors', main: 'deg', elem: 'cha', hpMult: 1.1, color: '#c9962e',
     desc: 'Trouve plus de butin et de kamas que quiconque.',
-    passive: { name: 'Flair du Trésor', points: [['🔎','Prospection','+40 Prospection.'],['💰','Double butin','12 % de chance qu’un monstre lâche ses ressources en double.']], desc: '+40 Prospection. 12 % de chance qu’un monstre vaincu lâche ses ressources en double.', stats: { pp: 40 } },
+    passive: { name: 'Fièvre de l’Or', points: [
+      ['🔎','L’or fait la force','+40 Prospection. Chaque tranche de 10 Prospection ajoute +1 % de dégâts : plus il est riche en butin, plus il frappe fort.'],
+      ['🗺️','Carte au trésor','Au début de chaque combat, un ennemi au hasard cache un trésor 💰 et l’Enutrof le vise en priorité. Quand il tombe, le coffre s’ouvre : +2 pièces, Ruée vers l’or (+30 Dégâts pendant 3 tours), kamas de ce monstre ×1,5 et 35 % de ses ressources en double.'],
+      ['🪙','Cupidité','Chaque tour où il lance un sort offensif, 1 pièce tombe dans sa bourse (1 de plus s’il fait un coup critique). 10 pièces maximum, la bourse se garde d’un combat à l’autre.'],
+      ['🎰','Jackpot','Bourse pleine : au début de son tour, elle éclate en Pluie d’Or qui frappe tous les ennemis. Chaque Jackpot rapporte +10 % de kamas à la victoire.'],
+      ['🤝','Pot-de-vin','Une fois par combat, un coup fatal avec au moins 5 pièces est évité : il jette sa bourse, survit avec 15 % de ses PV et les ennemis se jettent sur l’or en perdant leur prochain tour.']
+    ], desc: '+40 Prospection (+1 % de dégâts par 10). Un ennemi cache un trésor : l’ouvrir donne une Ruée vers l’or et un meilleur butin. Chaque tour offensif remplit la bourse ; pleine, elle éclate en Jackpot. Une fois par combat, un Pot-de-vin évite le coup fatal.', stats: { pp: 40 } },
     spells: [
       { id: 'lancer_pieces', name: 'Lancer de Pièces', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
       { id: 'pelle_animee', name: 'Pelle Animée', lvl: 6, pa: 4, min: 15, max: 20, stat: 'cha', type: 'dmg', max_: 1 },
@@ -1924,6 +1945,7 @@ function startFight(st, h, ev) {
     tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {},
   };
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
+  if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   const names = group.map(m => MONSTERS[m].name);
   ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
@@ -1935,6 +1957,7 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
   if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
+  if (h.cls === 'enutrof') return Math.floor((t.pp || 0) / 10); // L'or fait la force : +1 % de dégâts par 10 Prospection
   return 0;
 }
 function spellPower(h, t, f, sp) {
@@ -1979,7 +2002,7 @@ function heroTurn(st, h, t, ev) {
       && (sp.max_ == null || (f.casts[sp.id] || 0) < sp.max_));
     if (!usable.length) break;
     const hpRatio = h.hp / t.maxHp;
-    const target = h.cls === 'cra' ? craPrey(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+    const target = h.cls === 'cra' ? craPrey(f, alive) : h.cls === 'enutrof' ? enuTarget(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
     let best = null, bestVal = -1;
     for (const sp of usable) {
       const { avg } = spellPower(h, t, f, sp);
@@ -2005,6 +2028,7 @@ function heroTurn(st, h, t, ev) {
     const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
     const line = castSpell(st, h, t, best, target, alive);
     actions.push(line);
+    enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
     (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
@@ -2012,8 +2036,13 @@ function heroTurn(st, h, t, ev) {
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
   };
+  if (h.cls === 'enutrof') {
+    enuChest(h, f, actions);
+    if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
+  }
   phase(true);
   if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
   if (h.cls === 'sram') {
@@ -2074,6 +2103,7 @@ function monsterTurn(st, h, t, m, ev) {
     if (--m.poison.turns <= 0) m.poison = null;
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
+  if (m.bribed) { m.bribed = false; ev.log(h, line + `${def.name} se jette sur les pièces d’or et oublie d’attaquer.`, 'mon'); return; }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
   f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
@@ -2093,11 +2123,48 @@ function monsterTurn(st, h, t, m, ev) {
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
+    const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
+    h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
+    f.mons.forEach(o => { if (o.hp > 0) o.bribed = true; });
+    ev.log(h, `🤝 Pot-de-vin ! ${h.name} jette ${spent} 🪙 : les ennemis se ruent sur l’or et il s’en tire avec ${h.hp} PV.`, 'win');
+  }
   if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
     f.paradox = true; f.grains = 0;
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Fièvre de l'Or de l'Enutrof ----------------------
+   Un ennemi cache un trésor (f.treasure) que l'Enutrof vise en priorité.
+   Chaque sort remplit la bourse (h.purse, gardée d'un combat à l'autre) :
+   pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
+const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
+const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
+function enuTarget(f, alive) {
+  const c = f.mons[f.treasure];
+  return c && c.hp > 0 ? c : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+}
+function enuGain(h, n) { h.purse = Math.min(ENU_PURSE_MAX, (h.purse || 0) + n); }
+/* Le porteur du trésor est tombé : le coffre s'ouvre (une seule fois par combat) */
+function enuChest(h, f, actions) {
+  if (f.treasure == null || f.treasure < 0 || f.chest) return;
+  const c = f.mons[f.treasure]; if (!c || c.hp > 0) return;
+  f.chest = true; f.chestSeq = (f.chestSeq || 0) + 1;
+  enuGain(h, 2);
+  const more = f.mons.some(m => m.hp > 0);
+  if (more) f.buffs.push({ id: 'ruee_or', stats: { deg: ENU_RUSH }, turns: 4 });
+  actions.push(`🗺️ Coffre ouvert ! +2 🪙${more ? ` · Ruée vers l’or (+${ENU_RUSH} Dégâts)` : ''}`);
+}
+function enuJackpot(h, t, f) {
+  const alive = f.mons.filter(m => m.hp > 0);
+  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); return `${r.v}${r.crit ? ' CC' : ''}`; });
+  h.purse = 0; f.jackpots = (f.jackpots || 0) + 1; f.jackSeq = (f.jackSeq || 0) + 1;
+  f.fxSeq = (f.fxSeq || 0) + 1;
+  (f.fx = f.fx || []).push({ n: f.fxSeq, id: ENU_JACKPOT.id, t: alive.map(m => f.mons.indexOf(m)) });
+  if (f.fx.length > 16) f.fx.shift();
+  return `🎰 JACKPOT ! Pluie d’Or → ${parts.join('/')}`;
 }
 
 /* ---------------------- Ombre & Pièges du Sram ---------------------- */
@@ -2234,9 +2301,9 @@ function resolveWin(st, h, ev) {
     const gap = h.lvl - def.lvl;
     const pen = gap > 10 ? clamp(1 - (gap - 10) * 0.06, 0.1, 1) : 1;
     xp += ms.xp * pen;
-    kamas += irnd(ms.kamas[0], ms.kamas[1]);
-    const dbl = h.cls === 'enutrof' && Math.random() < 0.12 ? 2 : 1;
-    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + dbl;
+    const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
+    kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
+    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (chest && Math.random() < 0.35 ? 2 : 1);
     for (const [rid, rc] of (RELIC_DROPS[m.mid] || [])) if (Math.random() < rc * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(rid); st.gear.push(g); gearLoot.push(g);
     }
@@ -2254,7 +2321,7 @@ function resolveWin(st, h, ev) {
   }
   const n = f.mons.length;
   xp *= (1 + (n - 1) * 0.15) * (1 + t.xpBonus / 100) * (place.bonusXp || 1);
-  kamas = Math.round(kamas * (1 + (t.kamas || 0) / 100));
+  kamas = Math.round(kamas * (1 + ((t.kamas || 0) + 10 * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
   xp = Math.round(xp);
   st.kamas += kamas; st.stats.kamasEarned += kamas; st.stats.fights++;
   for (const [rid, c] of Object.entries(loot)) addRes(st, rid, c);
@@ -4292,6 +4359,7 @@ const SPELL_FX = {
   pelle_animee:      ['drop', '#c9a46a', '⛏️'],
   pelle_fantomatique:['rain', '#b9c7ff', '⛏️'],
   fortune:           ['buff', '#ffd24a', '💰'],
+  pluie_or:          ['rain', '#ffd24a', '🪙'],
   pelle_jugement:    ['drop', '#ffcf3a', '⛏️', 1.8],
   // Sram : ombres et pièges
   sournoiserie:      ['slash', '#9a7bff', '', 'quick'],
@@ -4742,10 +4810,10 @@ function fightCard(h) {
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
-        ${cra ? reticleHtml(h) : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
+        ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -4757,7 +4825,7 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -4788,6 +4856,22 @@ function trapBoom(card, fx) {
   b.innerHTML = `<i></i><i></i><i></i><i></i><i></i><i></i><i></i><b>PIÈGE !</b>`;
   mon.appendChild(b); setTimeout(() => b.remove(), 1300);
   mon.classList.remove('trapped'); void mon.offsetWidth; mon.classList.add('trapped'); setTimeout(() => mon.classList.remove('trapped'), 900);
+}
+/* ---------------------- Fièvre de l'Or de l'Enutrof ---------------------- */
+function purseHtml(h) { const n = h.purse || 0; return n >= ENU_PURSE_MAX ? '🎰 JACKPOT' : `🪙 ${Array.from({ length: ENU_PURSE_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`; }
+function coinBurst(el, n) {
+  if (!el || !FX_OK()) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span'); s.className = 'coin-pop'; s.textContent = '🪙';
+    const a = (i / n) * Math.PI * 2;
+    s.style.cssText = `--dx:${(Math.cos(a) * (24 + Math.random() * 26)).toFixed(0)}px;--dy:${(Math.sin(a) * (18 + Math.random() * 16) - 18).toFixed(0)}px;animation-delay:${(Math.random() * 140).toFixed(0)}ms`;
+    el.appendChild(s); setTimeout(() => s.remove(), 1100);
+  }
+}
+function goldFx(card, text, burstTarget, n) {
+  const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
+  const t = document.createElement('span'); t.className = 'fnum gold'; t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+  coinBurst(burstTarget || fg, n || 8);
 }
 function missFx(card) { const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return; const n = document.createElement('span'); n.className = 'fnum miss'; n.textContent = 'Raté !'; fg.appendChild(n); setTimeout(() => n.remove(), 950); }
 
@@ -4928,6 +5012,11 @@ function patchCombat() {
         const vn = h.fight.vanishSeq || 0; if (vn > +(scene.dataset.vn || 0)) { scene.dataset.vn = vn; smokePuff(card.querySelector('[data-k="fighter"] .sprite'), true); }
         const ms = h.fight.missSeq || 0; if (ms > +(scene.dataset.ms || 0)) { scene.dataset.ms = ms; missFx(card); }
       }
+      if (h.cls === 'enutrof') {
+        const ch = h.fight.chestSeq || 0; if (ch > +(scene.dataset.ch || 0)) { scene.dataset.ch = ch; goldFx(card, 'Coffre !', card.querySelector(`[data-mon="${h.fight.treasure}"] .sprite`), 12); }
+        const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; goldFx(card, 'JACKPOT !', scene, 22); scene.classList.remove('gold-flash'); void scene.offsetWidth; scene.classList.add('gold-flash'); setTimeout(() => scene.classList.remove('gold-flash'), 900); }
+        const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
+      }
       if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
@@ -4965,6 +5054,10 @@ function patchCombat() {
       const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
       const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="trap"]'); if (tr) tr.classList.toggle('armed', !!m && m.hp > 0 && h.fight.trap === i); });
+    }
+    if (h.cls === 'enutrof') {
+      const pu = q('purse'); if (pu) { const tx = purseHtml(h); if (pu.innerHTML !== tx) pu.innerHTML = tx; pu.classList.toggle('full', (h.purse || 0) >= ENU_PURSE_MAX); }
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="treasure"]'); if (tr) tr.classList.toggle('on', !!m && m.hp > 0 && h.fight.treasure === i); });
     }
     if (h.cls === 'cra') {
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }

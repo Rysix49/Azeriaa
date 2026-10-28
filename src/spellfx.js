@@ -38,6 +38,7 @@ const SPELL_FX = {
   pelle_animee:      ['drop', '#c9a46a', '⛏️'],
   pelle_fantomatique:['rain', '#b9c7ff', '⛏️'],
   fortune:           ['buff', '#ffd24a', '💰'],
+  pluie_or:          ['rain', '#ffd24a', '🪙'],
   pelle_jugement:    ['drop', '#ffcf3a', '⛏️', 1.8],
   // Sram : ombres et pièges
   sournoiserie:      ['slash', '#9a7bff', '', 'quick'],

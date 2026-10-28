@@ -169,6 +169,7 @@ function startFight(st, h, ev) {
     tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {},
   };
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
+  if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   const names = group.map(m => MONSTERS[m].name);
   ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
@@ -180,6 +181,7 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
   if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
+  if (h.cls === 'enutrof') return Math.floor((t.pp || 0) / 10); // L'or fait la force : +1 % de dégâts par 10 Prospection
   return 0;
 }
 function spellPower(h, t, f, sp) {
@@ -224,7 +226,7 @@ function heroTurn(st, h, t, ev) {
       && (sp.max_ == null || (f.casts[sp.id] || 0) < sp.max_));
     if (!usable.length) break;
     const hpRatio = h.hp / t.maxHp;
-    const target = h.cls === 'cra' ? craPrey(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+    const target = h.cls === 'cra' ? craPrey(f, alive) : h.cls === 'enutrof' ? enuTarget(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
     let best = null, bestVal = -1;
     for (const sp of usable) {
       const { avg } = spellPower(h, t, f, sp);
@@ -250,6 +252,7 @@ function heroTurn(st, h, t, ev) {
     const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
     const line = castSpell(st, h, t, best, target, alive);
     actions.push(line);
+    enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
     (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
@@ -257,8 +260,13 @@ function heroTurn(st, h, t, ev) {
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
   };
+  if (h.cls === 'enutrof') {
+    enuChest(h, f, actions);
+    if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
+  }
   phase(true);
   if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
   if (h.cls === 'sram') {
@@ -319,6 +327,7 @@ function monsterTurn(st, h, t, m, ev) {
     if (--m.poison.turns <= 0) m.poison = null;
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
+  if (m.bribed) { m.bribed = false; ev.log(h, line + `${def.name} se jette sur les pièces d’or et oublie d’attaquer.`, 'mon'); return; }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
   f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
@@ -338,11 +347,48 @@ function monsterTurn(st, h, t, m, ev) {
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
+    const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
+    h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
+    f.mons.forEach(o => { if (o.hp > 0) o.bribed = true; });
+    ev.log(h, `🤝 Pot-de-vin ! ${h.name} jette ${spent} 🪙 : les ennemis se ruent sur l’or et il s’en tire avec ${h.hp} PV.`, 'win');
+  }
   if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
     f.paradox = true; f.grains = 0;
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Fièvre de l'Or de l'Enutrof ----------------------
+   Un ennemi cache un trésor (f.treasure) que l'Enutrof vise en priorité.
+   Chaque sort remplit la bourse (h.purse, gardée d'un combat à l'autre) :
+   pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
+const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
+const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
+function enuTarget(f, alive) {
+  const c = f.mons[f.treasure];
+  return c && c.hp > 0 ? c : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+}
+function enuGain(h, n) { h.purse = Math.min(ENU_PURSE_MAX, (h.purse || 0) + n); }
+/* Le porteur du trésor est tombé : le coffre s'ouvre (une seule fois par combat) */
+function enuChest(h, f, actions) {
+  if (f.treasure == null || f.treasure < 0 || f.chest) return;
+  const c = f.mons[f.treasure]; if (!c || c.hp > 0) return;
+  f.chest = true; f.chestSeq = (f.chestSeq || 0) + 1;
+  enuGain(h, 2);
+  const more = f.mons.some(m => m.hp > 0);
+  if (more) f.buffs.push({ id: 'ruee_or', stats: { deg: ENU_RUSH }, turns: 4 });
+  actions.push(`🗺️ Coffre ouvert ! +2 🪙${more ? ` · Ruée vers l’or (+${ENU_RUSH} Dégâts)` : ''}`);
+}
+function enuJackpot(h, t, f) {
+  const alive = f.mons.filter(m => m.hp > 0);
+  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); return `${r.v}${r.crit ? ' CC' : ''}`; });
+  h.purse = 0; f.jackpots = (f.jackpots || 0) + 1; f.jackSeq = (f.jackSeq || 0) + 1;
+  f.fxSeq = (f.fxSeq || 0) + 1;
+  (f.fx = f.fx || []).push({ n: f.fxSeq, id: ENU_JACKPOT.id, t: alive.map(m => f.mons.indexOf(m)) });
+  if (f.fx.length > 16) f.fx.shift();
+  return `🎰 JACKPOT ! Pluie d’Or → ${parts.join('/')}`;
 }
 
 /* ---------------------- Ombre & Pièges du Sram ---------------------- */
@@ -479,9 +525,9 @@ function resolveWin(st, h, ev) {
     const gap = h.lvl - def.lvl;
     const pen = gap > 10 ? clamp(1 - (gap - 10) * 0.06, 0.1, 1) : 1;
     xp += ms.xp * pen;
-    kamas += irnd(ms.kamas[0], ms.kamas[1]);
-    const dbl = h.cls === 'enutrof' && Math.random() < 0.12 ? 2 : 1;
-    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + dbl;
+    const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
+    kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
+    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (chest && Math.random() < 0.35 ? 2 : 1);
     for (const [rid, rc] of (RELIC_DROPS[m.mid] || [])) if (Math.random() < rc * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(rid); st.gear.push(g); gearLoot.push(g);
     }
@@ -499,7 +545,7 @@ function resolveWin(st, h, ev) {
   }
   const n = f.mons.length;
   xp *= (1 + (n - 1) * 0.15) * (1 + t.xpBonus / 100) * (place.bonusXp || 1);
-  kamas = Math.round(kamas * (1 + (t.kamas || 0) / 100));
+  kamas = Math.round(kamas * (1 + ((t.kamas || 0) + 10 * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
   xp = Math.round(xp);
   st.kamas += kamas; st.stats.kamasEarned += kamas; st.stats.fights++;
   for (const [rid, c] of Object.entries(loot)) addRes(st, rid, c);

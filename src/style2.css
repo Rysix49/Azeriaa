@@ -1182,3 +1182,18 @@ label.btn { cursor: pointer; }
 /* Lueur (craqueleur, fantôme) */
 .ms .p-glow { animation: msglow 2s ease-in-out infinite; }
 @keyframes msglow { 50% { opacity: .7; } }
+
+/* ---------------------- Fièvre de l'Or de l'Enutrof ---------------------- */
+.vs .purse { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #c9962e33; border: 1px solid #c9962e88; color: #ffe9a8 !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vs .purse i { display: inline-block; width: 4px; height: 8px; border-radius: 2px; background: #ffffff22; box-shadow: inset 0 0 0 1px #0005; }
+.vs .purse i.on { background: linear-gradient(#fff3b0, #e8b52e); box-shadow: 0 0 5px #ffd24a; }
+.vs .purse.full { background: linear-gradient(90deg, #b8791a, #ffd24a, #b8791a); background-size: 200% 100%; color: #3a2400 !important; font-weight: 900; border-color: #fff1a8; box-shadow: 0 0 12px #ffd24a; animation: furyshine 1.4s linear infinite; }
+.treasure { position: absolute; top: -4px; right: 4px; z-index: 4; font-size: 17px; line-height: 1; pointer-events: none; opacity: 0; transform: scale(.4); transition: opacity .25s, transform .25s; filter: drop-shadow(0 0 5px #ffd24a) drop-shadow(0 1px 1px #000); }
+.treasure.on { opacity: 1; transform: scale(1); animation: treasurebob 1.6s ease-in-out infinite; }
+@keyframes treasurebob { 50% { transform: translateY(-4px) rotate(8deg) scale(1.08); } }
+.coin-pop { position: absolute; left: 50%; top: 40%; z-index: 7; font-size: 15px; pointer-events: none; filter: drop-shadow(0 0 5px #ffd24a); animation: coinpop 1s cubic-bezier(.2, .8, .3, 1) forwards; }
+@keyframes coinpop { 0% { transform: translate(-50%, 0) scale(.3); opacity: 0; } 15% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(var(--dy) + 36px)) scale(1) rotate(540deg); opacity: 0; } }
+.fnum.gold { color: #ffe27a; font-size: 19px; letter-spacing: .06em; -webkit-text-stroke: 1px #5a3a00; text-shadow: 0 2px 0 #5a3a00, 0 0 12px #ffd24a; }
+.scene.gold-flash::after { content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none; background: radial-gradient(circle at 50% 50%, #ffe27acc, #ffd24a33 55%, transparent 75%); animation: goldflash .9s ease-out forwards; }
+@keyframes goldflash { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .treasure.on, .vs .purse.full, .coin-pop, .scene.gold-flash::after { animation: none; } }
