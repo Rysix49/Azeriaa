@@ -877,11 +877,10 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
 
   <!-- bras avant et bâton au sablier -->
   <g class="p-arm">
-    <path d="M70 67 Q77 69 81 77 Q83 81 86 83 L92 81 Q92 75 88 71 Q82 63 72 61Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M80 76 Q84 84 94 82 L92 76Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.6" stroke-linejoin="round"/>
-    <path d="M80 77 Q85 84 93 82" fill="none" stroke="url(#xlGold)" stroke-width="1.4"/>
-    <path d="M86 78 q-3 -2 -1 -5 q4 -2 7 1 q2 3 -1 5 q-2 2 -5 -1Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M90 74 q3 1 4 4" fill="none" stroke="#2a1a0a" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M70 67 Q77 69 82 77 Q84 81 90 83 L94 81 Q93 75 89 71 Q82 63 72 61Z" fill="url(#xlRobe)" stroke="#0c1442" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M82 75 Q86 83 93 82 L93 74Z" fill="#1a2680" stroke="#0c1442" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M82 76 Q86 83 92 82" fill="none" stroke="url(#xlGold)" stroke-width="1.4"/>
+    <path d="M88 73 q-1 5 1 9 q5 3 10 0 q2 -5 -1 -9 q-5 -2 -10 0Z" fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.5" stroke-linejoin="round"/>
     <g class="p-staff">
       <path d="M94 20 L94 117" stroke="#2a1a0a" stroke-width="5.6" stroke-linecap="round"/>
       <path d="M94 20 L94 117" stroke="url(#xlStaff)" stroke-width="3.4" stroke-linecap="round"/>
@@ -900,6 +899,7 @@ xelor: `<svg class="hs hs-xelor" viewBox="0 0 128 128" aria-hidden="true">
       </g>
       <circle class="p-glow" cx="94" cy="17" r="14" fill="#9fd4ff" opacity="0"/>
     </g>
+    <g fill="url(#xlSkin)" stroke="#2a1a0a" stroke-width="1.2"><rect x="90.2" y="73.6" width="9.4" height="3.2" rx="1.6"/><rect x="90.6" y="77.2" width="9.4" height="3.2" rx="1.6"/><rect x="91" y="80.6" width="8.4" height="3" rx="1.5"/></g>
   </g>
 
   <g class="p-torso">
