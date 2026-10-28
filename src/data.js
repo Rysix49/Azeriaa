@@ -437,10 +437,10 @@ for (const c of CROPS) RESOURCES[c.id] = { name: c.name, icon: c.icon, value: c.
 /* Rang de maîtrise d'une plante (nombre de récoltes) : +qty % de chance d'une unité en plus, +mir % de chance de miracle */
 const HARVEST_RANKS = [
   { at: 0,    qty: 0,  mir: 0 },
-  { at: 50,   qty: 5,  mir: 0.5 },
-  { at: 200,  qty: 10, mir: 1 },
-  { at: 600,  qty: 15, mir: 1.5 },
-  { at: 1500, qty: 20, mir: 2 },
+  { at: 250,  qty: 5,  mir: 0.5 },
+  { at: 1000, qty: 10, mir: 1 },
+  { at: 3000, qty: 15, mir: 1.5 },
+  { at: 7500, qty: 20, mir: 2 },
 ];
 const HARVEST_RANK_NAMES = {
   paysan:     ['Glaneur', 'Moissonneur', 'Fermier', 'Maître des champs', 'Légende des blés'],
