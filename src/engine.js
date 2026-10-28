@@ -91,7 +91,8 @@ function heroTotals(st, h) {
     if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v;
   }
   for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] = (t[k] || 0) + v;
-  if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) t[k] = (t[k] || 0) + v;
+  const sk = skillTotals(h); for (const k in sk) t[k] = (t[k] || 0) + sk[k];
+  if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const fm = 1 + (sk.foodPow || 0) / 100; for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) t[k] = (t[k] || 0) + v * fm; }
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
   const cl = CLASSES[h.cls];
@@ -204,7 +205,7 @@ function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
   const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0) + (h.cls === 'zobal' && f && (h.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT : 0);
-  if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
+  if (crit) v *= (h.cls === 'cra' ? 1.8 : 1.5) + (t.critDmg || 0) / 100;
   if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
   if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
@@ -503,7 +504,7 @@ function unleashColosse(st, h, ev) {
     if (m.hp <= 0) return null;
     const crit = Math.random() * 100 < t.critPct + 25;
     let v = (rnd(COLOSSE_SPELL.min, COLOSSE_SPELL.max) * scale + t.dmg + pay * SAC_COLOSSE_BLOOD) * mult;
-    if (crit) v *= 1.5;
+    if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
     if (t.dmgPct) v *= 1 + t.dmgPct / 100;
     v = Math.max(1, Math.round(v)); // ignore les résistances
     m.hp = Math.max(0, m.hp - v); if (m.hp <= 0) kills++;
@@ -628,7 +629,7 @@ function unleashFury(st, h, ev) {
     if (m.hp <= 0) return null;
     const crit = Math.random() * 100 < t.critPct + 25;
     let v = rnd(COLERE_SPELL.min, COLERE_SPELL.max) * scale + t.dmg;
-    if (crit) v *= 1.5;
+    if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
     if (t.dmgPct) v *= 1 + t.dmgPct / 100;
     v = Math.max(1, Math.round(v)); // ignore les résistances
     m.hp = Math.max(0, m.hp - v);
@@ -790,7 +791,7 @@ function doHarvest(st, h, ev) {
   const ht = harvestTotals(st, h), m0 = harvestMastery(st, c);
   const [a, b] = cropQty(st, c); let n = irnd(a, b) + (Math.random() * 100 < ht.rqty ? 1 : 0) + (Math.random() * 100 < m0.rank.qty ? 1 : 0);
   const alm = almanaxCrop(c.job, job.lvl) === c.id; if (alm) n *= ALMANAX_MULT;
-  const miracle = Math.random() * 100 < MIRACLE_BASE + m0.rank.mir; if (miracle) n *= 3;
+  const miracle = Math.random() * 100 < MIRACLE_BASE + m0.rank.mir + (ht.rmir || 0); if (miracle) n *= 3;
   const gx = Math.max(1, Math.round(c.xp * (1 + ht.rxp / 100))) * (miracle ? 2 : 1);
   addRes(st, c.id, n);
   job.xp += gx;
@@ -872,7 +873,8 @@ function eat(st, h, id) {
   const r = RESOURCES[id]; if (!r || !r.food) return 'Cet objet ne se mange pas.';
   if ((st.res[id] || 0) < 1) return `Plus de ${r.name}.`;
   st.res[id]--; if (!st.res[id]) delete st.res[id];
-  h.food = { id, left: r.food.ms, total: r.food.ms };
+  const ms = Math.round(r.food.ms * (1 + (skillTotals(h).foodDur || 0) / 100));
+  h.food = { id, left: ms, total: ms };
   return null;
 }
 
@@ -1046,7 +1048,7 @@ function equip(st, h, gearUid, wanted) {
   return null;
 }
 function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
-function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0 }; if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) if (k in t) t[k] += v; for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
+function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0, rmir: 0 }; const sk = skillTotals(h); for (const k in t) t[k] += sk[k] || 0; if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) if (k in t) t[k] += v * (1 + (sk.foodPow || 0) / 100); for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
 /* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
 function heroPower(st, h) {
@@ -1148,3 +1150,31 @@ function fmtDur(ms) {
 }
 
 if (typeof module !== 'undefined') module.exports = {};
+
+
+/* ---------- Arbre de compétences ---------- */
+function skillPoints(h) { return Math.floor(h.lvl / SKILL_LEVELS_PER_POINT); }
+function skillRanks(h) { return h.skills || (h.skills = {}); }
+function skillSpent(h) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n) s += h.skills[id] * n.cost; } return s; }
+function skillBranchSpent(h, bid) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n && n.branch === bid) s += h.skills[id] * n.cost; } return s; }
+function skillFree(h) { return skillPoints(h) - skillSpent(h); }
+function skillCheck(h, id) {
+  const n = SKILL_NODE[id]; if (!n) return 'Compétence inconnue.';
+  const rk = h.skills || {};
+  if ((rk[id] || 0) >= n.max) return 'Rang maximal atteint.';
+  if (n.req.length && !n.req.some(q => rk[q] > 0)) return 'Apprends d’abord une compétence reliée.';
+  const gate = SKILL_GATE[n.r]; if (skillBranchSpent(h, n.branch) < gate) return `Dépense ${gate} points dans cette voie pour ouvrir cette ligne.`;
+  if (skillFree(h) < n.cost) return n.cost > 1 ? `Il faut ${n.cost} points.` : 'Plus de point de compétence.';
+  return null;
+}
+function skillRank(st, h, id) { const err = skillCheck(h, id); if (err) return err; const rk = skillRanks(h); rk[id] = (rk[id] || 0) + 1; return null; }
+function skillTotals(h) {
+  const t = {}, rk = h.skills; if (!rk) return t;
+  const bs = {}; let tot = 0;
+  for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!n || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
+  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
+  for (const [at, fx] of SKILL_GLOBAL) if (tot >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k];
+  return t;
+}
+function skillRespecCost(h) { const sp = skillSpent(h); return sp ? Math.round(h.lvl * 40 + sp * 60) : 0; }
+function skillRespec(st, h) { const c = skillRespecCost(h); if (!c) return 'Aucun point dépensé.'; if (st.kamas < c) return `Il te faut ${fmt(c)} kamas.`; st.kamas -= c; h.skills = {}; return null; }

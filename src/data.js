@@ -652,3 +652,97 @@ const HERO_NAMES = [
   'Azalée', 'Bastok', 'Cerisette', 'Draknor', 'Ebonix', 'Flocon', 'Gaïamène', 'Hargnor', 'Iris', 'Jabot', 'Kestrel', 'Lumina',
   'Mandrak', 'Nébuleuse', 'Olgrim', 'Paprika', 'Quartzine', 'Rouquin', 'Saphyra', 'Tonnerre', 'Ulysse', 'Vortan', 'Willow', 'Yzalis',
 ];
+
+/* --------------------------------------------------------------------
+   ARBRE DE COMPÉTENCES — 1 point tous les 3 niveaux, 6 voies
+   Chaque nœud : [id, nom, icône, rangs max, bonus par rang, ligne 0-5, colonne 0-2, prérequis (l'un des deux), coût par rang]
+   Stats : deg dmgPct dmg crit critDmg speed pa vit hpPct res dodge regen soin pp kamas xpPct
+           rxp rqty rspd rmir (récolte), foodPow foodDur (repas)
+   -------------------------------------------------------------------- */
+const SKILL_LEVELS_PER_POINT = 3;
+const SKILL_GATE = [0, 0, 3, 6, 10, 15];   // points déjà dépensés dans la voie pour ouvrir la ligne
+const SKILL_STAT = {
+  deg: ['Dégâts', ' %'], dmgPct: ['Dégâts finaux', ' %'], dmg: ['Dommages fixes', ''], crit: ['Critique', ' %'], critDmg: ['Dégâts critiques', ' %'],
+  speed: ['Vitesse de combat', ' %'], pa: ['PA', ''], vit: ['Vitalité', ''], hpPct: ['PV max', ' %'], res: ['Résistance', ' %'], dodge: ['Esquive', ' %'],
+  regen: ['Régénération par tour', ' % PV'], soin: ['Soins', ''], pp: ['Prospection', ''], kamas: ['Kamas gagnés', ' %'], xpPct: ['XP de combat', ' %'],
+  rxp: ['XP de récolte', ' %'], rqty: ['Quantité récoltée', ' %'], rspd: ['Vitesse de récolte', ' %'], rmir: ['Chance de miracle', ' %'],
+  foodPow: ['Effet des repas', ' %'], foodDur: ['Durée des repas', ' %'],
+};
+const SKILL_BRANCHES = [
+  { id: 'guerrier', name: 'Voie du Guerrier', icon: '⚔️', col: '#e0533f', text: 'Frapper plus fort, plus souvent, plus juste.',
+    mile: [[6, { dmgPct: 4 }], [12, { crit: 4, critDmg: 15 }], [18, { dmgPct: 8 }]],
+    nodes: [
+      ['a1', 'Poigne de Fer', '💪', 5, { deg: 3 }, 0, 1, [], 1],
+      ['a2', 'Lames Affûtées', '🗡️', 5, { dmg: 3 }, 1, 0, ['a1'], 1],
+      ['a3', 'Œil du Tueur', '👁️', 5, { crit: 1 }, 1, 2, ['a1'], 1],
+      ['a4', 'Rage Contenue', '😤', 5, { dmgPct: 2 }, 2, 1, ['a2', 'a3'], 1],
+      ['a5', 'Coup Fatal', '☠️', 4, { critDmg: 8 }, 3, 0, ['a4'], 1],
+      ['a6', 'Frénésie', '🔥', 4, { speed: 4 }, 3, 2, ['a4'], 1],
+      ['a7', "Maître d'Armes", '🏅', 3, { deg: 4, dmgPct: 2 }, 4, 1, ['a5', 'a6'], 1],
+      ['a8', 'Colère des Dieux', '⚡', 1, { pa: 1, crit: 5, dmgPct: 5 }, 5, 1, ['a7'], 3],
+    ] },
+  { id: 'rempart', name: 'Voie du Rempart', icon: '🛡️', col: '#55a8ea', text: 'Encaisser, esquiver, se relever.',
+    mile: [[6, { hpPct: 4 }], [12, { res: 3, dodge: 2 }], [18, { hpPct: 8, regen: 0.5 }]],
+    nodes: [
+      ['b1', 'Constitution', '❤️', 5, { vit: 25 }, 0, 1, [], 1],
+      ['b2', 'Peau de Pierre', '🪨', 5, { res: 1 }, 1, 0, ['b1'], 1],
+      ['b3', 'Esquive Féline', '🐈', 5, { dodge: 1 }, 1, 2, ['b1'], 1],
+      ['b4', 'Cœur Robuste', '💖', 5, { hpPct: 3 }, 2, 1, ['b2', 'b3'], 1],
+      ['b5', 'Soins Vitaux', '🩹', 4, { soin: 5 }, 3, 0, ['b4'], 1],
+      ['b6', 'Seconde Peau', '🌿', 4, { regen: 0.6 }, 3, 2, ['b4'], 1],
+      ['b7', 'Forteresse', '🏰', 3, { hpPct: 4, res: 1 }, 4, 1, ['b5', 'b6'], 1],
+      ['b8', 'Inébranlable', '🗿', 1, { hpPct: 18, res: 5, regen: 1.5 }, 5, 1, ['b7'], 3],
+    ] },
+  { id: 'vent', name: 'Voie du Vent', icon: '🌪️', col: '#74c552', text: 'La vitesse avant tout : jouer avant les autres.',
+    mile: [[6, { speed: 8 }], [12, { crit: 3, dodge: 3 }], [18, { speed: 12, dmgPct: 4 }]],
+    nodes: [
+      ['c1', 'Pas Léger', '👟', 5, { speed: 3 }, 0, 1, [], 1],
+      ['c2', 'Réflexes', '⚡', 5, { dodge: 1 }, 1, 0, ['c1'], 1],
+      ['c3', 'Visée', '🎯', 5, { crit: 1 }, 1, 2, ['c1'], 1],
+      ['c4', 'Souffle Court', '💨', 5, { speed: 3 }, 2, 1, ['c2', 'c3'], 1],
+      ['c5', 'Lame de Vent', '🍃', 4, { dmgPct: 2.5 }, 3, 0, ['c4'], 1],
+      ['c6', "Coup d'Œil", '🔭', 4, { pp: 6 }, 3, 2, ['c4'], 1],
+      ['c7', 'Tourbillon', '🌀', 3, { speed: 4, crit: 1 }, 4, 1, ['c5', 'c6'], 1],
+      ['c8', 'Maître du Temps', '⏳', 1, { speed: 25, dodge: 4, critDmg: 15 }, 5, 1, ['c7'], 3],
+    ] },
+  { id: 'marchand', name: 'Voie du Marchand', icon: '💰', col: '#e8aa2e', text: 'Kamas, butin et savoir : tout se monnaie.',
+    mile: [[6, { kamas: 6 }], [12, { pp: 20, xpPct: 5 }], [18, { kamas: 12, xpPct: 8 }]],
+    nodes: [
+      ['d1', 'Bourse Pleine', '👛', 5, { kamas: 4 }, 0, 1, [], 1],
+      ['d2', 'Flair', '👃', 5, { pp: 8 }, 1, 0, ['d1'], 1],
+      ['d3', 'Érudit', '📚', 5, { xpPct: 3 }, 1, 2, ['d1'], 1],
+      ['d4', 'Négociant', '🤝', 5, { kamas: 4 }, 2, 1, ['d2', 'd3'], 1],
+      ['d5', 'Chasseur de Trésors', '🗺️', 4, { pp: 10 }, 3, 0, ['d4'], 1],
+      ['d6', 'Savoir Infus', '🔮', 4, { xpPct: 3 }, 3, 2, ['d4'], 1],
+      ['d7', 'Magnat', '🏦', 3, { kamas: 6, pp: 10 }, 4, 1, ['d5', 'd6'], 1],
+      ['d8', "Roi d'Astrub", '👑', 1, { kamas: 30, xpPct: 15, pp: 30 }, 5, 1, ['d7'], 3],
+    ] },
+  { id: 'paysan', name: 'Voie des Champs', icon: '🌾', col: '#9cba52', text: 'La terre donne plus à qui sait la cueillir.',
+    mile: [[6, { rspd: 10 }], [12, { rqty: 10, rxp: 10 }], [18, { rmir: 3, rspd: 15 }]],
+    nodes: [
+      ['e1', 'Doigts de Fée', '🤲', 5, { rspd: 4 }, 0, 1, [], 1],
+      ['e2', 'Bonne Graine', '🌱', 5, { rqty: 4 }, 1, 0, ['e1'], 1],
+      ['e3', 'Sagesse des Champs', '📖', 5, { rxp: 5 }, 1, 2, ['e1'], 1],
+      ['e4', 'Main Verte', '🌿', 5, { rspd: 4 }, 2, 1, ['e2', 'e3'], 1],
+      ['e5', 'Moisson Abondante', '🧺', 4, { rqty: 5 }, 3, 0, ['e4'], 1],
+      ['e6', 'Chance du Paysan', '🍀', 4, { rmir: 0.6 }, 3, 2, ['e4'], 1],
+      ['e7', 'Alchimie Instinctive', '⚗️', 3, { rxp: 6, rqty: 4 }, 4, 1, ['e5', 'e6'], 1],
+      ['e8', 'Avatar des Moissons', '🌻', 1, { rmir: 5, rspd: 30, rqty: 20 }, 5, 1, ['e7'], 3],
+    ] },
+  { id: 'gourmet', name: 'Voie du Gourmet', icon: '🍞', col: '#f08a6a', text: 'Les repas deviennent plus forts et durent plus longtemps.',
+    mile: [[6, { foodPow: 10 }], [12, { foodDur: 20, hpPct: 3 }], [18, { foodPow: 20, dmgPct: 3 }]],
+    nodes: [
+      ['f1', 'Palais Fin', '👅', 5, { foodPow: 4 }, 0, 1, [], 1],
+      ['f2', 'Gros Appétit', '🍽️', 5, { foodDur: 6 }, 1, 0, ['f1'], 1],
+      ['f3', "Estomac d'Acier", '🥣', 5, { vit: 20 }, 1, 2, ['f1'], 1],
+      ['f4', 'Cuisson Parfaite', '👨‍🍳', 5, { foodPow: 4 }, 2, 1, ['f2', 'f3'], 1],
+      ['f5', 'Garde-Manger', '🏺', 4, { foodDur: 8 }, 3, 0, ['f4'], 1],
+      ['f6', 'Bonne Chère', '🍷', 4, { regen: 0.5 }, 3, 2, ['f4'], 1],
+      ['f7', 'Gastronome', '🎖️', 3, { foodPow: 6, foodDur: 10 }, 4, 1, ['f5', 'f6'], 1],
+      ['f8', 'Festin Éternel', '🍰', 1, { foodPow: 40, foodDur: 50, hpPct: 8 }, 5, 1, ['f7'], 3],
+    ] },
+];
+/* Bonus de puissance selon le total de points dépensés (toutes voies) */
+const SKILL_GLOBAL = [[15, { dmgPct: 3, hpPct: 3 }], [30, { xpPct: 5, kamas: 5 }], [45, { dmgPct: 5, hpPct: 5 }], [60, { crit: 3, speed: 8, pp: 20 }]];
+const SKILL_NODE = {}; for (const b of SKILL_BRANCHES) for (const n of b.nodes) SKILL_NODE[n[0]] = { id: n[0], name: n[1], icon: n[2], max: n[3], fx: n[4], r: n[5], c: n[6], req: n[7], cost: n[8], branch: b.id };
+function skillFmt(k, v) { const s = SKILL_STAT[k]; return `+${String(+v.toFixed(2)).replace('.', ',')}${s[1]} ${s[0]}`; }

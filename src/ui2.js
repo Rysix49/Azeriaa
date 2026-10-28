@@ -42,7 +42,7 @@ const ui = {
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
   recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '',
 };
-const UI_KEEP = ['view', 'hero', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
+const UI_KEEP = ['view', 'hero', 'skBranch', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -67,7 +67,7 @@ function loadGame(snapshot) {
 /* ---------------------------- Notifications ---------------------------- */
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
-  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
+  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
     for (const g of gear) toast(ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
@@ -171,8 +171,8 @@ function shell() {
   </section>`;
 }
 function updateChrome() {
-  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
-  const v = VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
+  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String((ui.view === 'talents' ? 'heros' : ui.view) === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
+  const v = ui.view === 'talents' ? ['talents', 'Talents', 'Dépense tes points : 1 tous les 3 niveaux.'] : VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
   const tt = `<h1 class="display">${v[1]}</h1><p>${v[2]}</p>`;
   if (tt !== ui._tt) { $('#tbtitle').innerHTML = tt; ui._tt = tt; }
   const active = st.heroes.filter(h => h.act).length;
@@ -1039,7 +1039,9 @@ function renderHeros() {
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
   const tab = ['combat', 'recolte', 'relique'].includes(ui.eqTab) ? ui.eqTab : 'combat';
   const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
-  return `${heroTabs(h)}<div class="hero-grid">
+  const fp = skillFree(h);
+  const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
+  return `${heroTabs(h)}${skb}<div class="hero-grid">
     <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
@@ -1362,7 +1364,7 @@ function renderOptions() {
 }
 
 /* ---------------------------- Rendu principal ---------------------------- */
-const RENDER = { combat: renderCombat, heros: renderHeros, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions };
+const RENDER = { combat: renderCombat, heros: renderHeros, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions, talents: renderTalents };
 function canRebuild() {
   if (pointerDown || Date.now() - lastScroll < 800) return false;
   const a = document.activeElement;
@@ -1459,6 +1461,14 @@ const ACTIONS = {
     return 'keep';
   },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
+  talents(d) { if (d.hero) ui.hero = d.hero; ui.view = 'talents'; ui.skConfirm = false; ui.recruitOpen = false; scrollTop(); },
+  skhero(d) { ui.hero = d.hero; ui.skSel = null; ui.skConfirm = false; },
+  skbranch(d) { ui.skBranch = d.v; ui.skSel = null; },
+  sknode(d) { if (ui.skSel === d.id) return ACTIONS.skbuy(d); ui.skSel = d.id; },
+  skbuy(d) { const h = selHero(); const err = skillRank(st, h, d.id); if (err) toast(err, 'warn'); else { ui.skSel = d.id; ui.skJust = d.id; } },
+  skrespec() { ui.skConfirm = true; },
+  skrespec0() { ui.skConfirm = false; },
+  skrespec2() { const h = selHero(); const err = skillRespec(st, h); ui.skConfirm = false; ui.skSel = null; toast(err || `Points de ${h.name} rendus !`, err ? 'warn' : 'quest'); },
   alloc(d) { allocate(selHero(), d.stat, +d.n); },
   resetstats() { resetStats(st, selHero()); selHero().auto = ''; },
   equip(d) { const err = equip(st, selHero(), d.uid, d.slot || null); if (err) toast(err, 'warn'); },
