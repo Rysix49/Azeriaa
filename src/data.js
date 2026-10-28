@@ -641,7 +641,7 @@ const RELIC_DROPS = {
 };
 
 /* Coût de recrutement des héros (index = nombre de héros déjà possédés) */
-const RECRUIT_COST = [0, 4000, 30000, 160000];
+const RECRUIT_COST = [0, 4000, 25000, 60000, 140000, 300000, 650000, 1300000];
 
 const HERO_NAMES = [
   'Brakmouth', 'Pimprenelle', 'Tarnak', 'Mirabulle', 'Fendrel', 'Oswyna', 'Garrok', 'Sélénia', 'Kryssa', 'Bolgo', 'Elyndre', 'Patouf',
