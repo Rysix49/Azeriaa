@@ -9,7 +9,7 @@ const JOB_LORE = {
   cordonnier: 'Cuir tanné, semelles solides. On ne court pas loin sans bonnes bottes.',
   forgeron: 'Le marteau chante sur l’enclume : armes, outils, et un peu de poésie.',
   bricoleur: 'Clefs, serrures et mécanismes. Le Bricoleur ouvre les donjons.',
-  boulanger: 'Le pain du matin donne des ailes… et de la vitesse au combat.',
+  boulanger: 'Un bon repas change un combat : dégâts, XP, kamas, PV… et même la récolte.',
   forgemage: 'Il brise les objets en runes, puis les runes redonnent de la puissance. Gare au surjet !',
 };
 const RUNE_STAT_LABEL = { vit: 'Vitalité', sag: 'Sagesse', deg: 'Dégâts', pp: 'Prospection', crit: '% Critique', res: '% Résistance' };
@@ -22,7 +22,11 @@ function renderAteliers() {
     const ready = id === 'forgemage' ? 0 : RECIPES.filter(r => r.job === id && canCraft(st, r)).length;
     return `<button class="jrow at-job" data-act="job" data-v="${id}" aria-pressed="${ui.job === id}"><span class="at-ico">${JOB_ICON[id]}</span><span class="jr-body"><span class="jr-top"><b>${j.name}</b><span class="lvl">Niv. ${s.lvl}</span></span><small>${j.makes}</small>${bar('job thin', s.xp, jobXpToNext(s.lvl))}</span>${ready ? `<i class="ready-n" title="Recettes fabricables">${ready}</i>` : ''}</button>`;
   }).join('');
-  return `<div class="split at-split"><aside class="joblist">${jobs}</aside><section class="panel at-panel at-${ui.job}">${atBanner(ui.job)}${ui.job === 'forgemage' ? atForgemage() : atRecipes()}</section></div>`;
+  return `<div class="split at-split"><aside class="joblist">${jobs}</aside><section class="panel at-panel at-${ui.job}">${atBanner(ui.job)}${ui.job === 'boulanger' ? bkDaily() : ''}${ui.job === 'forgemage' ? atForgemage() : atRecipes()}</section></div>`;
+}
+function bkDaily() {
+  const id = platDuJour(st.jobs.boulanger.lvl), d = RESOURCES[id], ms = msToMidnight();
+  return `<div class="bk-special"><span class="bk-sp-ic">${d.icon}</span><div><small class="label">★ Plat du jour</small><b class="display">${esc(d.name)}</b><span class="sub">1 portion offerte à chaque fabrication · encore ${Math.floor(ms / 3600000)} h ${String(Math.floor(ms / 60000) % 60).padStart(2, '0')}</span></div></div>`;
 }
 function atBanner(id) {
   const s = st.jobs[id];
@@ -45,24 +49,25 @@ function atRecipes() {
   list.sort((a, b) => (a[0].lvl > js.lvl) - (b[0].lvl > js.lvl) || a[0].lvl - b[0].lvl);
   const cards = list.map(([r, i]) => atCard(r, i, js)).join('');
   const chips = slots.length > 1 ? `<div class="at-chips"><button data-act="rslot" data-v="" aria-pressed="${!ui.rslot}">Tout</button>${slots.map(s => `<button data-act="rslot" data-v="${s}" aria-pressed="${ui.rslot === s}">${(HARVEST_SLOT_LABEL[s] || SLOT_LABEL[s === 'anneau' ? 'anneau1' : s] || s)}</button>`).join('')}</div>` : '';
-  return `<div class="tools-row"><div class="seg"><button data-act="rtab" data-v="combat" aria-pressed="${ui.rtab !== 'recolte'}">Équipements de combat · ${nC}</button><button data-act="rtab" data-v="recolte" aria-pressed="${ui.rtab === 'recolte'}" ${nH ? '' : 'disabled'}>Métiers de récolte · ${nH}</button></div>
+  return `<div class="tools-row"><div class="seg"><button data-act="rtab" data-v="combat" aria-pressed="${ui.rtab !== 'recolte'}">${ui.job === 'boulanger' ? 'Repas' : 'Équipements de combat'} · ${nC}</button><button data-act="rtab" data-v="recolte" aria-pressed="${ui.rtab === 'recolte'}" ${nH ? '' : 'disabled'}>Métiers de récolte · ${nH}</button></div>
     <button class="toggle" data-act="onlycraft" aria-pressed="${!!ui.onlyCraft}"><span class="tg" aria-hidden="true"></span>Seulement fabricables</button></div>${chips}
     <div class="at-grid">${cards || `<div class="empty sm">${ui.onlyCraft ? 'Aucune recette fabricable avec ton stock actuel.' : 'Aucune recette ici pour ce métier.'}</div>`}</div>
-    <p class="hint">Plus tu fabriques une recette, mieux tu la maîtrises : jet minimal garanti et chance de <b>Jet Parfait</b>. Les objets en double peuvent être brisés en runes chez le Forgemage.</p>`;
+    <p class="hint">Plus tu fabriques une recette, mieux tu la maîtrises : jet minimal garanti et chance de <b>Jet Parfait</b>. ${ui.job === 'boulanger' ? 'Les repas se mangent depuis l’inventaire ou la fiche d’un héros (un seul repas actif à la fois). Chaque jour, le <b>Plat du jour</b> offre une portion de plus.' : 'Les objets en double peuvent être brisés en runes chez le Forgemage.'}</p>`;
 }
 function atCard(r, i, js) {
   const locked = js.lvl < r.lvl, max = maxCraftable(st, r), isRes = !!RESOURCES[r.out], d = isRes ? RESOURCES[r.out] : ITEMS[r.out];
   const m = masteryOf(st, r.out);
-  const meta = isRes ? `${d.food ? `Consommable · ${d.food.desc}` : 'Clef de donjon'} · en stock : ${st.res[r.out] || 0}` : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]} · Paysan ${d.lvl}` : `${SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot]} · niveau ${d.lvl}${d.set ? ' · ' + SETS[d.set].name : ''}`;
+  const meta = isRes ? `${d.food ? 'Repas' : 'Clef de donjon'} · en stock : ${st.res[r.out] || 0}` : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]} · Paysan ${d.lvl}` : `${SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot]} · niveau ${d.lvl}${d.set ? ' · ' + SETS[d.set].name : ''}`;
   const prog = m.next ? (m.n - m.rank.at) / (m.next.at - m.rank.at) : 1;
-  const mast = isRes ? `<div class="rc-mast"><span class="sub">Fabriqués : <b class="num">${fmt(m.n)}</b></span></div>`
+  const mast = isRes && !d.food ? `<div class="rc-mast"><span class="sub">Fabriqués : <b class="num">${fmt(m.n)}</b></span></div>`
     : `<div class="rc-mast"><div class="rc-mhead"><span class="mrank m${m.i}"><span class="pips">${atRankPips(m.i)}</span>${m.rank.name}</span><small class="sub num">${m.next ? `${m.n} / ${m.next.at}` : `${m.n} fabriqués`}</small></div>
         <div class="bar mast thin"><i style="width:${(prog * 100).toFixed(0)}%"></i></div>
-        <div class="rc-perks"><span title="Chaque jet est au moins à ce pourcentage de sa fourchette">Jet ≥ <b>${Math.round(m.rank.floor * 100)} %</b></span><span title="Chance que tous les jets soient au maximum">Parfait <b>${Math.round(m.rank.perf * 100)} %</b></span>${m.next ? `<span class="nx">→ ${m.next.name} : jet ≥ ${Math.round(m.next.floor * 100)} %</span>` : '<span class="nx gold">Rang maximal</span>'}</div></div>`;
-  const stats = isRes ? '' : `<div class="rr-stats">${Object.entries(d.stats).map(([k, [a, b]]) => `<span style="--c:${STAT_COLOR[k]}">${a === b ? a : `${a}–${b}`} ${STAT_SHORT[k] || k}</span>`).join('')}</div>`;
+        <div class="rc-perks">${d.food ? '' : `<span title="Chaque jet est au moins à ce pourcentage de sa fourchette">Jet ≥ <b>${Math.round(m.rank.floor * 100)} %</b></span>`}<span title="${d.food ? 'Chance de sortir une double fournée (×2)' : 'Chance que tous les jets soient au maximum'}">${d.food ? 'Fournée dorée ×2' : 'Parfait'} <b>${Math.round(m.rank.perf * 100)} %</b></span>${m.next ? `<span class="nx">→ ${m.next.name} : ${d.food ? Math.round(m.next.perf * 100) + ' %' : 'jet ≥ ' + Math.round(m.next.floor * 100) + ' %'}</span>` : '<span class="nx gold">Rang maximal</span>'}</div></div>`;
+  const daily = isRes && d.food && platDuJour(js.lvl) === r.out;
+  const stats = isRes ? (d.food ? `<div class="rr-stats bk-fx">${foodFxList(d.food).map(x => `<span style="--c:${STAT_COLOR[x.k] || 'var(--gold-2)'}">${x.txt}</span>`).join('')}<span class="bk-dur">⏱ ${d.food.ms / 60000} min</span></div>` : '') : `<div class="rr-stats">${Object.entries(d.stats).map(([k, [a, b]]) => `<span style="--c:${STAT_COLOR[k]}">${a === b ? a : `${a}–${b}`} ${STAT_SHORT[k] || k}</span>`).join('')}</div>`;
   const ings = Object.entries(r.ing).map(([id, n]) => { const have = st.res[id] || 0; return `<span class="ing ${have >= n ? 'ok' : 'no'}" title="${RESOURCES[id].name}">${RESOURCES[id].icon}<span class="ing-n">${RESOURCES[id].name}</span><b class="num">${fmt(have)}</b>/${n}</span>`; }).join('');
   return `<article class="rcard${locked ? ' locked' : ''}${max > 0 && !locked ? ' ready' : ''}${m.i >= 3 && !isRes ? ' master' : ''}">
-    <header class="rc-top"><div class="tile${isRes ? ' res' : ''}">${isRes ? `<span class="t-emo">${d.icon}</span>` : itemIcon(r.out)}</div><div class="rc-name"><b>${esc(d.name)}</b><small class="sub">${meta}</small></div></header>
+    <header class="rc-top"><div class="tile${isRes ? ' res' : ''}">${isRes ? `<span class="t-emo">${d.icon}</span>` : itemIcon(r.out)}</div><div class="rc-name"><b>${esc(d.name)}${daily ? ' <span class="bk-daily">★ Plat du jour</span>' : ''}</b><small class="sub">${meta}</small></div></header>
     ${stats}${locked ? '' : mast}<div class="rr-ing">${ings}</div>
     <footer class="rr-act">${locked ? `<span class="lockt">🔒 ${JOBS[r.job].name} niveau ${r.lvl} requis</span>` : `<button class="btn sm gold" data-act="craft" data-i="${i}" data-n="1" ${max < 1 ? 'disabled' : ''}>🔨 Fabriquer</button><button class="btn sm" data-act="craft" data-i="${i}" data-n="10" ${max < 2 ? 'disabled' : ''}>×${Math.min(10, Math.max(max, 2))}</button>${max > 0 ? `<small class="sub">${max} possible${max > 1 ? 's' : ''}</small>` : ''}`}</footer></article>`;
 }
@@ -76,6 +81,7 @@ function atCraft(d) {
   if (lv) toast(`${JOBS[r.job].name} passe niveau ${st.jobs[r.job].lvl} !`, 'lvl');
 }
 function forgeShow(r, made, xp) {
+  if (r.job === 'boulanger' && RESOURCES[r.out] && RESOURCES[r.out].food) return bakeShow(r, made, xp);
   const old = document.getElementById('forge'); if (old) old.remove();
   const isRes = !!RESOURCES[r.out], gs = made.map(m => m.gear).filter(Boolean), n = made.length;
   const perfect = made.some(m => m.perfect), rank = made.map(m => m.rankUp).filter(Boolean).pop();
@@ -98,6 +104,38 @@ function forgeShow(r, made, xp) {
   if (perfect) for (let i = 0; i < 26; i++) { const c = document.createElement('i'); c.className = 'fg-conf'; const a = Math.random() * 6.28, dd = 60 + Math.random() * 140; c.style.cssText = `--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd - 40).toFixed(0)}px;--c:${['#ffd24a', '#fff3b0', '#ff9a2a', '#ffe27a'][i % 4]};--r:${Math.round(Math.random() * 720)}deg;animation-delay:${(1.05 + Math.random() * .25).toFixed(2)}s`; el.querySelector('.fg-stage').appendChild(c); }
   const kill = () => { el.classList.add('out'); setTimeout(() => el.remove(), 320); };
   el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, perfect || rank ? 5600 : 4200);
+}
+
+/* ---------------------------- Le fournil : pétrissage, four, fournée ---------------------------- */
+const BK_OVEN = `<svg class="bk-oven" viewBox="0 0 130 120" aria-hidden="true">
+  <rect class="bk-chim" x="86" y="2" width="20" height="30" rx="2" fill="#6a4a36" stroke="#2a180c" stroke-width="2.5"/>
+  <path d="M8 118V58Q8 14 65 14Q122 14 122 58V118Z" fill="#9a6a46" stroke="#2a180c" stroke-width="3.5"/>
+  <path d="M20 40h22M54 32h24M86 40h20M12 58h18M42 52h22M76 52h22M104 60h14M20 76h24M56 70h26M92 76h22M12 94h20M44 90h24M80 92h30" stroke="#6a4430" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
+  <path d="M28 118V70Q28 40 65 40Q102 40 102 70V118Z" fill="#1a0b05" stroke="#2a180c" stroke-width="3"/>
+  <g class="bk-fire"><path d="M44 118Q40 96 52 84Q52 96 60 94Q58 78 68 66Q70 82 80 90Q86 100 84 118Z" fill="#ff8a1a"/><path d="M54 118Q52 104 60 98Q62 106 68 102Q70 94 74 92Q78 104 76 118Z" fill="#ffd24a"/></g>
+  <path d="M14 118h102" stroke="#2a180c" stroke-width="3"/></svg>`;
+function bakeShow(r, made, xp) {
+  const old = document.getElementById('forge'); if (old) old.remove();
+  const d = RESOURCES[r.out], n = made.reduce((a, m) => a + (m.qty || 1), 0), golden = made.some(m => m.golden), daily = made.some(m => m.daily), rank = made.map(m => m.rankUp).filter(Boolean).pop();
+  const fx = foodFxList(d.food).map(x => `<i style="--c:${STAT_COLOR[x.k] || 'var(--gold-2)'}">${x.txt}</i>`).join('');
+  const flour = Array.from({ length: 12 }, (_, k) => `<i class="bk-flour" style="--dx:${(Math.random() * 56 - 28).toFixed(0)}px;--dy:${(-18 - Math.random() * 30).toFixed(0)}px;animation-delay:${(.2 + (k % 3) * .3 + Math.random() * .12).toFixed(2)}s"></i>`).join('');
+  const steam = Array.from({ length: 6 }, (_, k) => `<i class="bk-steam" style="--dx:${(Math.random() * 90 - 20).toFixed(0)}px;animation-delay:${(2.3 + k * .08).toFixed(2)}s"></i>`).join('');
+  const el = document.createElement('div'); el.id = 'forge'; el.className = 'forge bakery' + (golden ? ' is-perfect' : '');
+  el.innerHTML = `<div class="forge-card bk-card" role="status">
+    <div class="bk-stage"><div class="bk-glow"></div>
+      <div class="bk-bench"></div>
+      <div class="bk-dough"><span></span></div><div class="bk-pin"><svg viewBox="0 0 70 16"><rect x="12" y="3" width="46" height="10" rx="5" fill="#d8b070" stroke="#5a3a1c" stroke-width="1.6"/><rect x="2" y="5" width="12" height="6" rx="3" fill="#a87840" stroke="#5a3a1c" stroke-width="1.4"/><rect x="56" y="5" width="12" height="6" rx="3" fill="#a87840" stroke="#5a3a1c" stroke-width="1.4"/></svg></div>${flour}
+      <div class="bk-loaf">${d.icon}</div>
+      <div class="bk-oven-w">${BK_OVEN}<div class="bk-ovenglow"></div><div class="bk-burst"></div></div>${steam}
+      <div class="bk-ding">🔔 Ding !</div><div class="fg-wait bk-wait">Cuisson…</div></div>
+    <div class="fg-reveal bk-reveal">${golden ? '<div class="fg-banner">✦ FOURNÉE DORÉE ×2 ✦</div>' : ''}${daily ? '<div class="bk-daily big">★ Plat du jour : portion offerte</div>' : ''}
+      <div class="fg-item res bk-item"><span class="fg-emo">${d.icon}</span></div><b class="fg-name">${n > 1 ? n + '× ' : ''}${esc(d.name)}</b>
+      <div class="bk-fxs">${fx}<em>⏱ ${d.food.ms / 60000} min</em></div><small class="bk-tale">${esc(d.tale || '')}</small>
+      <div class="fg-foot"><span class="pop-xp">+${xp} XP ${JOB_ICON[r.job]}</span>${rank ? `<span class="fg-rank m${masteryOf(st, r.out).i}">Maîtrise : ${rank.name} !</span>` : ''}</div></div></div>`;
+  document.body.appendChild(el);
+  if (golden) for (let i = 0; i < 28; i++) { const c = document.createElement('i'); c.className = 'fg-conf bk-crumb'; const a = Math.random() * 6.28, dd = 60 + Math.random() * 150; c.style.cssText = `--dx:${(Math.cos(a) * dd).toFixed(0)}px;--dy:${(Math.sin(a) * dd * .8 - 40).toFixed(0)}px;animation-delay:${(2.4 + Math.random() * .3).toFixed(2)}s`; el.querySelector('.forge-card').appendChild(c); }
+  const kill = () => { el.classList.add('out'); setTimeout(() => el.remove(), 320); };
+  el.addEventListener('click', kill); setTimeout(() => { if (el.isConnected) kill(); }, golden || rank || daily ? 8200 : 6600);
 }
 
 /* ---------------------------- Forgemage ---------------------------- */

@@ -111,7 +111,7 @@ function heroById(id) { return st.heroes.find(h => h.id === id); }
 function selHero() { let h = heroById(ui.hero); if (!h && st.heroes.length) { h = st.heroes[0]; ui.hero = h.id; } return h; }
 function placeName(act) { if (!act) return ''; const p = findPlace(act.type, act.id); return p ? subName(p, act) : ''; }
 function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
-function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RESOURCES[h.food.id]; return `${r.icon} ${r.food.speed ? `Vitesse ×${1 + r.food.speed / 100}` : r.name} · ${mmss(h.food.left)}`; }
+function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RESOURCES[h.food.id]; return `${r.icon} ${r.name} · ${mmss(h.food.left)}`; }
 function themeStyle(th) { return `--sky:${th[0]};--ground:${th[1]}`; }
 function qClass(g) {
   if (ITEMS[g.id].relic) return 'q-relic';

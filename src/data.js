@@ -519,11 +519,45 @@ const CRAFT_COST_MULT = 3;
 for (const r of RECIPES) for (const k of Object.keys(r.ing)) r.ing[k] *= CRAFT_COST_MULT;
 
 /* --------------------------------------------------------------------
-   BOULANGER — consommables (hors multiplicateur de coût ci-dessus)
-   food : effet quand un héros le mange. speed = % de vitesse de combat, ms = durée
+   BOULANGER — repas (hors multiplicateur de coût ci-dessus)
+   food : { fx, ms } — effet quand un héros mange le plat, pendant ms millisecondes.
+   fx : speed (vitesse de combat), dmgPct (dégâts), xpPct (XP de combat), kamas (kamas gagnés), pp (prospection),
+        hpPct (PV max), res (% résistance), crit (% critique), dodge (% esquive),
+        rxp / rqty / rspd (récolte : XP, chance de quantité, vitesse)
    -------------------------------------------------------------------- */
-RESOURCES.pain_ble = { name: 'Pain de Blé', icon: '🍞', value: 150, food: { speed: 100, ms: 10 * 60 * 1000, desc: 'Vitesse de combat ×2 pendant 10 min' } };
-RECIPES.push({ out: 'pain_ble', job: 'boulanger', lvl: 1, ing: { ble: 100 } });
+const FOOD_FX = {
+  speed: ['Vitesse de combat', ' %'], dmgPct: ['Dégâts', ' %'], xpPct: ['XP de combat', ' %'], kamas: ['Kamas gagnés', ' %'], pp: ['Prospection', ''],
+  hpPct: ['PV max', ' %'], res: ['Résistance', ' %'], crit: ['Critique', ' %'], dodge: ['Esquive', ' %'],
+  rxp: ['XP de récolte', ' %'], rqty: ['Quantité récoltée', ' %'], rspd: ['Vitesse de récolte', ' %'],
+};
+function foodFxList(f) { return Object.entries(f.fx).map(([k, v]) => ({ k, v, label: FOOD_FX[k][0], txt: `+${v}${FOOD_FX[k][1]} ${FOOD_FX[k][0]}` })); }
+function defFood(id, lvl, name, icon, fx, min, ing, tale) {
+  const food = { fx, ms: min * 60 * 1000 }; food.desc = foodFxList(food).map(x => x.txt).join(' · ') + ` pendant ${min} min`;
+  const cost = Object.entries(ing).reduce((a, [k, n]) => a + RESOURCES[k].value * n, 0);
+  RESOURCES[id] = { name, icon, value: Math.round(cost * 2.4 / 10) * 10, food, tale };
+  RECIPES.push({ out: id, job: 'boulanger', lvl, ing });
+}
+defFood('pain_ble', 1, 'Pain de Blé', '🍞', { speed: 100 }, 10, { ble: 100 }, 'Le classique du matin. Croustillant, et ça file comme le vent.');
+defFood('galette_orge', 10, "Galette d'Orge", '🥞', { dmgPct: 10 }, 20, { orge: 130, laine_bouftou: 60 }, 'Épaisse, dorée, et elle donne envie de cogner.');
+defFood('brioche_avoine', 20, "Brioche d'Avoine", '🥐', { kamas: 25 }, 20, { avoine: 160, plume_tofu: 120, dard_moskito: 40 }, 'Tellement bonne que les marchands paient plus cher à ta table.');
+defFood('tourte_houblon', 30, 'Tourte du Houblon', '🥧', { xpPct: 25 }, 20, { houblon: 180, defense_sanglier: 50, queue_ecurouille: 40 }, 'Une bouchée et tout devient clair. Même les leçons de combat.');
+defFood('tisane_sauge', 35, 'Tisane de Sauge Sacrée', '🍵', { rxp: 40 }, 30, { sauge: 180, menthe: 90, ortie: 120 }, 'La sagesse des herbes dans une tasse. Les plantes se laissent mieux cueillir.');
+defFood('pain_lin', 40, 'Pain de Lin Épicé', '🥖', { pp: 35 }, 20, { lin: 200, patte_arakne: 80, chapeau_champ: 60 }, 'Un parfum qui attire le butin comme les mouches.');
+defFood('seigle_noir', 50, 'Pain de Seigle Noir', '🍞', { res: 12 }, 25, { seigle: 220, carapace_scara: 60, fragment_craq: 40 }, 'Dense comme un mur. Les coups glissent dessus.');
+defFood('makis_riz', 50, 'Makis de Pandala', '🍙', { crit: 10 }, 20, { riz: 220, plume_kwak: 70, oreille_bwork: 40 }, 'Roulés avec précision, servis avec tranchant.');
+defFood('cookie_trefle', 55, 'Cookie au Trèfle à 5 Feuilles', '🍪', { rqty: 30 }, 30, { trefle: 200, orchidee: 60, petale_pissenlit: 100 }, 'La chance se mange. Les champs sont plus généreux.');
+defFood('chope_malt', 60, 'Chope de Malt Brâkmarienne', '🍺', { hpPct: 25 }, 25, { malt: 240, peau_kanigrou: 60, poil_koalak: 60 }, 'Un gros cœur et de gros bras. Très gros.');
+defFood('soupe_chanvre', 70, 'Soupe de Chanvre du Paysan', '🍲', { rspd: 50 }, 30, { chanvre: 260, ortie: 150, os_chafer: 40 }, 'Elle réveille les bras : la faux va deux fois plus vite.');
+defFood('fondue_royale', 75, 'Fondue du Bouftou Royal', '🫕', { dmgPct: 18, hpPct: 15 }, 30, { laine_bouftou: 250, cuir_bouftou: 150, corne_royale: 2 }, 'Un plat de roi. Il fait du bien à tout le corps.');
+defFood('tarte_edelweiss', 80, "Tarte à l'Edelweiss", '🥧', { dodge: 15, speed: 25 }, 25, { edelweiss: 240, croc_mufafah: 60, gelee_bleutee: 40 }, 'Légère comme un flocon : on ne te touche plus.');
+defFood('festin_mandragore', 90, 'Festin de Mandragore', '🍖', { xpPct: 30, kamas: 30, pp: 40 }, 30, { mandragore: 200, ginseng: 160, belladone: 80, ectoplasme: 40 }, 'Il crie quand on le coupe, mais qu’est-ce qu’il est bon.');
+defFood('banquet_dieux', 100, "Banquet des Dieux d'Amakna", '🍰', { dmgPct: 25, hpPct: 25, xpPct: 30, crit: 10, speed: 30 }, 45, { perceneige: 240, mandragore: 240, laine_royale: 3, nattes_bworkette: 2 }, 'Le repas ultime. Les héros s’en souviennent toute leur vie.');
+/* Plat du jour : un plat par jour (parmi ceux que tu sais faire) donne une portion offerte à chaque fabrication */
+function platDuJour(lvl, t = Date.now()) {
+  const pool = RECIPES.filter(r => r.job === 'boulanger' && r.lvl <= Math.max(1, lvl)); if (!pool.length) return null;
+  let x = (Math.imul(dayNumber(t), 2246822519) + 3266489917) >>> 0; x = Math.imul(x ^ (x >>> 15), 2654435761) >>> 0; x = (x ^ (x >>> 13)) >>> 0;
+  return pool[x % pool.length].out;
+}
 
 
 /* --------------------------------------------------------------------

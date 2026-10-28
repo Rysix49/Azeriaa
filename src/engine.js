@@ -91,12 +91,13 @@ function heroTotals(st, h) {
     if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v;
   }
   for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] = (t[k] || 0) + v;
-  if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const f = RESOURCES[h.food.id].food; if (f.speed) t.speed = (t.speed || 0) + f.speed; }
+  if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) t[k] = (t[k] || 0) + v;
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
   const cl = CLASSES[h.cls];
   if (cl.passive && cl.passive.stats) for (const [k, v] of Object.entries(cl.passive.stats)) t[k] = (t[k] || 0) + v;
   t.maxHp = Math.round((50 + h.lvl * 6) * cl.hpMult + t.vit);
+  if (t.hpPct) t.maxHp = Math.round(t.maxHp * (1 + t.hpPct / 100));
   t.pa = 6 + (h.lvl >= 100 ? 1 : 0) + t.pa;
   t.critPct = clamp(3 + t.crit, 0, 50);
   t.dodgePct = clamp(t.dodge || 0, 0, 35);
@@ -943,7 +944,13 @@ function craft(st, r) {
   const m0 = masteryOf(st, r.out); st.mastery = st.mastery || {}; st.mastery[r.out] = m0.n + 1;
   const m1 = masteryOf(st, r.out), rankUp = m1.i > m0.i ? m1.rank : null;
   let result, perfect = false;
-  if (RESOURCES[r.out]) { addRes(st, r.out, 1); result = { res: r.out }; }
+  if (RESOURCES[r.out]) {
+    let qty = 1, golden = false, daily = false;
+    if (RESOURCES[r.out].food) { // Fournée dorée (maîtrise) : ×2 ; Plat du jour : une portion offerte
+      golden = Math.random() < m0.rank.perf; daily = platDuJour(st.jobs[r.job].lvl) === r.out; if (golden) qty *= 2; if (daily) qty += 1; perfect = golden;
+    }
+    addRes(st, r.out, qty); result = { res: r.out, qty, golden, daily };
+  }
   else { perfect = Math.random() < m0.rank.perf; const g = rollItem(r.out, m0.rank.floor, perfect); st.gear.push(g); result = { gear: g }; }
   return { ...result, xp, lvUp, perfect, rankUp };
 }
@@ -1039,7 +1046,7 @@ function equip(st, h, gearUid, wanted) {
   return null;
 }
 function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
-function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0 }; for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
+function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0 }; if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) if (k in t) t[k] += v; for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
 /* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
 function heroPower(st, h) {
