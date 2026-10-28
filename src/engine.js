@@ -193,10 +193,11 @@ function spellPower(h, t, f, sp) {
 function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0);
+  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
   if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
+  if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
   if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
   if (monRes) v *= 1 - monRes / 100;
@@ -252,6 +253,10 @@ function heroTurn(st, h, t, ev) {
     const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
     const line = castSpell(st, h, t, best, target, alive);
     actions.push(line);
+    if (h.cls === 'ecaflip' && f.double && (best.type === 'dmg' || best.type === 'aoe')) { // Quitte ou Double gagné : le sort frappe deux fois
+      const al2 = f.mons.filter(m => m.hp > 0);
+      if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
+    }
     enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
@@ -260,6 +265,7 @@ function heroTurn(st, h, t, ev) {
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
   };
+  if (h.cls === 'ecaflip') ecaToss(h, t, f, actions);
   if (h.cls === 'enutrof') {
     enuChest(h, f, actions);
     if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
@@ -345,6 +351,14 @@ function monsterTurn(st, h, t, m, ev) {
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
+  if (h.cls === 'ecaflip') {
+    if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
+    if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
+      f.lifeSeq = (f.lifeSeq || 0) + 1;
+      ev.log(h, line + `🐾 Neuf Vies ! ${h.name} retombe sur ses pattes : le coup de ${def.name} est évité.`, 'win');
+      return;
+    }
+  }
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
   if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
@@ -358,6 +372,25 @@ function monsterTurn(st, h, t, m, ev) {
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Chance du Matou de l'Ecaflip ----------------------
+   Chaque tour : pièce. Face = +40 % de dégâts ; Pile = −35 % de dégâts subis et +1 Trèfle
+   (h.clover, gardés d'un combat à l'autre). À 6 Trèfles : Quitte ou Double. */
+const ECA_CLOVER_MAX = 6, ECA_FACE_DMG = 1.4, ECA_PILE_DEF = 0.65;
+function ecaToss(h, t, f, actions) {
+  f.double = false;
+  if ((h.clover || 0) >= ECA_CLOVER_MAX) {
+    h.clover = 0;
+    const win = Math.random() < 0.6;
+    f.gambleSeq = (f.gambleSeq || 0) + 1; f.gambleFx = { n: f.gambleSeq, win };
+    if (win) { f.double = true; actions.push('🎲 Quitte ou Double : GAGNÉ ! Ses sorts frappent deux fois'); }
+    else { const loss = Math.max(0, Math.min(h.hp - 1, Math.round(t.maxHp * 0.08))); h.hp -= loss; actions.push(`🎲 Quitte ou Double : perdu… −${loss} PV`); }
+  }
+  const face = Math.random() < 0.5 + 0.04 * (h.clover || 0);
+  f.coin = face ? 'face' : 'pile'; f.coinSeq = (f.coinSeq || 0) + 1; f.coinFx = { n: f.coinSeq, face };
+  if (!face) h.clover = Math.min(ECA_CLOVER_MAX, (h.clover || 0) + 1);
+  actions.push(face ? '😼 FACE ! +40 % de dégâts' : `🙀 PILE ! −35 % de dégâts subis · 🍀 ${h.clover}/${ECA_CLOVER_MAX}`);
 }
 
 /* ---------------------- Fièvre de l'Or de l'Enutrof ----------------------

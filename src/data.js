@@ -102,6 +102,25 @@ const CLASSES = {
       { id: 'pelle_jugement', name: 'Pelle du Jugement', lvl: 36, pa: 5, min: 34, max: 44, stat: 'cha', type: 'dmg', cd: 2 },
     ],
   },
+  ecaflip: {
+    name: 'Ecaflip', role: 'Félin joueur', main: 'deg', elem: 'cha', hpMult: 1.0, color: '#2fb59a',
+    desc: 'Un chat qui joue sa vie sur un coup de pièce. La chance fait tout : Pile, Face, trèfles et neuf vies.',
+    passive: { name: 'Chance du Matou', points: [
+      ['🪙','Pile ou Face','Au début de chaque tour, il lance sa pièce. FACE 😼 : +40 % de dégâts ce tour. PILE 🙀 : les ennemis infligent 35 % de dégâts en moins ce tour, et il gagne 1 Trèfle.'],
+      ['🍀','Trèfles','Jusqu’à 6 Trèfles, gardés d’un combat à l’autre. Chacun donne +3 % de critique et +4 % de chances de tomber sur Face.'],
+      ['🎲','Quitte ou Double','À 6 Trèfles, il les mise tous (60 % de réussite). Gagné : tous ses sorts offensifs du tour frappent deux fois. Perdu : il y laisse 8 % de ses PV max (sans pouvoir en mourir).'],
+      ['🐾','Neuf Vies','Un coup qui devait être fatal a 20 % de chances (+4 % par Trèfle) d’être évité : il retombe sur ses pattes sans une égratignure.'],
+      ['🔎','Instinct félin','+25 Prospection et +5 % d’esquive.']
+    ], desc: 'Pile ou Face à chaque tour (Face : +40 % de dégâts, Pile : −35 % de dégâts subis et +1 Trèfle). Les Trèfles augmentent critique et chance de Face ; à 6, Quitte ou Double. Neuf Vies évite parfois le coup fatal.', stats: { pp: 25, dodge: 5 } },
+    spells: [
+      { id: 'griffe_joueuse', name: 'Griffe Joueuse', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
+      { id: 'langue_rapeuse', name: 'Langue Râpeuse', lvl: 6, pa: 3, min: 10, max: 13, stat: 'cha', type: 'drain', max_: 1 },
+      { id: 'roulette', name: 'Roulette', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
+      { id: 'felintion', name: 'Félintion', lvl: 22, pa: 2, type: 'buff', buff: { deg: 30, res: 10 }, turns: 3, cd: 5 },
+      { id: 'tout_ou_rien', name: 'Tout ou Rien', lvl: 36, pa: 5, min: 26, max: 52, stat: 'cha', type: 'dmg', cd: 2 },
+      { id: 'rekop', name: 'Rekop', lvl: 45, pa: 4, min: 15, max: 21, stat: 'cha', type: 'aoe', cd: 1 },
+    ],
+  },
   sram: {
     name: 'Sram', role: 'Assassin sournois', main: 'deg', elem: 'agi', hpMult: 0.9, color: '#6a5fb5',
     desc: 'Poisons et coups critiques. Rapporte plus de kamas.',

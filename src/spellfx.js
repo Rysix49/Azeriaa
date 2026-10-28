@@ -40,6 +40,13 @@ const SPELL_FX = {
   fortune:           ['buff', '#ffd24a', '💰'],
   pluie_or:          ['rain', '#ffd24a', '🪙'],
   pelle_jugement:    ['drop', '#ffcf3a', '⛏️', 1.8],
+  // Ecaflip : griffes et chance
+  griffe_joueuse:    ['slash', '#2fe0b8', '', 'quick'],
+  langue_rapeuse:    ['drain', '#ff7aa8'],
+  roulette:          ['rain', '#ffe27a', '🎲'],
+  felintion:         ['buff', '#2fe0b8', '🍀'],
+  tout_ou_rien:      ['slash', '#ffd24a', '', 'heavy'],
+  rekop:             ['wave', '#2fe0b8'],
   // Sram : ombres et pièges
   sournoiserie:      ['slash', '#9a7bff', '', 'quick'],
   poison_paralysant: ['poison', '#6dff5a'],
