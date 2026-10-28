@@ -300,3 +300,20 @@ relique_chafer: () => { const l = _id(); return _halo('#9be8e0') + `<defs>${_lg(
 
 /* Couleur d'identité de chaque panoplie (pastille sur les cases, fiche d'objet) */
 const SET_COL = { aventurier: '#4fc3f7', bouftou: '#f2e6c4', abraknyde: '#7ccf4d', bwork: '#e0503a', koalak: '#ff9c4a', chafer: '#7ff3ff' };
+
+/* ======================= RELIQUES v3 : aura rayonnante + cadre doré ornementé ======================= */
+const _RELIC_COL = { relique_tofu: ['#8fd6ff', '#2a9fe0'], relique_bouftou: ['#ffd54a', '#e8851a'], relique_abra: ['#8ee05a', '#2f9a2a'], relique_craq: ['#ff9a4a', '#d8401a'], relique_bworkette: ['#ff6a7a', '#c4122a'], relique_kanigrou: ['#ffe08a', '#d9961a'], relique_chafer: ['#9bf3ff', '#17a8c8'] };
+const _relicOld = Object.assign({}, ITEM_ART);
+const _relicFrame = (id) => {
+  const [c1, c2] = _RELIC_COL[id], g = _id(), r = _id(), f = _id();
+  const rays = Array.from({ length: 16 }, (_, i) => { const a = i * 22.5, L = i % 2 ? 13 : 15.4; return `<path transform="rotate(${a} 16 16)" d="M15.2 16 16 ${16 - L} 16.8 16Z" fill="url(#${r})"/>`; }).join('');
+  const gems = [[16, 2.6], [29.4, 16], [16, 29.4], [2.6, 16]].map(([x, y]) => `<path transform="translate(${x} ${y}) rotate(45)" d="M-1.5-1.5h3v3h-3Z" fill="${c1}" stroke="#fff3c0" stroke-width=".5"/>`).join('');
+  return `<defs>${_rg(g, c1, c2, .5, .5, .55)}${_lg(f, '#fff2b0', '#b9801a', 1, 1)}<radialGradient id="${r}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${c1}" stop-opacity=".05"/><stop offset="1" stop-color="${c1}" stop-opacity=".75"/></radialGradient></defs>
+    <circle cx="16" cy="16" r="15.2" fill="${c2}" opacity=".16"/>${rays}<circle cx="16" cy="16" r="12.6" fill="url(#${g})" opacity=".42"/>
+    <circle cx="16" cy="16" r="13.2" fill="none" stroke="#2a1c04" stroke-width="2.4" opacity=".75"/><circle cx="16" cy="16" r="13.2" fill="none" stroke="url(#${f})" stroke-width="1.5"/><circle cx="16" cy="16" r="11.9" fill="none" stroke="#fff6c8" stroke-width=".4" opacity=".7"/>${gems}`;
+};
+for (const id of Object.keys(_RELIC_COL)) {
+  const body = _relicOld[id]().replace(/<circle cx="16" cy="16" r="14"[^>]*\/><circle cx="16" cy="16" r="10\.5"[^>]*\/>/, '');
+  const [c1] = _RELIC_COL[id];
+  ITEM_ART[id] = () => _relicFrame(id) + `<g transform="translate(16 16.4) scale(.72) translate(-16 -16)">${body}</g>` + _spark(4.6, 6, '#fff', .9) + _spark(27.6, 8.4, c1, .8) + _spark(26.8, 26, '#fff', .7) + _spark(5.4, 25.4, c1, .6);
+}
