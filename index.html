@@ -1532,7 +1532,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793150372';
+const BUILD_ID = '1793150680';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -5066,6 +5066,9 @@ iop: `<svg class="hs hs-iop" viewBox="0 0 128 128" aria-hidden="true">
     <linearGradient id="ipLeather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a32"/><stop offset="1" stop-color="#4a2a14"/></linearGradient>
     <linearGradient id="ipBoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a04a2a"/><stop offset="1" stop-color="#3a1608"/></linearGradient>
     <linearGradient id="ipBand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0503a"/><stop offset="1" stop-color="#a01c14"/></linearGradient>
+    <linearGradient id="ipHairBack" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#7a1608"/><stop offset=".5" stop-color="#c8321a"/><stop offset="1" stop-color="#ff7a1e"/></linearGradient>
+    <linearGradient id="ipSteel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9eef5"/><stop offset=".5" stop-color="#9aa8ba"/><stop offset="1" stop-color="#55637a"/></linearGradient>
+    <radialGradient id="ipRuby" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ffd0c0"/><stop offset=".4" stop-color="#ff3b22"/><stop offset="1" stop-color="#6a0a02"/></radialGradient>
     <radialGradient id="ipFlame" cx="50%" cy="60%" r="55%"><stop offset="0" stop-color="#ffe27a" stop-opacity=".95"/><stop offset=".5" stop-color="#ff7a1e" stop-opacity=".65"/><stop offset="1" stop-color="#ff3b22" stop-opacity="0"/></radialGradient>
   </defs>
   <ellipse class="p-shadow" cx="62" cy="119" rx="32" ry="5.5" fill="#000" opacity=".32"/>
@@ -5086,8 +5089,18 @@ iop: `<svg class="hs hs-iop" viewBox="0 0 128 128" aria-hidden="true">
       <path d="M50 60 Q32 64 22 86 L14 100 L26 96 L24 108 L36 100 L42 110 L46 94 Q52 80 58 64Z" fill="url(#ipCape)"/>
       <path d="M48 66 Q36 72 28 88 M52 72 Q44 84 40 98" fill="none" stroke="#ffb09a" stroke-opacity=".3" stroke-width="1.6" stroke-linecap="round"/>
     </g>
+    <!-- bras gauche : poing serré, gantelet d'or -->
+    <path d="M46 69 Q36 76 38 90" fill="none" stroke="#2a1606" stroke-width="11" stroke-linecap="round"/>
+    <path d="M46 69 Q36 76 38 90" fill="none" stroke="url(#ipSkin)" stroke-width="8.2" stroke-linecap="round"/>
+    <path d="M37.4 82 L38 90" fill="none" stroke="#2a1606" stroke-width="12" stroke-linecap="round"/>
+    <path d="M37.4 82 L38 90" fill="none" stroke="url(#ipGold)" stroke-width="9.2" stroke-linecap="round"/>
+    <path d="M33.6 85.4 h8.4" stroke="#8a5408" stroke-width="1.3"/>
+    <circle cx="38.4" cy="95.4" r="5.4" fill="url(#ipSkin)" stroke="#2a1606" stroke-width="1.9"/>
+    <path d="M35 93.4 h6.8 M34.8 96.2 h7.2" stroke="#a8683c" stroke-width="1"/>
     <!-- tunique et ceinture -->
     <path d="M46 62 Q62 54 80 62 L85 97 Q62 105 41 97Z" fill="url(#ipTunic)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M41 97 Q62 105 85 97 L85 100 Q62 108 41 100Z" fill="#ffd24a" stroke="#2a1606" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M82 68 Q85 82 84 94" fill="none" stroke="#ffc2a0" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/>
     <path d="M42 70 Q40 84 43 94" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2.4" stroke-linecap="round"/>
     <path d="M52 62 L62 77 L72 62" fill="none" stroke="#2a1606" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M52 62 L62 77 L72 62" fill="none" stroke="#ffd24a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -5103,6 +5116,10 @@ iop: `<svg class="hs hs-iop" viewBox="0 0 128 128" aria-hidden="true">
       <path d="M43 101 L53 102 L51.5 111 L45 109Z"/><path d="M71 102 L81 101 L79 109 L72.5 111Z"/>
     </g>
 
+    <!-- épaulière gauche à pointes -->
+    <path d="M36 66 Q40 52 56 58 Q57 69 47 72 Q37 72 36 66Z" fill="url(#ipGold)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M40 58 L36.4 47.4 L45.4 54.4 M47 55 L47.6 44.6 L53.6 55" fill="url(#ipGold)" stroke="#2a1606" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M39.4 64 Q44 57.4 52 59.4" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.8" stroke-linecap="round"/>
     <!-- bras avant, brassard, épaulière -->
     <path d="M80 66 Q91 69 97 83" fill="none" stroke="#2a1606" stroke-width="11" stroke-linecap="round"/>
     <path d="M80 66 Q91 69 97 83" fill="none" stroke="url(#ipSkin)" stroke-width="8.2" stroke-linecap="round"/>
@@ -5116,12 +5133,14 @@ iop: `<svg class="hs hs-iop" viewBox="0 0 128 128" aria-hidden="true">
       <path d="M98 12 L98 74" stroke="#7c8a9c" stroke-width="2.2" stroke-linecap="round"/>
       <path d="M94.6 28 L94.6 72" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-opacity=".9"/>
       <path class="p-bladefire" d="M91 72 Q86 58 92 46 Q88 34 95 22 Q94 14 98 4 Q102 14 101 22 Q108 34 104 46 Q110 58 105 72Z" fill="url(#ipFlame)" opacity="0"/>
+      <path d="M96 22 l4 3 M96 34 l4 -3 M96.4 44 l3.2 3 M96 56 l4 -3 M96.4 66 l3.2 3" stroke="#ff7a1e" stroke-width="1.5" stroke-linecap="round" opacity=".9"/>
       <path class="p-edge" d="M98 20 Q102 34 98 48 Q94 60 98 70" fill="none" stroke="#ff7a1e" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>
       <path d="M84 77 Q91 70 98 75 Q105 70 112 77 L109 83 Q98 79 87 83Z" fill="url(#ipGold)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
-      <circle cx="98" cy="77.6" r="2.4" fill="#c0301e" stroke="#2a1606" stroke-width="1"/>
+      <path d="M84 77 Q79 70 83 64 Q86 70 91 71Z M112 77 Q117 70 113 64 Q110 70 105 71Z" fill="url(#ipGold)" stroke="#2a1606" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="98" cy="77.6" r="3.2" fill="url(#ipRuby)" stroke="#2a1606" stroke-width="1.2"/>
       <path d="M96 83 L96 96 L100 96 L100 83Z" fill="url(#ipLeather)" stroke="#2a1606" stroke-width="1.6" stroke-linejoin="round"/>
       <path d="M96 86 L100 87.6 M96 89.6 L100 91.2 M96 93 L100 94.6" stroke="#e0b25a" stroke-width="1"/>
-      <circle cx="98" cy="98" r="3.8" fill="url(#ipGold)" stroke="#7a4a00" stroke-width="1.5"/>
+      <circle cx="98" cy="98" r="4.2" fill="url(#ipGold)" stroke="#7a4a00" stroke-width="1.5"/><circle cx="98" cy="98" r="1.9" fill="url(#ipRuby)"/>
       <circle cx="98" cy="86" r="5.6" fill="url(#ipSkin)" stroke="#2a1606" stroke-width="1.8"/>
       <path d="M94.4 83.4 h7.2 M94.2 86.4 h7.4 M94.6 89.2 h6.8" stroke="#a8683c" stroke-width="1"/>
     </g>
@@ -5137,10 +5156,14 @@ iop: `<svg class="hs hs-iop" viewBox="0 0 128 128" aria-hidden="true">
       <g class="p-tails" stroke="#2a1606" stroke-width="1.8" stroke-linejoin="round">
         <path d="M43 36 Q30 30 18 38 Q27 38 32 42 Q22 46 15 56 Q32 50 44 41Z" fill="url(#ipBand)"/>
       </g>
+      <path class="p-hairback" d="M40 42 Q34 30 40 22 L28 14 L43 15 L38 5 L52 11 L58 2 L66 9 L78 2 L80 10 L95 4 L88 18 L98 24 L86 28 Q90 36 84 46 Q78 36 62 30 Q46 36 40 42Z" fill="url(#ipHairBack)" stroke="#2a1606" stroke-width="1.8" stroke-linejoin="round"/>
       <circle cx="44.6" cy="45" r="4.2" fill="url(#ipSkin)" stroke="#2a1606" stroke-width="1.8"/>
       <path d="M44 40 Q44 26 62 25 Q80 26 81 40 Q82 52 74 58 Q62 63 50 58 Q43 52 44 40Z" fill="url(#ipSkin)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
       <ellipse cx="53" cy="51" rx="4.4" ry="2.8" fill="#ff7a6a" opacity=".42"/>
-      <path d="M51.4 48.4 l5 5.2 M56.4 48.4 l-5 5.2" stroke="#b05a40" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M44 40 Q62 34 82 40 L82 44 Q62 39 44 44Z" fill="#a8603a" opacity=".28"/>
+      <path d="M50.4 41 L55.4 56" stroke="#a24a3a" stroke-width="1.8" stroke-linecap="round"/><path d="M49.4 46 h3.4 M51 50.4 h3.4" stroke="#f6d2b0" stroke-width="1.1" stroke-linecap="round"/>
+      <circle cx="44.2" cy="51.4" r="2.2" fill="none" stroke="#ffd24a" stroke-width="1.3"/>
+      <path d="M58 56.4 Q63 58.6 68 57.4" fill="none" stroke="#a8603a" stroke-width="1" stroke-opacity=".7" stroke-linecap="round" stroke-dasharray="1 2"/>
       <g class="p-eye">
         <ellipse cx="61" cy="45" rx="4.1" ry="4.6" fill="#fff" stroke="#2a1606" stroke-width="1.4"/>
         <ellipse cx="74" cy="45" rx="3.7" ry="4.4" fill="#fff" stroke="#2a1606" stroke-width="1.4"/>
