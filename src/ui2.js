@@ -226,7 +226,19 @@ function renderParty() {
 }
 
 /* ---------------------------- Vue : Combats ---------------------------- */
-function combatSig() { return st.heroes.map(h => h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0)).join('|'); }
+function heroSig(h) { return h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0); }
+function combatSig() { return st.heroes.map(heroSig).join('|'); }
+/* Seules les cartes dont le contenu a changé sont redessinées : les ennemis morts de l'autre héros ne rejouent plus leur chute */
+function redrawCards() {
+  const cards = [...document.querySelectorAll('[data-hero-card]')];
+  if (cards.length !== st.heroes.length || !ui.lastHs) return false;
+  for (const h of st.heroes) {
+    const sg = heroSig(h); if (ui.lastHs[h.id] === sg) continue;
+    const old = document.querySelector(`[data-hero-card="${h.id}"]`); if (!old) return false;
+    const tmp = document.createElement('div'); tmp.innerHTML = fightCard(h); old.replaceWith(tmp.firstElementChild);
+  }
+  ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); ui.lastSig = combatSig(); return true;
+}
 function renderCombat() {
   if (!st.heroes.length) return renderRecruit(true);
   const more = st.heroes.length < RECRUIT_COST.length;
@@ -266,7 +278,7 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
@@ -575,7 +587,7 @@ function patchCombat() {
       const prev = +el.dataset.hp;
       if (!isNaN(prev) && m.hp < prev) floatNum(el, '−' + fmt(prev - m.hp), 'dmg');
       el.dataset.hp = m.hp;
-      el.classList.toggle('dead', m.hp <= 0);
+      el.classList.toggle('dead', m.hp <= 0); if (m.hp > 0) el.classList.remove('still');
       if (m.frozen && m.hp > 0 && !el.classList.contains('frozen')) iceBurst(el);
       el.classList.toggle('frozen', !!m.frozen && m.hp > 0);
       setBar(el, m.hp, m.max);
@@ -1045,7 +1057,7 @@ function renderMain(force) {
   try { window.scrollTo(0, sy); } catch (e) {}
   requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
-  if (ui.view === 'combat') ui.lastSig = combatSig();
+  if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); }
 }
 let lastSlow = 0;
 function render(force) {
@@ -1053,7 +1065,7 @@ function render(force) {
   const now = Date.now();
   if (force) { renderMain(true); lastSlow = now; return; }
   if (ui.view === 'combat' && st.heroes.length) {
-    if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) renderMain(); else patchCombat();
+    if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) { if (!redrawCards()) renderMain(); patchCombat(); } else patchCombat();
   } else if (now - lastSlow > 1500 && ui.view !== 'options') {
     renderMain(); lastSlow = now;
   }

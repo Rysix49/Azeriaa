@@ -1535,3 +1535,6 @@ label.btn { cursor: pointer; }
 
 /* l'état du héros garde une largeur fixe : l'en-tête ne se replie plus sur 1 ou 2 lignes selon le texte (la page sautait) */
 .fc-head .status { min-width: 124px; text-align: center; box-sizing: border-box; }
+
+/* ennemi déjà mort quand la carte est redessinée : pose finale directe, sans rejouer la chute */
+.mon.dead.still .sprite.has-art .ms { animation-duration: 0s; animation-delay: 0s; }
