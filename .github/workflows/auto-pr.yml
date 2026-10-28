@@ -17,11 +17,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
-          if [ -n "$(gh pr list -R "$REPO" --head dev --base main --state open --json number -q '.[].number')" ]; then
-            echo "Demande déjà ouverte."; exit 0
+          # Ne fait jamais échouer le déploiement : au pire, un simple avertissement.
+          OWNER="${REPO%%/*}"
+          OPEN=$(gh api "repos/$REPO/pulls?state=open&base=main&head=$OWNER:dev" -q 'length' 2>/dev/null || echo "?")
+          if [ "$OPEN" != "0" ]; then echo "Demande déjà ouverte (ou liste illisible : $OPEN)."; exit 0; fi
+          AHEAD=$(gh api "repos/$REPO/compare/main...dev" -q .ahead_by 2>/dev/null || echo 0)
+          if [ "$AHEAD" = "0" ]; then echo "Rien de nouveau sur dev."; exit 0; fi
+          if gh api -X POST "repos/$REPO/pulls" -f head=dev -f base=main \
+               -f title="Publier les nouveautés de dev" \
+               -f body="Demande ouverte automatiquement. Clique sur « Merge pull request » puis « Confirm merge » pour publier sur le site officiel." >/dev/null 2>&1; then
+            echo "Demande de fusion ouverte."
+          else
+            echo "::warning::Impossible d'ouvrir la demande automatiquement. Active Settings > Actions > General > « Allow GitHub Actions to create and approve pull requests », ou ouvre-la avec le bouton Publier."
           fi
-          AHEAD=$(gh api "repos/$REPO/compare/main...dev" -q .ahead_by)
-          [ "$AHEAD" = "0" ] && { echo "Rien de nouveau sur dev."; exit 0; }
-          gh pr create -R "$REPO" --base main --head dev \
-            --title "Publier les nouveautés de dev" \
-            --body "Demande ouverte automatiquement. Clique sur « Merge pull request » puis « Confirm merge » pour publier sur le site officiel."
+          exit 0

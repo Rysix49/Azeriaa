@@ -87,13 +87,38 @@ const CLASSES = {
   enutrof: {
     name: 'Enutrof', role: 'Chercheur de trésors', main: 'deg', elem: 'cha', hpMult: 1.1, color: '#c9962e',
     desc: 'Trouve plus de butin et de kamas que quiconque.',
-    passive: { name: 'Flair du Trésor', points: [['🔎','Prospection','+40 Prospection.'],['💰','Double butin','12 % de chance qu’un monstre lâche ses ressources en double.']], desc: '+40 Prospection. 12 % de chance qu’un monstre vaincu lâche ses ressources en double.', stats: { pp: 40 } },
+    passive: { name: 'Fièvre de l’Or', points: [
+      ['🔎','L’or fait la force','+40 Prospection. Chaque tranche de 10 Prospection ajoute +1 % de dégâts : plus il est riche en butin, plus il frappe fort.'],
+      ['🗺️','Carte au trésor','Au début de chaque combat, un ennemi au hasard cache un trésor 💰 et l’Enutrof le vise en priorité. Quand il tombe, le coffre s’ouvre : +2 pièces, Ruée vers l’or (+30 Dégâts pendant 3 tours), kamas de ce monstre ×1,5 et 35 % de ses ressources en double.'],
+      ['🪙','Cupidité','Chaque tour où il lance un sort offensif, 1 pièce tombe dans sa bourse (1 de plus s’il fait un coup critique). 10 pièces maximum, la bourse se garde d’un combat à l’autre.'],
+      ['🎰','Jackpot','Bourse pleine : au début de son tour, elle éclate en Pluie d’Or qui frappe tous les ennemis. Chaque Jackpot rapporte +10 % de kamas à la victoire.'],
+      ['🤝','Pot-de-vin','Une fois par combat, un coup fatal avec au moins 5 pièces est évité : il jette sa bourse, survit avec 15 % de ses PV et les ennemis se jettent sur l’or en perdant leur prochain tour.']
+    ], desc: '+40 Prospection (+1 % de dégâts par 10). Un ennemi cache un trésor : l’ouvrir donne une Ruée vers l’or et un meilleur butin. Chaque tour offensif remplit la bourse ; pleine, elle éclate en Jackpot. Une fois par combat, un Pot-de-vin évite le coup fatal.', stats: { pp: 40 } },
     spells: [
       { id: 'lancer_pieces', name: 'Lancer de Pièces', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
       { id: 'pelle_animee', name: 'Pelle Animée', lvl: 6, pa: 4, min: 15, max: 20, stat: 'cha', type: 'dmg', max_: 1 },
       { id: 'pelle_fantomatique', name: 'Pelle Fantomatique', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
       { id: 'fortune', name: 'Coffre Animé', lvl: 22, pa: 2, type: 'buff', buff: { deg: 35, res: 8 }, turns: 3, cd: 5 },
       { id: 'pelle_jugement', name: 'Pelle du Jugement', lvl: 36, pa: 5, min: 34, max: 44, stat: 'cha', type: 'dmg', cd: 2 },
+    ],
+  },
+  ecaflip: {
+    name: 'Ecaflip', role: 'Félin joueur', main: 'deg', elem: 'cha', hpMult: 1.0, color: '#2fb59a',
+    desc: 'Un chat qui joue sa vie sur un coup de pièce. La chance fait tout : Pile, Face, trèfles et neuf vies.',
+    passive: { name: 'Chance du Matou', points: [
+      ['🪙','Pile ou Face','Au début de chaque tour, il lance sa pièce. FACE 😼 : +40 % de dégâts ce tour. PILE 🙀 : les ennemis infligent 35 % de dégâts en moins ce tour, et il gagne 1 Trèfle.'],
+      ['🍀','Trèfles','Jusqu’à 6 Trèfles, gardés d’un combat à l’autre. Chacun donne +3 % de critique et +4 % de chances de tomber sur Face.'],
+      ['🎲','Quitte ou Double','À 6 Trèfles, il les mise tous (60 % de réussite). Gagné : tous ses sorts offensifs du tour frappent deux fois. Perdu : il y laisse 8 % de ses PV max (sans pouvoir en mourir).'],
+      ['🐾','Neuf Vies','Un coup qui devait être fatal a 20 % de chances (+4 % par Trèfle) d’être évité : il retombe sur ses pattes sans une égratignure.'],
+      ['🔎','Instinct félin','+25 Prospection et +5 % d’esquive.']
+    ], desc: 'Pile ou Face à chaque tour (Face : +40 % de dégâts, Pile : −35 % de dégâts subis et +1 Trèfle). Les Trèfles augmentent critique et chance de Face ; à 6, Quitte ou Double. Neuf Vies évite parfois le coup fatal.', stats: { pp: 25, dodge: 5 } },
+    spells: [
+      { id: 'griffe_joueuse', name: 'Griffe Joueuse', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
+      { id: 'langue_rapeuse', name: 'Langue Râpeuse', lvl: 6, pa: 3, min: 10, max: 13, stat: 'cha', type: 'drain', max_: 1 },
+      { id: 'roulette', name: 'Roulette', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
+      { id: 'felintion', name: 'Félintion', lvl: 22, pa: 2, type: 'buff', buff: { deg: 30, res: 10 }, turns: 3, cd: 5 },
+      { id: 'tout_ou_rien', name: 'Tout ou Rien', lvl: 36, pa: 5, min: 26, max: 52, stat: 'cha', type: 'dmg', cd: 2 },
+      { id: 'rekop', name: 'Rekop', lvl: 45, pa: 4, min: 15, max: 21, stat: 'cha', type: 'aoe', cd: 1 },
     ],
   },
   sram: {

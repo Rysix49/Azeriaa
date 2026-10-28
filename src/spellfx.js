@@ -38,7 +38,15 @@ const SPELL_FX = {
   pelle_animee:      ['drop', '#c9a46a', '⛏️'],
   pelle_fantomatique:['rain', '#b9c7ff', '⛏️'],
   fortune:           ['buff', '#ffd24a', '💰'],
+  pluie_or:          ['rain', '#ffd24a', '🪙'],
   pelle_jugement:    ['drop', '#ffcf3a', '⛏️', 1.8],
+  // Ecaflip : griffes et chance
+  griffe_joueuse:    ['slash', '#2fe0b8', '', 'quick'],
+  langue_rapeuse:    ['drain', '#ff7aa8'],
+  roulette:          ['rain', '#ffe27a', '🎲'],
+  felintion:         ['buff', '#2fe0b8', '🍀'],
+  tout_ou_rien:      ['slash', '#ffd24a', '', 'heavy'],
+  rekop:             ['wave', '#2fe0b8'],
   // Sram : ombres et pièges
   sournoiserie:      ['slash', '#9a7bff', '', 'quick'],
   poison_paralysant: ['poison', '#6dff5a'],
@@ -208,10 +216,23 @@ const FX_KIND = {
   },
 };
 
+/* Geste du personnage : un seul à la fois ; si un sort arrive en plein mouvement, le suivant s'enchaîne juste après (pas de saccade) */
+function heroGesture(unit, k) {
+  if (unit._gBusy) { unit._gNext = k; return; }
+  unit._gBusy = true; unit.classList.remove('atk', 'cheer'); void unit.offsetWidth; unit.classList.add(k);
+  setTimeout(() => {
+    unit.classList.remove(k); unit._gBusy = false;
+    const n = unit._gNext; unit._gNext = null;
+    if (n) requestAnimationFrame(() => heroGesture(unit, n));
+  }, k === 'atk' ? 520 : 600);
+}
+
 /* Joue l'animation d'un sort dans la carte de combat d'un héros */
 function playSpellFx(card, cast) {
   if (!FX_OK()) return;
   const scene = card.querySelector('.scene'); if (!scene) return;
+  const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
+  if (heroUnit) heroGesture(heroUnit, ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]) ? 'cheer' : 'atk');
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
   const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
   const from = fxPos(scene, heroSprite); if (!from) return;

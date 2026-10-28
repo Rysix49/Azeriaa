@@ -114,6 +114,7 @@ const CLASS_GLYPH = {
   eniripsa: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" fill="currentColor"/><path d="M12 10.5v6M9 13.5h6" stroke="var(--c)" stroke-width="2" stroke-linecap="round"/><path d="M4.7 12.2C2.6 12.4 1 10.9 1 8.8c1.3.9 2.6 1 3.6.7M4.9 14.6c-1.8.4-3.2-.5-3.6-2.1M19.3 12.2c2.1.2 3.7-1.3 3.7-3.4-1.3.9-2.6 1-3.6.7M19.1 14.6c1.8.4 3.2-.5 3.6-2.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".85"/>',
   sacrieur: '<path d="M12 2.8s6.3 7.2 6.3 11.4a6.3 6.3 0 0 1-12.6 0C5.7 10 12 2.8 12 2.8Z" fill="currentColor"/><path d="M9.3 12.5l2 3.5M12 11.5l1.4 4.8M14.7 12.5l-.6 3.6" stroke="var(--c)" stroke-width="1.5" stroke-linecap="round"/>',
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
+  ecaflip: '<path d="M4.2 3.8 9 7.9c1.9-.6 4.1-.6 6 0l4.8-4.1.5 8.7c0 4.6-3.6 7.7-8.3 7.7S3.7 17.1 3.7 12.5Z" fill="currentColor"/><path d="M7.6 12.2c.9-1.1 2.1-1.1 2.8 0M13.6 12.2c.9-1.1 2.1-1.1 2.8 0" stroke="var(--c)" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M12 14.1l-1.3 1.3h2.6Z" fill="var(--c)"/><path d="M12 15.4v1.1M9.9 16.7c.8.5 1.5.5 2.1 0 .6.5 1.3.5 2.1 0" stroke="var(--c)" stroke-width=".9" stroke-linecap="round" fill="none"/><path d="M1.4 12.6l3.6.8M1.7 16l3.4-.9M22.6 12.6l-3.6.8M22.3 16l-3.4-.9" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/>',
   xelor: '<path d="M6.5 3h11M6.5 21h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5c0 4.6 3.6 5.8 3.6 8.5S8 15.9 8 20.5h8c0-4.6-3.6-5.8-3.6-8.5S16 7.1 16 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 19.6c.6-1.9 1.5-2.6 2.4-2.6s1.8.7 2.4 2.6ZM10 6.2h4c-.5 1.4-1.2 2.1-2 2.6-.8-.5-1.5-1.2-2-2.6Z" fill="currentColor"/><circle cx="12" cy="13.4" r=".7" fill="currentColor"/>',
   sram: '<path d="M14.5 3.2A8.8 8.8 0 1 0 20.8 16 7 7 0 1 1 14.5 3.2Z" fill="currentColor"/><path d="M17.5 5.5 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19.2 3.8l1-1M16.3 4.3l3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
 };
@@ -266,10 +267,10 @@ function fightCard(h) {
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
-        ${cra ? reticleHtml(h) : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
+        ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -281,12 +282,12 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
-          <div class="sprite">${emblem(h.cls, 'big')}</div></div>
+          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
         ${stage}
       </div>
       <div class="fc-log" data-k="log">${logHtml(h)}</div>
@@ -312,6 +313,81 @@ function trapBoom(card, fx) {
   b.innerHTML = `<i></i><i></i><i></i><i></i><i></i><i></i><i></i><b>PIÈGE !</b>`;
   mon.appendChild(b); setTimeout(() => b.remove(), 1300);
   mon.classList.remove('trapped'); void mon.offsetWidth; mon.classList.add('trapped'); setTimeout(() => mon.classList.remove('trapped'), 900);
+}
+/* ---------------------- Fièvre de l'Or de l'Enutrof ---------------------- */
+function purseHtml(h) { const n = h.purse || 0; return n >= ENU_PURSE_MAX ? '🎰 JACKPOT' : `🪙 ${Array.from({ length: ENU_PURSE_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`; }
+function coinBurst(el, n, sym) {
+  if (!el || !FX_OK()) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span'); s.className = 'coin-pop'; s.textContent = sym || '🪙';
+    const a = (i / n) * Math.PI * 2;
+    s.style.cssText = `--dx:${(Math.cos(a) * (24 + Math.random() * 26)).toFixed(0)}px;--dy:${(Math.sin(a) * (18 + Math.random() * 16) - 18).toFixed(0)}px;animation-delay:${(Math.random() * 140).toFixed(0)}ms`;
+    el.appendChild(s); setTimeout(() => s.remove(), 1100);
+  }
+}
+function goldFx(card, text, burstTarget, n) {
+  const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
+  const t = document.createElement('span'); t.className = 'fnum gold'; t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+  coinBurst(burstTarget || fg, n || 8);
+}
+/* ---------------------- Chance du Matou de l'Ecaflip ---------------------- */
+function cloverHtml(h) {
+  const f = h.fight, n = h.clover || 0;
+  const side = f && f.coin === 'face' ? '😼' : f && f.coin === 'pile' ? '🙀' : '🪙';
+  return n >= ECA_CLOVER_MAX ? `${side} 🎲 QUITTE OU DOUBLE` : `${side} 🍀 ${Array.from({ length: ECA_CLOVER_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`;
+}
+function ecaText(card, text, cls) {
+  const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
+  const t = document.createElement('span'); t.className = 'fnum eca ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+}
+function coinFlip(card, face) {
+  if (!FX_OK()) { ecaText(card, face ? 'FACE !' : 'PILE !', face ? 'face' : 'pile'); return; }
+  const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
+  const c = document.createElement('div'); c.className = 'flip ' + (face ? 'face' : 'pile');
+  c.innerHTML = `<div class="flip-coin"><b class="fr">😼</b><b class="bk">🙀</b></div><span>${face ? 'FACE !' : 'PILE !'}</span>`;
+  fg.appendChild(c); setTimeout(() => c.remove(), 1700);
+  const sp = fg.querySelector('.sprite'); if (sp) { sp.classList.remove('eca-glow-face', 'eca-glow-pile'); void sp.offsetWidth; sp.classList.add(face ? 'eca-glow-face' : 'eca-glow-pile'); setTimeout(() => sp.classList.remove('eca-glow-face', 'eca-glow-pile'), 1500); }
+}
+function gambleFx(card, scene, win) {
+  ecaText(card, win ? '🎲 DOUBLE !' : '🎲 PERDU…', win ? 'face' : 'pile');
+  if (win) { coinBurst(card.querySelector('[data-k="fighter"]'), 14, '🍀'); scene.classList.remove('gold-flash'); void scene.offsetWidth; scene.classList.add('gold-flash'); setTimeout(() => scene.classList.remove('gold-flash'), 900); }
+}
+
+/* Jackpot : machine à sous, rayons d'or, pluie de pièces et impacts sur chaque ennemi (≈ 2,7 s) */
+function playJackpot(card, fx) {
+  const scene = card.querySelector('.scene'); if (!scene) return;
+  if (!FX_OK()) { goldFx(card, 'JACKPOT !', scene, 0); return; }
+  const H = scene.clientHeight || 220;
+  const sym = ['🍒', '🔔', '💎', '🍀', '🪙', '<b class="s7">7</b>'];
+  const strip = sym.concat(sym).map(x => `<span>${x}</span>`).join('');
+  const reels = [0, 1, 2].map(() => `<div class="jp-reel"><div class="jp-strip">${strip}</div></div>`).join('');
+  const bulbs = Array.from({ length: 12 }, (_, i) => `<i style="--i:${i}"></i>`).join('');
+  const coins = Array.from({ length: 44 }, () => `<i style="left:${(Math.random() * 100).toFixed(1)}%;--t:${(800 + Math.random() * 600).toFixed(0)}ms;--d:${(1080 + Math.random() * 650).toFixed(0)}ms;--s:${(.8 + Math.random() * .8).toFixed(2)};--r:${(Math.random() * 360).toFixed(0)}deg"></i>`).join('');
+  const ov = document.createElement('div'); ov.className = 'jp'; ov.style.setProperty('--fall', (H + 40) + 'px');
+  ov.innerHTML = `<div class="jp-dim"></div><div class="jp-rays"></div>
+    <div class="jp-machine"><div class="jp-bulbs">${bulbs}</div><div class="jp-reels">${reels}</div></div>
+    <div class="jp-title"><span>JACKPOT</span><small>PLUIE D’OR</small></div><div class="jp-rain">${coins}</div>`;
+  scene.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const reelEls = ov.querySelectorAll('.jp-reel');
+  [560, 840, 1120].forEach((ms, k) => setTimeout(() => reelEls[k].classList.add('stop'), ms));
+  const hero = card.querySelector('[data-k="fighter"]');
+  const heroCls = card.querySelector('[data-k="fighter"] .hs') ? 'jp-pose' : 'jp-hero'; // dessin animé : pose de victoire, sinon simple halo
+  if (hero) hero.classList.add(heroCls); // le personnage entre dans la danse dès le lancement des rouleaux
+  setTimeout(() => { ov.classList.add('win'); scene.classList.add('gold-flash'); }, 1150);
+  setTimeout(() => {
+    scene.classList.add('cl-shake');
+    ((fx && fx.hits) || []).forEach((hit, k) => setTimeout(() => {
+      const mon = card.querySelector(`[data-mon="${hit.i}"]`); if (!mon) return;
+      mon.classList.remove('jp-hit'); void mon.offsetWidth; mon.classList.add('jp-hit');
+      const n = document.createElement('span'); n.className = 'jp-num'; n.textContent = '−' + fmt(hit.v) + (hit.crit ? ' !' : ''); mon.appendChild(n);
+      coinBurst(mon.querySelector('.sprite') || mon, 9);
+      setTimeout(() => { n.remove(); mon.classList.remove('jp-hit'); }, 1300);
+    }, k * 110));
+  }, 1500);
+  setTimeout(() => { scene.classList.remove('cl-shake'); scene.classList.remove('gold-flash'); }, 2300);
+  setTimeout(() => { if (hero) hero.classList.remove(heroCls); }, 2750);
+  setTimeout(() => ov.remove(), 2800);
 }
 function missFx(card) { const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return; const n = document.createElement('span'); n.className = 'fnum miss'; n.textContent = 'Raté !'; fg.appendChild(n); setTimeout(() => n.remove(), 950); }
 
@@ -452,6 +528,16 @@ function patchCombat() {
         const vn = h.fight.vanishSeq || 0; if (vn > +(scene.dataset.vn || 0)) { scene.dataset.vn = vn; smokePuff(card.querySelector('[data-k="fighter"] .sprite'), true); }
         const ms = h.fight.missSeq || 0; if (ms > +(scene.dataset.ms || 0)) { scene.dataset.ms = ms; missFx(card); }
       }
+      if (h.cls === 'ecaflip') {
+        const cf = h.fight.coinFx; if (cf && cf.n > +(scene.dataset.co || 0)) { scene.dataset.co = cf.n; coinFlip(card, cf.face); }
+        const gf = h.fight.gambleFx; if (gf && gf.n > +(scene.dataset.gm || 0)) { scene.dataset.gm = gf.n; setTimeout(() => gambleFx(card, scene, gf.win), 200); }
+        const nv = h.fight.lifeSeq || 0; if (nv > +(scene.dataset.nv || 0)) { scene.dataset.nv = nv; ecaText(card, '🐾 NEUF VIES !', 'face'); coinBurst(card.querySelector('[data-k="fighter"]'), 8, '🐾'); }
+      }
+      if (h.cls === 'enutrof') {
+        const ch = h.fight.chestSeq || 0; if (ch > +(scene.dataset.ch || 0)) { scene.dataset.ch = ch; goldFx(card, 'Coffre !', card.querySelector(`[data-mon="${h.fight.treasure}"] .sprite`), 12); }
+        const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
+        const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
+      }
       if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
@@ -489,6 +575,11 @@ function patchCombat() {
       const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
       const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="trap"]'); if (tr) tr.classList.toggle('armed', !!m && m.hp > 0 && h.fight.trap === i); });
+    }
+    if (h.cls === 'ecaflip') { const cl = q('clover'); if (cl) { const tx = cloverHtml(h); if (cl.innerHTML !== tx) cl.innerHTML = tx; cl.classList.toggle('full', (h.clover || 0) >= ECA_CLOVER_MAX); } }
+    if (h.cls === 'enutrof') {
+      const pu = q('purse'); if (pu) { const tx = purseHtml(h); if (pu.innerHTML !== tx) pu.innerHTML = tx; pu.classList.toggle('full', (h.purse || 0) >= ENU_PURSE_MAX); }
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="treasure"]'); if (tr) tr.classList.toggle('on', !!m && m.hp > 0 && h.fight.treasure === i); });
     }
     if (h.cls === 'cra') {
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }

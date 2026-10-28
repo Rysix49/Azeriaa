@@ -1190,6 +1190,175 @@ label.btn { cursor: pointer; }
 /* Lueur (craqueleur, fantôme) */
 .ms .p-glow { animation: msglow 2s ease-in-out infinite; }
 @keyframes msglow { 50% { opacity: .7; } }
+
+/* ---------------------- Fièvre de l'Or de l'Enutrof ---------------------- */
+.vs .purse { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #c9962e33; border: 1px solid #c9962e88; color: #ffe9a8 !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vs .purse i { display: inline-block; width: 4px; height: 8px; border-radius: 2px; background: #ffffff22; box-shadow: inset 0 0 0 1px #0005; }
+.vs .purse i.on { background: linear-gradient(#fff3b0, #e8b52e); box-shadow: 0 0 5px #ffd24a; }
+.vs .purse.full { background: linear-gradient(90deg, #b8791a, #ffd24a, #b8791a); background-size: 200% 100%; color: #3a2400 !important; font-weight: 900; border-color: #fff1a8; box-shadow: 0 0 12px #ffd24a; animation: furyshine 1.4s linear infinite; }
+.treasure { position: absolute; top: -4px; right: 4px; z-index: 4; font-size: 17px; line-height: 1; pointer-events: none; opacity: 0; transform: scale(.4); transition: opacity .25s, transform .25s; filter: drop-shadow(0 0 5px #ffd24a) drop-shadow(0 1px 1px #000); }
+.treasure.on { opacity: 1; transform: scale(1); animation: treasurebob 1.6s ease-in-out infinite; }
+@keyframes treasurebob { 50% { transform: translateY(-4px) rotate(8deg) scale(1.08); } }
+.coin-pop { position: absolute; left: 50%; top: 40%; z-index: 7; font-size: 15px; pointer-events: none; filter: drop-shadow(0 0 5px #ffd24a); animation: coinpop 1s cubic-bezier(.2, .8, .3, 1) forwards; }
+@keyframes coinpop { 0% { transform: translate(-50%, 0) scale(.3); opacity: 0; } 15% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(var(--dy) + 36px)) scale(1) rotate(540deg); opacity: 0; } }
+.fnum.gold { color: #ffe27a; font-size: 19px; letter-spacing: .06em; -webkit-text-stroke: 1px #5a3a00; text-shadow: 0 2px 0 #5a3a00, 0 0 12px #ffd24a; }
+.scene.gold-flash::after { content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none; background: radial-gradient(circle at 50% 50%, #ffe27acc, #ffd24a33 55%, transparent 75%); animation: goldflash .9s ease-out forwards; }
+@keyframes goldflash { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .treasure.on, .vs .purse.full, .coin-pop, .scene.gold-flash::after { animation: none; } }
+
+/* ---------------------- Jackpot de l'Enutrof : cinématique ---------------------- */
+.jp { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.jp-dim { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 50% 38%, #3a2400cc, #0c0700ee 80%); transition: opacity .3s ease; }
+.jp.go .jp-dim { opacity: 1; }
+.jp.win .jp-dim { animation: jpdim 1.4s ease-out forwards; }
+@keyframes jpdim { to { opacity: .15; } }
+.jp-rays { position: absolute; left: 50%; top: 38%; width: 520px; height: 520px; margin: -260px 0 0 -260px; opacity: 0; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, #ffe27aee 0 7deg, transparent 7deg 18deg);
+  -webkit-mask: radial-gradient(circle, #000 5%, transparent 68%); mask: radial-gradient(circle, #000 5%, transparent 68%); }
+.jp.win .jp-rays { animation: jprays 1.6s ease-out forwards; }
+@keyframes jprays { 0% { opacity: 0; transform: scale(.2) rotate(0); } 18% { opacity: 1; } 100% { opacity: 0; transform: scale(1.5) rotate(50deg); } }
+.jp-machine { position: absolute; left: 50%; top: 10px; z-index: 2; padding: 9px 12px 8px; border-radius: 12px; translate: -50% 0; transform: scale(.2); opacity: 0;
+  background: linear-gradient(180deg, #ffe58a, #d9962a 30%, #8a5410 90%); border: 2px solid #3a2200; box-shadow: 0 0 0 2px #ffd24a, 0 6px 18px #000c, 0 0 26px #ffb02e; }
+.jp.go .jp-machine { animation: jpmachine .38s cubic-bezier(.2, 1.7, .4, 1) forwards; }
+.jp.win .jp-machine { animation: jpmachinewin .5s ease-in-out 3 forwards; }
+@keyframes jpmachine { to { transform: scale(1); opacity: 1; } }
+@keyframes jpmachinewin { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.22); box-shadow: 0 0 0 2px #fff6c0, 0 6px 18px #000c, 0 0 46px #fff1a8; } }
+.jp-bulbs { position: absolute; inset: 2px; pointer-events: none; }
+.jp-bulbs i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fff6c0; box-shadow: 0 0 5px #fff, 0 0 8px #ff9a1e; animation: jpbulb .36s steps(2) infinite; animation-delay: calc(var(--i) * 30ms); }
+.jp-bulbs i:nth-child(-n+4) { top: -1px; left: calc(10% + var(--i) * 22%); }
+.jp-bulbs i:nth-child(n+5):nth-child(-n+8) { bottom: -1px; left: calc(10% + (var(--i) - 4) * 22%); }
+.jp-bulbs i:nth-child(n+9):nth-child(-n+10) { left: -1px; top: calc(25% + (var(--i) - 9) * 45%); }
+.jp-bulbs i:nth-child(n+11) { right: -1px; top: calc(25% + (var(--i) - 11) * 45%); }
+@keyframes jpbulb { 50% { opacity: .2; } }
+.jp-reels { display: flex; gap: 5px; padding: 3px; border-radius: 7px; background: #1a0e00; box-shadow: inset 0 2px 6px #000; }
+.jp-reel { position: relative; width: 38px; height: 36px; overflow: hidden; border-radius: 4px; background: linear-gradient(180deg, #8a7a5a, #fff8e0 22%, #fffdf2 50%, #fff8e0 78%, #8a7a5a); }
+.jp-strip { display: flex; flex-direction: column; animation: jpspin .28s linear infinite; filter: blur(1.2px); }
+.jp-strip span { flex: none; height: 36px; line-height: 36px; font-size: 22px; text-align: center; }
+.jp-strip .s7 { font-size: 30px; font-weight: 900; color: #e0281e; -webkit-text-stroke: 1px #6a0a04; text-shadow: 0 2px 0 #8a1008; font-family: Grenze, serif; }
+@keyframes jpspin { to { transform: translateY(-216px); } }
+.jp-reel.stop .jp-strip { animation: none; filter: none; transform: translateY(-180px); transition: transform .34s cubic-bezier(.3, 1.8, .5, 1); }
+.jp-title { position: absolute; left: 50%; top: 52%; z-index: 3; display: flex; flex-direction: column; align-items: center; line-height: .95; white-space: nowrap; opacity: 0; translate: -50% -50%; }
+.jp-title span { font-family: Grenze, serif; font-weight: 900; font-size: 46px; letter-spacing: .08em; background: linear-gradient(180deg, #fffbe0 8%, #ffe27a 40%, #e9a21c 70%, #8a4e08); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 1.5px #4a2600; filter: drop-shadow(0 3px 0 #4a2600) drop-shadow(0 0 14px #ffb02e); }
+.jp-title small { margin-top: 3px; font-size: 11px; font-weight: 900; letter-spacing: .42em; color: #fff1a8; text-shadow: 0 1px 3px #000, 0 0 8px #ff9a1e; }
+.jp.win .jp-title { animation: jptitle 1.5s cubic-bezier(.2, 1.4, .4, 1) forwards; }
+@keyframes jptitle { 0% { opacity: 0; transform: scale(3.2) rotate(-8deg); } 18% { opacity: 1; transform: scale(1) rotate(-3deg); } 80% { opacity: 1; transform: scale(1.06) rotate(-3deg); } 100% { opacity: 0; transform: scale(1.2) translateY(-18px) rotate(-3deg); } }
+.jp-rain { position: absolute; inset: 0; }
+.jp-rain i { position: absolute; top: -22px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; opacity: 0; scale: var(--s); rotate: var(--r);
+  background: radial-gradient(circle at 35% 30%, #fffbc8, #ffd24a 45%, #b8791a); box-shadow: inset 0 0 0 1.5px #7a4a00, inset 0 0 0 3.5px #ffe98a88, 0 0 7px #ffd24a;
+  animation: jpfall var(--t) cubic-bezier(.5, 0, .9, .6) var(--d) forwards, jpflip .32s linear var(--d) infinite; }
+@keyframes jpfall { 0% { opacity: 1; translate: 0 0; } 85% { opacity: 1; } 100% { opacity: 0; translate: 0 var(--fall); } }
+@keyframes jpflip { 50% { transform: scaleX(.18); } }
+.unit.mon.jp-hit .sprite { animation: jphit 1s ease-out; }
+@keyframes jphit { 0% { filter: brightness(1); transform: translateY(0); } 12% { filter: brightness(3) sepia(1) saturate(6) hue-rotate(-8deg); transform: translateY(8px) scale(1.12); } 40% { filter: brightness(1.8) sepia(.6) saturate(3); } 100% { filter: brightness(1); transform: translateY(0); } }
+.jp-num { position: absolute; left: 50%; top: 12px; z-index: 9; pointer-events: none; white-space: nowrap; font-weight: 900; font-size: 20px; color: #fff1a8; -webkit-text-stroke: 1px #5a3a00; text-shadow: 0 2px 0 #5a3a00, 0 0 12px #ffd24a; animation: jpnum 1.2s cubic-bezier(.2, 1.5, .4, 1) forwards; }
+@keyframes jpnum { 0% { opacity: 0; transform: translate(-50%, 14px) scale(.4); } 18% { opacity: 1; transform: translate(-50%, 0) scale(1.35); } 70% { opacity: 1; transform: translate(-50%, -16px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -34px) scale(.9); } }
+.unit.hero.jp-hero .sprite { animation: jphero 1.1s ease-in-out; }
+@keyframes jphero { 0%, 100% { filter: none; } 30% { filter: drop-shadow(0 0 14px #ffd24a) drop-shadow(0 0 28px #ffb02e) brightness(1.35); transform: scale(1.12); } }
+@media (prefers-reduced-motion: reduce) { .jp { display: none; } }
+@media (max-width: 560px) { .jp-title span { font-size: 34px; } .jp-machine { top: 6px; } }
+
+/* ---------------------- Chance du Matou de l'Ecaflip ---------------------- */
+.vs .cat { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 1px 7px; border-radius: 999px; background: #2fb59a2e; border: 1px solid #2fb59a88; color: #c9fff1 !important; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vs .cat i { display: inline-block; width: 7px; height: 8px; border-radius: 60% 40% 60% 40%; background: #ffffff22; box-shadow: inset 0 0 0 1px #0005; }
+.vs .cat i.on { background: linear-gradient(#b8ffd0, #2fb55a); box-shadow: 0 0 5px #5affa0; }
+.vs .cat.full { background: linear-gradient(90deg, #178a72, #5affd2, #178a72); background-size: 200% 100%; color: #02352a !important; font-weight: 900; border-color: #c9fff1; box-shadow: 0 0 12px #5affd2; animation: furyshine 1.4s linear infinite; }
+.flip { position: absolute; left: 50%; top: -6px; z-index: 8; width: 0; height: 0; pointer-events: none; animation: flipup 1.5s cubic-bezier(.3, .6, .5, 1) forwards; }
+@keyframes flipup { 0% { transform: translateY(24px); opacity: 0; } 12% { opacity: 1; } 42% { transform: translateY(-34px); } 78% { transform: translateY(-14px); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
+.flip-coin { position: absolute; left: -19px; top: -19px; width: 38px; height: 38px; transform-style: preserve-3d; perspective: 120px; animation: flipspin 1.05s cubic-bezier(.2, .7, .3, 1) forwards; }
+.flip.face .flip-coin { --end: 1800deg; } .flip.pile .flip-coin { --end: 1980deg; }
+@keyframes flipspin { from { transform: rotateY(0) rotateZ(-8deg); } to { transform: rotateY(var(--end)) rotateZ(0); } }
+.flip-coin b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; border-radius: 50%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: radial-gradient(circle at 35% 30%, #fffbc8, #ffd24a 50%, #b8791a); box-shadow: inset 0 0 0 2px #7a4a00, 0 0 12px #ffd24a; }
+.flip-coin b.bk { transform: rotateY(180deg); background: radial-gradient(circle at 35% 30%, #e0fbff, #8fd6ff 50%, #3f73c4); box-shadow: inset 0 0 0 2px #1f3f7a, 0 0 12px #8fd6ff; }
+.flip > span { position: absolute; left: 28px; top: -6px; translate: 0 -50%; white-space: nowrap; font-weight: 900; font-size: 15px; letter-spacing: .1em; opacity: 0; animation: fliptxt 1.5s ease-out .5s forwards; }
+.flip.face > span { color: #ffe27a; text-shadow: 0 2px 0 #5a3a00, 0 0 10px #ffb02e; } .flip.pile > span { color: #bfe6ff; text-shadow: 0 2px 0 #1f3f7a, 0 0 10px #6fa8ff; }
+@keyframes fliptxt { 0% { opacity: 0; transform: scale(.4); } 25% { opacity: 1; transform: scale(1.25); } 80% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+.fnum.eca { font-size: 17px; letter-spacing: .06em; }
+.fnum.eca.face { color: #ffe27a; text-shadow: 0 2px 0 #5a3a00, 0 0 12px #ffb02e; } .fnum.eca.pile { color: #bfe6ff; text-shadow: 0 2px 0 #1f3f7a, 0 0 12px #6fa8ff; }
+.sprite.eca-glow-face { animation: ecaface 1.4s ease-out; } .sprite.eca-glow-pile { animation: ecapile 1.4s ease-out; }
+@keyframes ecaface { 0%, 100% { filter: none; } 25% { filter: drop-shadow(0 0 12px #ffb02e) drop-shadow(0 0 22px #ff7a1e) brightness(1.3); transform: scale(1.1); } }
+@keyframes ecapile { 0%, 100% { filter: none; } 25% { filter: drop-shadow(0 0 12px #6fa8ff) drop-shadow(0 0 22px #3f73c4) brightness(1.2); transform: scale(.94); } }
+@media (prefers-reduced-motion: reduce) { .vs .cat.full, .flip, .flip-coin, .flip > span, .sprite.eca-glow-face, .sprite.eca-glow-pile { animation: none; } }
+
+/* ===================== Sprites des personnages (dessins originaux) ===================== */
+.hero .sprite.has-art { font-size: 0; }
+.hero .sprite.has-art::after { display: none; }
+.hs { width: 108px; height: 108px; display: block; overflow: visible; filter: drop-shadow(0 2px 2px #0007); }
+.hs * { transform-box: fill-box; }
+/* Repos : tout le haut du corps respire d'un bloc, la tête, la barbe et le chapeau suivent ensemble */
+.hs .p-torso { transform-origin: 50% 100%; animation: hstorso 2.4s ease-in-out infinite; }
+.hs .p-face { transform-origin: 50% 62%; animation: hsface 2.4s ease-in-out infinite; }
+.hs .p-beard { transform-origin: 50% 0%; animation: hsbeard 3.2s ease-in-out infinite; }
+.hs .p-bag { transform-origin: 75% 10%; animation: hsbag 2.8s ease-in-out infinite; }
+.hs .p-shovel { transform-origin: 50% 42%; animation: hssway 3.4s ease-in-out infinite; }
+.hs .p-eye { transform-origin: 50% 50%; animation: msblink 4.6s infinite; }
+.hs .p-brow { transform-origin: 50% 100%; }
+.hs .p-shadow { transform-origin: 50% 50%; animation: msshadow 2.4s ease-in-out infinite; }
+.hs .p-glint { transform-origin: 50% 50%; animation: hsglint 2.8s ease-in-out infinite; }
+@keyframes hstorso { 50% { transform: translateY(1.2px) scale(1.012, .988); } }
+@keyframes hsface { 50% { transform: translateY(.8px) rotate(-.6deg); } }
+@keyframes hsbeard { 50% { transform: rotate(1.2deg); } }
+@keyframes hsbag { 50% { transform: rotate(1.6deg); } }
+@keyframes hssway { 50% { transform: rotate(-1.2deg); } }
+@keyframes hsglint { 0%, 55%, 100% { transform: scale(.2) rotate(0); opacity: 0; } 70% { transform: scale(1) rotate(45deg); opacity: 1; } 85% { transform: scale(.4) rotate(90deg); opacity: .5; } }
+/* Attaque : armement, frappe, rebond, retour. Le corps, la tête, la barbe et le sac suivent avec un léger retard */
+.hero.atk .hs .p-torso { animation: hsa-torso .52s cubic-bezier(.45, 0, .25, 1); }
+.hero.atk .hs .p-shovel { animation: hsa-shovel .52s cubic-bezier(.45, 0, .25, 1); }
+.hero.atk .hs .p-face { animation: hsa-face .52s cubic-bezier(.45, 0, .25, 1); }
+.hero.atk .hs .p-beard { animation: hsa-beard .52s ease-out; }
+.hero.atk .hs .p-bag { animation: hsa-bag .52s ease-out; }
+.hero.atk .hs .p-brow { animation: msbrow .52s ease-out; }
+@keyframes hsa-shovel { 0% { transform: rotate(0); } 24% { transform: rotate(24deg); } 50% { transform: rotate(-84deg); } 62% { transform: rotate(-92deg); } 82% { transform: rotate(-12deg); } 100% { transform: rotate(0); } }
+@keyframes hsa-torso { 0% { transform: none; } 24% { transform: translateX(-2px) rotate(-3deg); } 50% { transform: translateX(5px) rotate(5deg) scale(1.02, .98); } 64% { transform: translateX(4px) rotate(4deg); } 100% { transform: none; } }
+@keyframes hsa-face { 0% { transform: none; } 24% { transform: rotate(-3deg); } 50% { transform: rotate(4deg) translateY(1px); } 100% { transform: none; } }
+@keyframes hsa-beard { 0% { transform: rotate(0); } 24% { transform: rotate(4deg); } 55% { transform: rotate(-9deg); } 78% { transform: rotate(3deg); } 100% { transform: rotate(0); } }
+@keyframes hsa-bag { 0% { transform: rotate(0); } 24% { transform: rotate(-3deg); } 55% { transform: rotate(5deg); } 80% { transform: rotate(-1.5deg); } 100% { transform: rotate(0); } }
+/* Soutien (buff, soin) : la pelle se lève, la pièce du chapeau brille */
+.hero.cheer .hs .p-shovel { animation: hsraise .6s cubic-bezier(.45, 0, .25, 1); }
+.hero.cheer .hs .p-glint { animation: hsglintnow .6s ease-out; }
+.hero.cheer .hs .p-torso { animation: hshop .6s cubic-bezier(.3, .6, .4, 1); }
+@keyframes hsraise { 0% { transform: rotate(0); } 40% { transform: rotate(-22deg) translateY(-5px); } 100% { transform: rotate(0); } }
+@keyframes hsglintnow { 0% { transform: scale(.2); opacity: 0; } 40% { transform: scale(1.5) rotate(60deg); opacity: 1; } 100% { transform: scale(.3) rotate(120deg); opacity: 0; } }
+@keyframes hshop { 0%, 100% { transform: none; } 35% { transform: translateY(-6px) scale(.985, 1.025); } 70% { transform: translateY(1px) scale(1.02, .98); } }
+/* Coup reçu et défaite */
+.hero.hit .sprite.has-art { animation: none; }
+.hero.hit .hs { animation: mshit .3s ease-out; }
+.hero.hit .hs .p-eye { animation: none; transform: scaleY(.15); }
+.hero.dead .hs { animation: msdie .7s ease-in forwards; }
+.hero.dead .hs * { animation-play-state: paused; }
+@media (max-width: 560px) { .hs { width: 78px; height: 78px; } }
+@media (prefers-reduced-motion: reduce) { .hs *, .hero .hs { animation: none !important; } }
+
+/* ===================== Enutrof : pose de victoire du Jackpot ===================== */
+.unit.hero.jp-pose { z-index: 9; }
+.hero.jp-pose .sprite.has-art::before { content: ""; position: absolute; left: 50%; top: 52%; width: 190px; height: 190px; margin: -95px 0 0 -95px; z-index: -1; pointer-events: none; opacity: 0; border-radius: 50%;
+  background: radial-gradient(circle, #fff1a8cc 0 18%, #ffd24a66 38%, transparent 66%), repeating-conic-gradient(from 0deg, #ffe27acc 0 6deg, transparent 6deg 16deg);
+  -webkit-mask: radial-gradient(circle, #000 20%, transparent 70%); mask: radial-gradient(circle, #000 20%, transparent 70%); animation: jpaura 2.5s ease-out forwards; }
+@keyframes jpaura { 0%, 40% { opacity: 0; transform: scale(.3) rotate(0); } 52% { opacity: 1; transform: scale(1) rotate(30deg); } 100% { opacity: 0; transform: scale(1.35) rotate(120deg); } }
+.hero.jp-pose .hs { animation: jpglow 2.5s ease-in-out; }
+@keyframes jpglow { 0%, 100% { filter: drop-shadow(0 2px 2px #0007); } 45%, 80% { filter: drop-shadow(0 0 10px #ffd24a) drop-shadow(0 0 22px #ffb02e) brightness(1.18); } }
+/* 0-45 % : il s'accroupit en trépignant ; 50-70 % : saut, la pelle tournoie ; 70-100 % : atterrissage, pose triomphante */
+.hero.jp-pose .hs .p-torso { animation: jpt-torso 2.5s cubic-bezier(.4, 0, .3, 1); }
+.hero.jp-pose .hs .p-shovel { animation: jpt-shovel 2.5s cubic-bezier(.4, 0, .3, 1); }
+.hero.jp-pose .hs .p-face { animation: jpt-face 2.5s ease-in-out; }
+.hero.jp-pose .hs .p-beard { animation: jpt-beard 2.5s ease-in-out; }
+.hero.jp-pose .hs .p-bag { animation: jpt-bag 2.5s ease-in-out; }
+.hero.jp-pose .hs .p-glint { animation: jpt-glint 2.5s ease-out; }
+.hero.jp-pose .hs .p-brow { animation: jpt-brow 2.5s ease-in-out; }
+@keyframes jpt-torso { 0% { transform: none; } 8% { transform: translateY(1px) scale(1.01, .99); } 16% { transform: translateY(0); } 24% { transform: translateY(1.5px) scale(1.02, .98); } 32% { transform: translateY(0); } 44% { transform: translateY(5px) scale(1.07, .91); } 54% { transform: translateY(-20px) scale(.95, 1.08); } 66% { transform: translateY(-24px) scale(.97, 1.05) rotate(-3deg); } 78% { transform: translateY(2px) scale(1.07, .92); } 86% { transform: translateY(-3px) scale(.99, 1.02); } 100% { transform: none; } }
+@keyframes jpt-shovel { 0%, 40% { transform: rotate(0); } 46% { transform: rotate(14deg); } 66% { transform: rotate(-190deg); } 80% { transform: rotate(-345deg); } 90% { transform: rotate(-372deg); } 100% { transform: rotate(-360deg); } }
+@keyframes jpt-face { 0%, 40% { transform: none; } 46% { transform: translateY(2px) rotate(2deg); } 62% { transform: translateY(-3px) rotate(-7deg); } 80% { transform: translateY(2px) rotate(3deg); } 90% { transform: rotate(-4deg); } 100% { transform: none; } }
+@keyframes jpt-beard { 0%, 40% { transform: rotate(0); } 46% { transform: rotate(4deg); } 62% { transform: rotate(-16deg) scaleY(.92); } 80% { transform: rotate(8deg) scaleY(1.06); } 100% { transform: rotate(0); } }
+@keyframes jpt-bag { 0% { transform: rotate(0); } 6% { transform: rotate(-5deg); } 12% { transform: rotate(5deg); } 18% { transform: rotate(-5deg); } 24% { transform: rotate(5deg); } 30% { transform: rotate(-6deg); } 36% { transform: rotate(6deg); } 44% { transform: rotate(0) scale(.94, 1.04); } 54% { transform: scale(1.14, .9) rotate(-4deg); } 70% { transform: rotate(5deg) scale(1.02); } 100% { transform: none; } }
+@keyframes jpt-glint { 0%, 40% { transform: scale(.2); opacity: 0; } 56% { transform: scale(2.6) rotate(45deg); opacity: 1; } 80% { transform: scale(1) rotate(90deg); opacity: .7; } 100% { transform: scale(.2) rotate(135deg); opacity: 0; } }
+@keyframes jpt-brow { 0%, 40% { transform: none; } 50%, 85% { transform: translateY(-3px) rotate(-6deg); } 100% { transform: none; } }
+/* Les pièces jaillissent du sac au moment du saut */
+.hs .sp { opacity: 0; transform-origin: 50% 50%; }
+.hero.jp-pose .hs .sp { animation: jpspill 1.1s cubic-bezier(.2, .7, .4, 1) 1.25s both; }
+.hs .sp:nth-child(1) { --dx: -20px; --dy: -30px; } .hs .sp:nth-child(2) { --dx: -8px; --dy: -42px; } .hs .sp:nth-child(3) { --dx: 6px; --dy: -46px; }
+.hs .sp:nth-child(4) { --dx: 20px; --dy: -36px; } .hs .sp:nth-child(5) { --dx: -28px; --dy: -12px; } .hs .sp:nth-child(6) { --dx: 30px; --dy: -14px; } .hs .sp:nth-child(7) { --dx: 0px; --dy: -34px; }
+@keyframes jpspill { 0% { opacity: 0; transform: translate(0, 0) scale(.3); } 12% { opacity: 1; } 55% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1) rotate(200deg); } 100% { opacity: 0; transform: translate(calc(var(--dx) * 1.25), calc(var(--dy) + 50px)) scale(.9) rotate(420deg); } }
+@media (prefers-reduced-motion: reduce) { .hero.jp-pose .hs, .hero.jp-pose .hs *, .hero.jp-pose .sprite.has-art::before { animation: none !important; } }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1242,6 +1411,9 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .toasts { bottom: calc(136px + env(safe-area-inset-bottom, 0px)); }
 :root[data-layout="mobile"] .acc-form { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .dev-ribbon > span { display: none; }
+:root[data-layout="mobile"] .jp-title span { font-size: 34px; }
+:root[data-layout="mobile"] .jp-machine { top: 6px; }
+:root[data-layout="mobile"] .hs { width: 78px; height: 78px; }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -1250,7 +1422,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793145161';
+const BUILD_ID = '1793149058';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -1340,13 +1512,38 @@ const CLASSES = {
   enutrof: {
     name: 'Enutrof', role: 'Chercheur de trésors', main: 'deg', elem: 'cha', hpMult: 1.1, color: '#c9962e',
     desc: 'Trouve plus de butin et de kamas que quiconque.',
-    passive: { name: 'Flair du Trésor', points: [['🔎','Prospection','+40 Prospection.'],['💰','Double butin','12 % de chance qu’un monstre lâche ses ressources en double.']], desc: '+40 Prospection. 12 % de chance qu’un monstre vaincu lâche ses ressources en double.', stats: { pp: 40 } },
+    passive: { name: 'Fièvre de l’Or', points: [
+      ['🔎','L’or fait la force','+40 Prospection. Chaque tranche de 10 Prospection ajoute +1 % de dégâts : plus il est riche en butin, plus il frappe fort.'],
+      ['🗺️','Carte au trésor','Au début de chaque combat, un ennemi au hasard cache un trésor 💰 et l’Enutrof le vise en priorité. Quand il tombe, le coffre s’ouvre : +2 pièces, Ruée vers l’or (+30 Dégâts pendant 3 tours), kamas de ce monstre ×1,5 et 35 % de ses ressources en double.'],
+      ['🪙','Cupidité','Chaque tour où il lance un sort offensif, 1 pièce tombe dans sa bourse (1 de plus s’il fait un coup critique). 10 pièces maximum, la bourse se garde d’un combat à l’autre.'],
+      ['🎰','Jackpot','Bourse pleine : au début de son tour, elle éclate en Pluie d’Or qui frappe tous les ennemis. Chaque Jackpot rapporte +10 % de kamas à la victoire.'],
+      ['🤝','Pot-de-vin','Une fois par combat, un coup fatal avec au moins 5 pièces est évité : il jette sa bourse, survit avec 15 % de ses PV et les ennemis se jettent sur l’or en perdant leur prochain tour.']
+    ], desc: '+40 Prospection (+1 % de dégâts par 10). Un ennemi cache un trésor : l’ouvrir donne une Ruée vers l’or et un meilleur butin. Chaque tour offensif remplit la bourse ; pleine, elle éclate en Jackpot. Une fois par combat, un Pot-de-vin évite le coup fatal.', stats: { pp: 40 } },
     spells: [
       { id: 'lancer_pieces', name: 'Lancer de Pièces', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
       { id: 'pelle_animee', name: 'Pelle Animée', lvl: 6, pa: 4, min: 15, max: 20, stat: 'cha', type: 'dmg', max_: 1 },
       { id: 'pelle_fantomatique', name: 'Pelle Fantomatique', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
       { id: 'fortune', name: 'Coffre Animé', lvl: 22, pa: 2, type: 'buff', buff: { deg: 35, res: 8 }, turns: 3, cd: 5 },
       { id: 'pelle_jugement', name: 'Pelle du Jugement', lvl: 36, pa: 5, min: 34, max: 44, stat: 'cha', type: 'dmg', cd: 2 },
+    ],
+  },
+  ecaflip: {
+    name: 'Ecaflip', role: 'Félin joueur', main: 'deg', elem: 'cha', hpMult: 1.0, color: '#2fb59a',
+    desc: 'Un chat qui joue sa vie sur un coup de pièce. La chance fait tout : Pile, Face, trèfles et neuf vies.',
+    passive: { name: 'Chance du Matou', points: [
+      ['🪙','Pile ou Face','Au début de chaque tour, il lance sa pièce. FACE 😼 : +40 % de dégâts ce tour. PILE 🙀 : les ennemis infligent 35 % de dégâts en moins ce tour, et il gagne 1 Trèfle.'],
+      ['🍀','Trèfles','Jusqu’à 6 Trèfles, gardés d’un combat à l’autre. Chacun donne +3 % de critique et +4 % de chances de tomber sur Face.'],
+      ['🎲','Quitte ou Double','À 6 Trèfles, il les mise tous (60 % de réussite). Gagné : tous ses sorts offensifs du tour frappent deux fois. Perdu : il y laisse 8 % de ses PV max (sans pouvoir en mourir).'],
+      ['🐾','Neuf Vies','Un coup qui devait être fatal a 20 % de chances (+4 % par Trèfle) d’être évité : il retombe sur ses pattes sans une égratignure.'],
+      ['🔎','Instinct félin','+25 Prospection et +5 % d’esquive.']
+    ], desc: 'Pile ou Face à chaque tour (Face : +40 % de dégâts, Pile : −35 % de dégâts subis et +1 Trèfle). Les Trèfles augmentent critique et chance de Face ; à 6, Quitte ou Double. Neuf Vies évite parfois le coup fatal.', stats: { pp: 25, dodge: 5 } },
+    spells: [
+      { id: 'griffe_joueuse', name: 'Griffe Joueuse', lvl: 1, pa: 2, min: 5, max: 8, stat: 'cha', type: 'dmg', max_: 3 },
+      { id: 'langue_rapeuse', name: 'Langue Râpeuse', lvl: 6, pa: 3, min: 10, max: 13, stat: 'cha', type: 'drain', max_: 1 },
+      { id: 'roulette', name: 'Roulette', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
+      { id: 'felintion', name: 'Félintion', lvl: 22, pa: 2, type: 'buff', buff: { deg: 30, res: 10 }, turns: 3, cd: 5 },
+      { id: 'tout_ou_rien', name: 'Tout ou Rien', lvl: 36, pa: 5, min: 26, max: 52, stat: 'cha', type: 'dmg', cd: 2 },
+      { id: 'rekop', name: 'Rekop', lvl: 45, pa: 4, min: 15, max: 21, stat: 'cha', type: 'aoe', cd: 1 },
     ],
   },
   sram: {
@@ -1924,6 +2121,7 @@ function startFight(st, h, ev) {
     tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {},
   };
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
+  if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   const names = group.map(m => MONSTERS[m].name);
   ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
   return true;
@@ -1935,6 +2133,7 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
   if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
+  if (h.cls === 'enutrof') return Math.floor((t.pp || 0) / 10); // L'or fait la force : +1 % de dégâts par 10 Prospection
   return 0;
 }
 function spellPower(h, t, f, sp) {
@@ -1946,10 +2145,11 @@ function spellPower(h, t, f, sp) {
 function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0);
+  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0);
   if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
   if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
   if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
+  if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
   if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
   if (monRes) v *= 1 - monRes / 100;
@@ -1979,7 +2179,7 @@ function heroTurn(st, h, t, ev) {
       && (sp.max_ == null || (f.casts[sp.id] || 0) < sp.max_));
     if (!usable.length) break;
     const hpRatio = h.hp / t.maxHp;
-    const target = h.cls === 'cra' ? craPrey(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+    const target = h.cls === 'cra' ? craPrey(f, alive) : h.cls === 'enutrof' ? enuTarget(f, alive) : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
     let best = null, bestVal = -1;
     for (const sp of usable) {
       const { avg } = spellPower(h, t, f, sp);
@@ -2005,6 +2205,11 @@ function heroTurn(st, h, t, ev) {
     const tgts = best.type === 'aoe' ? alive.map(m => f.mons.indexOf(m)) : [f.mons.indexOf(target)];
     const line = castSpell(st, h, t, best, target, alive);
     actions.push(line);
+    if (h.cls === 'ecaflip' && f.double && (best.type === 'dmg' || best.type === 'aoe')) { // Quitte ou Double gagné : le sort frappe deux fois
+      const al2 = f.mons.filter(m => m.hp > 0);
+      if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
+    }
+    enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
     (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts });
@@ -2012,8 +2217,14 @@ function heroTurn(st, h, t, ev) {
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
   };
+  if (h.cls === 'ecaflip') ecaToss(h, t, f, actions);
+  if (h.cls === 'enutrof') {
+    enuChest(h, f, actions);
+    if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
+  }
   phase(true);
   if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
   if (h.cls === 'sram') {
@@ -2074,6 +2285,7 @@ function monsterTurn(st, h, t, m, ev) {
     if (--m.poison.turns <= 0) m.poison = null;
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
+  if (m.bribed) { m.bribed = false; ev.log(h, line + `${def.name} se jette sur les pièces d’or et oublie d’attaquer.`, 'mon'); return; }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
   f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
@@ -2091,13 +2303,77 @@ function monsterTurn(st, h, t, m, ev) {
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
+  if (h.cls === 'ecaflip') {
+    if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
+    if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
+      f.lifeSeq = (f.lifeSeq || 0) + 1;
+      ev.log(h, line + `🐾 Neuf Vies ! ${h.name} retombe sur ses pattes : le coup de ${def.name} est évité.`, 'win');
+      return;
+    }
+  }
   h.hp = Math.max(0, h.hp - dmg);
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
+    const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
+    h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
+    f.mons.forEach(o => { if (o.hp > 0) o.bribed = true; });
+    ev.log(h, `🤝 Pot-de-vin ! ${h.name} jette ${spent} 🪙 : les ennemis se ruent sur l’or et il s’en tire avec ${h.hp} PV.`, 'win');
+  }
   if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
     f.paradox = true; f.grains = 0;
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
+}
+
+/* ---------------------- Chance du Matou de l'Ecaflip ----------------------
+   Chaque tour : pièce. Face = +40 % de dégâts ; Pile = −35 % de dégâts subis et +1 Trèfle
+   (h.clover, gardés d'un combat à l'autre). À 6 Trèfles : Quitte ou Double. */
+const ECA_CLOVER_MAX = 6, ECA_FACE_DMG = 1.4, ECA_PILE_DEF = 0.65;
+function ecaToss(h, t, f, actions) {
+  f.double = false;
+  if ((h.clover || 0) >= ECA_CLOVER_MAX) {
+    h.clover = 0;
+    const win = Math.random() < 0.6;
+    f.gambleSeq = (f.gambleSeq || 0) + 1; f.gambleFx = { n: f.gambleSeq, win };
+    if (win) { f.double = true; actions.push('🎲 Quitte ou Double : GAGNÉ ! Ses sorts frappent deux fois'); }
+    else { const loss = Math.max(0, Math.min(h.hp - 1, Math.round(t.maxHp * 0.08))); h.hp -= loss; actions.push(`🎲 Quitte ou Double : perdu… −${loss} PV`); }
+  }
+  const face = Math.random() < 0.5 + 0.04 * (h.clover || 0);
+  f.coin = face ? 'face' : 'pile'; f.coinSeq = (f.coinSeq || 0) + 1; f.coinFx = { n: f.coinSeq, face };
+  if (!face) h.clover = Math.min(ECA_CLOVER_MAX, (h.clover || 0) + 1);
+  actions.push(face ? '😼 FACE ! +40 % de dégâts' : `🙀 PILE ! −35 % de dégâts subis · 🍀 ${h.clover}/${ECA_CLOVER_MAX}`);
+}
+
+/* ---------------------- Fièvre de l'Or de l'Enutrof ----------------------
+   Un ennemi cache un trésor (f.treasure) que l'Enutrof vise en priorité.
+   Chaque sort remplit la bourse (h.purse, gardée d'un combat à l'autre) :
+   pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
+const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
+const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
+const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
+function enuTarget(f, alive) {
+  const c = f.mons[f.treasure];
+  return c && c.hp > 0 ? c : alive.reduce((a, b) => (b.hp < a.hp ? b : a));
+}
+function enuGain(h, n) { h.purse = Math.min(ENU_PURSE_MAX, (h.purse || 0) + n); }
+/* Le porteur du trésor est tombé : le coffre s'ouvre (une seule fois par combat) */
+function enuChest(h, f, actions) {
+  if (f.treasure == null || f.treasure < 0 || f.chest) return;
+  const c = f.mons[f.treasure]; if (!c || c.hp > 0) return;
+  f.chest = true; f.chestSeq = (f.chestSeq || 0) + 1;
+  enuGain(h, 2);
+  const more = f.mons.some(m => m.hp > 0);
+  if (more) f.buffs.push({ id: 'ruee_or', stats: { deg: ENU_RUSH }, turns: 4 });
+  actions.push(`🗺️ Coffre ouvert ! +2 🪙${more ? ` · Ruée vers l’or (+${ENU_RUSH} Dégâts)` : ''}`);
+}
+function enuJackpot(h, t, f) {
+  const alive = f.mons.filter(m => m.hp > 0);
+  const hits = [];
+  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); hits.push({ i: f.mons.indexOf(m), v: r.v, crit: r.crit }); return `${r.v}${r.crit ? ' CC' : ''}`; });
+  h.purse = 0; f.jackpots = (f.jackpots || 0) + 1; f.jackSeq = (f.jackSeq || 0) + 1;
+  f.jackFx = { n: f.jackSeq, hits }; // pour la cinématique
+  return `🎰 JACKPOT ! Pluie d’Or → ${parts.join('/')}`;
 }
 
 /* ---------------------- Ombre & Pièges du Sram ---------------------- */
@@ -2183,8 +2459,11 @@ function unleashFury(st, h, ev) {
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
 function fightStep(st, h, ev) {
   const f = h.fight, t = heroTotals(st, h);
+  let jackpot = false;
   if (f.phase === 0) {
+    const jk0 = f.jackSeq || 0;
     heroTurn(st, h, t, ev);
+    jackpot = (f.jackSeq || 0) > jk0;
     f.phase = 1;
   } else {
     // cherche le prochain monstre vivant à jouer
@@ -2195,7 +2474,11 @@ function fightStep(st, h, ev) {
       f.buffs.forEach(b => b.turns--); f.buffs = f.buffs.filter(b => b.turns > 0);
     }
   }
-  if (f.mons.every(m => m.hp <= 0)) return 'win';
+  if (f.mons.every(m => m.hp <= 0)) {
+    // Un Jackpot vient d'achever le combat : on laisse la cinématique se jouer avant de conclure
+    if (jackpot) { h.wait += JACKPOT_ANIM_MS; return null; }
+    return 'win';
+  }
   if (h.hp <= 0) return 'lose';
   if (f.turn > MAX_TURNS) return 'lose';
   return null;
@@ -2234,9 +2517,9 @@ function resolveWin(st, h, ev) {
     const gap = h.lvl - def.lvl;
     const pen = gap > 10 ? clamp(1 - (gap - 10) * 0.06, 0.1, 1) : 1;
     xp += ms.xp * pen;
-    kamas += irnd(ms.kamas[0], ms.kamas[1]);
-    const dbl = h.cls === 'enutrof' && Math.random() < 0.12 ? 2 : 1;
-    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + dbl;
+    const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
+    kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
+    for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (chest && Math.random() < 0.35 ? 2 : 1);
     for (const [rid, rc] of (RELIC_DROPS[m.mid] || [])) if (Math.random() < rc * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
       const g = rollItem(rid); st.gear.push(g); gearLoot.push(g);
     }
@@ -2254,7 +2537,7 @@ function resolveWin(st, h, ev) {
   }
   const n = f.mons.length;
   xp *= (1 + (n - 1) * 0.15) * (1 + t.xpBonus / 100) * (place.bonusXp || 1);
-  kamas = Math.round(kamas * (1 + (t.kamas || 0) / 100));
+  kamas = Math.round(kamas * (1 + ((t.kamas || 0) + 10 * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
   xp = Math.round(xp);
   st.kamas += kamas; st.stats.kamasEarned += kamas; st.stats.fights++;
   for (const [rid, c] of Object.entries(loot)) addRes(st, rid, c);
@@ -4292,7 +4575,15 @@ const SPELL_FX = {
   pelle_animee:      ['drop', '#c9a46a', '⛏️'],
   pelle_fantomatique:['rain', '#b9c7ff', '⛏️'],
   fortune:           ['buff', '#ffd24a', '💰'],
+  pluie_or:          ['rain', '#ffd24a', '🪙'],
   pelle_jugement:    ['drop', '#ffcf3a', '⛏️', 1.8],
+  // Ecaflip : griffes et chance
+  griffe_joueuse:    ['slash', '#2fe0b8', '', 'quick'],
+  langue_rapeuse:    ['drain', '#ff7aa8'],
+  roulette:          ['rain', '#ffe27a', '🎲'],
+  felintion:         ['buff', '#2fe0b8', '🍀'],
+  tout_ou_rien:      ['slash', '#ffd24a', '', 'heavy'],
+  rekop:             ['wave', '#2fe0b8'],
   // Sram : ombres et pièges
   sournoiserie:      ['slash', '#9a7bff', '', 'quick'],
   poison_paralysant: ['poison', '#6dff5a'],
@@ -4462,10 +4753,23 @@ const FX_KIND = {
   },
 };
 
+/* Geste du personnage : un seul à la fois ; si un sort arrive en plein mouvement, le suivant s'enchaîne juste après (pas de saccade) */
+function heroGesture(unit, k) {
+  if (unit._gBusy) { unit._gNext = k; return; }
+  unit._gBusy = true; unit.classList.remove('atk', 'cheer'); void unit.offsetWidth; unit.classList.add(k);
+  setTimeout(() => {
+    unit.classList.remove(k); unit._gBusy = false;
+    const n = unit._gNext; unit._gNext = null;
+    if (n) requestAnimationFrame(() => heroGesture(unit, n));
+  }, k === 'atk' ? 520 : 600);
+}
+
 /* Joue l'animation d'un sort dans la carte de combat d'un héros */
 function playSpellFx(card, cast) {
   if (!FX_OK()) return;
   const scene = card.querySelector('.scene'); if (!scene) return;
+  const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
+  if (heroUnit) heroGesture(heroUnit, ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]) ? 'cheer' : 'atk');
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
   const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
   const from = fxPos(scene, heroSprite); if (!from) return;
@@ -4474,6 +4778,148 @@ function playSpellFx(card, cast) {
   if (!tos.length && !['buff', 'heal'].includes(fx[0])) return;
   kind(scene, from, tos, fx, heroSprite);
 }
+/* =====================================================================
+   AMAKNA IDLE — SPRITES DES PERSONNAGES EN COMBAT (dessins originaux)
+   HERO_ART[classe] = SVG du personnage, dessiné tourné vers la DROITE
+   (le héros est à gauche de la scène et fait face aux monstres).
+   Même principe que les monstres : les parties portent des classes
+   animées en CSS (style2.css) : repos (respiration, clignement, barbe),
+   .atk (coup de pelle), .hit (coup reçu), .dead (à terre).
+   Sans dessin, la classe garde son emblème rond.
+   Pour une nouvelle classe : ajouter une entrée dans HERO_ART.
+   ===================================================================== */
+const HERO_ART = {
+
+/* ---- ENUTROF ---- vieux chasseur de trésors : grand chapeau, moustache de morse, sac de kamas, pelle ---- */
+enutrof: `<svg class="hs hs-enutrof" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <linearGradient id="ehCoat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b57a32"/><stop offset=".55" stop-color="#8a5622"/><stop offset="1" stop-color="#55340f"/></linearGradient>
+    <linearGradient id="ehVest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6ecd2"/><stop offset="1" stop-color="#cdb888"/></linearGradient>
+    <linearGradient id="ehHat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9b06a"/><stop offset=".6" stop-color="#a77a38"/><stop offset="1" stop-color="#6a4a1c"/></linearGradient>
+    <linearGradient id="ehBrim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9a05a"/><stop offset="1" stop-color="#7a5524"/></linearGradient>
+    <radialGradient id="ehSkin" cx="42%" cy="35%" r="75%"><stop offset="0" stop-color="#ffdcb4"/><stop offset=".7" stop-color="#eaa874"/><stop offset="1" stop-color="#c47c4c"/></radialGradient>
+    <radialGradient id="ehNose" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#ffb69a"/><stop offset=".6" stop-color="#e4806a"/><stop offset="1" stop-color="#b95a48"/></radialGradient>
+    <linearGradient id="ehBeard" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#e6e6ee"/><stop offset="1" stop-color="#b8b8c8"/></linearGradient>
+    <radialGradient id="ehGold" cx="36%" cy="30%" r="80%"><stop offset="0" stop-color="#fff8c0"/><stop offset=".45" stop-color="#ffd24a"/><stop offset="1" stop-color="#b8791a"/></radialGradient>
+    <linearGradient id="ehBag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0bd82"/><stop offset=".6" stop-color="#b98a4e"/><stop offset="1" stop-color="#6e4a22"/></linearGradient>
+    <linearGradient id="ehMetal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f4f8fc"/><stop offset=".5" stop-color="#b4c0cc"/><stop offset="1" stop-color="#6c7886"/></linearGradient>
+    <linearGradient id="ehWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d1a064"/><stop offset="1" stop-color="#7a5128"/></linearGradient>
+    <linearGradient id="ehBoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5230"/><stop offset="1" stop-color="#2e1c0c"/></linearGradient>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="119" rx="34" ry="5.5" fill="#000" opacity=".32"/>
+  <g class="p-hop">
+
+  <!-- jambes et bottes -->
+  <g stroke="#2a1606" stroke-width="2" stroke-linejoin="round">
+    <path d="M50 102 h13 v8 q6 1 6 5 q0 4.5 -6 4.5 h-18 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#ehBoot)"/>
+    <path d="M69 102 h13 v8 q6 1 6 5 q0 4.5 -6 4.5 h-18 q-4 0 -4 -4 q0 -4 6 -5Z" fill="url(#ehBoot)"/>
+    <path d="M50 104 h13 M69 104 h13" stroke="#e0b25a" stroke-width="2.4"/>
+    <path d="M44 117 h24 M64 117 h24" stroke="#1a0f06" stroke-width="2"/>
+  </g>
+
+  <g class="p-torso">
+  <!-- sac de kamas sur le dos -->
+  <g class="p-bag" stroke="#2a1606" stroke-width="2" stroke-linejoin="round">
+    <path d="M44 66 Q38 58 33 62" fill="none" stroke="#4a2e12" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M30 60 Q22 72 20 86 Q20 104 36 104 Q52 104 52 86 Q50 72 42 60 Q36 56 30 60Z" fill="url(#ehBag)"/>
+    <path d="M28 58 Q36 52 44 58 L42 63 Q36 59 30 63Z" fill="#8a5a28"/>
+    <path d="M30 61 Q36 64 42 61" fill="none" stroke="#e8c070" stroke-width="2" stroke-linecap="round"/>
+    <g fill="url(#ehGold)" stroke="#7a4a00" stroke-width="1.2"><circle cx="32" cy="55.5" r="3.6"/><circle cx="39" cy="53.5" r="3.8"/><circle cx="36" cy="58" r="3.2"/></g>
+    <circle cx="36" cy="82" r="9.5" fill="url(#ehGold)" stroke="#7a4a00" stroke-width="1.6"/>
+    <circle cx="36" cy="82" r="6.4" fill="none" stroke="#a8680a" stroke-width="1.2"/>
+    <path d="M33.4 82h5.2M36 79.4v5.2" stroke="#8a5408" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M24 74 Q23 86 27 96" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <g class="p-spill" fill="url(#ehGold)" stroke="#7a4a00" stroke-width="1.1"><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/><circle class="sp" cx="36" cy="54" r="3.2"/></g>
+  <g class="p-body">
+    <!-- manteau -->
+    <path d="M46 62 Q64 52 82 62 L92 104 Q64 114 36 104Z" fill="url(#ehCoat)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M56 62 L64 84 L72 62Z" fill="url(#ehVest)" stroke="#2a1606" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M64 84 L64 108" stroke="#2a1606" stroke-width="1.6" opacity=".55"/>
+    <path d="M46 62 L64 86 M82 62 L64 86" stroke="#e8b84a" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+    <g fill="url(#ehGold)" stroke="#7a4a00" stroke-width="1"><circle cx="64" cy="94" r="2.4"/><circle cx="64" cy="101" r="2.4"/></g>
+    <path d="M40 98 Q64 108 88 98" fill="none" stroke="#e8b84a" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M41 70 Q38 86 40 100" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2.4" stroke-linecap="round"/>
+    <!-- ceinture + boucle-pièce -->
+    <path d="M42 84 Q64 91 86 84 L87 91 Q64 98 41 91Z" fill="#4a2c10" stroke="#2a1606" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="64" cy="90" r="6.2" fill="url(#ehGold)" stroke="#7a4a00" stroke-width="1.6"/>
+    <circle cx="64" cy="90" r="3.8" fill="none" stroke="#a8680a" stroke-width="1"/>
+    <path d="M62.2 90h3.6M64 88.2v3.6" stroke="#8a5408" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- bras avant + pelle (pivot : la main) -->
+  <g class="p-shovel">
+    <path d="M94 45 L93 100" stroke="#000a" stroke-width="5.4" stroke-linecap="round"/>
+    <path d="M94 45 L93 100" stroke="#b98a4e" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M86 44.5 H101" stroke="#000a" stroke-width="5" stroke-linecap="round"/>
+    <path d="M86 44.5 H101" stroke="#b98a4e" stroke-width="3" stroke-linecap="round"/>
+    <path d="M82 100 Q93 94 104 100 Q106 116 93 123 Q80 116 82 100Z" fill="url(#ehMetal)" stroke="#2a1606" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M86 102 Q86 112 91 118" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".85"/>
+    <path d="M93 97 V108" stroke="#5c6876" stroke-width="1.4"/>
+    <path d="M80 70 Q88 66 92 76" fill="none" stroke="#2a1606" stroke-width="9" stroke-linecap="round"/>
+    <path d="M80 70 Q88 66 92 76" fill="none" stroke="#7a4a1c" stroke-width="6.6" stroke-linecap="round"/>
+    <path d="M82 69 Q87 66.5 90 72" fill="none" stroke="#b57a32" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="93" cy="77" r="5.2" fill="url(#ehSkin)" stroke="#2a1606" stroke-width="1.8"/>
+    <path d="M89.6 74.4 h6.6 M89.4 77.6 h6.8" stroke="#a8683c" stroke-width="1"/>
+  </g>
+
+  <g class="p-face">
+  <!-- tête -->
+  <g class="p-head">
+    <circle cx="44" cy="47" r="4.4" fill="url(#ehSkin)" stroke="#2a1606" stroke-width="1.8"/>
+    <ellipse cx="64" cy="43" rx="21" ry="19" fill="url(#ehSkin)" stroke="#2a1606" stroke-width="2"/>
+    <path d="M50 34 Q56 36 60 33 M70 33 Q76 36 80 34" fill="none" stroke="#b8784c" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+    <ellipse cx="53" cy="48" rx="4.6" ry="3" fill="#ff8a7a" opacity=".45"/>
+    <!-- yeux -->
+    <g class="p-eye">
+      <ellipse cx="62" cy="40" rx="3.6" ry="4.4" fill="#fff" stroke="#2a1606" stroke-width="1.4"/>
+      <ellipse cx="75" cy="40" rx="3.2" ry="4.2" fill="#fff" stroke="#2a1606" stroke-width="1.4"/>
+      <circle cx="63.4" cy="41" r="2.2" fill="#2b1a0a"/><circle cx="76.2" cy="41" r="2" fill="#2b1a0a"/>
+      <circle cx="64.1" cy="40.1" r=".8" fill="#fff"/><circle cx="76.8" cy="40.2" r=".75" fill="#fff"/>
+    </g>
+    <!-- sourcils broussailleux -->
+    <g class="p-brow" fill="url(#ehBeard)" stroke="#2a1606" stroke-width="1.4" stroke-linejoin="round">
+      <path d="M55 35 Q62 30 68 34 Q64 34.4 62 37 Q58 33.6 55 35Z"/>
+      <path d="M71 34 Q77 30 83 34 Q79 34.4 77 37 Q74 33.6 71 34Z"/>
+    </g>
+    <!-- gros nez -->
+    <path d="M69 42 Q85 40 86 49 Q86 56 78 55 Q70 55 69 47Z" fill="url(#ehNose)" stroke="#2a1606" stroke-width="1.8" stroke-linejoin="round"/>
+    <ellipse cx="78" cy="45" rx="2.6" ry="1.8" fill="#ffd0c0" opacity=".8"/>
+    <circle cx="82.2" cy="52" r="1.1" fill="#6a2a22"/>
+  </g>
+
+  <!-- barbe et moustache de morse -->
+  <g class="p-beard" stroke="#2a1606" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M43 45 Q38 70 53 87 Q64 96 75 87 Q90 70 85 46 Q83 58 76 62 Q64 66 52 62 Q45 58 43 45Z" fill="url(#ehBeard)"/>
+    <path d="M51 68 Q55 78 60 85 M64 68 V91 M77 68 Q73 78 68 85" fill="none" stroke="#b8b8c8" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M54 55 Q58 50 66 54 Q76 50 89 52 Q93 56 89 60 Q85 56 78 58 Q70 62 64 60 Q56 60 54 55Z" fill="url(#ehBeard)"/>
+    <path d="M90 52 Q95 52 94 58 Q92 62 89 60" fill="url(#ehBeard)"/>
+    <path d="M56 56 Q62 58 70 55 M70 56 Q80 55 86 57" fill="none" stroke="#b8b8c8" stroke-width="1" stroke-linecap="round"/>
+    <path d="M62 62 Q64 64.4 67 62" fill="none" stroke="#8a4a3a" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+
+  <!-- grand chapeau d'explorateur -->
+  <g transform="translate(0 -4)"><g class="p-hat" stroke="#2a1606" stroke-width="2" stroke-linejoin="round">
+    <path d="M43 29 Q43 11 64 10 Q85 11 85 29Z" fill="url(#ehHat)"/>
+    <path d="M52 13 Q64 19 76 13" fill="none" stroke="#6a4a1c" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M44 25 Q64 31 84 25 L85 19 Q64 26 43 19Z" fill="#4a2c10"/>
+    <path d="M20 31 Q30 21 64 23 Q98 21 108 31 Q100 38 64 36 Q28 38 20 31Z" fill="url(#ehBrim)"/>
+    <path d="M26 31 Q64 40 102 31" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2" stroke-linecap="round"/>
+    <circle class="p-coin" cx="56" cy="22.5" r="5.4" fill="url(#ehGold)" stroke="#7a4a00" stroke-width="1.6"/>
+    <circle cx="56" cy="22.5" r="3.2" fill="none" stroke="#a8680a" stroke-width="1"/>
+    <path d="M54.4 22.5h3.2M56 20.9v3.2" stroke="#8a5408" stroke-width="1.1" stroke-linecap="round"/>
+    <path class="p-glint" d="M56 14.6 57.2 21 63 22.5 57.2 24 56 30.4 54.8 24 49 22.5 54.8 21Z" fill="#fff" stroke="none"/>
+  </g></g>
+  </g>
+  </g>
+  </g>
+</svg>`,
+};
+
+function hasHeroArt(cls) { return !!HERO_ART[cls]; }
+/* Sprite de combat : dessin si la classe en a un, sinon emblème rond */
+function heroSprite(cls) { return HERO_ART[cls] || emblem(cls, 'big'); }
 /* =====================================================================
    AMAKNA IDLE — INTERFACE v2
    Barre latérale (navigation + groupe), scènes de combat, poupée
@@ -4590,6 +5036,7 @@ const CLASS_GLYPH = {
   eniripsa: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" fill="currentColor"/><path d="M12 10.5v6M9 13.5h6" stroke="var(--c)" stroke-width="2" stroke-linecap="round"/><path d="M4.7 12.2C2.6 12.4 1 10.9 1 8.8c1.3.9 2.6 1 3.6.7M4.9 14.6c-1.8.4-3.2-.5-3.6-2.1M19.3 12.2c2.1.2 3.7-1.3 3.7-3.4-1.3.9-2.6 1-3.6.7M19.1 14.6c1.8.4 3.2-.5 3.6-2.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".85"/>',
   sacrieur: '<path d="M12 2.8s6.3 7.2 6.3 11.4a6.3 6.3 0 0 1-12.6 0C5.7 10 12 2.8 12 2.8Z" fill="currentColor"/><path d="M9.3 12.5l2 3.5M12 11.5l1.4 4.8M14.7 12.5l-.6 3.6" stroke="var(--c)" stroke-width="1.5" stroke-linecap="round"/>',
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
+  ecaflip: '<path d="M4.2 3.8 9 7.9c1.9-.6 4.1-.6 6 0l4.8-4.1.5 8.7c0 4.6-3.6 7.7-8.3 7.7S3.7 17.1 3.7 12.5Z" fill="currentColor"/><path d="M7.6 12.2c.9-1.1 2.1-1.1 2.8 0M13.6 12.2c.9-1.1 2.1-1.1 2.8 0" stroke="var(--c)" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M12 14.1l-1.3 1.3h2.6Z" fill="var(--c)"/><path d="M12 15.4v1.1M9.9 16.7c.8.5 1.5.5 2.1 0 .6.5 1.3.5 2.1 0" stroke="var(--c)" stroke-width=".9" stroke-linecap="round" fill="none"/><path d="M1.4 12.6l3.6.8M1.7 16l3.4-.9M22.6 12.6l-3.6.8M22.3 16l-3.4-.9" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/>',
   xelor: '<path d="M6.5 3h11M6.5 21h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5c0 4.6 3.6 5.8 3.6 8.5S8 15.9 8 20.5h8c0-4.6-3.6-5.8-3.6-8.5S16 7.1 16 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 19.6c.6-1.9 1.5-2.6 2.4-2.6s1.8.7 2.4 2.6ZM10 6.2h4c-.5 1.4-1.2 2.1-2 2.6-.8-.5-1.5-1.2-2-2.6Z" fill="currentColor"/><circle cx="12" cy="13.4" r=".7" fill="currentColor"/>',
   sram: '<path d="M14.5 3.2A8.8 8.8 0 1 0 20.8 16 7 7 0 1 1 14.5 3.2Z" fill="currentColor"/><path d="M17.5 5.5 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19.2 3.8l1-1M16.3 4.3l3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
 };
@@ -4742,10 +5189,10 @@ function fightCard(h) {
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
       return `<div class="unit mon${m.hp <= 0 ? ' dead' : ''}${d.boss ? ' boss' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
-        ${cra ? reticleHtml(h) : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
+        ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -4757,12 +5204,12 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
-          <div class="sprite">${emblem(h.cls, 'big')}</div></div>
+          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
         ${stage}
       </div>
       <div class="fc-log" data-k="log">${logHtml(h)}</div>
@@ -4788,6 +5235,81 @@ function trapBoom(card, fx) {
   b.innerHTML = `<i></i><i></i><i></i><i></i><i></i><i></i><i></i><b>PIÈGE !</b>`;
   mon.appendChild(b); setTimeout(() => b.remove(), 1300);
   mon.classList.remove('trapped'); void mon.offsetWidth; mon.classList.add('trapped'); setTimeout(() => mon.classList.remove('trapped'), 900);
+}
+/* ---------------------- Fièvre de l'Or de l'Enutrof ---------------------- */
+function purseHtml(h) { const n = h.purse || 0; return n >= ENU_PURSE_MAX ? '🎰 JACKPOT' : `🪙 ${Array.from({ length: ENU_PURSE_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`; }
+function coinBurst(el, n, sym) {
+  if (!el || !FX_OK()) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span'); s.className = 'coin-pop'; s.textContent = sym || '🪙';
+    const a = (i / n) * Math.PI * 2;
+    s.style.cssText = `--dx:${(Math.cos(a) * (24 + Math.random() * 26)).toFixed(0)}px;--dy:${(Math.sin(a) * (18 + Math.random() * 16) - 18).toFixed(0)}px;animation-delay:${(Math.random() * 140).toFixed(0)}ms`;
+    el.appendChild(s); setTimeout(() => s.remove(), 1100);
+  }
+}
+function goldFx(card, text, burstTarget, n) {
+  const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
+  const t = document.createElement('span'); t.className = 'fnum gold'; t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+  coinBurst(burstTarget || fg, n || 8);
+}
+/* ---------------------- Chance du Matou de l'Ecaflip ---------------------- */
+function cloverHtml(h) {
+  const f = h.fight, n = h.clover || 0;
+  const side = f && f.coin === 'face' ? '😼' : f && f.coin === 'pile' ? '🙀' : '🪙';
+  return n >= ECA_CLOVER_MAX ? `${side} 🎲 QUITTE OU DOUBLE` : `${side} 🍀 ${Array.from({ length: ECA_CLOVER_MAX }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}`;
+}
+function ecaText(card, text, cls) {
+  const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
+  const t = document.createElement('span'); t.className = 'fnum eca ' + (cls || ''); t.textContent = text; fg.appendChild(t); setTimeout(() => t.remove(), 1000);
+}
+function coinFlip(card, face) {
+  if (!FX_OK()) { ecaText(card, face ? 'FACE !' : 'PILE !', face ? 'face' : 'pile'); return; }
+  const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return;
+  const c = document.createElement('div'); c.className = 'flip ' + (face ? 'face' : 'pile');
+  c.innerHTML = `<div class="flip-coin"><b class="fr">😼</b><b class="bk">🙀</b></div><span>${face ? 'FACE !' : 'PILE !'}</span>`;
+  fg.appendChild(c); setTimeout(() => c.remove(), 1700);
+  const sp = fg.querySelector('.sprite'); if (sp) { sp.classList.remove('eca-glow-face', 'eca-glow-pile'); void sp.offsetWidth; sp.classList.add(face ? 'eca-glow-face' : 'eca-glow-pile'); setTimeout(() => sp.classList.remove('eca-glow-face', 'eca-glow-pile'), 1500); }
+}
+function gambleFx(card, scene, win) {
+  ecaText(card, win ? '🎲 DOUBLE !' : '🎲 PERDU…', win ? 'face' : 'pile');
+  if (win) { coinBurst(card.querySelector('[data-k="fighter"]'), 14, '🍀'); scene.classList.remove('gold-flash'); void scene.offsetWidth; scene.classList.add('gold-flash'); setTimeout(() => scene.classList.remove('gold-flash'), 900); }
+}
+
+/* Jackpot : machine à sous, rayons d'or, pluie de pièces et impacts sur chaque ennemi (≈ 2,7 s) */
+function playJackpot(card, fx) {
+  const scene = card.querySelector('.scene'); if (!scene) return;
+  if (!FX_OK()) { goldFx(card, 'JACKPOT !', scene, 0); return; }
+  const H = scene.clientHeight || 220;
+  const sym = ['🍒', '🔔', '💎', '🍀', '🪙', '<b class="s7">7</b>'];
+  const strip = sym.concat(sym).map(x => `<span>${x}</span>`).join('');
+  const reels = [0, 1, 2].map(() => `<div class="jp-reel"><div class="jp-strip">${strip}</div></div>`).join('');
+  const bulbs = Array.from({ length: 12 }, (_, i) => `<i style="--i:${i}"></i>`).join('');
+  const coins = Array.from({ length: 44 }, () => `<i style="left:${(Math.random() * 100).toFixed(1)}%;--t:${(800 + Math.random() * 600).toFixed(0)}ms;--d:${(1080 + Math.random() * 650).toFixed(0)}ms;--s:${(.8 + Math.random() * .8).toFixed(2)};--r:${(Math.random() * 360).toFixed(0)}deg"></i>`).join('');
+  const ov = document.createElement('div'); ov.className = 'jp'; ov.style.setProperty('--fall', (H + 40) + 'px');
+  ov.innerHTML = `<div class="jp-dim"></div><div class="jp-rays"></div>
+    <div class="jp-machine"><div class="jp-bulbs">${bulbs}</div><div class="jp-reels">${reels}</div></div>
+    <div class="jp-title"><span>JACKPOT</span><small>PLUIE D’OR</small></div><div class="jp-rain">${coins}</div>`;
+  scene.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const reelEls = ov.querySelectorAll('.jp-reel');
+  [560, 840, 1120].forEach((ms, k) => setTimeout(() => reelEls[k].classList.add('stop'), ms));
+  const hero = card.querySelector('[data-k="fighter"]');
+  const heroCls = card.querySelector('[data-k="fighter"] .hs') ? 'jp-pose' : 'jp-hero'; // dessin animé : pose de victoire, sinon simple halo
+  if (hero) hero.classList.add(heroCls); // le personnage entre dans la danse dès le lancement des rouleaux
+  setTimeout(() => { ov.classList.add('win'); scene.classList.add('gold-flash'); }, 1150);
+  setTimeout(() => {
+    scene.classList.add('cl-shake');
+    ((fx && fx.hits) || []).forEach((hit, k) => setTimeout(() => {
+      const mon = card.querySelector(`[data-mon="${hit.i}"]`); if (!mon) return;
+      mon.classList.remove('jp-hit'); void mon.offsetWidth; mon.classList.add('jp-hit');
+      const n = document.createElement('span'); n.className = 'jp-num'; n.textContent = '−' + fmt(hit.v) + (hit.crit ? ' !' : ''); mon.appendChild(n);
+      coinBurst(mon.querySelector('.sprite') || mon, 9);
+      setTimeout(() => { n.remove(); mon.classList.remove('jp-hit'); }, 1300);
+    }, k * 110));
+  }, 1500);
+  setTimeout(() => { scene.classList.remove('cl-shake'); scene.classList.remove('gold-flash'); }, 2300);
+  setTimeout(() => { if (hero) hero.classList.remove(heroCls); }, 2750);
+  setTimeout(() => ov.remove(), 2800);
 }
 function missFx(card) { const fg = card.querySelector('[data-k="fighter"]'); if (!fg) return; const n = document.createElement('span'); n.className = 'fnum miss'; n.textContent = 'Raté !'; fg.appendChild(n); setTimeout(() => n.remove(), 950); }
 
@@ -4928,6 +5450,16 @@ function patchCombat() {
         const vn = h.fight.vanishSeq || 0; if (vn > +(scene.dataset.vn || 0)) { scene.dataset.vn = vn; smokePuff(card.querySelector('[data-k="fighter"] .sprite'), true); }
         const ms = h.fight.missSeq || 0; if (ms > +(scene.dataset.ms || 0)) { scene.dataset.ms = ms; missFx(card); }
       }
+      if (h.cls === 'ecaflip') {
+        const cf = h.fight.coinFx; if (cf && cf.n > +(scene.dataset.co || 0)) { scene.dataset.co = cf.n; coinFlip(card, cf.face); }
+        const gf = h.fight.gambleFx; if (gf && gf.n > +(scene.dataset.gm || 0)) { scene.dataset.gm = gf.n; setTimeout(() => gambleFx(card, scene, gf.win), 200); }
+        const nv = h.fight.lifeSeq || 0; if (nv > +(scene.dataset.nv || 0)) { scene.dataset.nv = nv; ecaText(card, '🐾 NEUF VIES !', 'face'); coinBurst(card.querySelector('[data-k="fighter"]'), 8, '🐾'); }
+      }
+      if (h.cls === 'enutrof') {
+        const ch = h.fight.chestSeq || 0; if (ch > +(scene.dataset.ch || 0)) { scene.dataset.ch = ch; goldFx(card, 'Coffre !', card.querySelector(`[data-mon="${h.fight.treasure}"] .sprite`), 12); }
+        const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
+        const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
+      }
       if (h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0)) { scene.dataset.pf = h.fight.perfect.n; FURY_ANIM[h.id] = 1; setTimeout(() => playPerfect(card, h.fight.perfect), 60); setTimeout(() => { delete FURY_ANIM[h.id]; }, 1750); }
       if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
@@ -4965,6 +5497,11 @@ function patchCombat() {
       const inv = !!(h.fight && h.fight.invis); if (fg) fg.classList.toggle('invis', inv);
       const ic = q('invis'); if (ic && ic.hidden === inv) ic.hidden = !inv;
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="trap"]'); if (tr) tr.classList.toggle('armed', !!m && m.hp > 0 && h.fight.trap === i); });
+    }
+    if (h.cls === 'ecaflip') { const cl = q('clover'); if (cl) { const tx = cloverHtml(h); if (cl.innerHTML !== tx) cl.innerHTML = tx; cl.classList.toggle('full', (h.clover || 0) >= ECA_CLOVER_MAX); } }
+    if (h.cls === 'enutrof') {
+      const pu = q('purse'); if (pu) { const tx = purseHtml(h); if (pu.innerHTML !== tx) pu.innerHTML = tx; pu.classList.toggle('full', (h.purse || 0) >= ENU_PURSE_MAX); }
+      if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i], tr = el.querySelector('[data-k="treasure"]'); if (tr) tr.classList.toggle('on', !!m && m.hp > 0 && h.fight.treasure === i); });
     }
     if (h.cls === 'cra') {
       const fo = q('focus'); if (fo) { const tx = focusHtml(h); if (fo.innerHTML !== tx) fo.innerHTML = tx; fo.classList.toggle('full', (h.focus || 0) >= CRA_FOCUS_MAX); }
