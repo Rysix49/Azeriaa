@@ -1039,7 +1039,11 @@ function renderMain(force) {
   if (!force && !canRebuild()) return;
   // Les listes défilantes gardent leur position quand la vue est redessinée
   const keep = ['.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
-  $('#main').innerHTML = (RENDER[ui.view] || renderCombat)();
+  // La page garde sa hauteur et sa position pendant le redessin : sans ça, le défilement saute quand le contenu change de taille
+  const main = $('#main'), sy = window.scrollY, mh = main.offsetHeight; main.style.minHeight = mh + 'px';
+  main.innerHTML = (RENDER[ui.view] || renderCombat)();
+  try { window.scrollTo(0, sy); } catch (e) {}
+  requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
   if (ui.view === 'combat') ui.lastSig = combatSig();
 }

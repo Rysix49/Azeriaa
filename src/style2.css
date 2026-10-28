@@ -254,7 +254,7 @@ textarea { width: 100%; min-height: 90px; font-family: ui-monospace, Menlo, mono
 .rate b { font-size: 13.5px; }
 @media (max-width: 1150px) {
   .fc-body { grid-template-columns: minmax(0, 1fr); }
-  .fc-log { border-left: 0; border-top: 1px dashed #ffffff12; max-height: 104px; }
+  .fc-log { border-left: 0; border-top: 1px dashed #ffffff12; height: 104px; max-height: 104px; box-sizing: border-box; } /* hauteur fixe : la page ne bouge plus quand les lignes arrivent */
 }
 
 /* Scène : ciel en haut, sol en bas, les combattants posés sur le sol */
@@ -1530,3 +1530,8 @@ label.btn { cursor: pointer; }
 
 /* un héros déjà KO quand la carte est redessinée reste à terre : pas de nouvelle chute */
 .hero.dead.still .hs { animation-duration: 0s; animation-delay: 0s; }
+
+#main { overflow-anchor: none; }
+
+/* l'état du héros garde une largeur fixe : l'en-tête ne se replie plus sur 1 ou 2 lignes selon le texte (la page sautait) */
+.fc-head .status { min-width: 124px; text-align: center; box-sizing: border-box; }

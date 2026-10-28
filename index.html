@@ -262,7 +262,7 @@ textarea { width: 100%; min-height: 90px; font-family: ui-monospace, Menlo, mono
 .rate b { font-size: 13.5px; }
 @media (max-width: 1150px) {
   .fc-body { grid-template-columns: minmax(0, 1fr); }
-  .fc-log { border-left: 0; border-top: 1px dashed #ffffff12; max-height: 104px; }
+  .fc-log { border-left: 0; border-top: 1px dashed #ffffff12; height: 104px; max-height: 104px; box-sizing: border-box; } /* hauteur fixe : la page ne bouge plus quand les lignes arrivent */
 }
 
 /* Scène : ciel en haut, sol en bas, les combattants posés sur le sol */
@@ -1538,6 +1538,11 @@ label.btn { cursor: pointer; }
 
 /* un héros déjà KO quand la carte est redessinée reste à terre : pas de nouvelle chute */
 .hero.dead.still .hs { animation-duration: 0s; animation-delay: 0s; }
+
+#main { overflow-anchor: none; }
+
+/* l'état du héros garde une largeur fixe : l'en-tête ne se replie plus sur 1 ou 2 lignes selon le texte (la page sautait) */
+.fc-head .status { min-width: 124px; text-align: center; box-sizing: border-box; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -1550,7 +1555,7 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); padding-top: 16px; }
 :root[data-layout="mobile"] .foot { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
 :root[data-layout="mobile"] .fc-body { grid-template-columns: minmax(0, 1fr); }
-:root[data-layout="mobile"] .fc-log { border-left: 0; border-top: 1px dashed #ffffff12; max-height: 104px; }
+:root[data-layout="mobile"] .fc-log { border-left: 0; border-top: 1px dashed #ffffff12; height: 104px; max-height: 104px; box-sizing: border-box; }
 :root[data-layout="mobile"] .scene { margin: 12px; }
 :root[data-layout="mobile"] .scene { grid-template-columns: 72px auto minmax(0, 1fr); gap: 6px; padding: 12px 8px; min-height: 178px; }
 :root[data-layout="mobile"] .emblem.big { --s: 48px; }
@@ -1601,7 +1606,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793185422';
+const BUILD_ID = '1793185897';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -6458,7 +6463,11 @@ function renderMain(force) {
   if (!force && !canRebuild()) return;
   // Les listes défilantes gardent leur position quand la vue est redessinée
   const keep = ['.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
-  $('#main').innerHTML = (RENDER[ui.view] || renderCombat)();
+  // La page garde sa hauteur et sa position pendant le redessin : sans ça, le défilement saute quand le contenu change de taille
+  const main = $('#main'), sy = window.scrollY, mh = main.offsetHeight; main.style.minHeight = mh + 'px';
+  main.innerHTML = (RENDER[ui.view] || renderCombat)();
+  try { window.scrollTo(0, sy); } catch (e) {}
+  requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
   if (ui.view === 'combat') ui.lastSig = combatSig();
 }
