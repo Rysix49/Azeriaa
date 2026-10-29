@@ -43,9 +43,9 @@ let st;
 const ui = {
   view: 'combat', hero: null, job: 'tailleur', invFilter: 'all', sel: null, slot: null, hslot: null, eqTab: 'combat',
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
-  recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '', fcFold: {},
+  recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '', fcFold: {}, jrOpen: false,
 };
-const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'fcFold'];
+const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'fcFold', 'jrOpen'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -107,8 +107,8 @@ function emblem(cls, size) {
   const c = CLASSES[cls];
   return `<span class="emblem${size ? ' ' + (size === true ? 'sm' : size) : ''}" style="--c:${c.color}" title="${c.name}" aria-hidden="true"><svg viewBox="0 0 24 24">${CLASS_GLYPH[cls] || ''}</svg></span>`;
 }
-function bar(kind, val, max) { const p = max > 0 ? clamp(val / max * 100, 0, 100) : 0; return `<div class="bar ${kind}"><i style="width:${p.toFixed(1)}%"></i></div>`; }
-function setBar(el, val, max) { const i = el && el.querySelector('.bar > i'); if (i) i.style.width = (max > 0 ? clamp(val / max * 100, 0, 100) : 0).toFixed(1) + '%'; }
+function bar(kind, val, max) { const p = (max > 0 ? clamp(val / max * 100, 0, 100) : 0).toFixed(1); return `<div class="bar ${kind}" style="--w:${p}%"><i style="width:${p}%"></i></div>`; }
+function setBar(el, val, max) { const i = el && el.querySelector('.bar > i'); if (!i) return; const p = (max > 0 ? clamp(val / max * 100, 0, 100) : 0).toFixed(1) + '%'; i.style.width = p; i.parentNode.style.setProperty('--w', p); } // --w : traînée « fantôme » des barres de PV
 const coin = '<span class="kama" aria-hidden="true"></span>';
 function kamasHtml(n) { return `<span class="kamas">${coin}<b class="num">${fmt(n)}</b></span>`; }
 function itemIcon(id) { return itemArt(id); }
@@ -309,9 +309,9 @@ function fightCard(h) {
       <button class="btn sm ghost fc-fold" data-act="fcfold" data-hero="${h.id}" aria-label="Réduire ou déplier la carte" title="Réduire / déplier">${folded ? '▾' : '▴'}</button>
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
-    ${cbRibbon(h)}
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur' || h.cls === 'steamer') && !harvest ? ' has-fury' : ''}${h.cls === 'steamer' && !harvest ? ' has-yard' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${!harvest && h.act ? ' has-tl' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur' || h.cls === 'steamer') && !harvest ? ' has-fury' : ''}${h.cls === 'steamer' && !harvest ? ' has-yard' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+        ${cbRibbon(h)}
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}"${h.cls === 'zobal' ? ` data-mask="${zobMask(h)}"` : ''}>
           <i class="act-mark" aria-hidden="true">▼</i><div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
@@ -325,9 +325,9 @@ function fightCard(h) {
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
-      <aside class="fc-side">${harvest ? '' : cbSide(h)}<div class="fc-log" data-k="log">${logHtml(h)}</div></aside>
     </div>
     ${cbSpellbar(h)}
+    ${cbJournal(h)}
     <footer class="fc-foot">
       <div class="xpline"><span class="lbl">XP</span><div class="grow" data-k="xpb">${bar('xp thin', h.xp, xpToNext(h.lvl))}</div><span class="num" data-k="xpt">${h.lvl >= MAX_LEVEL ? 'Max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))}`}</span></div>
       <div class="rates" data-k="rates">${fightRates(h)}</div>
@@ -1555,6 +1555,7 @@ const ACTIONS = {
   unequipuid(d) { const by = equippedBy(st, d.uid); if (by) unequipUid(by, d.uid); },
   toggledetail() { ui.detailHidden = !ui.detailHidden; },
   unrelic() { selHero().relic = null; },
+  jrtoggle() { ui.jrOpen = !ui.jrOpen; document.querySelectorAll('.jr').forEach(e => e.classList.toggle('open', ui.jrOpen)); saveGame(); return 'keep'; },
   fcfold(d) { const f = ui.fcFold || (ui.fcFold = {}); f[d.hero] = !f[d.hero]; const c = document.querySelector(`[data-hero-card="${d.hero}"]`); if (c) { c.classList.toggle('fold', !!f[d.hero]); const b = c.querySelector('.fc-fold'); if (b) b.textContent = f[d.hero] ? '▾' : '▴'; } saveGame(); return 'keep'; },
   fcfoldall(d) { const f = ui.fcFold || (ui.fcFold = {}); for (const h of st.heroes) f[h.id] = d.v === 'on'; document.querySelectorAll('[data-hero-card]').forEach(c => { c.classList.toggle('fold', d.v === 'on'); const b = c.querySelector('.fc-fold'); if (b) b.textContent = d.v === 'on' ? '▾' : '▴'; }); saveGame(); return 'keep'; },
   ovgo(d) { const f = ui.fcFold || (ui.fcFold = {}); f[d.hero] = false; const c = document.querySelector(`[data-hero-card="${d.hero}"]`); if (c) { c.classList.remove('fold'); const b = c.querySelector('.fc-fold'); if (b) b.textContent = '▴'; c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } saveGame(); return 'keep'; },
