@@ -93,6 +93,7 @@ function heroTotals(st, h) {
   for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] = (t[k] || 0) + v;
   const sk = skillTotals(h); for (const k in sk) t[k] = (t[k] || 0) + sk[k];
   if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const fm = 1 + (sk.foodPow || 0) / 100; for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) t[k] = (t[k] || 0) + v * fm; }
+  for (const slot of DOFUS_SLOTS) { const g = h.dofus && h.dofus[slot] && gearById(st, h.dofus[slot]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; }
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
   const cl = CLASSES[h.cls];
@@ -1132,7 +1133,7 @@ function craft(st, r) {
 }
 
 /* ---------- Forgemage : Brisage (objet -> runes) et Forgemagie (runes -> jets) ---------- */
-function forgeable(g) { const d = ITEMS[g.id]; return !!d && !d.relic && !d.harvest; }
+function forgeable(g) { const d = ITEMS[g.id]; return !!d && !d.relic && !d.harvest && !d.dofus; }
 function brisageRunes(g) { // moyenne des runes obtenues par stat (avant aléa)
   const d = ITEMS[g.id], out = {};
   for (const [k, v] of Object.entries(g.stats)) if (RUNES[k]) out[k] = v / RUNES[k].step * 0.55;
@@ -1186,7 +1187,7 @@ function sellRes(st, id, n) {
   st.res[id] -= n; if (!st.res[id]) delete st.res[id];
   const k = n * RESOURCES[id].value; st.kamas += k; st.stats.kamasEarned += k; return k;
 }
-function equippedBy(st, gearUid) { return st.heroes.find(h => h.relic === gearUid || Object.values(h.equip).includes(gearUid) || Object.values(h.hequip || {}).includes(gearUid)); }
+function equippedBy(st, gearUid) { return st.heroes.find(h => h.relic === gearUid || Object.values(h.equip).includes(gearUid) || Object.values(h.hequip || {}).includes(gearUid) || Object.values(h.dofus || {}).includes(gearUid)); }
 function sellGear(st, gearUid) {
   if (equippedBy(st, gearUid)) return 0;
   const i = st.gear.findIndex(g => g.uid === gearUid); if (i < 0) return 0;
@@ -1201,6 +1202,17 @@ function equip(st, h, gearUid, wanted) {
     if (h.lvl < def.lvl) return `Niveau ${def.lvl} requis.`;
     const other = equippedBy(st, gearUid); if (other) unequipUid(other, gearUid);
     h.relic = gearUid; return null;
+  }
+  if (def.dofus) {
+    if (h.lvl < def.lvl) return `Niveau ${def.lvl} requis.`;
+    const other = equippedBy(st, gearUid); if (other) unequipUid(other, gearUid);
+    h.dofus = h.dofus || {};
+    const dup = DOFUS_SLOTS.find(s => h.dofus[s] && gearById(st, h.dofus[s])?.id === g.id); // pas deux fois le même Dofus
+    const free = dup || (wanted && DOFUS_SLOTS.includes(wanted) ? wanted : (DOFUS_SLOTS.find(s => !h.dofus[s]) || DOFUS_SLOTS[0]));
+    h.dofus[free] = gearUid;
+    const t = heroTotals(st, h); h.hp = Math.min(h.hp, t.maxHp);
+    if (!h.act) h.hp = t.maxHp;
+    return null;
   }
   if (def.harvest) {
     if (st.jobs.paysan.lvl < def.lvl) return `Paysan niveau ${def.lvl} requis.`;
@@ -1221,7 +1233,7 @@ function equip(st, h, gearUid, wanted) {
   if (!h.act) h.hp = t.maxHp;
   return null;
 }
-function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
+function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; if (h.dofus) for (const s of DOFUS_SLOTS) if (h.dofus[s] === gearUid) delete h.dofus[s]; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
 function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0, rmir: 0 }; const sk = skillTotals(h); for (const k in t) t[k] += sk[k] || 0; if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) if (k in t) t[k] += v * (1 + (sk.foodPow || 0) / 100); for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
 /* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
@@ -1236,7 +1248,7 @@ function heroPower(st, h) {
 /* Équipe pour chaque emplacement l'objet qui rend le héros le plus puissant (sans déséquiper les autres héros). Renvoie le nombre de changements. */
 function bestEquip(st, h) {
   const before = { ...h.equip }; let changed = true, passes = 0;
-  const pool = st.gear.filter(g => { const d = ITEMS[g.id]; if (d.relic || d.harvest || h.lvl < d.lvl) return false; const by = equippedBy(st, g.uid); return !by || by.id === h.id; });
+  const pool = st.gear.filter(g => { const d = ITEMS[g.id]; if (d.relic || d.harvest || d.dofus || h.lvl < d.lvl) return false; const by = equippedBy(st, g.uid); return !by || by.id === h.id; });
   while (changed && passes++ < 5) {
     changed = false;
     for (const slot of SLOTS) {
@@ -1275,7 +1287,7 @@ function migrate(obj) {
   st.mastery = st.mastery || {};
   st.heroes = st.heroes.filter(h => CLASSES[h.cls]); // classe supprimée (Eniripsa) : le héros disparaît de la sauvegarde
   for (const h of st.heroes) {
-    h.log = h.log || []; h.hequip = h.hequip || {};
+    h.log = h.log || []; h.hequip = h.hequip || {}; h.dofus = h.dofus || {};
     // v8 : Force/Intelligence/Chance/Agilité fusionnées en Dégâts → points de capital remboursés
     const ob = h.base || {};
     if ((obj.v || 1) < 2 || OLD_ELEM_STATS.some(k => k in ob)) {

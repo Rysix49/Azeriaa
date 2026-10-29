@@ -271,3 +271,27 @@ for (const id of ['relique_wabbit', 'relique_blop', 'relique_kanniboul', 'reliqu
 
 /* Couleur d'identité des nouvelles panoplies */
 Object.assign(SET_COL, { wabbit: '#ffb3e6', blop: '#a98aff', kanniboul: '#34d399', porcos: '#ffd24a', dragoeuf: '#ff4f6e', mansot: '#c9e4ff' });
+
+/* ======================= DOFUS : œufs magiques (dessin original) =======================
+   Forme d'œuf, dégradé de couleur, marbrures, reflet et petites étincelles. */
+const _dofusArt = (c1, c2, c3, vein, glow) => () => {
+  const e = _id(), s = _id(), cp = _id();
+  const egg = 'M16 3.4C21.8 3.4 25.8 11.2 25.8 17.8 25.8 23.8 21.6 28.6 16 28.6 10.4 28.6 6.2 23.8 6.2 17.8 6.2 11.2 10.2 3.4 16 3.4Z';
+  return `<circle cx="16" cy="16.4" r="14.6" fill="${glow}" opacity=".16"/><circle cx="16" cy="16.4" r="11.2" fill="${glow}" opacity=".16"/>
+  <defs><radialGradient id="${e}" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="${c1}"/><stop offset=".55" stop-color="${c2}"/><stop offset="1" stop-color="${c3}"/></radialGradient>
+  <linearGradient id="${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <clipPath id="${cp}"><path d="${egg}"/></clipPath></defs>
+  <ellipse cx="16" cy="29.4" rx="7" ry="1.4" fill="#000" opacity=".28"/>
+  <path d="${egg}" fill="url(#${e})" ${_O}/>
+  <g clip-path="url(#${cp})" fill="none" stroke-linecap="round">
+    <path d="M5 14c5 3 8-3 13 0s7 0 10-1" stroke="${vein}" stroke-width="1.3" opacity=".55"/>
+    <path d="M4 20c6 3 9-3 14 0s6 1 11 0" stroke="${vein}" stroke-width="1" opacity=".45"/>
+    <path d="M9 8c3 2 6 0 9 2" stroke="#fff" stroke-width=".8" opacity=".45"/>
+    <path d="M10 25c4-2 7 1 12-1" stroke="${c3}" stroke-width="1.2" opacity=".5"/>
+    <path d="M16 4.4v8.6c0 3 2 4 4 6" stroke="${vein}" stroke-width=".7" opacity=".4"/>
+  </g>
+  <path d="M10.4 12.4c.6-3.4 2.4-6 4.6-7.2" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/>
+  <ellipse cx="12.4" cy="12.8" rx="2.6" ry="4" transform="rotate(18 12.4 12.8)" fill="url(#${s})"/>
+  <path d="${egg}" fill="none" stroke="${vein}" stroke-width=".5" opacity=".5"/>` + _spark(25.6, 7.4, '#fff', .9) + _spark(6.4, 22.6, glow, .7) + _spark(26.6, 24, '#fff', .6);
+};
+Object.assign(ITEM_ART, { dofus_turquoise: _dofusArt('#c4fff2', '#1fd3c4', '#07707e', '#a8fff0', '#35f0dc') });

@@ -119,8 +119,8 @@ function monCard(p, type, mid, T) {
   const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
   const detail = mo ? `<div class="mc-detail" data-act="noop"><div class="dr-items">
       ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
-      ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
-        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
+      ${rl.map(([r, c]) => `<div class="dr-item relic${ITEMS[r].dofus ? ' dofus' : ''}"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">${ITEMS[r].dofus ? 'Dofus' : 'Relique'} · niv. ${ITEMS[r].lvl}</span>
+        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a === b2 ? a : a + '–' + b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
       ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
         <div class="sub">${Object.entries(it.stats).map(([k, [a, b2]]) => `<span style="color:${STAT_COLOR[k]}">${a}–${b2} ${STAT_SHORT[k]}</span>`).join(' · ')}</div>
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
@@ -136,7 +136,7 @@ function monCard(p, type, mid, T) {
     ${ar ? `<div class="mc-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}
     <div class="mc-row"><label>Ressources</label><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></div>
     <div class="mc-row"><label>Équipement</label>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span><span class="dr-stasis-chip" title="Chance de stasifié (stats ×2)">✦ <b>${pct(STASIS_RATE * T.drop)}</b></span></div>` : '<span class="dim">—</span>'}</div>
-    <div class="mc-row"><label>Relique</label>${rl.length ? `<div class="dr-chips">${rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('')}</div>` : '<span class="dim">—</span>'}</div>
+    <div class="mc-row"><label>Relique / Dofus</label>${rl.length ? `<div class="dr-chips">${rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('')}</div>` : '<span class="dim">—</span>'}</div>
     ${detail}</article>`;
 }
 

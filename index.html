@@ -3730,6 +3730,27 @@ label.btn { cursor: pointer; }
 .surge-fg > i { font-style: normal; }
 .scene.sg-on .unit.mon { z-index: 21; }
 .cl-num.sg-num { top: auto; }
+
+/* ===== Dofus : œufs magiques turquoise ===== */
+:root { --dofus: #35f0dc; }
+.q-dofus { --qc: var(--dofus); }
+.tile.q-dofus, .slot-t.q-dofus { background: radial-gradient(circle, #35f0dc26, #1b2016 72%); box-shadow: 0 0 12px #35f0dc40, inset 0 2px 7px #0008; }
+.tile.q-dofus .iart, .slot-t.q-dofus .iart { filter: drop-shadow(0 0 5px #35f0dcaa) drop-shadow(0 1px 0 #0008); }
+.qtag.q-dofus { background: #35f0dc22; color: var(--dofus); }
+.bag-r.q-dofus { background: #35f0dc0d; }
+.insp-card.q-dofus { box-shadow: 0 0 0 1px #35f0dc44 inset, 0 0 22px #35f0dc18; }
+.dofus-slots .slot-t.empty { border-style: dashed; border-color: #35f0dc44; }
+.dofus-slots .slot-t.empty .ph { opacity: .4; }
+.dofus-mini { display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 10px; border: 1px dashed #35f0dc55; background: #35f0dc0a; max-width: 100%; margin-top: 4px; }
+.dofus-mini .iart { width: 26px; height: 26px; }
+.dofus-mini .ph { font-size: 20px; opacity: .45; width: 30px; }
+.dofus-mini small { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.dofus-mini.on { border-style: solid; border-color: #35f0dc99; }
+.dofus-mini.on small { color: var(--dofus); font-weight: 800; }
+.dofus-row { display: inline-flex; flex-wrap: nowrap; }
+.dofus-row .dofus-ic { display: inline-flex; margin-right: -8px; }
+.dofus-entry.has .re-src, .dr-item.dofus .dr-pc.relic { color: var(--dofus); }
+.dr-item.relic.dofus { border-color: #35f0dc44; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -3854,7 +3875,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793238922';
+const BUILD_ID = '1793272698';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -4169,7 +4190,9 @@ const DUNGEONS = [
    -------------------------------------------------------------------- */
 const SLOTS = ['coiffe', 'cape', 'amulette', 'anneau1', 'anneau2', 'ceinture', 'bottes', 'arme'];
 const SLOT_LABEL = { coiffe: 'Coiffe', cape: 'Cape', amulette: 'Amulette', anneau1: 'Anneau', anneau2: 'Anneau', ceinture: 'Ceinture', bottes: 'Bottes', arme: 'Arme' };
-const SLOT_ICON = { relique: '🔮', outil: '🪓', gants: '🧤', sac: '👝', coiffe: '🎩', cape: '🧥', amulette: '📿', anneau: '💍', ceinture: '🎗️', bottes: '👢', arme: '🗡️' };
+/* Dofus : œufs magiques, 6 emplacements par héros (séparés de l'équipement, de la récolte et de la relique) */
+const DOFUS_SLOTS = ['dofus1', 'dofus2', 'dofus3', 'dofus4', 'dofus5', 'dofus6'];
+const SLOT_ICON = { dofus: '🥚', relique: '🔮', outil: '🪓', gants: '🧤', sac: '👝', coiffe: '🎩', cape: '🧥', amulette: '📿', anneau: '💍', ceinture: '🎗️', bottes: '👢', arme: '🗡️' };
 
 const SETS = {
   aventurier: { name: "Panoplie de l'Aventurier", bonus: { 2: { vit: 10 }, 4: { vit: 20, sag: 20 }, 6: { deg: 20, vit: 30, sag: 30 } } },
@@ -4192,6 +4215,8 @@ Object.assign(STAT_SHORT, { rxp: '% XP récolte', rqty: '% Qté', rspd: '% Vites
    RELIQUES — un seul emplacement par héros, effets uniques et puissants.
    Elles ne se fabriquent pas : drop extrêmement rare (voir RELIC_DROPS).
    -------------------------------------------------------------------- */
+Object.assign(STAT_LABEL, { critDmg: '% Dégâts critiques' });
+Object.assign(STAT_SHORT, { critDmg: '% Dég. crit.' });
 Object.assign(STAT_LABEL, { kamas: '% Kamas gagnés', xpPct: '% XP gagnée', dmgPct: '% Dégâts finaux', dodge: '% Esquive', regen: '% PV régénérés / tour', speed: '% Vitesse de combat' });
 Object.assign(STAT_SHORT, { kamas: '% Kamas', xpPct: '% XP', dmgPct: '% Dégâts', dodge: '% Esquive', regen: '% Régén.', speed: '% Vitesse combat' });
 
@@ -4811,6 +4836,8 @@ Object.assign(ITEMS, {
   ceinture_porcos: { icon: '🎗️', name: 'Ceinture du Porsalu', slot: 'ceinture', lvl: 80, set: 'porcos', stats: { deg: [32, 50], vit: [52, 72] } },
   amulette_porcos: { icon: '📿', name: 'Médaillon du Porcos', slot: 'amulette', lvl: 82, set: 'porcos', stats: { vit: [90, 130], res: [4, 6], pp: [28, 46] } },
   rotissoire_cochon:{ icon: '🍖', name: 'Rôtissoire du Dragon Cochon', slot: 'arme', lvl: 88, set: 'porcos', stats: { deg: [78, 112], vit: [20, 35] } },
+  /* Dofus : objet à part (emplacements Dofus du héros), pas de jet : les stats sont fixes */
+  dofus_turquoise: { name: 'Dofus Turquoise', slot: 'dofus', lvl: 80, dofus: true, stats: { crit: [20, 20], critDmg: [50, 50] } },
   relique_porcos:  { name: 'Tirelire du Dragon Cochon', slot: 'relique', lvl: 80, relic: true, stats: { kamas: [50, 80], vit: [80, 130] } },
 
   /* Panoplie du Dragoeuf — coquille, ailes et braise */
@@ -4897,7 +4924,7 @@ Object.assign(GEAR_DROPS, {
 });
 Object.assign(RELIC_DROPS, {
   wa_wabbit: [['relique_wabbit', 0.0005]], blop_royal: [['relique_blop', 0.0005]], kanniboul_ebil: [['relique_kanniboul', 0.0005]],
-  dragon_cochon: [['relique_porcos', 0.02]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
+  dragon_cochon: [['relique_porcos', 0.02], ['dofus_turquoise', 0.01]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
 });
 /* =====================================================================
    AMAKNA IDLE — MOTEUR
@@ -4994,6 +5021,7 @@ function heroTotals(st, h) {
   for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] = (t[k] || 0) + v;
   const sk = skillTotals(h); for (const k in sk) t[k] = (t[k] || 0) + sk[k];
   if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const fm = 1 + (sk.foodPow || 0) / 100; for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) t[k] = (t[k] || 0) + v * fm; }
+  for (const slot of DOFUS_SLOTS) { const g = h.dofus && h.dofus[slot] && gearById(st, h.dofus[slot]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; }
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
   const cl = CLASSES[h.cls];
@@ -6033,7 +6061,7 @@ function craft(st, r) {
 }
 
 /* ---------- Forgemage : Brisage (objet -> runes) et Forgemagie (runes -> jets) ---------- */
-function forgeable(g) { const d = ITEMS[g.id]; return !!d && !d.relic && !d.harvest; }
+function forgeable(g) { const d = ITEMS[g.id]; return !!d && !d.relic && !d.harvest && !d.dofus; }
 function brisageRunes(g) { // moyenne des runes obtenues par stat (avant aléa)
   const d = ITEMS[g.id], out = {};
   for (const [k, v] of Object.entries(g.stats)) if (RUNES[k]) out[k] = v / RUNES[k].step * 0.55;
@@ -6087,7 +6115,7 @@ function sellRes(st, id, n) {
   st.res[id] -= n; if (!st.res[id]) delete st.res[id];
   const k = n * RESOURCES[id].value; st.kamas += k; st.stats.kamasEarned += k; return k;
 }
-function equippedBy(st, gearUid) { return st.heroes.find(h => h.relic === gearUid || Object.values(h.equip).includes(gearUid) || Object.values(h.hequip || {}).includes(gearUid)); }
+function equippedBy(st, gearUid) { return st.heroes.find(h => h.relic === gearUid || Object.values(h.equip).includes(gearUid) || Object.values(h.hequip || {}).includes(gearUid) || Object.values(h.dofus || {}).includes(gearUid)); }
 function sellGear(st, gearUid) {
   if (equippedBy(st, gearUid)) return 0;
   const i = st.gear.findIndex(g => g.uid === gearUid); if (i < 0) return 0;
@@ -6102,6 +6130,17 @@ function equip(st, h, gearUid, wanted) {
     if (h.lvl < def.lvl) return `Niveau ${def.lvl} requis.`;
     const other = equippedBy(st, gearUid); if (other) unequipUid(other, gearUid);
     h.relic = gearUid; return null;
+  }
+  if (def.dofus) {
+    if (h.lvl < def.lvl) return `Niveau ${def.lvl} requis.`;
+    const other = equippedBy(st, gearUid); if (other) unequipUid(other, gearUid);
+    h.dofus = h.dofus || {};
+    const dup = DOFUS_SLOTS.find(s => h.dofus[s] && gearById(st, h.dofus[s])?.id === g.id); // pas deux fois le même Dofus
+    const free = dup || (wanted && DOFUS_SLOTS.includes(wanted) ? wanted : (DOFUS_SLOTS.find(s => !h.dofus[s]) || DOFUS_SLOTS[0]));
+    h.dofus[free] = gearUid;
+    const t = heroTotals(st, h); h.hp = Math.min(h.hp, t.maxHp);
+    if (!h.act) h.hp = t.maxHp;
+    return null;
   }
   if (def.harvest) {
     if (st.jobs.paysan.lvl < def.lvl) return `Paysan niveau ${def.lvl} requis.`;
@@ -6122,7 +6161,7 @@ function equip(st, h, gearUid, wanted) {
   if (!h.act) h.hp = t.maxHp;
   return null;
 }
-function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
+function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; if (h.dofus) for (const s of DOFUS_SLOTS) if (h.dofus[s] === gearUid) delete h.dofus[s]; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
 function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0, rmir: 0 }; const sk = skillTotals(h); for (const k in t) t[k] += sk[k] || 0; if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) if (k in t) t[k] += v * (1 + (sk.foodPow || 0) / 100); for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
 /* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
@@ -6137,7 +6176,7 @@ function heroPower(st, h) {
 /* Équipe pour chaque emplacement l'objet qui rend le héros le plus puissant (sans déséquiper les autres héros). Renvoie le nombre de changements. */
 function bestEquip(st, h) {
   const before = { ...h.equip }; let changed = true, passes = 0;
-  const pool = st.gear.filter(g => { const d = ITEMS[g.id]; if (d.relic || d.harvest || h.lvl < d.lvl) return false; const by = equippedBy(st, g.uid); return !by || by.id === h.id; });
+  const pool = st.gear.filter(g => { const d = ITEMS[g.id]; if (d.relic || d.harvest || d.dofus || h.lvl < d.lvl) return false; const by = equippedBy(st, g.uid); return !by || by.id === h.id; });
   while (changed && passes++ < 5) {
     changed = false;
     for (const slot of SLOTS) {
@@ -6176,7 +6215,7 @@ function migrate(obj) {
   st.mastery = st.mastery || {};
   st.heroes = st.heroes.filter(h => CLASSES[h.cls]); // classe supprimée (Eniripsa) : le héros disparaît de la sauvegarde
   for (const h of st.heroes) {
-    h.log = h.log || []; h.hequip = h.hequip || {};
+    h.log = h.log || []; h.hequip = h.hequip || {}; h.dofus = h.dofus || {};
     // v8 : Force/Intelligence/Chance/Agilité fusionnées en Dégâts → points de capital remboursés
     const ob = h.base || {};
     if ((obj.v || 1) < 2 || OLD_ELEM_STATS.some(k => k in ob)) {
@@ -7005,6 +7044,30 @@ for (const id of ['relique_wabbit', 'relique_blop', 'relique_kanniboul', 'reliqu
 
 /* Couleur d'identité des nouvelles panoplies */
 Object.assign(SET_COL, { wabbit: '#ffb3e6', blop: '#a98aff', kanniboul: '#34d399', porcos: '#ffd24a', dragoeuf: '#ff4f6e', mansot: '#c9e4ff' });
+
+/* ======================= DOFUS : œufs magiques (dessin original) =======================
+   Forme d'œuf, dégradé de couleur, marbrures, reflet et petites étincelles. */
+const _dofusArt = (c1, c2, c3, vein, glow) => () => {
+  const e = _id(), s = _id(), cp = _id();
+  const egg = 'M16 3.4C21.8 3.4 25.8 11.2 25.8 17.8 25.8 23.8 21.6 28.6 16 28.6 10.4 28.6 6.2 23.8 6.2 17.8 6.2 11.2 10.2 3.4 16 3.4Z';
+  return `<circle cx="16" cy="16.4" r="14.6" fill="${glow}" opacity=".16"/><circle cx="16" cy="16.4" r="11.2" fill="${glow}" opacity=".16"/>
+  <defs><radialGradient id="${e}" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="${c1}"/><stop offset=".55" stop-color="${c2}"/><stop offset="1" stop-color="${c3}"/></radialGradient>
+  <linearGradient id="${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <clipPath id="${cp}"><path d="${egg}"/></clipPath></defs>
+  <ellipse cx="16" cy="29.4" rx="7" ry="1.4" fill="#000" opacity=".28"/>
+  <path d="${egg}" fill="url(#${e})" ${_O}/>
+  <g clip-path="url(#${cp})" fill="none" stroke-linecap="round">
+    <path d="M5 14c5 3 8-3 13 0s7 0 10-1" stroke="${vein}" stroke-width="1.3" opacity=".55"/>
+    <path d="M4 20c6 3 9-3 14 0s6 1 11 0" stroke="${vein}" stroke-width="1" opacity=".45"/>
+    <path d="M9 8c3 2 6 0 9 2" stroke="#fff" stroke-width=".8" opacity=".45"/>
+    <path d="M10 25c4-2 7 1 12-1" stroke="${c3}" stroke-width="1.2" opacity=".5"/>
+    <path d="M16 4.4v8.6c0 3 2 4 4 6" stroke="${vein}" stroke-width=".7" opacity=".4"/>
+  </g>
+  <path d="M10.4 12.4c.6-3.4 2.4-6 4.6-7.2" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/>
+  <ellipse cx="12.4" cy="12.8" rx="2.6" ry="4" transform="rotate(18 12.4 12.8)" fill="url(#${s})"/>
+  <path d="${egg}" fill="none" stroke="${vein}" stroke-width=".5" opacity=".5"/>` + _spark(25.6, 7.4, '#fff', .9) + _spark(6.4, 22.6, glow, .7) + _spark(26.6, 24, '#fff', .6);
+};
+Object.assign(ITEM_ART, { dofus_turquoise: _dofusArt('#c4fff2', '#1fd3c4', '#07707e', '#a8fff0', '#35f0dc') });
 /* =====================================================================
    AMAKNA IDLE — SPRITES ANIMÉS DES MONSTRES (dessins originaux)
    MON_ART[id] = SVG du monstre, dessiné tourné vers la DROITE
@@ -12077,8 +12140,8 @@ function monCard(p, type, mid, T) {
   const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
   const detail = mo ? `<div class="mc-detail" data-act="noop"><div class="dr-items">
       ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
-      ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
-        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
+      ${rl.map(([r, c]) => `<div class="dr-item relic${ITEMS[r].dofus ? ' dofus' : ''}"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">${ITEMS[r].dofus ? 'Dofus' : 'Relique'} · niv. ${ITEMS[r].lvl}</span>
+        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a === b2 ? a : a + '–' + b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
       ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
         <div class="sub">${Object.entries(it.stats).map(([k, [a, b2]]) => `<span style="color:${STAT_COLOR[k]}">${a}–${b2} ${STAT_SHORT[k]}</span>`).join(' · ')}</div>
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
@@ -12094,7 +12157,7 @@ function monCard(p, type, mid, T) {
     ${ar ? `<div class="mc-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}
     <div class="mc-row"><label>Ressources</label><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></div>
     <div class="mc-row"><label>Équipement</label>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span><span class="dr-stasis-chip" title="Chance de stasifié (stats ×2)">✦ <b>${pct(STASIS_RATE * T.drop)}</b></span></div>` : '<span class="dim">—</span>'}</div>
-    <div class="mc-row"><label>Relique</label>${rl.length ? `<div class="dr-chips">${rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('')}</div>` : '<span class="dim">—</span>'}</div>
+    <div class="mc-row"><label>Relique / Dofus</label>${rl.length ? `<div class="dr-chips">${rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('')}</div>` : '<span class="dim">—</span>'}</div>
     ${detail}</article>`;
 }
 
@@ -12572,7 +12635,7 @@ const liveEv = {
   turretNew(h, s) { toast(`⚙️ ${h.name} déploie sa ${STM_NAMES[s].toLowerCase()} !`, 'quest'); },
   levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
-    for (const g of gear) toast(ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic ? 'relic' : g.stasis ? 'stasis' : 'rare');
+    for (const g of gear) toast(ITEMS[g.id].dofus ? `DOFUS ! ${h.name} a trouvé le ${ITEMS[g.id].name} !` : ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic || ITEMS[g.id].dofus ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
   },
   dungeonDone(h, p) { toast(`${h.name} a vaincu ${p.name} !`, 'quest'); },
@@ -12619,11 +12682,13 @@ function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RES
 function themeStyle(th) { return `--sky:${th[0]};--ground:${th[1]}`; }
 function qClass(g) {
   if (ITEMS[g.id].relic) return 'q-relic';
+  if (ITEMS[g.id].dofus) return 'q-dofus';
   if (g.stasis) return 'q-stasis';
   const q = itemQuality(g); return q > 0.8 ? 'q-high' : q > 0.4 ? 'q-mid' : 'q-low';
 }
 function qualityTag(g) {
   if (ITEMS[g.id].relic) return '<span class="qtag q-relic">Relique</span>';
+  if (ITEMS[g.id].dofus) return '<span class="qtag q-dofus">Dofus</span>';
   if (g.stasis) return '<span class="qtag q-stasis">Stasifié ×2</span>';
   return `<span class="qtag ${qClass(g)}">Jet ${Math.round(itemQuality(g) * 100)} %</span>`;
 }
@@ -13545,12 +13610,12 @@ function heroTabs(h) {
 function renderHeros() {
   const h = selHero(); if (!h) return renderRecruit(true);
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
-  const tab = ['combat', 'recolte', 'relique'].includes(ui.eqTab) ? ui.eqTab : 'combat';
-  const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
+  const tab = ['combat', 'recolte', 'relique', 'dofus'].includes(ui.eqTab) ? ui.eqTab : 'combat';
+  const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique'], ['dofus', 'Dofus']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
   const fp = skillFree(h);
   const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
   return `${heroTabs(h)}${skb}<div class="hero-grid">
-    <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : combatGear(h)}</section>
+    <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : tab === 'dofus' ? dofusPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
 function slotTile(h, slot) {
@@ -13579,6 +13644,7 @@ function combatGear(h) {
   if (!SLOTS.includes(ui.slot)) ui.slot = null;
   const t = heroTotals(st, h); const hp = displayHp(st, h); const c = CLASSES[h.cls];
   const rel = h.relic && gearById(st, h.relic);
+  const nDofus = DOFUS_SLOTS.filter(s => h.dofus && h.dofus[s] && gearById(st, h.dofus[s])).length;
   const doll = `<div class="doll" style="--hc:${c.color}">
     <div class="doll-col">${['coiffe', 'cape', 'amulette', 'ceinture'].map(s => slotTile(h, s)).join('')}</div>
     <div class="doll-mid">
@@ -13587,6 +13653,7 @@ function combatGear(h) {
       <div class="mini-bars"><div>${bar('hp', hp, t.maxHp)}<small class="num">${fmt(hp)} / ${fmt(t.maxHp)} PV</small></div>
         <div>${bar('xp thin', h.xp, xpToNext(h.lvl))}<small class="num">${h.lvl >= MAX_LEVEL ? 'Niveau max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))} XP`}</small></div></div>
       <button class="relic-mini${rel ? ' on' : ''}" data-act="eqtab" data-v="relique" title="Relique">${rel ? itemIcon(rel.id) : '<span class="ph">🔮</span>'}<small>${rel ? esc(ITEMS[rel.id].name) : 'Aucune relique'}</small></button>
+      <button class="dofus-mini${nDofus ? ' on' : ''}" data-act="eqtab" data-v="dofus" title="Dofus">${nDofus ? dofusRow(h, true) : '<span class="ph">🥚</span>'}<small>${nDofus ? `${nDofus} Dofus équipé${nDofus > 1 ? 's' : ''}` : 'Aucun Dofus'}</small></button>
       <div class="activity">${h.act ? `<span><span class="tag">${actLabel(h)}</span> <b>${esc(placeName(h.act))}</b></span>` : '<span class="sub">Inactif</span>'}
         <div class="row-btns">${h.act ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : ''}<button class="btn sm" data-act="gomap" data-hero="${h.id}">Carte</button></div></div>
     </div>
@@ -13606,7 +13673,7 @@ function combatGear(h) {
         ${d.set ? setBlock(d.set, h) : ''}</div>`;
   }
   const typeOf = s => (s && s.startsWith('anneau') ? 'anneau' : s);
-  const free = st.gear.filter(g => !ITEMS[g.id].harvest && !ITEMS[g.id].relic).filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); });
+  const free = st.gear.filter(g => !ITEMS[g.id].harvest && !ITEMS[g.id].relic && !ITEMS[g.id].dofus).filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); });
   let body;
   if (!ui.slot) {
     // Vue d'ensemble : un bouton par type d'objet, avec le nombre et le meilleur gain possible
@@ -13697,6 +13764,37 @@ function harvestGear(h) {
         <button class="btn sm gold" data-act="equip" data-uid="${g.uid}" ${ok ? '' : 'disabled'}>${ok ? 'Équiper' : `Paysan ${d.lvl}`}</button></div>`; }).join('')}</div>`
     : `<div class="empty sm">Aucun outil de récolte. Le Forgeron fabrique les faux, le Tailleur les gants et les sacs, à partir de céréales. <button class="btn sm" data-act="view" data-v="ateliers">Aller aux Ateliers</button></div>`}`;
 }
+/* Rangée des Dofus équipés (mini œufs) */
+function dofusRow(h, mini) {
+  return `<span class="dofus-row">${DOFUS_SLOTS.map(s => { const g = h.dofus && h.dofus[s] && gearById(st, h.dofus[s]); return g ? `<span class="dofus-ic">${itemIcon(g.id)}</span>` : (mini ? '' : '<span class="dofus-ic empty">🥚</span>'); }).join('')}</span>`;
+}
+function dofusPanel(h) {
+  h.dofus = h.dofus || {};
+  if (!DOFUS_SLOTS.includes(ui.dslot)) ui.dslot = null;
+  const slots = DOFUS_SLOTS.map((s, i) => { const g = h.dofus[s] && gearById(st, h.dofus[s]); const sel = ui.dslot === s;
+    return `<div class="hslot"><button class="slot-t dofus-slot ${g ? 'q-dofus' : 'empty'}${sel ? ' sel' : ''}" data-act="dofusslot" data-slot="${s}" aria-pressed="${sel}" title="${g ? esc(ITEMS[g.id].name) : 'Emplacement Dofus ' + (i + 1) + ' : vide'}">${g ? itemIcon(g.id) : '<span class="ph">🥚</span>'}<span class="st-l">Dofus ${i + 1}</span></button>
+      <small>${g ? esc(ITEMS[g.id].name) : 'Vide'}</small></div>`; }).join('');
+  const cur = ui.dslot && h.dofus[ui.dslot] && gearById(st, h.dofus[ui.dslot]);
+  const owned = st.gear.filter(g => ITEMS[g.id].dofus).filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); }).sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl);
+  const ownedIds = new Set(st.gear.filter(g => ITEMS[g.id].dofus).map(g => g.id));
+  const ids = Object.keys(ITEMS).filter(id => ITEMS[id].dofus);
+  const t = heroTotals(st, h);
+  const dofusStat = (k, v) => `<span class="sd" style="--c:${STAT_COLOR[k] || 'var(--dofus)'}">+${v} ${STAT_SHORT[k]}</span>`;
+  return `<p class="hint">Les Dofus sont des œufs magiques : ${DOFUS_SLOTS.length} emplacements par héros, un seul exemplaire de chaque Dofus. Ils ne se fabriquent pas : ils tombent très rarement sur les boss de donjon.</p>
+    <div class="hslots dofus-slots">${slots}</div>
+    <div class="cstats"><div class="cs"><small>Critique</small><b>${t.critPct.toFixed(1).replace('.', ',')} %</b></div><div class="cs"><small>Bonus dégâts critiques</small><b>+${t.critDmg || 0} %</b></div></div>
+    <div class="list-h"><span class="label">${ui.dslot ? 'Dofus disponibles' : 'Dofus du sac · choisis un emplacement ou équipe directement'}</span>
+      ${cur ? `<button class="btn sm danger" data-act="undofus" data-slot="${ui.dslot}">Retirer ${esc(ITEMS[cur.id].name)}</button>` : ''}</div>
+    ${owned.length ? `<div class="bag-list">${owned.map(g => { const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const ok = h.lvl >= d.lvl;
+      return `<div class="bag-r q-dofus"><div class="tile sm q-dofus">${itemIcon(g.id)}</div><div class="br-main"><div class="br-top"><b>${esc(d.name)}</b><small class="sub">niv. ${d.lvl}</small>${qualityTag(g)}${by ? `<small class="eqby">porté par ${esc(by.name)}</small>` : ''}</div>
+        <div class="sd-list">${Object.entries(g.stats).map(([k, v]) => dofusStat(k, v)).join('')}</div></div>
+        <button class="btn sm gold" data-act="equip" data-uid="${g.uid}" ${ui.dslot ? `data-slot="${ui.dslot}"` : ''} ${ok ? '' : 'disabled'}>${ok ? 'Équiper' : `Niv. ${d.lvl}`}</button></div>`; }).join('')}</div>`
+      : '<div class="empty sm">Aucun Dofus dans le sac. Le Dofus Turquoise peut tomber sur le Dragon Cochon, au fond de son repaire.</div>'}
+    <div class="list-h"><span class="label">Codex des Dofus · ${ownedIds.size}/${ids.length}</span></div>
+    <div class="relic-codex">${ids.map(id => { const d = ITEMS[id]; const has = ownedIds.has(id);
+      return `<div class="relic-entry dofus-entry${has ? ' has' : ''}"><div class="relic-mini-ic">${itemIcon(id)}</div><div class="re-main"><b>${has ? esc(d.name) : '???'}</b> <small class="sub">niv. ${d.lvl}</small>
+        <div class="sub">${Object.entries(d.stats).map(([k, [a, b]]) => `${a === b ? a : a + '–' + b} ${STAT_SHORT[k]}`).join(' · ')}</div><div class="re-src">${relicSources(id)}</div></div></div>`; }).join('')}</div>`;
+}
 function relicSources(id) { return Object.entries(RELIC_DROPS).filter(([, l]) => l.some(([r]) => r === id)).map(([m, l]) => `${monIcon(m)} ${MONSTERS[m].name} (${pct(l.find(([r]) => r === id)[1])})`).join(', '); }
 function relicPanel(h) {
   const cur = h.relic && gearById(st, h.relic);
@@ -13726,12 +13824,12 @@ function defaultPlace() {
 }
 function placeMons(p, type) { return type === 'dungeon' ? [...new Set([...p.rooms.flat(), ...p.boss])] : p.monsters; }
 /* ---------------------------- Vue : Inventaire ---------------------------- */
-const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['res', 'Ressources', '🧺']];
+const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['dofus', 'Dofus', '🥚'], ['res', 'Ressources', '🧺']];
 const INV_SORTS = [['lvl', 'Niveau'], ['q', 'Qualité'], ['val', 'Valeur'], ['name', 'Nom']];
 const INV_RCATS = [['all', 'Toutes'], ['loot', 'Butin'], ['crop', 'Récoltes'], ['food', 'Repas'], ['rune', 'Runes'], ['rare', 'Rares'], ['key', 'Clefs']];
 const INV_RCAT_LABEL = { loot: 'Butin de monstres', crop: 'Récoltes', food: 'Repas', rune: 'Runes', rare: 'Ressources rares', key: 'Clefs de donjon' };
 const resCat = id => { const r = RESOURCES[id]; return r.key ? 'key' : r.food ? 'food' : r.rune ? 'rune' : r.crop ? 'crop' : r.rare ? 'rare' : 'loot'; };
-const gearKind = g => (ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
+const gearKind = g => (ITEMS[g.id].dofus ? 'dofus' : ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
 const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 const gearStatChips = g => Object.entries(g.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k] || 'var(--fg)'}">+${v} ${STAT_LABEL[k]}</i>`).join('');
 const relicPh = () => `--ph:-${Date.now() % 6000}ms;`;
@@ -13746,7 +13844,7 @@ function resTile(id) {
 }
 function gearRow(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
-  const type = d.relic ? 'Relique' : d.harvest ? HARVEST_SLOT_LABEL[d.slot] : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
+  const type = d.dofus ? 'Dofus' : d.relic ? 'Relique' : d.harvest ? HARVEST_SLOT_LABEL[d.slot] : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
   return `<button class="iv-row ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}"><span class="tile sm ${qClass(g)}" style="${d.relic ? relicPh() : ''}">${itemIcon(g.id)}</span>
     <span class="iv-n"><b>${esc(d.name)}</b><small>${type} · niv. ${d.lvl}${d.set ? ` · <u class="setn" style="--sc:${SET_COL[d.set]}">${esc(SETS[d.set].name.replace('Panoplie ', '').replace('de l’', '').replace('du ', '').replace("de l'", ''))}</u>` : ''}</small></span><span class="iv-st">${gearStatChips(g)}</span>
     <span class="iv-r">${qualityTag(g)}${by ? `<span class="iv-by" style="--c:${CLASSES[by.cls].color}">${emblem(by.cls, true)}${esc(by.name)}</span>` : `<small class="iv-v">${fmt(itemValue(g))} K</small>`}</span></button>`;
@@ -13766,9 +13864,9 @@ function renderInventaire() {
   const q = norm(ui.invQ || ''), rcat = INV_RCATS.some(x => x[0] === ui.invRcat) ? ui.invRcat : 'all';
   const slot = ui.invSlot || 'all', freeOnly = !!ui.invFree;
   const allRes = Object.keys(st.res).filter(id => st.res[id] > 0);
-  const counts = { all: 0, res: allRes.length, gear: 0, harvest: 0, relic: 0 };
+  const counts = { all: 0, res: allRes.length, gear: 0, harvest: 0, relic: 0, dofus: 0 };
   for (const g of st.gear) counts[gearKind(g)]++;
-  counts.all = counts.res + counts.gear + counts.harvest + counts.relic;
+  counts.all = counts.res + counts.gear + counts.harvest + counts.relic + counts.dofus;
   const worn = st.gear.filter(g => equippedBy(st, g.uid)).length;
   const stock = allRes.reduce((s, id) => s + st.res[id] * RESOURCES[id].value, 0), units = allRes.reduce((s, id) => s + st.res[id], 0);
   const matchG = g => { const d = ITEMS[g.id]; if (q && !norm(d.name).includes(q)) return false; if (freeOnly && equippedBy(st, g.uid)) return false; return true; };
@@ -13778,10 +13876,11 @@ function renderInventaire() {
   const resList = allRes.filter(id => (!q || norm(RESOURCES[id].name).includes(q)) && (rcat === 'all' || resCat(id) === rcat)).sort(rcmp);
   const isList = view === 'list', gT = isList ? gearRow : gearTile, rT = isList ? resRow : resTile;
   const secs = [];
-  const gs = f === 'all' || f === 'gear' ? gearOf('gear') : [], hs = f === 'all' || f === 'harvest' ? gearOf('harvest') : [], rl = f === 'all' || f === 'relic' ? gearOf('relic') : [];
+  const gs = f === 'all' || f === 'gear' ? gearOf('gear') : [], hs = f === 'all' || f === 'harvest' ? gearOf('harvest') : [], rl = f === 'all' || f === 'relic' ? gearOf('relic') : [], dfs = f === 'all' || f === 'dofus' ? gearOf('dofus') : [];
   if (gs.length) secs.push(invSection('Équipements', '⚔️', gs.length, gs.map(gT).join(''), isList));
   if (hs.length) secs.push(invSection('Outils de récolte', '🪓', hs.length, hs.map(gT).join(''), isList));
   if (rl.length) secs.push(invSection('Reliques', '✨', rl.length, rl.map(gT).join(''), isList));
+  if (dfs.length) secs.push(invSection('Dofus', '🥚', dfs.length, dfs.map(gT).join(''), isList));
   if ((f === 'all' || f === 'res') && resList.length) {
     if (rcat === 'all' && f === 'res') for (const [c, l] of INV_RCATS.slice(1)) { const ids = resList.filter(id => resCat(id) === c); if (ids.length) secs.push(invSection(INV_RCAT_LABEL[c], { loot: '🦴', crop: '🌾', food: '🍞', rune: '🔮', rare: '💎', key: '🗝️' }[c], ids.length, ids.map(rT).join(''), isList)); }
     else secs.push(invSection('Ressources', '🧺', resList.length, resList.map(rT).join(''), isList));
@@ -13791,7 +13890,7 @@ function renderInventaire() {
   const sell = `<button class="btn sm" data-act="sellallres" ${allRes.length ? '' : 'disabled'} title="Vend toutes les ressources sauf les rares et les clefs">Vendre les ressources communes</button>`;
   return `<div class="inv-layout"><section class="panel iv-panel">
     <div class="iv-stats">
-      <div class="iv-stat"><span>⚔️</span><div><small>Objets</small><b class="num">${counts.gear + counts.harvest + counts.relic}</b><em>${worn} porté${worn > 1 ? 's' : ''}</em></div></div>
+      <div class="iv-stat"><span>⚔️</span><div><small>Objets</small><b class="num">${counts.gear + counts.harvest + counts.relic + counts.dofus}</b><em>${worn} porté${worn > 1 ? 's' : ''}</em></div></div>
       <div class="iv-stat"><span>🧺</span><div><small>Ressources</small><b class="num">${allRes.length}</b><em>${short(units)} unités</em></div></div>
       <div class="iv-stat gold"><span>💰</span><div><small>Stock</small><b class="num">${fmt(stock)}</b><em>kamas</em></div></div>
     </div>
@@ -13804,7 +13903,7 @@ function renderInventaire() {
     <div class="iv-tools"><div class="iv-sort"><span class="sub">Trier</span>${INV_SORTS.map(([v, l]) => `<button class="fchip sm" data-act="invsort" data-v="${v}" aria-pressed="${sort === v}">${l}</button>`).join('')}</div>
       <div class="iv-sort">${f !== 'res' ? `<button class="fchip sm" data-act="invfree" aria-pressed="${freeOnly}" title="Masquer les objets portés">Non portés</button>` : ''}${sell}</div></div>
     ${secs.length ? secs.join('') : `<div class="empty">${q ? `Aucun résultat pour « ${esc(ui.invQ)} ».` : 'Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.'}</div>`}
-    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
+    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Turquoise : Dofus. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
   </section><aside class="panel inspector">${inspector()}</aside></div>`;
 }
 function inspector() {
@@ -13814,7 +13913,7 @@ function inspector() {
   return `<div class="insp-empty">${ICONS.inventaire}<b>Sélectionne un objet</b><p class="sub">Clique sur une case pour voir ses détails, le comparer à ce que portent tes héros, l’équiper ou le vendre.</p></div>`;
 }
 function gearCurrent(d, h) {
-  if (d.relic) return h.relic; if (d.harvest) return (h.hequip || {})[d.slot];
+  if (d.relic) return h.relic; if (d.dofus) { const h2 = h.dofus || {}; return h2[DOFUS_SLOTS.find(s => !h2[s]) || DOFUS_SLOTS[0]]; } if (d.harvest) return (h.hequip || {})[d.slot];
   const ss = slotsFor(d.slot); return h.equip[ss.find(s => !h.equip[s]) || ss[0]];
 }
 function gearDiff(g, cur) {
@@ -13823,7 +13922,7 @@ function gearDiff(g, cur) {
 }
 function gearInspector(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid);
-  const type = d.relic ? 'Relique' : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]}` : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
+  const type = d.dofus ? 'Dofus' : d.relic ? 'Relique' : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]}` : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
   const req = d.harvest ? `Paysan ${d.lvl}` : `Niveau ${d.lvl}`;
   const canFor = h => (d.harvest ? st.jobs.paysan.lvl >= d.lvl : h.lvl >= d.lvl);
   const stat = ([k, v]) => { const [a, b] = d.stats[k], pc = b === a ? 100 : Math.round((v - a) / (b - a) * 100);
@@ -14010,6 +14109,8 @@ const ACTIONS = {
   unequipuid(d) { const by = equippedBy(st, d.uid); if (by) unequipUid(by, d.uid); },
   toggledetail() { ui.detailHidden = !ui.detailHidden; },
   unrelic() { selHero().relic = null; },
+  undofus(d) { const h = selHero(); if (h.dofus) delete h.dofus[d.slot]; },
+  dofusslot(d) { ui.dslot = ui.dslot === d.slot ? null : d.slot; },
   eqtab(d) { ui.eqTab = d.v; },
   hslot(d) { ui.hslot = ui.hslot === d.slot ? null : d.slot; },
   hunequip(d) { const h = selHero(); if (h.hequip) delete h.hequip[d.slot]; },

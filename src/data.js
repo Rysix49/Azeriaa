@@ -312,7 +312,9 @@ const DUNGEONS = [
    -------------------------------------------------------------------- */
 const SLOTS = ['coiffe', 'cape', 'amulette', 'anneau1', 'anneau2', 'ceinture', 'bottes', 'arme'];
 const SLOT_LABEL = { coiffe: 'Coiffe', cape: 'Cape', amulette: 'Amulette', anneau1: 'Anneau', anneau2: 'Anneau', ceinture: 'Ceinture', bottes: 'Bottes', arme: 'Arme' };
-const SLOT_ICON = { relique: '🔮', outil: '🪓', gants: '🧤', sac: '👝', coiffe: '🎩', cape: '🧥', amulette: '📿', anneau: '💍', ceinture: '🎗️', bottes: '👢', arme: '🗡️' };
+/* Dofus : œufs magiques, 6 emplacements par héros (séparés de l'équipement, de la récolte et de la relique) */
+const DOFUS_SLOTS = ['dofus1', 'dofus2', 'dofus3', 'dofus4', 'dofus5', 'dofus6'];
+const SLOT_ICON = { dofus: '🥚', relique: '🔮', outil: '🪓', gants: '🧤', sac: '👝', coiffe: '🎩', cape: '🧥', amulette: '📿', anneau: '💍', ceinture: '🎗️', bottes: '👢', arme: '🗡️' };
 
 const SETS = {
   aventurier: { name: "Panoplie de l'Aventurier", bonus: { 2: { vit: 10 }, 4: { vit: 20, sag: 20 }, 6: { deg: 20, vit: 30, sag: 30 } } },
@@ -335,6 +337,8 @@ Object.assign(STAT_SHORT, { rxp: '% XP récolte', rqty: '% Qté', rspd: '% Vites
    RELIQUES — un seul emplacement par héros, effets uniques et puissants.
    Elles ne se fabriquent pas : drop extrêmement rare (voir RELIC_DROPS).
    -------------------------------------------------------------------- */
+Object.assign(STAT_LABEL, { critDmg: '% Dégâts critiques' });
+Object.assign(STAT_SHORT, { critDmg: '% Dég. crit.' });
 Object.assign(STAT_LABEL, { kamas: '% Kamas gagnés', xpPct: '% XP gagnée', dmgPct: '% Dégâts finaux', dodge: '% Esquive', regen: '% PV régénérés / tour', speed: '% Vitesse de combat' });
 Object.assign(STAT_SHORT, { kamas: '% Kamas', xpPct: '% XP', dmgPct: '% Dégâts', dodge: '% Esquive', regen: '% Régén.', speed: '% Vitesse combat' });
 

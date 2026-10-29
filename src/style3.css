@@ -340,3 +340,24 @@
 .surge-fg > i { font-style: normal; }
 .scene.sg-on .unit.mon { z-index: 21; }
 .cl-num.sg-num { top: auto; }
+
+/* ===== Dofus : œufs magiques turquoise ===== */
+:root { --dofus: #35f0dc; }
+.q-dofus { --qc: var(--dofus); }
+.tile.q-dofus, .slot-t.q-dofus { background: radial-gradient(circle, #35f0dc26, #1b2016 72%); box-shadow: 0 0 12px #35f0dc40, inset 0 2px 7px #0008; }
+.tile.q-dofus .iart, .slot-t.q-dofus .iart { filter: drop-shadow(0 0 5px #35f0dcaa) drop-shadow(0 1px 0 #0008); }
+.qtag.q-dofus { background: #35f0dc22; color: var(--dofus); }
+.bag-r.q-dofus { background: #35f0dc0d; }
+.insp-card.q-dofus { box-shadow: 0 0 0 1px #35f0dc44 inset, 0 0 22px #35f0dc18; }
+.dofus-slots .slot-t.empty { border-style: dashed; border-color: #35f0dc44; }
+.dofus-slots .slot-t.empty .ph { opacity: .4; }
+.dofus-mini { display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 10px; border: 1px dashed #35f0dc55; background: #35f0dc0a; max-width: 100%; margin-top: 4px; }
+.dofus-mini .iart { width: 26px; height: 26px; }
+.dofus-mini .ph { font-size: 20px; opacity: .45; width: 30px; }
+.dofus-mini small { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.dofus-mini.on { border-style: solid; border-color: #35f0dc99; }
+.dofus-mini.on small { color: var(--dofus); font-weight: 800; }
+.dofus-row { display: inline-flex; flex-wrap: nowrap; }
+.dofus-row .dofus-ic { display: inline-flex; margin-right: -8px; }
+.dofus-entry.has .re-src, .dr-item.dofus .dr-pc.relic { color: var(--dofus); }
+.dr-item.relic.dofus { border-color: #35f0dc44; }
