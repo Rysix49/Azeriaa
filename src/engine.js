@@ -38,6 +38,7 @@ function newState() {
     kamas: 200,
     archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
+    mastery: {},            // recette (id de l'objet) -> nombre de fabrications
     gear: [],               // instances d'équipement : { uid, id, stats }
     jobs: Object.fromEntries([...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)].map(j => [j, { lvl: 1, xp: 0 }])),
     heroes: [],
@@ -90,12 +91,14 @@ function heroTotals(st, h) {
     if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v;
   }
   for (const [set, n] of Object.entries(setCounts(st, h))) for (const [k, v] of Object.entries(setBonus(set, n))) t[k] = (t[k] || 0) + v;
-  if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const f = RESOURCES[h.food.id].food; if (f.speed) t.speed = (t.speed || 0) + f.speed; }
+  const sk = skillTotals(h); for (const k in sk) t[k] = (t[k] || 0) + sk[k];
+  if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) { const fm = 1 + (sk.foodPow || 0) / 100; for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) t[k] = (t[k] || 0) + v * fm; }
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
   const cl = CLASSES[h.cls];
   if (cl.passive && cl.passive.stats) for (const [k, v] of Object.entries(cl.passive.stats)) t[k] = (t[k] || 0) + v;
   t.maxHp = Math.round((50 + h.lvl * 6) * cl.hpMult + t.vit);
+  if (t.hpPct) t.maxHp = Math.round(t.maxHp * (1 + t.hpPct / 100));
   t.pa = 6 + (h.lvl >= 100 ? 1 : 0) + t.pa;
   t.critPct = clamp(3 + t.crit, 0, 50);
   t.dodgePct = clamp(t.dodge || 0, 0, 35);
@@ -176,6 +179,7 @@ function startFight(st, h, ev) {
   };
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
+  if (h.cls === 'zobal') { h.mask = h.mask || 'rire'; h.ferv = Math.max(1, h.ferv || 1); }
   const names = group.map(m => MONSTERS[m].name);
   if (group.length === 1 && MONSTERS[group[0]].archi) { h.fight.archi = true; ev.log(h, `👹 ARCHIMONSTRE ! ${h.name} affronte ${names[0]}.`, 'boss'); }
   else ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
@@ -200,28 +204,34 @@ function spellPower(h, t, f, sp) {
 function rollSpell(h, t, f, sp, monRes) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0);
-  if (crit) v *= h.cls === 'cra' ? 1.8 : 1.5;
+  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0) + (h.cls === 'zobal' && f && (h.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT : 0);
+  if (crit) v *= (h.cls === 'cra' ? 1.8 : 1.5) + (t.critDmg || 0) / 100;
   if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
-  if (h.cls === 'eniripsa' && sp.type === 'heal') v *= 1.25;
   if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
   if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
-  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + Math.round(clamp(1 - h.hp / t.maxHp, 0, 1) * 100) / 100; // Souffrance : +1 % de dégâts finaux par % de PV manquant
+  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + SAC_STIG_DMG * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
+  if (h.cls === 'zobal' && f && zobMask(h) === 'rire' && sp.type !== 'heal') v *= 1 + (ZOB_RIRE_DMG + ZOB_FERV_STEP * (h.ferv || 1)) / 100; // Masque Rieur
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }
 
 function heroTurn(st, h, t, ev) {
   const f = h.fight;
+  if (f.pendHeal) colosseHeal(st, h); // filet de sécurité : un Colosse interrompu rend quand même ses PV
   for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--;
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
-  if (h.cls === 'eniripsa' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * 0.04)); h.hp += r; pre = `Souffle Vital +${r} PV · `; }
+  if (h.cls === 'zobal') pre += zobTurnStart(h, t, f, ev);
+  if (h.cls === 'sacrieur') { // Pacte de sang : il se saigne volontairement (jamais sous 40 % de PV) et gagne un Stigmate
+    f.stig = f.stig || 0;
+    if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
+      const loss = Math.max(1, Math.min(Math.round(t.maxHp * SAC_PACT_LOSS), Math.round(h.hp - t.maxHp * SAC_PACT_FLOOR)));
+      h.hp -= loss; gainBlood(h, loss, t.maxHp); f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
+    }
+  }
   const xel = h.cls === 'xelor';
   const aliveBefore = f.mons.filter(m => m.hp > 0).length;
   if (xel) f.hpMark = h.hp;
-  const rewind = xel && (f.grains || 0) >= 12;
-  if (rewind) f.grains -= 12;
   const actions = [];
   const phase = (gainGrains) => {
   f.casts = {};
@@ -265,6 +275,11 @@ function heroTurn(st, h, t, ev) {
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
     }
+    if (h.cls === 'zobal' && zobMask(h) === 'farce' && (best.type === 'dmg' || best.type === 'aoe') && Math.random() * 100 < ZOB_FARCE_CHANCE + ZOB_FERV_STEP * (h.ferv || 1)) { // Masque Farceur : le sort est lancé deux fois
+      const al2 = f.mons.filter(m => m.hp > 0);
+      if (al2.length) { f.farceSeq = (f.farceSeq || 0) + 1; actions.push('🤪×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2)); }
+    }
+    if (h.cls === 'zobal' && best.type !== 'buff' && best.type !== 'heal' && Math.random() < ZOB_FERV_CHANCE) zobGain(h); // Ferveur : 50 % de chances de +1 à chaque attaque lancée
     enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
@@ -278,8 +293,15 @@ function heroTurn(st, h, t, ev) {
     enuChest(h, f, actions);
     if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
   }
+  const rwPre = xel ? f.mons.map(m => m.hp) : null;
   phase(true);
-  if (rewind && f.mons.some(m => m.hp > 0)) { f.rewinds = (f.rewinds || 0) + 1; actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
+  if (rewind) f.grains -= 12;
+  if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
+    const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
+    if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
+  }
   if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
   if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
   if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
@@ -359,6 +381,7 @@ function monsterTurn(st, h, t, m, ev) {
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
+  if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100))); // Masque Pleureur
   if (h.cls === 'ecaflip') {
     if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
     if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
@@ -367,8 +390,23 @@ function monsterTurn(st, h, t, m, ev) {
       return;
     }
   }
+  const hpBefore = h.hp;
   h.hp = Math.max(0, h.hp - dmg);
+  gainBlood(h, hpBefore - h.hp, t.maxHp); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
+  if (h.cls === 'sacrieur') {
+    f.stig = Math.min(SAC_STIG_MAX, (f.stig || 0) + 1); // chaque coup reçu grave un Stigmate
+    const back = Math.min(m.hp, Math.max(1, Math.round(dmg * SAC_REFLECT))); // Douleur partagée
+    m.hp -= back; f.reflectSeq = (f.reflectSeq || 0) + 1;
+    ev.log(h, `🪞 Douleur partagée : ${def.name} subit ${back}${m.hp <= 0 ? ' et succombe' : ''}.`, 'hero');
+    if (h.hp <= 0 && !f.martyr) { // Martyre : le coup fatal est évité, le sang explose sur tous les ennemis
+      f.martyr = true; f.martyrSeq = (f.martyrSeq || 0) + 1; f.stig = SAC_STIG_MAX;
+      h.hp = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_HP));
+      const blast = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_BLAST));
+      for (const o of f.mons) if (o.hp > 0) o.hp = Math.max(0, o.hp - blast);
+      ev.log(h, `☠️ MARTYRE ! ${h.name} survit avec ${h.hp} PV et son sang explose : −${blast} PV à tous les ennemis.`, 'win');
+    }
+  }
   if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
     const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
     h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
@@ -408,6 +446,96 @@ function ecaToss(h, t, f, actions) {
    pleine = Jackpot, 5+ = Pot-de-vin possible contre un coup fatal. */
 const FINISH_ANIM_MS = 950;   // délai gardé avant de conclure un combat, pour voir l'animation du dernier coup
 const JACKPOT_ANIM_MS = 2900; // durée de la cinématique du Jackpot (ui2.js : playJackpot)
+/* Sacrieur : Pacte de sang, Stigmates, Douleur partagée, Soif de sang, Martyre */
+const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR = 0.4, SAC_REFLECT = 0.3, SAC_THIRST = 0.08, SAC_MARTYR_HP = 0.12, SAC_MARTYR_BLAST = 0.2;
+
+/* ---------------------- Zobal : masques, Ferveur et Rupture ----------------------
+   h.mask : 'rire' | 'larme' | 'farce' (persiste). h.ferv : Ferveur (1..10, persiste entre les combats), +4 % d'effet par point.
+   Changer de masque en combat (setMask) programme une Rupture : au prochain tour, la Ferveur explose sur tous les ennemis. */
+const ZOB_FERV_MAX = 10, ZOB_FERV_CHANCE = 0.5, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
+const ZOB_MASKS = { rire: { name: 'Masque Rieur', icon: '😆' }, larme: { name: 'Masque Pleureur', icon: '😢' }, farce: { name: 'Masque Farceur', icon: '🤪' } };
+const ZOB_RUPTURE_SPELL = { id: 'rupture', name: 'Rupture', min: 1, max: 1, type: 'aoe' };
+function zobGain(h) { if ((h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = (h.ferv || 1) + 1; if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } } // pleine, la Ferveur tient 20 s
+function zobMask(h) { return ZOB_MASKS[h.mask] ? h.mask : 'rire'; }
+function setMask(h, m) {
+  if (h.cls !== 'zobal' || !ZOB_MASKS[m] || zobMask(h) === m) return false;
+  const f = h.fight, n = h.ferv || 1;
+  if (f && f.mons.some(x => x.hp > 0)) { f.rupt = (f.rupt || 0) + n; f.maskSeq = (f.maskSeq || 0) + 1; }
+  h.ferv = Math.max(1, Math.floor(n / 2)); h.fervT = 0; // la moitié de la Ferveur passe au nouveau masque
+  h.mask = m;
+  return true;
+}
+/* Début de tour : Rupture en attente + soin du Masque Pleureur. Retourne le texte du journal */
+function zobTurnStart(h, t, f, ev) {
+  let pre = '';
+  if (f.rupt) {
+    const n = f.rupt; f.rupt = 0; f.ruptSeq = (f.ruptSeq || 0) + 1;
+    const { scale } = spellPower(h, t, f, ZOB_RUPTURE_SPELL), parts = [];
+    for (const m of f.mons) if (m.hp > 0) { const v = Math.max(1, Math.round(ZOB_RUPTURE * n * scale * (1 - monsterStats(m.mid).res / 100))); m.hp = Math.max(0, m.hp - v); parts.push(v); }
+    pre += `💥 RUPTURE (Ferveur ${n}) ${parts.join('/')} · `;
+  }
+  if (zobMask(h) === 'larme' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * (ZOB_LARME_HEAL * (h.ferv || 1)) / 100))); h.hp += r; pre += `😢 Larmes +${r} PV · `; }
+  return pre;
+}
+
+/* ---------------------- Colosse de Sang (jauge de Sang versé) ----------------------
+   Chaque PV perdu par le Sacrieur (Pacte de sang, coups reçus) remplit la jauge ; elle persiste entre les combats.
+   Pleine, le joueur déclenche l'attaque à la main : le Sacrieur sacrifie 35 % de ses PV actuels, passe en Berserk et un colosse
+   de sang écrase tous les ennemis (dégâts accrus par le sang sacrifié et les Stigmates, résistances ignorées). */
+const SAC_BLOOD_MAX = 300, SAC_BLOOD_RATE = 0.6, SAC_COLOSSE_COST = 0.35, SAC_COLOSSE_BLOOD = 1.25;
+const COLOSSE_SPELL = { id: 'colosse_ult', name: 'Colosse de Sang', min: 110, max: 150, type: 'aoe' };
+function gainBlood(h, lost, maxHp) { if (h.cls === 'sacrieur' && lost > 0 && maxHp > 0) h.blood = Math.min(SAC_BLOOD_MAX, (h.blood || 0) + lost / maxHp * 100 * SAC_BLOOD_RATE); }
+function bloodReady(h) { return h.cls === 'sacrieur' && (h.blood || 0) >= SAC_BLOOD_MAX; }
+/* Soif de sang du Colosse : rend les PV différés (idempotent) */
+function colosseHeal(st, h) {
+  const f = h.fight; if (!f || !f.pendHeal) return 0;
+  const t = heroTotals(st, h), r = Math.min(Math.max(0, t.maxHp - h.hp), f.pendHeal); h.hp += r; f.pendHeal = 0; return r;
+}
+/* Déclenche l'attaque. Retourne { hits, pay, heal } (ou null si impossible) */
+function unleashColosse(st, h, ev) {
+  const f = h.fight;
+  if (!bloodReady(h) || !f || !f.mons.some(m => m.hp > 0)) return null;
+  const t = heroTotals(st, h);
+  const pay = Math.max(0, Math.min(Math.round(h.hp * SAC_COLOSSE_COST), Math.round(h.hp) - 1)); // le sacrifice ne tue jamais
+  h.hp -= pay; f.stig = SAC_STIG_MAX; // le sang appelle le sang : Berserk garanti
+  const { scale } = spellPower(h, t, f, COLOSSE_SPELL), mult = 1 + SAC_STIG_DMG * f.stig / 100;
+  let kills = 0;
+  const hits = f.mons.map(m => {
+    if (m.hp <= 0) return null;
+    const crit = Math.random() * 100 < t.critPct + 25;
+    let v = (rnd(COLOSSE_SPELL.min, COLOSSE_SPELL.max) * scale + t.dmg + pay * SAC_COLOSSE_BLOOD) * mult;
+    if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
+    if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+    v = Math.max(1, Math.round(v)); // ignore les résistances
+    m.hp = Math.max(0, m.hp - v); if (m.hp <= 0) kills++;
+    return { v, crit };
+  });
+  const heal = Math.round(t.maxHp * SAC_THIRST * kills); f.pendHeal = heal; // le soin n'est appliqué qu'à la fin de la cinématique (colosseHeal)
+  h.blood = 0; h.bloodCount = (h.bloodCount || 0) + 1; f.ult = (f.ult || 0) + 1; f.colosse = (f.colosse || 0) + 1;
+  ev.log(h, `🩸 COLOSSE DE SANG ! −${pay} PV sacrifiés · ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}${heal ? ` · 🧛 +${heal} PV` : ''}`, 'boss');
+  return { hits, pay, heal };
+}
+/* Xélor, Éclat du temps : 4 rembobinages remplissent le sablier ; plein, il se brise et le Xélor vit 10 combats d'un coup. */
+const CHRONO_MAX = 4, CHRONO_FIGHTS = 10;
+function chronoReady(h) { return h.cls === 'xelor' && (h.chrono || 0) >= CHRONO_MAX && !!h.act && h.act.type === 'zone'; }
+function chronoBurst(st, h, ev) {
+  const place = findPlace('zone', h.act.id);
+  const keep = { fight: h.fight, resting: h.resting, restTotal: h.restTotal, wait: h.wait };
+  const sum = { n: CHRONO_FIGHTS, xp: 0, kamas: 0, loot: {}, gear: [], lvl0: h.lvl };
+  const quiet = Object.assign({}, ev, { log() {}, reward(_h, xp, k, loot, gear) {
+    sum.xp += xp; sum.kamas += k; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; for (const g of gear) sum.gear.push(g);
+    ev.reward && ev.reward(_h, xp, k, loot, gear);
+  } });
+  h.chrono = 0;
+  for (let i = 0; i < CHRONO_FIGHTS; i++) {
+    h.fight = { mons: pickGroup(place, h).map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }), tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {} };
+    resolveWin(st, h, quiet);
+  }
+  h.fight = keep.fight; h.resting = keep.resting; h.restTotal = keep.restTotal; h.wait = keep.wait;
+  sum.lvlUps = h.lvl - sum.lvl0;
+  ev.log(h, `⌛ Éclat du temps : ${CHRONO_FIGHTS} combats d'un coup ! +${fmt(sum.xp)} XP, +${fmt(sum.kamas)} K${sum.gear.length ? `, ${sum.gear.length} objet(s)` : ''}`, 'win');
+  return sum;
+}
 const ENU_PURSE_MAX = 10, ENU_BRIBE_MIN = 5, ENU_RUSH = 30;
 const ENU_JACKPOT = { id: 'pluie_or', name: 'Pluie d’Or', min: 14, max: 20, type: 'aoe' };
 function enuTarget(f, alive) {
@@ -501,7 +629,7 @@ function unleashFury(st, h, ev) {
     if (m.hp <= 0) return null;
     const crit = Math.random() * 100 < t.critPct + 25;
     let v = rnd(COLERE_SPELL.min, COLERE_SPELL.max) * scale + t.dmg;
-    if (crit) v *= 1.5;
+    if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
     if (t.dmgPct) v *= 1 + t.dmgPct / 100;
     v = Math.max(1, Math.round(v)); // ignore les résistances
     m.hp = Math.max(0, m.hp - v);
@@ -652,25 +780,38 @@ function resolveLose(st, h, ev) {
 /* Avance un héros de dt millisecondes. */
 /* Quantité récoltée : augmente de 1 tous les 10 niveaux au-dessus du palier */
 function cropQty(st, c) { const lv = st.jobs[c.job].lvl; return [1, 1 + Math.floor(Math.max(0, lv - c.lvl) / 10)]; }
+function harvestMastery(st, c) {
+  const n = (st.mastery && st.mastery['h_' + c.id]) || 0; let i = 0;
+  HARVEST_RANKS.forEach((r, k) => { if (n >= r.at) i = k; });
+  return { n, i, rank: HARVEST_RANKS[i], next: HARVEST_RANKS[i + 1] || null, name: HARVEST_RANK_NAMES[c.job][i] };
+}
 function doHarvest(st, h, ev) {
   const c = findPlace('harvest', h.act.id); const job = st.jobs[c.job];
   if (job.lvl < c.lvl) { ev.stopped && ev.stopped(h, `${GATHER_JOBS[c.job].name} niveau ${c.lvl} requis`); setActivity(st, h, null); return; }
-  const ht = harvestTotals(st, h);
-  const [a, b] = cropQty(st, c); const n = irnd(a, b) + (Math.random() * 100 < ht.rqty ? 1 : 0);
-  const gx = Math.max(1, Math.round(c.xp * (1 + ht.rxp / 100)));
+  const ht = harvestTotals(st, h), m0 = harvestMastery(st, c);
+  const [a, b] = cropQty(st, c); let n = irnd(a, b) + (Math.random() * 100 < ht.rqty ? 1 : 0) + (Math.random() * 100 < m0.rank.qty ? 1 : 0);
+  const alm = almanaxCrop(c.job, job.lvl) === c.id; if (alm) n *= ALMANAX_MULT;
+  const miracle = Math.random() * 100 < MIRACLE_BASE + m0.rank.mir + (ht.rmir || 0); if (miracle) n *= 3;
+  const gx = Math.max(1, Math.round(c.xp * (1 + ht.rxp / 100))) * (miracle ? 2 : 1);
   addRes(st, c.id, n);
   job.xp += gx;
   let up = false;
   while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; up = true; }
   st.stats.harvested = (st.stats.harvested || 0) + n;
+  st.mastery = st.mastery || {}; st.mastery['h_' + c.id] = m0.n + 1;
+  const m1 = harvestMastery(st, c), rankUp = m1.i > m0.i;
+  if (miracle) st.stats.miracles = (st.stats.miracles || 0) + 1;
+  h.hseq = (h.hseq || 0) + 1; h.hlast = { id: c.id, n, xp: gx, miracle, alm, rankUp: rankUp ? m1.name : null };
   if (h.session) { h.session.xp += gx; h.session.kills += n; sessionEvent(h, gx, 0, n); }
-  ev.log(h, `${h.name} récolte ${n}× ${c.name} (+${gx} XP ${GATHER_JOBS[c.job].name}).`, 'win');
+  ev.log(h, `${h.name} récolte ${n}× ${c.name} (+${gx} XP ${GATHER_JOBS[c.job].name})${miracle ? ' ✨ Récolte miraculeuse !' : ''}${alm ? ' · Almanax ×2' : ''}.`, miracle ? 'boss' : 'win');
+  if (rankUp) ev.harvrank && ev.harvrank(h, c, m1.name);
   if (up) ev.jobup && ev.jobup(c.job, job.lvl);
 }
 
 function stepMs(st, h) { const sp = heroTotals(st, h).speed || 0; return STEP_MS / (1 + sp / 100); }
 
 function tickHero(st, h, dt, ev, maxActions = 200000) {
+  if (h.cls === 'zobal' && h.fervT > 0) { h.fervT -= dt; if (h.fervT <= 0) { h.fervT = 0; h.ferv = 1; } } // Ferveur pleine : elle retombe après 20 s
   if (h.food) { h.food.left -= dt; if (h.food.left <= 0) { h.food = null; ev.foodEnd && ev.foodEnd(h); } }
   if (!h.act) { h.hp = heroTotals(st, h).maxHp; return; }
   if (h.act.type === 'harvest') {
@@ -732,7 +873,8 @@ function eat(st, h, id) {
   const r = RESOURCES[id]; if (!r || !r.food) return 'Cet objet ne se mange pas.';
   if ((st.res[id] || 0) < 1) return `Plus de ${r.name}.`;
   st.res[id]--; if (!st.res[id]) delete st.res[id];
-  h.food = { id, left: r.food.ms, total: r.food.ms };
+  const ms = Math.round(r.food.ms * (1 + (skillTotals(h).foodDur || 0) / 100));
+  h.food = { id, left: ms, total: ms };
   return null;
 }
 
@@ -767,10 +909,20 @@ function maxCraftable(st, r) {
   if (st.jobs[r.job].lvl < r.lvl) return 0;
   return Math.min(...Object.entries(r.ing).map(([id, n]) => Math.floor((st.res[id] || 0) / n)));
 }
-function rollItem(id) {
+function rollItem(id, floor = 0, perfect = false) {
   const def = ITEMS[id]; const stats = {};
-  for (const [k, [a, b]] of Object.entries(def.stats)) stats[k] = irnd(a, b);
+  for (const [k, [a, b]] of Object.entries(def.stats)) stats[k] = perfect ? b : Math.round(a + (b - a) * (floor + (1 - floor) * Math.random()));
   return { uid: uid(), id, stats };
+}
+function masteryOf(st, out) {
+  const n = (st.mastery && st.mastery[out]) || 0; let i = 0;
+  MASTERY_RANKS.forEach((r, k) => { if (n >= r.at) i = k; });
+  return { n, i, rank: MASTERY_RANKS[i], next: MASTERY_RANKS[i + 1] || null };
+}
+function gainJobXp(st, jobId, xp) {
+  const job = st.jobs[jobId]; job.xp += xp; let lvUp = false;
+  while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; lvUp = true; }
+  return lvUp;
 }
 function rollStasis(id) {
   const def = ITEMS[id]; const stats = {};
@@ -789,14 +941,69 @@ function craft(st, r) {
   const job = st.jobs[r.job];
   const ingCount = Object.values(r.ing).reduce((a, b) => a + b, 0);
   const xp = Math.round((10 + ingCount * 3) * (1 + r.lvl / 10) * (job.lvl - r.lvl > 20 ? 0.3 : 1));
-  job.xp += xp;
-  let lvUp = false;
-  while (job.lvl < MAX_JOB_LEVEL && job.xp >= jobXpToNext(job.lvl)) { job.xp -= jobXpToNext(job.lvl); job.lvl++; lvUp = true; }
+  const lvUp = gainJobXp(st, r.job, xp);
   st.stats.crafted++;
-  let result;
-  if (RESOURCES[r.out]) { addRes(st, r.out, 1); result = { res: r.out }; }
-  else { const g = rollItem(r.out); st.gear.push(g); result = { gear: g }; }
-  return { ...result, xp, lvUp };
+  const m0 = masteryOf(st, r.out); st.mastery = st.mastery || {}; st.mastery[r.out] = m0.n + 1;
+  const m1 = masteryOf(st, r.out), rankUp = m1.i > m0.i ? m1.rank : null;
+  let result, perfect = false;
+  if (RESOURCES[r.out]) {
+    let qty = 1, golden = false, daily = false;
+    if (RESOURCES[r.out].food) { // Fournée dorée (maîtrise) : ×2 ; Plat du jour : une portion offerte
+      golden = Math.random() < m0.rank.perf; daily = platDuJour(st.jobs[r.job].lvl) === r.out; if (golden) qty *= 2; if (daily) qty += 1; perfect = golden;
+    }
+    addRes(st, r.out, qty); result = { res: r.out, qty, golden, daily };
+  }
+  else { perfect = Math.random() < m0.rank.perf; const g = rollItem(r.out, m0.rank.floor, perfect); st.gear.push(g); result = { gear: g }; }
+  return { ...result, xp, lvUp, perfect, rankUp };
+}
+
+/* ---------- Forgemage : Brisage (objet -> runes) et Forgemagie (runes -> jets) ---------- */
+function forgeable(g) { const d = ITEMS[g.id]; return !!d && !d.relic && !d.harvest; }
+function brisageRunes(g) { // moyenne des runes obtenues par stat (avant aléa)
+  const d = ITEMS[g.id], out = {};
+  for (const [k, v] of Object.entries(g.stats)) if (RUNES[k]) out[k] = v / RUNES[k].step * 0.55;
+  return out;
+}
+function brisage(st, uid) {
+  const g = gearById(st, uid); if (!g || !forgeable(g)) return 'Cet objet ne peut pas être brisé.';
+  if (equippedBy(st, uid)) return 'Déséquipe l’objet avant de le briser.';
+  const lvl = st.jobs.forgemage.lvl, got = {}; let tot = 0;
+  for (const [k, avg] of Object.entries(brisageRunes(g))) { const n = Math.max(0, Math.round(avg * (0.7 + Math.random() * 0.6) * (1 + lvl * 0.005))); if (n) { got[k] = n; tot += n; } }
+  if (!tot) { const top = Object.keys(brisageRunes(g)).sort((a, b) => g.stats[b] / RUNES[b].step - g.stats[a] / RUNES[a].step)[0]; if (top) got[top] = 1; }
+  st.gear = st.gear.filter(x => x.uid !== uid);
+  for (const [k, n] of Object.entries(got)) addRes(st, 'rune_' + k, n);
+  const xp = Math.round(6 + ITEMS[g.id].lvl * 1.6), lvUp = gainJobXp(st, 'forgemage', xp);
+  return { id: g.id, runes: got, xp, lvUp, stasis: !!g.stasis };
+}
+function forgeInfo(st, g, k) {
+  const d = ITEMS[g.id], r = RUNES[k], rg = d.stats[k];
+  if (!r || !rg) return { ok: false, why: 'Pas de rune pour cette caractéristique.' };
+  const [a, b] = rg, cur = g.stats[k], cap = Math.max(b, Math.floor(b * FM_OVER)), gain = Math.min(r.step, cap - cur);
+  const have = st.res['rune_' + k] || 0, cost = Math.round(5 + d.lvl * 2);
+  if (gain < 1) return { ok: false, why: 'Surjet maximal atteint.', cur, a, b, cap, step: r.step, have, cost, gain: 0, chance: 0 };
+  const frac = (cur + gain - b) / Math.max(1, cap - b);
+  const base = frac <= 0 ? 0.85 : 0.55 - 0.47 * Math.min(1, frac);
+  const chance = Math.min(0.95, base + Math.min(0.12, st.jobs.forgemage.lvl * 0.0012));
+  return { ok: have >= 1 && st.kamas >= cost, why: have < 1 ? 'Il te faut une rune.' : st.kamas < cost ? 'Kamas insuffisants.' : '', cur, a, b, cap, step: r.step, have, cost, gain, chance, over: frac > 0 };
+}
+function forgemagie(st, uid, k) {
+  const g = gearById(st, uid); if (!g || !forgeable(g)) return null;
+  const inf = forgeInfo(st, g, k); if (!inf.ok) return { err: inf.why };
+  st.res['rune_' + k] -= 1; if (!st.res['rune_' + k]) delete st.res['rune_' + k];
+  st.kamas -= inf.cost;
+  const xp = Math.round(4 + ITEMS[g.id].lvl * 0.8); const lvUp = gainJobXp(st, 'forgemage', xp);
+  let kind, lost = null, gain = 0;
+  if (Math.random() < inf.chance) {
+    const crit = !inf.over && Math.random() < 0.12; gain = Math.min(crit ? inf.step * 2 : inf.step, inf.cap - inf.cur);
+    g.stats[k] += gain; g.fm = true; kind = crit ? 'crit' : 'ok';
+  } else {
+    kind = 'fail';
+    if (inf.over && Math.random() < 0.4) {
+      const cands = Object.keys(g.stats).filter(o => o !== k && g.stats[o] > ITEMS[g.id].stats[o][0]);
+      if (cands.length) { const o = cands[irnd(0, cands.length - 1)], n = Math.min(g.stats[o] - ITEMS[g.id].stats[o][0], Math.max(1, Math.ceil(g.stats[o] * 0.08))); g.stats[o] -= n; g.fm = true; lost = { k: o, n }; kind = 'cfail'; }
+    }
+  }
+  return { kind, k, gain, lost, xp, lvUp, chance: inf.chance, g };
 }
 
 function itemValue(g) { const d = ITEMS[g.id]; return Math.round((20 + d.lvl * d.lvl * 1.5) * (0.6 + itemQuality(g) * 0.8) * (g.stasis ? 10 : 1)); }
@@ -841,13 +1048,13 @@ function equip(st, h, gearUid, wanted) {
   return null;
 }
 function unequipUid(h, gearUid) { if (h.relic === gearUid) h.relic = null; for (const s of SLOTS) if (h.equip[s] === gearUid) delete h.equip[s]; if (h.hequip) for (const s of HARVEST_SLOTS) if (h.hequip[s] === gearUid) delete h.hequip[s]; }
-function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0 }; for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
+function harvestTotals(st, h) { const t = { rxp: 0, rqty: 0, rspd: 0, rmir: 0 }; const sk = skillTotals(h); for (const k in t) t[k] += sk[k] || 0; if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) for (const [k, v] of Object.entries(RESOURCES[h.food.id].food.fx)) if (k in t) t[k] += v * (1 + (sk.foodPow || 0) / 100); for (const s of HARVEST_SLOTS) { const g = h.hequip && h.hequip[s] && gearById(st, h.hequip[s]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; } return t; }
 function harvestMs(st, h) { return Math.round(HARVEST_MS / (1 + harvestTotals(st, h).rspd / 100)); }
 /* Puissance globale d'un héros (dégâts × robustesse × utilité) calculée sur ses vrais totaux : sets, PA et critiques compris */
 function heroPower(st, h) {
   const t = heroTotals(st, h);
   const base = 10 * (1 + h.lvl * 0.045);
-  let off = (base * (1 + t.deg / 100) + t.dmg + (h.cls === 'eniripsa' ? t.soin * 0.6 : 0)) * (1 + t.critPct / 200) * (1 + (t.dmgPct || 0) / 100) * (t.pa / 6);
+  let off = (base * (1 + t.deg / 100) + t.dmg) * (1 + t.critPct / 200) * (1 + (t.dmgPct || 0) / 100) * (t.pa / 6);
   const def = t.maxHp / (1 - t.resPct / 100) / (1 - t.dodgePct / 100) * (1 + (t.regen || 0) / 20);
   const util = 1 + t.pp / 100 * 0.12 + t.xpBonus / 100 * 0.08 + (t.kamas || 0) / 100 * 0.1;
   return off * Math.sqrt(def) * util * (1 + (t.speed || 0) / 100 * 0.5);
@@ -891,6 +1098,8 @@ function migrate(obj) {
   const st = Object.assign(base, obj);
   st.stats = Object.assign(newState().stats, obj.stats || {});
   for (const j of [...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)]) if (!st.jobs[j]) st.jobs[j] = { lvl: 1, xp: 0 };
+  st.mastery = st.mastery || {};
+  st.heroes = st.heroes.filter(h => CLASSES[h.cls]); // classe supprimée (Eniripsa) : le héros disparaît de la sauvegarde
   for (const h of st.heroes) {
     h.log = h.log || []; h.hequip = h.hequip || {};
     // v8 : Force/Intelligence/Chance/Agilité fusionnées en Dégâts → points de capital remboursés
@@ -919,7 +1128,7 @@ function migrateGear(g, old) {
   const q = Math.max(0, Math.min(1, itemQualityRaw(g, def)));
   for (const [k, [a, b]] of Object.entries(def.stats)) {
     if (g.stats[k] === undefined) g.stats[k] = g.stasis ? b * 2 : Math.round(a + (b - a) * q);
-    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(b, g.stats[k]));
+    else g.stats[k] = g.stasis ? b * 2 : Math.max(a, Math.min(g.fm ? Math.max(b, Math.floor(b * FM_OVER)) : b, g.stats[k]));
   }
   for (const k of Object.keys(g.stats)) if (!(k in def.stats)) delete g.stats[k];
 }
@@ -941,3 +1150,31 @@ function fmtDur(ms) {
 }
 
 if (typeof module !== 'undefined') module.exports = {};
+
+
+/* ---------- Arbre de compétences ---------- */
+function skillPoints(h) { return Math.floor(h.lvl / SKILL_LEVELS_PER_POINT); }
+function skillRanks(h) { return h.skills || (h.skills = {}); }
+function skillSpent(h) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n) s += h.skills[id] * n.cost; } return s; }
+function skillBranchSpent(h, bid) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n && n.branch === bid) s += h.skills[id] * n.cost; } return s; }
+function skillFree(h) { return skillPoints(h) - skillSpent(h); }
+function skillCheck(h, id) {
+  const n = SKILL_NODE[id]; if (!n) return 'Compétence inconnue.';
+  const rk = h.skills || {};
+  if ((rk[id] || 0) >= n.max) return 'Rang maximal atteint.';
+  if (n.req.length && !n.req.some(q => rk[q] > 0)) return 'Apprends d’abord une compétence reliée.';
+  const gate = SKILL_GATE[n.r]; if (skillBranchSpent(h, n.branch) < gate) return `Dépense ${gate} points dans cette voie pour ouvrir cette ligne.`;
+  if (skillFree(h) < n.cost) return n.cost > 1 ? `Il faut ${n.cost} points.` : 'Plus de point de compétence.';
+  return null;
+}
+function skillRank(st, h, id) { const err = skillCheck(h, id); if (err) return err; const rk = skillRanks(h); rk[id] = (rk[id] || 0) + 1; return null; }
+function skillTotals(h) {
+  const t = {}, rk = h.skills; if (!rk) return t;
+  const bs = {}; let tot = 0;
+  for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!n || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
+  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const k in b.per) t[k] = (t[k] || 0) + b.per[k] * sp; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
+  for (const [at, fx] of SKILL_GLOBAL) if (tot >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k];
+  return t;
+}
+function skillRespecCost(h) { const sp = skillSpent(h); return sp ? Math.round(h.lvl * 40 + sp * 60) : 0; }
+function skillRespec(st, h) { const c = skillRespecCost(h); if (!c) return 'Aucun point dépensé.'; if (st.kamas < c) return `Il te faut ${fmt(c)} kamas.`; st.kamas -= c; h.skills = {}; return null; }

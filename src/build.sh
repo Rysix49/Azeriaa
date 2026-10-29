@@ -20,9 +20,9 @@ echo '<div class="toasts" id="toasts" aria-live="polite"></div>'
 echo '<div class="modal-back" id="modal" hidden></div>'
 echo '<script>'
 echo "const BUILD_ID = '$BUILD_ID';"
-cat data.js engine.js art.js monart.js skin.js update.js
+cat data.js zones2.js engine.js art.js art2.js art3.js monart.js monart2.js skin.js update.js
 echo '(function () {'
-cat spellfx.js heroart.js ui2.js
+cat spellfx.js heroart.js atelier.js recolte.js talents.js carte.js carte2.js ui2.js
 echo '})();'
 echo '</script>'
 } > "$OUT_DIR/index.html"

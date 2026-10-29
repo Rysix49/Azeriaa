@@ -21,6 +21,9 @@ const STAT_COLOR = { xpPct: 'var(--xp)', dmgPct: 'var(--hp)', dodge: 'var(--air)
 const THEME = {
   Incarnam: ['#8ec5dc', '#86b86c'], Astrub: ['#a9cf8f', '#6d9a45'], Amakna: ['#5f8a4a', '#3d5a2c'],
   Cania: ['#d6be8d', '#a07f4c'], Koalak: ['#79a466', '#466b36'], Sidimote: ['#8a7a9e', '#4a3e58'],
+  /* sous-zones de la carte */
+  Wabbits: ['#a8dcef', '#7ec45e'], Blops: ['#7cc0cc', '#3f8a7a'], Moon: ['#7ec8b0', '#2f7a48'], Porcos: ['#e8c0a8', '#b08a52'],
+  Dragoeufs: ['#d98a5a', '#6a3226'], Frigost: ['#b4d4ee', '#9cbad6'],
   harvest: ['#ecd58e', '#b89140'], idle: ['#7a8a96', '#4f5a44'],
 };
 
@@ -42,7 +45,7 @@ const ui = {
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
   recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '',
 };
-const UI_KEEP = ['view', 'hero', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
+const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -67,12 +70,13 @@ function loadGame(snapshot) {
 /* ---------------------------- Notifications ---------------------------- */
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
-  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
+  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
     for (const g of gear) toast(ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
   },
   dungeonDone(h, p) { toast(`${h.name} a vaincu ${p.name} !`, 'quest'); },
+  harvrank(h, c, name) { toast(`${h.name} : maîtrise de ${c.name} → ${name} !`, 'quest'); },
   jobup(j, lv) { toast(`${GATHER_JOBS[j].name} passe niveau ${lv} !`, 'lvl'); },
   foodEnd(h) { toast(`L’effet du repas de ${h.name} est terminé.`, 'warn'); },
   stopped(h, why) { toast(`${h.name} s'arrête : ${why}.`, 'warn'); },
@@ -86,33 +90,11 @@ function toast(text, cls = '') {
   while (box.children.length > 4) box.firstChild.remove();
   setTimeout(() => el.remove(), 4500);
 }
-function craftPop(r, made, xp) {
-  const { x, y } = ui.click || { x: innerWidth / 2, y: innerHeight / 2 };
-  let html;
-  if (RESOURCES[r.out]) html = `<b>${RESOURCES[r.out].icon} ${made.length > 1 ? made.length + '× ' : ''}${esc(RESOURCES[r.out].name)}</b>`;
-  else {
-    const gs = made.map(m => m.gear).filter(Boolean);
-    const best = gs.reduce((a, b) => (itemQuality(b) > itemQuality(a) ? b : a));
-    const q = Math.round(itemQuality(best) * 100);
-    html = `<b>${itemIcon(best.id)} ${gs.length > 1 ? gs.length + '× ' : ''}${esc(ITEMS[best.id].name)}</b>
-      <span class="pop-q ${qClass(best)}">${gs.length > 1 ? 'Meilleur jet' : 'Jet'} ${q} %</span>
-      <span class="pop-stats">${Object.entries(best.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k]}">+${v} ${STAT_SHORT[k]}</i>`).join(' ')}</span>`;
-    if (gs.length > 1) html += `<span class="pop-stats">Jets : ${gs.map(g => Math.round(itemQuality(g) * 100) + ' %').join(', ')}</span>`;
-  }
-  html += `<span class="pop-xp">+${xp} XP</span>`;
-  const el = document.createElement('div'); el.className = 'craft-pop'; el.innerHTML = html;
-  document.body.appendChild(el);
-  const w = el.offsetWidth, h = el.offsetHeight;
-  el.style.left = clamp(x - w / 2, 8, innerWidth - w - 8) + 'px';
-  el.style.top = clamp(y - h - 14, 8, innerHeight - h - 8) + 'px';
-  setTimeout(() => el.remove(), 2600);
-}
-
 /* ---------------------------- Petits composants ---------------------------- */
 const CLASS_GLYPH = {
   iop: '<path d="M19.5 3.5 20.5 4.5 11 14 9.5 14.5 10 13Z" fill="currentColor"/><path d="M19.5 3.5 21 3 20.5 4.5" fill="currentColor"/><path d="M7 11.5l5.5 5.5M9.8 14.2 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="4.3" cy="19.7" r="1.4" fill="currentColor"/>',
   cra: '<path d="M8 3.5c6 .5 12 6.5 12.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5 20.5 16" stroke="currentColor" stroke-width=".9" opacity=".7" fill="none"/><path d="M3.5 20.5 17 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M18.5 5.5 14.5 6.3 17.7 9.5Z" fill="currentColor"/><path d="M3.5 20.5l.2-3M3.5 20.5l3-.2M5 19l.2-3M5 19l3-.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>',
-  eniripsa: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" fill="currentColor"/><path d="M12 10.5v6M9 13.5h6" stroke="var(--c)" stroke-width="2" stroke-linecap="round"/><path d="M4.7 12.2C2.6 12.4 1 10.9 1 8.8c1.3.9 2.6 1 3.6.7M4.9 14.6c-1.8.4-3.2-.5-3.6-2.1M19.3 12.2c2.1.2 3.7-1.3 3.7-3.4-1.3.9-2.6 1-3.6.7M19.1 14.6c1.8.4 3.2-.5 3.6-2.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".85"/>',
+  zobal: '<path d="M12 2.8C7 2.8 3.8 6.6 3.8 11.2c0 5.2 3.5 9.8 8.2 9.8s8.2-4.6 8.2-9.8c0-4.6-3.2-8.4-8.2-8.4Z" fill="currentColor"/><path d="M7.4 10.6q2-2.4 3.8 0M12.8 10.6q2-2.4 3.8 0M8 15.2q4 3.4 8 0" stroke="var(--c)" stroke-width="1.9" fill="none" stroke-linecap="round"/>',
   sacrieur: '<path d="M12 2.8s6.3 7.2 6.3 11.4a6.3 6.3 0 0 1-12.6 0C5.7 10 12 2.8 12 2.8Z" fill="currentColor"/><path d="M9.3 12.5l2 3.5M12 11.5l1.4 4.8M14.7 12.5l-.6 3.6" stroke="var(--c)" stroke-width="1.5" stroke-linecap="round"/>',
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
   ecaflip: '<path d="M4.2 3.8 9 7.9c1.9-.6 4.1-.6 6 0l4.8-4.1.5 8.7c0 4.6-3.6 7.7-8.3 7.7S3.7 17.1 3.7 12.5Z" fill="currentColor"/><path d="M7.6 12.2c.9-1.1 2.1-1.1 2.8 0M13.6 12.2c.9-1.1 2.1-1.1 2.8 0" stroke="var(--c)" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M12 14.1l-1.3 1.3h2.6Z" fill="var(--c)"/><path d="M12 15.4v1.1M9.9 16.7c.8.5 1.5.5 2.1 0 .6.5 1.3.5 2.1 0" stroke="var(--c)" stroke-width=".9" stroke-linecap="round" fill="none"/><path d="M1.4 12.6l3.6.8M1.7 16l3.4-.9M22.6 12.6l-3.6.8M22.3 16l-3.4-.9" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/>',
@@ -132,7 +114,7 @@ function heroById(id) { return st.heroes.find(h => h.id === id); }
 function selHero() { let h = heroById(ui.hero); if (!h && st.heroes.length) { h = st.heroes[0]; ui.hero = h.id; } return h; }
 function placeName(act) { if (!act) return ''; const p = findPlace(act.type, act.id); return p ? subName(p, act) : ''; }
 function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
-function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RESOURCES[h.food.id]; return `${r.icon} ${r.food.speed ? `Vitesse ×${1 + r.food.speed / 100}` : r.name} · ${mmss(h.food.left)}`; }
+function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RESOURCES[h.food.id]; return `${r.icon} ${r.name} · ${mmss(h.food.left)}`; }
 function themeStyle(th) { return `--sky:${th[0]};--ground:${th[1]}`; }
 function qClass(g) {
   if (ITEMS[g.id].relic) return 'q-relic';
@@ -154,7 +136,7 @@ function statusOf(h) {
 function actLabel(h) { return !h.act ? '' : h.act.type === 'dungeon' ? 'Donjon' : h.act.type === 'harvest' ? 'Récolte' : 'Zone'; }
 function arenaTheme(h) {
   if (!h.act) return THEME.idle;
-  if (h.act.type === 'harvest') return THEME.harvest;
+  if (h.act.type === 'harvest') return harvestTheme(findPlace('harvest', h.act.id));
   const p = findPlace(h.act.type, h.act.id); return THEME[p.region] || THEME.idle;
 }
 function heroChip(h, attrs, label, extraCls = '') {
@@ -192,8 +174,8 @@ function shell() {
   </section>`;
 }
 function updateChrome() {
-  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
-  const v = VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
+  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String((ui.view === 'talents' ? 'heros' : ui.view) === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
+  const v = ui.view === 'talents' ? ['talents', 'Talents', 'Dépense tes points : 1 tous les 3 niveaux.'] : VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
   const tt = `<h1 class="display">${v[1]}</h1><p>${v[2]}</p>`;
   if (tt !== ui._tt) { $('#tbtitle').innerHTML = tt; ui._tt = tt; }
   const active = st.heroes.filter(h => h.act).length;
@@ -252,6 +234,38 @@ function passiveHtml(c) {
   const body = p.points ? `<ul class="pv-list">${p.points.map(([ic, t, d]) => `<li><span class="pv-ic" aria-hidden="true">${ic}</span><div><b>${t}</b><span>${d}</span></div></li>`).join('')}</ul>` : `<span>${p.desc}</span>`;
   return `<div class="passive" style="--c:${c.color}"><span class="label">Passif · ${p.name}</span>${body}</div>`;
 }
+const SAC_RAGE = {};
+/* Transformation en Berserk : onde rouge, gouttes de sang, secousse, texte */
+function sacBerserk(card, fu) {
+  const sp = fu.querySelector('.sprite'), scene = card.querySelector('.scene');
+  ecaState(fu, 'sac-trans', 1250); ecaText(card, 'BERSERK !', '', 'sac');
+  if (!FX_OK() || !sp) return;
+  for (let k = 0; k < 2; k++) { const r = document.createElement('i'); r.className = 'sc-ring'; r.style.setProperty('--d', k * 220 + 'ms'); sp.appendChild(r); setTimeout(() => r.remove(), 1500); }
+  for (let i = 0; i < 16; i++) {
+    const e = document.createElement('i'); e.className = 'sc-drop'; e.style.left = '45%'; const a = -Math.PI * (.05 + Math.random() * .9);
+    e.style.cssText += `--dx:${(Math.cos(a) * (30 + Math.random() * 60)).toFixed(0)}px;--dy:${(Math.sin(a) * (30 + Math.random() * 50)).toFixed(0)}px;--s:${(3 + Math.random() * 5).toFixed(1)}px;--d:${(Math.random() * 300).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1600);
+  }
+  if (scene) { scene.classList.remove('cb-shake'); void scene.offsetWidth; scene.classList.add('cb-shake'); setTimeout(() => scene.classList.remove('cb-shake'), 800); }
+}
+function stigHtml(h) { const f = h.fight, n = (f && f.stig) || 0; return `🩸 ${'◆'.repeat(n)}${'◇'.repeat(SAC_STIG_MAX - n)}${f && f.martyr ? ' · ☠✗' : ''}`; }
+const COLOSSE_ICON = `<svg viewBox="0 0 40 44" aria-hidden="true"><path d="M20 2C20 2 6 18 6 28a14 14 0 0 0 28 0C34 18 20 2 20 2Z" fill="#c81420" stroke="#2a0306" stroke-width="2" stroke-linejoin="round"/><path d="M12 22q2-8 8-15" fill="none" stroke="#ff9a8a" stroke-width="1.6" stroke-linecap="round" opacity=".8"/><rect x="12" y="22" width="16" height="11" rx="3.6" fill="#f3e2c2" stroke="#2a0306" stroke-width="1.5"/><path d="M16 22v6M20 22v6M24 22v6" stroke="#2a0306" stroke-width="1.3" stroke-linecap="round"/><path d="M12 28q-3 0-3 3t4 3" fill="none" stroke="#2a0306" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+function bloodGauge(h) {
+  const p = clamp((h.blood || 0) / SAC_BLOOD_MAX, 0, 1);
+  return `<div class="fury blood${p >= 1 ? ' full' : ''}" data-k="blood" title="Sang versé : ${Math.floor(h.blood || 0)} / ${SAC_BLOOD_MAX}. Chaque PV perdu remplit la jauge. Pleine, déclenche le Colosse de Sang !"><span class="fury-fill" style="--p:${p.toFixed(3)}"></span><span class="fury-lbl">${p >= 1 ? 'COLOSSE !' : 'Sang ' + Math.floor(p * 100) + ' %'}</span></div>`;
+}
+function fervHtml(h) { const n = Math.min(ZOB_FERV_MAX, h.ferv || 1); return n >= ZOB_FERV_MAX ? `🎭 MAX · ${Math.ceil((h.fervT || 0) / 1000)} s` : `🎭 ${n}/${ZOB_FERV_MAX}`; }
+const ZOB_TIPS = { rire: 'Masque Rieur : +12 % de dégâts (+4 % par point de Ferveur).', larme: 'Masque Pleureur : −10 % de dégâts subis et un peu de soin à chaque tour (+4 % par point de Ferveur).', farce: 'Masque Farceur : 15 % de chances de lancer un sort offensif deux fois (+4 % par point de Ferveur).' };
+function zobMasks(h) { return `<div class="zmasks" data-k="zmasks" role="group" aria-label="Masque porté">${Object.entries(ZOB_MASKS).map(([id, m]) => `<button class="zmask${zobMask(h) === id ? ' on' : ''}" data-act="zmask" data-hero="${h.id}" data-mask="${id}" aria-label="${m.name}" aria-pressed="${zobMask(h) === id}">${m.icon}</button>`).join('')}</div>`; }
+/* Rupture : des éclats du masque brisé filent vers chaque ennemi */
+function zobShards(card) {
+  const scene = card.querySelector('.scene'), sp = card.querySelector('[data-k="fighter"] .sprite'); if (!scene || !sp || !FX_OK()) return;
+  const a = relPos(sp, scene), cols = ['#ffd24a', '#8ec4f4', '#9ae860', '#c58aff', '#ff6aa8'];
+  [...card.querySelectorAll('.unit.mon .sprite')].forEach(m => { const b = relPos(m, scene);
+    for (let i = 0; i < 9; i++) { const e = document.createElement('i'); e.className = 'zb-shard'; e.style.cssText = `left:${a.x}px;top:${a.y - 10}px;background:${cols[i % cols.length]};clip-path:polygon(50% 0,100% 70%,10% 100%)`; scene.appendChild(e);
+      const mx = (b.x - a.x) * .5 + (Math.random() - .5) * 50, my = -40 - Math.random() * 60;
+      e.animate([{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: `translate(${mx}px,${my}px) rotate(180deg)`, opacity: 1, offset: .45 }, { transform: `translate(${b.x - a.x + (Math.random() - .5) * 30}px,${b.y - a.y}px) rotate(540deg) scale(.5)`, opacity: .9 }], { duration: 650 + Math.random() * 250, delay: i * 40, easing: 'cubic-bezier(.4,0,.6,1)', fill: 'both' }).onfinish = () => e.remove(); } });
+}
 function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
@@ -268,22 +282,16 @@ function fightCard(h) {
   const harvest = h.act && h.act.type === 'harvest';
   let stage;
   if (harvest) {
-    const c = place; const job = st.jobs[c.job]; const [qa, qb] = cropQty(st, c); const p = clamp(1 - h.wait / harvestMs(st, h), 0, 1);
-    stage = `<div class="vs"><span class="vs-ic">${ICONS.recolte}</span><small>${GATHER_JOBS[c.job].name} ${job.lvl}</small></div>
-      <div class="field"><div class="crops" data-k="crops" style="--g:${p.toFixed(2)}">${Array.from({ length: 6 }, () => `<span>${c.icon}</span>`).join('')}</div>
-        <div class="field-info"><b>${c.name}</b><span data-k="stock">${qa === qb ? qa : `${qa}–${qb}`} par récolte · stock ${fmt(st.res[c.id] || 0)}</span></div>
-        <div data-k="hprog">${bar('job', p, 1)}</div>
-        <div class="field-xp"><span>XP ${GATHER_JOBS[c.job].name}</span><span class="num" data-k="jxt">${fmt(job.xp)} / ${fmt(jobXpToNext(job.lvl))}</span></div>
-        <div data-k="jxb">${bar('xp thin', job.xp, jobXpToNext(job.lvl))}</div></div>`;
+    stage = harvestStage(h, place);
   } else {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -295,11 +303,14 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${h.cls === 'iop' && !harvest ? ' has-fury' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
-        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}">
+      <div class="scene${harvest ? ' harvest' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur') && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+        <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}"${h.cls === 'zobal' ? ` data-mask="${zobMask(h)}"` : ''}>
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
+          ${h.cls === 'sacrieur' ? bloodGauge(h) : ''}
+          ${h.cls === 'sacrieur' ? `<button class="fury-btn blood-btn" data-act="sacolosse" data-hero="${h.id}" data-k="bloodbtn" title="Déclencher le Colosse de Sang !" aria-label="Déclencher le Colosse de Sang"${bloodReady(h) && h.fight ? '' : ' hidden'}>${COLOSSE_ICON}</button>` : ''}
+          ${h.cls === 'xelor' ? chronoBtn(h) : ''}
           <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
@@ -493,8 +504,141 @@ function startPerfect(h, card, scene, fresh) {
   post.forEach((c, j) => setTimeout(() => playSpellFx(card, c), T0 + dur + 150 + j * 280));
   setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T0 + dur + 250 + post.length * 280);
 }
+/* ---------------------- Xélor : Éclat du temps ----------------------
+   Chaque Rembobinage remplit le sablier au-dessus de la tête du Xélor. Plein, un clic le brise : 10 combats d'un coup (XP, kamas, butin). */
+const CHRONO_SVG = `<svg viewBox="0 0 40 52" aria-hidden="true"><path class="cs-glass" d="M9 7Q9 22 20 26Q9 30 9 45H31Q31 30 20 26Q31 22 31 7Z"/><path class="cs-u" d="M12 10Q12 21 20 25Q28 21 28 10Z"/><path class="cs-d" d="M20 29Q12 33 12 43H28Q28 33 20 29Z"/><path class="cs-drip" d="M20 25V43"/><rect class="cs-cap" x="5" y="2" width="30" height="5" rx="2"/><rect class="cs-cap" x="5" y="45" width="30" height="5" rx="2"/><path class="cs-shine" d="M12 10Q12 18 16 22"/></svg>`;
+function chronoBtn(h) {
+  const c = Math.min(CHRONO_MAX, h.chrono || 0);
+  return `<button class="chrono-btn${c >= CHRONO_MAX ? ' full' : ''}" data-act="xelchrono" data-hero="${h.id}" data-k="chrono" style="--p:${(c / CHRONO_MAX).toFixed(2)}" title="Éclat du temps : chaque Rembobinage remplit le sablier. Plein, clique dessus : 10 combats d’un coup !" aria-label="Éclat du temps">${CHRONO_SVG}<b>${c}/${CHRONO_MAX}</b></button>`;
+}
+const CB_MS = 6200;
+function playChrono(card, h, sum, done) {
+  const scene = card.querySelector('.scene'), fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite');
+  const N = sum.n;
+  const lootPanel = () => {
+    const chips = [`<span class="cl-chip xp">⭐ +${fmt(sum.xp)} XP</span>`, `<span class="cl-chip k">💰 +${fmt(sum.kamas)} K</span>`];
+    for (const [r, c] of Object.entries(sum.loot)) chips.push(`<span class="cl-chip${RESOURCES[r].rare ? ' rare' : ''}">${RESOURCES[r].icon} ${c}× ${esc(RESOURCES[r].name)}</span>`);
+    for (const g of sum.gear) chips.push(`<span class="cl-chip gear">${itemIcon(g.id)} ${esc(ITEMS[g.id].name)}${g.stasis ? ' ✦' : ''}</span>`);
+    if (sum.lvlUps > 0) chips.push(`<span class="cl-chip lvl">⬆ Niveau +${sum.lvlUps}</span>`);
+    const p = document.createElement('div'); p.className = 'cb-loot'; p.innerHTML = `<div class="cb-lt">⌛ ${N} combats gagnés</div><div class="cb-chips">${chips.map((c, i) => c.replace('<span ', `<span style="--i:${i}" `)).join('')}</div>`;
+    scene.appendChild(p); setTimeout(() => p.classList.add('out'), 7000); setTimeout(() => p.remove(), 7700);
+  };
+  if (!scene || !sp || !FX_OK()) { if (scene) lootPanel(); setTimeout(done, 300); return; }
+  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight, W = hp.w, H = hp.h, cx = W / 2, cy = H / 2;
+  const btn = fu.querySelector('[data-k="chrono"]'), bp = btn ? relPos(btn, scene) : { x: hp.x, y: hp.y - 60 };
+  const gs = Math.max(130, Math.round(H * .8)); // hauteur du grand sablier
+  // 10 repères horaires autour du sablier : un s'allume à chaque combat
+  let pips = '';
+  for (let i = 0; i < N; i++) { const a = (i / N) * Math.PI * 2 - Math.PI / 2, r = gs * .72; pips += `<i class="cb-pip" style="left:${(cx + Math.cos(a) * r * 1.35).toFixed(0)}px;top:${(cy + Math.sin(a) * r * .78).toFixed(0)}px"></i>`; }
+  let grains = '';
+  for (let i = 0; i < 70; i++) { const a = Math.random() * Math.PI * 2, r = 50 + Math.random() * 190; grains += `<i class="cb-grain" style="--dx:${(Math.cos(a) * r * 1.4).toFixed(0)}px;--dy:${(Math.sin(a) * r * .8).toFixed(0)}px;--s:${(3 + Math.random() * 6).toFixed(1)}px;--d:${(Math.random() * 160).toFixed(0)}ms"></i>`; }
+  let shards = '';
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2 + Math.random() * .3, r = 90 + Math.random() * 170, z = 34 + Math.random() * 56;
+    const pt = () => `${(Math.random() * 100).toFixed(0)}% ${(Math.random() * 100).toFixed(0)}%`;
+    shards += `<i class="cb-shard" style="width:${z.toFixed(0)}px;height:${z.toFixed(0)}px;clip-path:polygon(${pt()},${pt()},${pt()},${pt()});--dx:${(Math.cos(a) * r * 1.45).toFixed(0)}px;--dy:${(Math.sin(a) * r * .85).toFixed(0)}px;--rot:${(Math.random() * 900 - 450).toFixed(0)}deg"></i>`;
+  }
+  const letters = 'ÉCLAT DU TEMPS'.split('').map((c, i) => `<span style="--i:${i}">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+  const crackSvg = CHRONO_SVG.replace('</svg>', '<path class="cs-crack" d="M20 26L12 14M20 26L29 17M20 26L15 38M20 26L27 40M12 14L9 9M29 17L33 11M15 38L11 44"/></svg>');
+  // montage : les combats s'accélèrent
+  const T0 = 1050; let t = T0; const beats = [];
+  for (let i = 0; i < N; i++) { beats.push(t); t += Math.round(300 - i * 17); }
+  const TB = t + 260, spin = TB - T0 + 200;
+  const ov = document.createElement('div'); ov.className = 'cburst';
+  ov.style.cssText = `--gs:${gs}px;--spin:${spin}ms;--ox:${(bp.x - cx).toFixed(0)}px;--oy:${(bp.y - cy).toFixed(0)}px;--cs:${Math.round(gs * 2.3)}px`;
+  ov.innerHTML = `<div class="cb-dim"></div><div class="cb-tint"></div><div class="cb-rays"></div><div class="cb-clock">${RW_CLOCK}</div><div class="cb-vig"></div>
+    <div class="cb-bar t"></div><div class="cb-bar b"></div>${pips}
+    <div class="cb-ring"></div><div class="cb-ring r2"></div>
+    <div class="cb-glass" style="--p:1"><div class="cb-spin">${crackSvg}</div></div>
+    <div class="cb-count"><span class="n">0</span><small>/ ${N} combats</small></div>
+    <div class="cb-tick"><b class="xp">+0 XP</b><b class="k">+0 K</b></div>
+    <div class="cb-burst">${grains}${shards}</div>
+    <div class="cb-title">${letters}<small>${N} combats d’un coup</small></div><div class="cb-flash"></div>`;
+  scene.appendChild(ov); scene.classList.add('cb-on');
+  ecaState(fu, 'xel-chrono', CB_MS + 100);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  const q1 = k => ov.querySelector(k), nEl = q1('.cb-count .n'), xpEl = q1('.cb-tick .xp'), kEl = q1('.cb-tick .k'), cnt = q1('.cb-count'), pipEls = [...ov.querySelectorAll('.cb-pip')];
+  const mons = [...card.querySelectorAll('.unit.mon .sprite')], svg = sp.querySelector('.hs-xelor');
+  const icons = ['⭐', '💰', '⭐', ...Object.keys(sum.loot).map(r => RESOURCES[r].icon)];
+  const add = (cls, style, ms, html = '') => { const e = document.createElement(cls[0] === '#' ? 'span' : 'i'); e.className = cls.replace('#', ''); e.style.cssText = style; if (html) e.textContent = html; ov.appendChild(e); setTimeout(() => e.remove(), ms); return e; };
+  beats.forEach((bt, i) => setTimeout(() => {
+    if (!ov.isConnected) return;
+    const f = (i + 1) / N; nEl.textContent = i + 1; xpEl.textContent = '+' + fmt(Math.round(sum.xp * f)) + ' XP'; kEl.textContent = '+' + fmt(Math.round(sum.kamas * f)) + ' K';
+    cnt.classList.remove('beat'); void cnt.offsetWidth; cnt.classList.add('beat');
+    if (pipEls[i]) pipEls[i].classList.add('lit');
+    add('cb-pulse', '', 700);
+    add('cb-slash', `top:${(Math.random() * H).toFixed(0)}px;--r:${(Math.random() * 50 - 25).toFixed(0)}deg`, 420);
+    if (svg) { const g = document.createElement('div'); g.className = 'cb-echo'; const y = (Math.random() - .5) * H * .5;
+      g.style.cssText = `left:${(hp.x - sw / 2).toFixed(0)}px;top:${(hp.y - sh / 2 + y).toFixed(0)}px;width:${sw}px;height:${sh}px;--tx:${(W * (.38 + Math.random() * .34)).toFixed(0)}px`;
+      const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c); ov.appendChild(g); setTimeout(() => g.remove(), 720); }
+    const m = mons.length ? mons[i % mons.length] : null; const mp = m ? relPos(m, scene) : { x: cx + 60, y: cy };
+    if (m) ecaState(m.closest('.unit'), 'cb-zap', 240);
+    add('cb-pop', `left:${mp.x.toFixed(0)}px;top:${(mp.y - 14).toFixed(0)}px`, 600, '✦');
+    for (let k = 0; k < 3; k++) add('cb-fly', `--x0:${(mp.x + Math.random() * 30 - 15).toFixed(0)}px;--y0:${(mp.y + Math.random() * 20 - 10).toFixed(0)}px;--x1:${cx.toFixed(0)}px;--y1:${cy.toFixed(0)}px;animation-delay:${k * 70}ms`, 1000, icons[(i * 3 + k) % icons.length]);
+  }, bt));
+  setTimeout(() => ov.isConnected && ov.classList.add('crack'), TB - 420); // le sablier se fissure sous la pression
+  setTimeout(() => { // éclatement
+    if (!ov.isConnected) return; ov.classList.add('boom');
+    nEl.textContent = N; xpEl.textContent = '+' + fmt(sum.xp) + ' XP'; kEl.textContent = '+' + fmt(sum.kamas) + ' K';
+    scene.classList.add('cb-shake'); setTimeout(() => scene.classList.remove('cb-shake'), 800);
+    for (let k = 0; k < 3; k++) add('cb-pulse big', `animation-delay:${k * 150}ms`, 1300);
+  }, TB);
+  setTimeout(lootPanel, TB + 1700);
+  setTimeout(() => ov.isConnected && ov.classList.add('out'), CB_MS - 300);
+  setTimeout(() => { ov.remove(); scene.classList.remove('cb-on'); done(); }, CB_MS + 250);
+}
+/* ---------------------- Xélor : Rembobinage ----------------------
+   Au 12e grain, le Xélor renverse son sablier : le temps recule (les monstres abattus se relèvent, leurs PV remontent), puis il rejoue son tour.
+   Les sorts du premier jet se jouent, la cinématique prend le relais en figeant tout le combat, puis le tour rejoué suit. */
+const RW_MS = 3300, RW_MID = 1500;
+const RW_ROMAN = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+const RW_CLOCK = (() => {
+  const p = (a, r) => { const t = (a - 90) * Math.PI / 180; return [100 + r * Math.cos(t), 100 + r * Math.sin(t)]; };
+  let ticks = '', nums = '';
+  for (let i = 0; i < 60; i++) { const [x1, y1] = p(i * 6, 86), [x2, y2] = p(i * 6, i % 5 ? 90 : 93); ticks += `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}" stroke="${i % 5 ? '#bfe0ff' : '#ffe08a'}" stroke-width="${i % 5 ? 1 : 2.4}" stroke-linecap="round"/>`; }
+  RW_ROMAN.forEach((n, i) => { const [x, y] = p(i * 30, 72); nums += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="800" font-family="Georgia,serif" fill="#ffe9a0">${n}</text>`; });
+  return `<svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="97" fill="#0a1a5a33" stroke="#ffe08a" stroke-width="3"/><circle cx="100" cy="100" r="82" fill="none" stroke="#bfe0ff" stroke-width="1" stroke-dasharray="3 5" opacity=".7"/>
+  <g class="ring">${ticks}${nums}</g>
+  <g class="hh"><path d="M100 108V58" stroke="#ffe08a" stroke-width="6" stroke-linecap="round"/><path d="M100 50l-6 12h12z" fill="#ffe08a"/></g>
+  <g class="mh"><path d="M100 114V22" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/><path d="M100 14l-5 11h10z" fill="#fff"/></g>
+  <circle cx="100" cy="100" r="7" fill="#ffd24a" stroke="#6a4208" stroke-width="2"/><circle cx="100" cy="100" r="2.6" fill="#c8301a"/></svg>`;
+})();
+function playRewind(card, scene) {
+  const fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite'); if (!sp) return;
+  const hp = relPos(sp, scene), hx = hp.x + sp.offsetWidth * .23, hy = hp.y - sp.offsetHeight * .37; // le sablier au bout du bâton aspire les grains
+  let grains = '';
+  const add = (x0, y0, d) => { grains += `<i class="rw-grain" style="--x0:${x0.toFixed(0)}px;--y0:${y0.toFixed(0)}px;--x1:${(hx + Math.random() * 8 - 4).toFixed(0)}px;--y1:${(hy + Math.random() * 8 - 4).toFixed(0)}px;--d:${d.toFixed(0)}ms;--t:${(650 + Math.random() * 500).toFixed(0)}ms;--s:${(3 + Math.random() * 4).toFixed(1)}px"></i>`; };
+  card.querySelectorAll('.unit.mon .sprite').forEach(el => { const m = relPos(el, scene); for (let i = 0; i < 9; i++) add(m.x + Math.random() * 50 - 25, m.y + Math.random() * 60 - 30, 450 + Math.random() * 1500); });
+  for (let i = 0; i < 12; i++) add(Math.random() * hp.w, Math.random() * hp.h, 300 + Math.random() * 1700);
+  const ov = document.createElement('div'); ov.className = 'rewind';
+  ov.style.cssText = `--cs:${Math.max(240, Math.round(hp.h * 1.2))}px;--hx:${hx.toFixed(0)}px;--hy:${hy.toFixed(0)}px`;
+  ov.innerHTML = `<div class="rw-dim"></div><div class="rw-tint"></div><div class="rw-clock">${RW_CLOCK}</div><div class="rw-scan"></div>
+    <div class="rw-band" style="top:18%;--d:0ms"></div><div class="rw-band" style="top:46%;--d:380ms"></div><div class="rw-band" style="top:72%;--d:700ms"></div>${grains}
+    <div class="rw-ring" style="--d:0ms"></div><div class="rw-ring" style="--d:${RW_MID - 120}ms"></div><div class="rw-ring" style="--d:${RW_MS - 700}ms"></div>
+    <div class="rw-title">◀◀ REMBOBINAGE<small>le temps recule</small></div><div class="rw-flash"></div>`;
+  scene.appendChild(ov); scene.classList.add('rw-on'); ecaState(fu, 'xel-rewind', RW_MS + 40);
+  requestAnimationFrame(() => ov.classList.add('go'));
+  setTimeout(() => { ov.remove(); scene.classList.remove('rw-on'); }, RW_MS + 60);
+}
+function startRewind(h, card, scene, fresh) {
+  const info = h.fight.rwInfo, quick = !FX_OK();
+  const p1 = fresh.filter(c => c.n <= info.at).slice(-3), p2 = fresh.filter(c => c.n > info.at).slice(-3);
+  const hold = o => { const r = {}; (o || []).forEach((v, i) => { r[i] = v; }); return r; };
+  PF_HOLD[h.id] = hold(info.mid); // le premier jet frappe, les monstres tombent aux PV « du milieu »
+  FURY_ANIM[h.id] = 1;
+  p1.forEach((c, j) => setTimeout(() => playSpellFx(card, c), 60 + j * 280));
+  const T0 = p1.length ? 60 + (p1.length - 1) * 280 + 820 : 120, dur = quick ? 1200 : RW_MS;
+  setTimeout(() => {
+    if (quick) sceneFx(scene, 'rewind', 'Rembobinage !'); else playRewind(card, scene);
+    setTimeout(() => { PF_HOLD[h.id] = hold(info.pre); patchCombat(); }, quick ? 300 : RW_MID); // à mi-course : le temps a reculé, les PV remontent, les morts se relèvent
+  }, T0);
+  const T1 = T0 + dur + 100;
+  setTimeout(() => { delete PF_HOLD[h.id]; ecaText(card, 'TOUR REJOUÉ !', '', 'xel'); patchCombat(); }, T1);
+  p2.forEach((c, j) => setTimeout(() => playSpellFx(card, c), T1 + 160 + j * 280));
+  setTimeout(() => { delete FURY_ANIM[h.id]; delete PF_HOLD[h.id]; if (h.fight) h.wait = Math.max(h.wait, 700); }, T1 + 260 + p2.length * 280);
+}
 /* ---------------------- Colère de Iop : jauge + cinématique ---------------------- */
-const FURY_ANIM = {};
+const FURY_ANIM = {}, ZOB_APO_PREV = {};
 let FURY_FREEZE = 0; // > 0 pendant la cinématique de la Colère de Iop : plus personne n'agit (héros, ennemis, autres joueurs)
 const COLERE_ICON = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="cfb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient></defs><path d="M16 2 L19 6 L19 20 L13 20 L13 6 Z" fill="url(#cfb)" stroke="#5a1408" stroke-width="1.2"/><path d="M16 4 L16 19" stroke="#e8a52a" stroke-width="1"/><path d="M8 20 Q16 23 24 20 L24 22.5 Q16 25.5 8 22.5 Z" fill="#ffb62e" stroke="#5a1408" stroke-width="1.1"/><rect x="14.4" y="23" width="3.2" height="5" rx="1" fill="#7a2410" stroke="#3a0c04" stroke-width=".8"/><circle cx="16" cy="29.3" r="1.9" fill="#ff3b22" stroke="#3a0c04" stroke-width=".8"/></svg>`;
 function furyGauge(h) {
@@ -571,6 +715,119 @@ function playColere(card, h, done) {
   setTimeout(() => { ov.classList.add('s5'); }, T.end - 450);
   setTimeout(() => { ov.remove(); scene.classList.remove('cl-on'); hero.classList.remove('cl-leap'); }, T.end);
 }
+/* ---------------------- Sacrieur : Colosse de Sang ----------------------
+   ~5 s : un sceau de sang se grave sous ses pieds, des arcs de sang jaillissent de sa poitrine et dessinent un second sceau sous les ennemis ;
+   le Sacrieur paie son tribut (PV), passe en Berserk, et un colosse spectral — son propre reflet, géant — se dresse derrière lui, arme son poing
+   puis l'abat sur les ennemis : onde de choc, lances de sang, pluie écarlate. Le sang des vaincus lui revient (Soif de sang). */
+const CC_SEAL = (() => {
+  let ticks = '', runes = '';
+  for (let i = 0; i < 36; i++) { const a = i * 10 * Math.PI / 180, r1 = 83, r2 = i % 3 ? 87 : 91; ticks += `M${(100 + r1 * Math.sin(a)).toFixed(1)} ${(100 - r1 * Math.cos(a)).toFixed(1)}L${(100 + r2 * Math.sin(a)).toFixed(1)} ${(100 - r2 * Math.cos(a)).toFixed(1)}`; }
+  for (let i = 0; i < 6; i++) runes += `<path transform="rotate(${i * 60} 100 100)" d="M100 28v14M94 31l6 6 6-6M96 46h8"/>`;
+  return `<svg viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true"><g class="sp" fill="none" stroke="#ff3a2a" stroke-linecap="round" stroke-linejoin="round">
+    <circle class="dr" cx="100" cy="100" r="95" pathLength="100" stroke-width="3.4"/><circle class="dr" cx="100" cy="100" r="78" pathLength="100" stroke-width="1.8"/>
+    <path class="fd" d="${ticks}" stroke-width="1.6"/>
+    <path class="dr" pathLength="100" d="M100 24L166 138H34Z" stroke-width="2.6"/><path class="dr" pathLength="100" d="M100 176L34 62H166Z" stroke-width="2.6"/>
+    <circle class="dr" cx="100" cy="100" r="46" pathLength="100" stroke-width="2"/>
+    <g class="fd" stroke-width="2.2">${runes}</g>
+    <circle class="fd" cx="100" cy="100" r="9" fill="#ff3a2a" stroke="none"/></g></svg>`;
+})();
+function playColosse(card, h, k) {
+  const scene = card.querySelector('.scene'), fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-sacrieur');
+  const mons = [...card.querySelectorAll('.unit.mon:not(.dead)')];
+  let res = null;
+  const nums = () => { const hits = res && res.hits; if (!hits) return; mons.forEach(m => { const x = hits[+m.dataset.mon]; if (!x) return;
+    const n = document.createElement('span'); n.className = 'cl-num' + (x.crit ? ' crit' : ''); n.textContent = '−' + fmt(x.v); m.appendChild(n); setTimeout(() => n.remove(), 1700);
+    m.classList.add('cl-hit'); setTimeout(() => m.classList.remove('cl-hit'), 900); }); };
+  if (!scene || !sp || !svg || !FX_OK()) { // mouvement réduit : pas de cinématique, juste les effets de jeu
+    setTimeout(() => { res = k.pay(); }, 150); setTimeout(() => { k.impact(); nums(); }, 500); setTimeout(() => k.heal(), 900); setTimeout(k.done, 1300);
+    return;
+  }
+  const T = { pay: 950, rise: 1050, title: 1250, wind: 2100, slam: 2600, hit: 2830, end: 5000 };
+  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight, W = hp.w, H = hp.h;
+  const foes = mons.length ? mons.map(m => { const s = m.querySelector('.sprite') || m, p = relPos(s, scene); return { x: p.x, y: p.y, g: p.y + s.offsetHeight * .42, el: m }; }) : [{ x: W * .72, y: H * .6, g: H * .8, el: null }];
+  const fx = foes.reduce((a, p) => a + p.x, 0) / foes.length, fy = foes.reduce((a, p) => a + p.y, 0) / foes.length, gy = Math.max(...foes.map(p => p.g));
+  const hg = hp.y + sh * .42, chest = { x: hp.x + sw * .03, y: hp.y - sh * .04 };
+  const cs = Math.round(Math.min(H * 1.3, W * .58)), ox = cs * .4, oy = cs * .9, bodyX = Math.max(hp.x + sw * .5, cs * .44), cl = Math.round(bodyX - cs * 62 / 128), ct = Math.round(6 - cs * .09);
+  const FX = cs * 105 / 128, FY = cs * 76 / 128, rest = { x: cl + FX, y: ct + FY }, tgt = { x: fx - 22, y: (fy * 2 + gy) / 3 - 4 }, sh0 = { x: cl + cs * 84 / 128, y: ct + cs * 58 / 128 }; // poing au repos, cible de l'impact, épaule du colosse
+  const tx = Math.round(tgt.x - rest.x), ty = Math.round(tgt.y - rest.y);
+  const ov = document.createElement('div'); ov.className = 'colosse'; ov.style.cssText = `--ch:${H}px`;
+  const sealBox = (cx, cy, w) => `left:${(cx - w / 2).toFixed(0)}px;top:${(cy - w * .17).toFixed(0)}px;width:${w.toFixed(0)}px;height:${(w * .34).toFixed(0)}px`;
+  const spread = foes.length > 1 ? Math.max(...foes.map(p => p.x)) - Math.min(...foes.map(p => p.x)) : 0;
+  const arcs = foes.map((p, i) => { const x1 = p.x, y1 = p.g - 4, dx = x1 - chest.x; return `M${chest.x.toFixed(0)} ${chest.y.toFixed(0)}C${(chest.x + dx * .25).toFixed(0)} ${(chest.y - H * .5).toFixed(0)} ${(x1 - dx * .25).toFixed(0)} ${(chest.y - H * .55).toFixed(0)} ${x1.toFixed(0)} ${y1.toFixed(0)}`; });
+  ov.innerHTML = `<div class="cc-dark"></div><div class="cc-beat"></div>
+    <div class="cc-seal h" style="${sealBox(hp.x, hg, sw * 2.3)}">${CC_SEAL}</div>
+    <div class="cc-seal f" style="${sealBox(fx, gy, Math.max(sw * 3, spread + sw * 2.4))}">${CC_SEAL}</div>
+    <svg class="cc-arcs" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${arcs.map(d => `<path class="o" pathLength="100" d="${d}"/><path class="r" pathLength="100" d="${d}"/><path class="l" pathLength="100" d="${d}"/>`).join('')}</svg>
+    <div class="cc-col hero sac-rage" style="left:${cl}px;top:${ct}px;width:${cs}px;height:${cs}px;transform-origin:${ox}px ${oy}px;--st:1"></div>
+    <svg class="cc-arm" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><path class="o" stroke-width="${Math.round(cs * .12) + 8}"/><path class="r" stroke-width="${Math.round(cs * .12)}"/><path class="l" stroke-width="${Math.round(cs * .04)}"/></svg>
+    <div class="cc-fist hero sac-rage" style="left:${cl}px;top:${ct}px;width:${cs}px;height:${cs}px;transform-origin:${FX}px ${FY}px;--st:1"><i class="cc-fm" style="left:${FX}px;top:${FY}px"></i></div>
+    <div class="cc-title" style="--fs:${Math.round(Math.min(H * .2, W * .1))}px"><span>COLOSSE</span><b>DE SANG</b></div><div class="cc-flash"></div>`;
+  const col = ov.querySelector('.cc-col'), fist = ov.querySelector('.cc-fist'), fm = ov.querySelector('.cc-fm'), armSvg = ov.querySelector('.cc-arm'), c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); col.appendChild(c); fist.appendChild(c.cloneNode(true));
+  scene.appendChild(ov); scene.classList.add('cc-on');
+  const live = () => ov.isConnected, at = (ms, fn) => setTimeout(() => { if (live()) fn(); }, ms);
+  const an = (el, kf, o) => el.animate(kf, Object.assign({ duration: 400, fill: 'forwards', easing: 'ease-out' }, o));
+  const add = (cls, css, ms, html) => { const e = document.createElement('i'); e.className = cls; e.style.cssText = css; if (html) e.innerHTML = html; ov.appendChild(e); if (ms) setTimeout(() => e.remove(), ms); return e; };
+  const q = s => ov.querySelector(s), qa = s => [...ov.querySelectorAll(s)];
+  ecaState(fu, 'sac-cast', T.slam - 50);
+  an(q('.cc-dark'), [{ opacity: 0 }, { opacity: 1 }], { duration: 600 });
+  [250, 700, 1150].forEach((t, i) => at(t, () => { an(q('.cc-beat'), [{ opacity: 0, transform: 'scale(.9)' }, { opacity: .6 - i * .08, transform: 'scale(1.04)', offset: .3 }, { opacity: 0, transform: 'scale(1)' }], { duration: 420, fill: 'none' }); }));
+  // sceaux de sang : se gravent sous le Sacrieur puis sous les ennemis
+  const seal = (el, delay, dur) => { el.classList.add('on'); qa('.cc-seal.' + el.classList[1] + ' .dr').forEach((p, i) => an(p, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { duration: dur, delay: delay + i * 70, fill: 'both' })); an(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay }); };
+  seal(q('.cc-seal.h'), 0, 800); seal(q('.cc-seal.f'), 650, 800);
+  // arcs de sang qui partent de la poitrine
+  qa('.cc-arcs path').forEach((p, i) => { const f = Math.floor(i / 3); p.style.strokeDasharray = '100'; an(p, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { duration: 720, delay: 280 + f * 90, easing: 'cubic-bezier(.3,.6,.3,1)', fill: 'both' }); });
+  at(T.pay, () => { // le tribut : PV perdus, Berserk, gerbe de sang
+    res = k.pay();
+    for (let i = 0; i < 30; i++) { const a = -Math.PI * (.02 + Math.random() * .96), r = 40 + Math.random() * 110; add('cc-drop', `left:${chest.x.toFixed(0)}px;top:${chest.y.toFixed(0)}px;--dx:${(Math.cos(a) * r * 1.3).toFixed(0)}px;--dy:${(Math.sin(a) * r).toFixed(0)}px;--s:${(3 + Math.random() * 6).toFixed(1)}px;--d:${(Math.random() * 220).toFixed(0)}ms`, 1700); }
+    add('cc-ring', `left:${chest.x}px;top:${chest.y}px`, 1000);
+    an(q('.cc-flash'), [{ opacity: .4 }, { opacity: 0 }], { duration: 380 });
+  });
+  // le colosse se dresse
+  at(T.rise, () => an(col, [{ transform: `translate(-34px,${(cs * .55).toFixed(0)}px) scale(.82)`, opacity: 0 }, { transform: 'translate(0,0) scale(1)', opacity: .9 }], { duration: 950, easing: 'cubic-bezier(.2,.8,.2,1)' }));
+  at(T.rise + 100, () => { scene.classList.add('cc-rumble'); setTimeout(() => scene.classList.remove('cc-rumble'), 850); });
+  at(T.title, () => an(q('.cc-title'), [{ opacity: 0, transform: 'translate(-50%,0) scale(3.2)', filter: 'blur(10px)' }, { opacity: 1, transform: 'translate(-50%,0) scale(1)', filter: 'blur(0)', offset: .55 }, { opacity: 1, transform: 'translate(-50%,0) scale(1.04)' }], { duration: 1250, easing: 'cubic-bezier(.2,1.3,.4,1)' }));
+  // il arme son poing : le poing se détache du colosse (un bras de sang le retient) et recule…
+  const beam = () => { if (!live()) return; const m = relPos(fm, scene), dd = `M${sh0.x.toFixed(0)} ${sh0.y.toFixed(0)}Q${((sh0.x + m.x) / 2).toFixed(0)} ${((sh0.y + m.y) / 2 - H * .2).toFixed(0)} ${m.x.toFixed(0)} ${m.y.toFixed(0)}`; armSvg.querySelectorAll('path').forEach(pp => pp.setAttribute('d', dd)); requestAnimationFrame(beam); };
+  at(T.wind, () => {
+    col.classList.add('arm-off'); fist.style.opacity = 1; armSvg.style.opacity = 1; beam();
+    an(col, [{ transform: 'translate(0,0) rotate(0deg)' }, { transform: `translate(${(-cs * .03).toFixed(0)}px,0) rotate(-5deg)` }], { duration: 480, easing: 'cubic-bezier(.4,0,.2,1)' });
+    an(fist, [{ transform: 'translate(0,0) scale(1) rotate(0deg)' }, { transform: `translate(${(-cs * .1).toFixed(0)}px,${(-cs * .2).toFixed(0)}px) scale(1.4) rotate(-18deg)` }], { duration: 480, easing: 'cubic-bezier(.4,0,.2,1)' });
+  });
+  // …puis s'abat sur les ennemis
+  at(T.slam, () => {
+    an(col, [{ transform: `translate(${(-cs * .03).toFixed(0)}px,0) rotate(-5deg)` }, { transform: `translate(${(cs * .05).toFixed(0)}px,${(cs * .03).toFixed(0)}px) rotate(7deg)` }], { duration: T.hit - T.slam, easing: 'cubic-bezier(.7,0,1,.5)' });
+    an(fist, [{ transform: `translate(${(-cs * .1).toFixed(0)}px,${(-cs * .2).toFixed(0)}px) scale(1.4) rotate(-18deg)`, filter: 'blur(0)' }, { transform: `translate(${tx}px,${ty}px) scale(2.5) rotate(12deg)`, filter: 'blur(0)' }], { duration: T.hit - T.slam, easing: 'cubic-bezier(.7,0,1,.45)' });
+    heroGesture(fu, 'atk');
+  });
+  at(T.hit - 60, () => { an(q('.cc-title'), [{ opacity: 1 }, { opacity: 0, transform: 'translate(-50%,-14px) scale(1.35)' }], { duration: 300 }); });
+  at(T.hit, () => { // IMPACT
+    k.impact(); nums();
+    scene.classList.remove('cl-shake'); void scene.offsetWidth; scene.classList.add('cl-shake'); setTimeout(() => scene.classList.remove('cl-shake'), 560);
+    an(q('.cc-flash'), [{ opacity: .8 }, { opacity: 0 }], { duration: 340, easing: 'ease-out' });
+    qa('.cc-arcs path').forEach(p => an(p, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }));
+    for (let n = 0; n < 3; n++) add('cc-wave', `left:${fx.toFixed(0)}px;top:${(gy).toFixed(0)}px;--w:${Math.round(Math.max(sw * 2.4, spread + sw * 2))}px;animation-delay:${n * 120}ms`, 1300);
+    add('cc-crack', `left:${(fx - 170).toFixed(0)}px;top:${(gy - 16).toFixed(0)}px`, 2600, `<svg viewBox="-100 -20 200 40" width="340" height="68"><path pathLength="100" d="M0 0L-30 6L-52 2L-80 10M0 0L26 8L48 3L84 11M0 0L-14 14M0 0L12 16L22 14M-30 6L-38 16M48 3L56-6"/></svg>`);
+    foes.forEach((p, i) => { // lances de sang sous chaque ennemi
+      [[0, 1, 1], [-.55, .62, .66], [.55, .62, .66], [-1.05, .36, .5], [1.05, .36, .5]].forEach(([ox2, hh, ww], j) => {
+        const wd = Math.round(sw * .34 * ww), ht = Math.round(H * .78 * hh * (.85 + Math.random() * .3));
+        const e = add('cc-spike', `left:${(p.x + ox2 * sw * .42 - wd / 2).toFixed(0)}px;top:${(p.g - ht).toFixed(0)}px;width:${wd}px;height:${ht}px`, 1900);
+        an(e, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1.06)', offset: .55 }, { transform: 'scaleY(1)', offset: .7 }, { transform: 'scaleY(1)', opacity: 1, offset: .8 }, { transform: 'scaleY(.3)', opacity: 0 }], { duration: 1500, delay: j * 40 + i * 50, easing: 'cubic-bezier(.1,.8,.3,1)' });
+      });
+      for (let n = 0; n < 16; n++) { const a = -Math.PI * (.05 + Math.random() * .9), r = 40 + Math.random() * 110; add('cc-drop big', `left:${p.x.toFixed(0)}px;top:${(p.g - 6).toFixed(0)}px;--dx:${(Math.cos(a) * r * 1.2).toFixed(0)}px;--dy:${(Math.sin(a) * r * 1.2).toFixed(0)}px;--s:${(4 + Math.random() * 8).toFixed(1)}px;--d:${(Math.random() * 120).toFixed(0)}ms`, 1700); }
+    });
+    for (let n = 0; n < 46; n++) add('cc-rain', `left:${(Math.random() * W).toFixed(0)}px;--len:${(10 + Math.random() * 20).toFixed(0)}px;--fall:${(H + 50)}px;animation-delay:${(80 + Math.random() * 700).toFixed(0)}ms;animation-duration:${(520 + Math.random() * 420).toFixed(0)}ms`, 1900);
+  });
+  at(T.hit + 420, () => { an(col, [{ opacity: .95 }, { opacity: 0, filter: 'blur(7px)' }], { duration: 950, easing: 'ease-in' }); [fist, armSvg].forEach(e => an(e, [{ opacity: 1 }, { opacity: 0, filter: 'blur(6px)' }], { duration: 800, easing: 'ease-in' })); });
+  // le sang des vaincus revient au Sacrieur
+  at(T.hit + 900, () => {
+    const heal = (res && res.heal) || 0; if (heal <= 0) return;
+    foes.forEach((p, i) => { for (let n = 0; n < 5; n++) { const e = add('cc-fly', `left:${(p.x + Math.random() * 30 - 15).toFixed(0)}px;top:${(p.y + Math.random() * 30 - 10).toFixed(0)}px;--s:${(5 + Math.random() * 5).toFixed(0)}px`, 1500);
+      an(e, [{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${((chest.x - p.x) * .5 + (Math.random() - .5) * 60).toFixed(0)}px,${(-60 - Math.random() * 50).toFixed(0)}px) scale(1.2)`, opacity: 1, offset: .45 }, { transform: `translate(${(chest.x - p.x).toFixed(0)}px,${(chest.y - p.y).toFixed(0)}px) scale(.4)`, opacity: .9 }], { duration: 820, delay: n * 70 + i * 60, easing: 'cubic-bezier(.5,0,.6,1)' }); } });
+    at(1000, () => { k.heal(); ecaState(fu, 'sac-absorb', 900); });
+  });
+  at(T.end - 450, () => { an(q('.cc-dark'), [{ opacity: 1 }, { opacity: 0 }], { duration: 450 }); qa('.cc-seal').forEach(e => an(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 450 })); });
+  setTimeout(() => { ov.remove(); scene.classList.remove('cc-on', 'cc-rumble'); fu.classList.remove('sac-cast'); k.done(); }, T.end);
+}
 function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
 function floatNum(el, txt, cls) {
   const f = document.createElement('span'); f.className = 'fnum ' + cls; f.textContent = txt;
@@ -578,10 +835,10 @@ function floatNum(el, txt, cls) {
   if (cls === 'dmg') { el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 300); }
 }
 /* Effets visuels des passifs (Xélor) posés par-dessus la scène */
-function sceneFx(scene, kind, text) {
+function sceneFx(scene, kind, text, icon = '⏳') {
   if (!scene) return;
   const fx = document.createElement('div'); fx.className = 'fx fx-' + kind;
-  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">⏳</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
+  fx.innerHTML = `<div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-icon">${icon}</div>${text ? `<div class="fx-text">${text}</div>` : ''}`;
   scene.appendChild(fx);
   scene.classList.remove('fx-' + kind + '-on'); void scene.offsetWidth; scene.classList.add('fx-' + kind + '-on');
   setTimeout(() => { fx.remove(); scene.classList.remove('fx-' + kind + '-on'); }, 1500);
@@ -625,9 +882,11 @@ function patchCombat() {
       const fresh = (h.fight.fx || []).filter(c => c.n > seen);
       let lead = 0; // l'Ecaflip lance sa pièce (ou joue son Quitte ou Double) AVANT de frapper
       if (h.cls === 'ecaflip') { const cf0 = h.fight.coinFx, gf0 = h.fight.gambleFx; if (gf0 && gf0.n > +(scene.dataset.gm || 0)) lead = 1300; else if (cf0 && cf0.n > +(scene.dataset.co || 0)) lead = 450; }
+      const rwNew = h.cls === 'xelor' && !!h.fight.rwInfo && (h.fight.rewinds || 0) > +(scene.dataset.rw || 0) && fresh.length > 0;
       const pfNew = h.cls === 'cra' && h.fight.perfect && h.fight.perfect.n > +(scene.dataset.pf || 0);
       if (fresh.length) scene.dataset.fx = fresh[fresh.length - 1].n;
       if (pfNew) { scene.dataset.pf = h.fight.perfect.n; startPerfect(h, card, scene, fresh); } // Tir Parfait : cinématique, combat figé
+      else if (rwNew) startRewind(h, card, scene, fresh); // Rembobinage : cinématique, combat figé, puis le tour est rejoué
       else if (fresh.length) fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280));
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
@@ -647,8 +906,9 @@ function patchCombat() {
         const jk = h.fight.jackSeq || 0; if (jk > +(scene.dataset.jk || 0)) { scene.dataset.jk = jk; playJackpot(card, h.fight.jackFx); }
         const bb = h.fight.bribeSeq || 0; if (bb > +(scene.dataset.bb || 0)) { scene.dataset.bb = bb; goldFx(card, 'Pot-de-vin !', scene, 16); }
       }
-      if (+(scene.dataset.rw || 0) < rw) sceneFx(scene, 'rewind', 'Rembobinage !');
+      if (+(scene.dataset.rw || 0) < rw && !rwNew) sceneFx(scene, 'rewind', 'Rembobinage !');
       if (+(scene.dataset.px || 0) < px) sceneFx(scene, 'paradox', 'Paradoxe !');
+      const mt = h.fight.martyrSeq || 0; if (+(scene.dataset.mt || 0) < mt) { sceneFx(scene, 'martyr', 'MARTYRE !', '☠️'); ecaState(card.querySelector('[data-k="fighter"]'), 'sac-martyr', 1300); } scene.dataset.mt = mt;
       scene.dataset.rw = rw; scene.dataset.px = px;
     }
     const s1 = q('status'); if (s1) { if (s1.textContent !== stxt) s1.textContent = stxt; s1.className = 'status ' + sc; }
@@ -706,19 +966,41 @@ function patchCombat() {
       if (h.fight) card.querySelectorAll('.unit.mon').forEach(el => { const i = +el.dataset.mon, m = h.fight.mons[i]; el.classList.toggle('prey', !!m && m.hp > 0 && h.fight.mark === i);
         const r = el.querySelector('[data-k="ret"]'); if (r) { const n = h.focus || 0; r.classList.toggle('ready', n >= CRA_FOCUS_MAX); r.querySelectorAll('.seg').forEach((s, k) => s.classList.toggle('on', k < n)); } });
     }
+    if (h.cls === 'xelor') { // le cadran fantôme, le sablier et l'aura suivent les grains
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), g = h.fight ? Math.min(12, h.fight.grains || 0) : 0, gv = (g / 12).toFixed(2);
+      if (fsp) { if (fsp.style.getPropertyValue('--gr') !== gv) { fsp.style.setProperty('--gr', gv); fsp.querySelectorAll('.p-pip').forEach((el, i) => el.classList.toggle('lit', i < g)); } }
+      if (fu) fu.classList.toggle('xel-full', g >= 12 && !!h.fight && h.fight.mons.some(m => m.hp > 0));
+      const cb = q('chrono');
+      if (cb && !FURY_ANIM[h.id]) { // le sablier se remplit après le Rembobinage (la cinématique garde l'affichage figé)
+        const c = Math.min(CHRONO_MAX, h.chrono || 0), pv = (c / CHRONO_MAX).toFixed(2);
+        if (cb.style.getPropertyValue('--p') !== pv) { const up = +pv > +cb.style.getPropertyValue('--p'); cb.style.setProperty('--p', pv); cb.querySelector('b').textContent = `${c}/${CHRONO_MAX}`; if (up) { cb.classList.remove('gain'); void cb.offsetWidth; cb.classList.add('gain'); setTimeout(() => cb.classList.remove('gain'), 1300); } }
+        cb.classList.toggle('full', c >= CHRONO_MAX);
+      }
+    }
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
+    const bl = q('blood'); if (bl) { const p = clamp((h.blood || 0) / SAC_BLOOD_MAX, 0, 1); bl.firstElementChild.style.setProperty('--p', p.toFixed(3)); bl.classList.toggle('full', p >= 1); const lb = bl.lastElementChild, tx = p >= 1 ? 'COLOSSE !' : 'Sang ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
+    const bb = q('bloodbtn'); if (bb) { const show = bloodReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (bb.hidden === show) bb.hidden = !show; }
+    if (h.cls === 'zobal') { // masque porté, aura de Ferveur, Rupture
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), mk = zobMask(h), n = Math.min(ZOB_FERV_MAX, h.ferv || 1);
+      if (fu) { if (fu.dataset.mask !== mk) { const had = fu.dataset.mask; fu.dataset.mask = mk; if (had) ecaState(fu, 'zob-swap', 700); } fu.classList.toggle('zob-apo', n >= ZOB_FERV_MAX); }
+      if (fu && scene && ZOB_APO_PREV[h.id] !== undefined && ZOB_APO_PREV[h.id] < ZOB_FERV_MAX && n >= ZOB_FERV_MAX) zobApotheose(scene, fu); ZOB_APO_PREV[h.id] = n;
+      if (fsp) fsp.style.setProperty('--fv', (n / ZOB_FERV_MAX).toFixed(2));
+      card.querySelectorAll('.zmask').forEach(b => { const on = b.dataset.mask === mk; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+      const rp = h.fight ? h.fight.ruptSeq || 0 : 0; if (scene && +(scene.dataset.rp || 0) < rp) { sceneFx(scene, 'rupt', 'RUPTURE !', '🎭'); zobShards(card); } if (scene) scene.dataset.rp = rp;
+      const fv = q('ferv'); if (fv) { const tx = fervHtml(h); if (fv.textContent !== tx) fv.textContent = tx; fv.classList.toggle('full', n >= ZOB_FERV_MAX); }
+    }
+    if (h.cls === 'sacrieur') { // les runes-cicatrices s'allument avec les Stigmates ; au maximum : BERSERK
+      const fu = card.querySelector('[data-k="fighter"]'), fsp = fu && fu.querySelector('.sprite'), n = h.fight ? Math.min(SAC_STIG_MAX, h.fight.stig || 0) : 0, v = (n / SAC_STIG_MAX).toFixed(2);
+      if (fsp && fsp.style.getPropertyValue('--st') !== v) { fsp.style.setProperty('--st', v); fsp.querySelectorAll('.p-rune').forEach((el, i) => el.classList.toggle('lit', i < n)); }
+      const rage = !!h.fight && n >= SAC_STIG_MAX && !(h.hp <= 0);
+      if (fu) { fu.classList.toggle('sac-rage', rage); if (rage && !SAC_RAGE[h.id]) sacBerserk(card, fu); SAC_RAGE[h.id] = rage; }
+    }
+    const sg = q('stig'); if (sg) { const tx = stigHtml(h); if (sg.textContent !== tx) sg.textContent = tx; sg.classList.toggle('full', !!(h.fight && h.fight.stig >= SAC_STIG_MAX)); }
     const gr = q('grains'); if (gr) { const tx = grainsHtml(h); if (gr.textContent !== tx) gr.textContent = tx; gr.classList.toggle('full', !!(h.fight && h.fight.grains >= 12)); }
     const tn = q('turn'); if (tn) tn.textContent = h.fight ? `Tour ${h.fight.turn}` : '';
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
-    if (h.act && h.act.type === 'harvest') {
-      const c = findPlace('harvest', h.act.id); const job = st.jobs[c.job]; const p = clamp(1 - h.wait / harvestMs(st, h), 0, 1);
-      setBar(q('hprog'), p, 1);
-      const cr = q('crops'); if (cr) cr.style.setProperty('--g', p.toFixed(2));
-      const sk = q('stock'); if (sk) { const [qa, qb] = cropQty(st, c); const tx = `${qa === qb ? qa : `${qa}–${qb}`} par récolte · stock ${fmt(st.res[c.id] || 0)}`; if (sk.textContent !== tx) sk.textContent = tx; }
-      const jx = q('jxt'); if (jx) jx.textContent = `${fmt(job.xp)} / ${fmt(jobXpToNext(job.lvl))}`;
-      setBar(q('jxb'), job.xp, jobXpToNext(job.lvl));
-    }
+    if (h.act && h.act.type === 'harvest') harvestPatch(q, card, h, scene);
   }
   updateArchiBtn();
 }
@@ -760,14 +1042,16 @@ function renderHeros() {
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
   const tab = ['combat', 'recolte', 'relique'].includes(ui.eqTab) ? ui.eqTab : 'combat';
   const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
-  return `${heroTabs(h)}<div class="hero-grid">
+  const fp = skillFree(h);
+  const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
+  return `${heroTabs(h)}${skb}<div class="hero-grid">
     <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
 function slotTile(h, slot) {
   const g = h.equip[slot] && gearById(st, h.equip[slot]); const sel = ui.slot === slot;
   const ic = SLOT_ICON[slot.startsWith('anneau') ? 'anneau' : slot];
-  return `<button class="slot-t ${g ? qClass(g) : 'empty'}${sel ? ' sel' : ''}" data-act="pickslot" data-slot="${slot}" aria-pressed="${sel}" title="${g ? esc(ITEMS[g.id].name) : SLOT_LABEL[slot] + ' : vide'}">${g ? itemIcon(g.id) : `<span class="ph">${ic}</span>`}<span class="st-l">${SLOT_LABEL[slot]}</span></button>`;
+  return `<button class="slot-t ${g ? qClass(g) : 'empty'}${sel ? ' sel' : ''}" data-act="pickslot" data-slot="${slot}" aria-pressed="${sel}" style="${g && ITEMS[g.id].relic ? relicPh() : ''}" title="${g ? esc(ITEMS[g.id].name) : SLOT_LABEL[slot] + ' : vide'}">${g ? itemIcon(g.id) : `<span class="ph">${ic}</span>`}<span class="st-l">${SLOT_LABEL[slot]}</span></button>`;
 }
 /* Valeur globale d'un objet pour trier ses exemplaires (somme des stats, stasifié en tête) */
 function gearScore(g) { if (!g) return 0; return Object.entries(g.stats).reduce((s, [k, v]) => s + v * (k === 'vit' ? .5 : k === 'sag' ? .6 : ['res', 'crit', 'dodge'].includes(k) ? 3 : k === 'pp' ? .8 : 1), 0) + (g.stasis ? 1e6 : 0); }
@@ -932,116 +1216,120 @@ function defaultPlace() {
   const h = selHero();
   if (h && h.act && h.act.type !== 'harvest') return { type: h.act.type, id: h.act.id };
   const lv = h ? h.lvl : 1;
-  const z = [...ZONES].reverse().find(x => lv >= x.lvl[0]) || ZONES[0];
+  const z = [...ZONES].reverse().find(x => !x.sub && lv >= x.lvl[0]) || ZONES[0];
   return { type: 'zone', id: z.id };
 }
 function placeMons(p, type) { return type === 'dungeon' ? [...new Set([...p.rooms.flat(), ...p.boss])] : p.monsters; }
-function renderCarte() {
-  if (!ui.place || !findPlace(ui.place.type, ui.place.id)) ui.place = defaultPlace();
-  const row = (p, type) => {
-    const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-    const sel = ui.place.type === type && ui.place.id === p.id;
-    const mons = placeMons(p, type);
-    const icon = monIcon(type === 'dungeon' ? p.boss[0] : mons[0]);
-    return `<button class="mrow${sel ? ' sel' : ''}${type === 'dungeon' ? ' dj' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="${themeStyle(THEME[p.region] || THEME.idle)}">
-      <span class="mr-art" aria-hidden="true">${icon}</span><span class="mr-main"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : ''}${p.region} · niv. ${p.lvl[0]}–${p.lvl[1]}</small></span>
-      ${here.length ? `<span class="mr-here">${here.map(h => emblem(h.cls, true)).join('')}</span>` : ''}</button>`;
-  };
-  return `<div class="map-layout">
-    <aside class="map-list"><div class="ml-h">Zones</div>${ZONES.map(z => row(z, 'zone')).join('')}<div class="ml-h">Donjons</div>${DUNGEONS.map(d => row(d, 'dungeon')).join('')}</aside>
-    <section class="panel map-detail">${placeDetail(findPlace(ui.place.type, ui.place.id), ui.place.type)}</section></div>`;
-}
-function placeDetail(p, type) {
-  const mons = placeMons(p, type);
-  const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
-  const tier = type === 'zone' ? ((ui.zoneTier || {})[p.id] || 0) : 0; const T = SUBZONES[tier];
-  const best = st.heroes.reduce((m, h) => Math.max(m, heroTotals(st, h).ppTotal), 100);
-  const rows = (type === 'zone' && ARCHIS[p.id] ? [...mons, ARCHIS[p.id]] : mons).map(mid => {
-    const d = MONSTERS[mid]; const ar = !!d.archi, src = d.base || mid, ab = ar ? 3 : 1; const gd = GEAR_DROPS[src] || []; const ms = monsterStats(mid);
-    const gr = gd.length ? (d.boss || ar ? GEAR_DROP_RATE_BOSS : GEAR_DROP_RATE) * T.drop / gd.length : 0;
-    const key = p.id + ':' + mid; const mo = !!(ui.openMons || {})[key];
-    const rl = (RELIC_DROPS[src] || []).map(([r, c]) => [r, c * T.drop * (ar ? 20 : 1)]);
-    const detail = mo ? `<tr class="dr-detail"><td colspan="5"><div class="dr-items">
-      ${d.drops.map(([r, c]) => `<div class="dr-item"><span class="dr-ii">${RESOURCES[r].icon}</span><div><b>${RESOURCES[r].name}</b><div class="sub">Ressource · ${RESOURCES[r].value} K pièce</div></div><b class="dr-pc">${pct(Math.min(1, c * ab))}</b></div>`).join('')}
-      ${rl.map(([r, c]) => `<div class="dr-item relic"><span class="dr-ii">${itemIcon(r)}</span><div><b>${ITEMS[r].name}</b> <span class="sub">Relique · niv. ${ITEMS[r].lvl}</span>
-        <div class="sub">${Object.entries(ITEMS[r].stats).map(([k, [a, b2]]) => `${a}–${b2} ${STAT_SHORT[k]}`).join(' · ')}</div></div><b class="dr-pc relic">${pct(c)}</b></div>`).join('')}
-      ${gd.map(i => { const it = ITEMS[i]; return `<div class="dr-item gear"><span class="dr-ii">${itemIcon(i)}</span><div><b>${it.name}</b> <span class="sub">niv. ${it.lvl}</span>
-        <div class="sub">${Object.entries(it.stats).map(([k, [a, b2]]) => `<span style="color:${STAT_COLOR[k]}">${a}–${b2} ${STAT_SHORT[k]}</span>`).join(' · ')}</div>
-        <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
-        <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
-    </div></td></tr>` : '';
-    return `<tr class="dr-row${mo ? ' open' : ''}${ar ? ' archi-row' : ''}" data-act="togglemon" data-k="${key}" tabindex="0" title="Voir les objets">
-      <td><div class="dr-mon"><span class="chev" aria-hidden="true">▸</span><span class="dr-ico" aria-hidden="true">${monIcon(mid)}</span><div><b>${ar ? '👑 ' : ''}${d.name}</b> <span class="sub">${d.lvl}${d.boss ? ' · Boss' : ''}${ar ? ' · Archimonstre' : ''}</span>
-        <div class="dr-meta">${fmt(ms.hp * T.hp)} PV · ${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)} dégâts</div>${ar ? `<div class="dr-archi">👹 ${pct(ARCHI_RATE)} d’apparition après chaque combat de zone</div>` : ''}</div></div></td>
-      <td><div class="dr-chips">${d.drops.map(([r, c]) => `<span title="${RESOURCES[r].name}">${RESOURCES[r].icon}<b>${pct(Math.min(1, c * ab))}</b></span>`).join('')}</div></td>
-      <td>${gd.length ? `<div class="dr-chips"><span class="dr-gold" title="${gd.map(i => ITEMS[i].name).join(', ')}">${gd.map(i => itemIcon(i)).join('')}<b>${pct(gr)}</b></span></div>` : '<span class="dim">—</span>'}</td>
-      <td>${gd.length ? `<span class="dr-stasis">${pct(STASIS_RATE * T.drop)}</span>` : '<span class="dim">—</span>'}</td>
-      <td>${rl.length ? rl.map(([r, c]) => `<span class="dr-relic" title="${ITEMS[r].name}">${itemIcon(r)}<b>${pct(c)}</b></span>`).join('') : '<span class="dim">—</span>'}</td>
-    </tr>${detail}`;
-  }).join('');
-  const sends = st.heroes.length ? st.heroes.map(h => {
-    const there = h.act && h.act.type === type && h.act.id === p.id && (type !== 'zone' || (h.act.tier || 0) === tier);
-    const low = h.lvl < p.lvl[0] - 3;
-    const label = there ? 'Est ici' : low ? `Niveau conseillé ${p.lvl[0]}` : h.act ? `Quitte ${placeName(h.act)}` : 'Disponible';
-    return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="${type}" data-id="${p.id}" data-t="${tier}" ${there || (type === 'dungeon' && !keyN) ? 'disabled' : ''}`, esc(label), (there ? 'here' : '') + (low ? ' low' : ''));
-  }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
-  return `<div class="place-banner" style="${themeStyle(THEME[p.region] || THEME.idle)}">
-      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : ''}${p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
-      <div class="pb-side"><span class="lvl-badge">Niv. ${p.lvl[0]}–${p.lvl[1]}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map(m => `<span>${monIcon(m)}</span>`).join('')}</div></div>
-    </div>
-    ${type === 'zone' ? `<div class="tiers">${SUBZONES.map((s, i) => { const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === p.id && (h.act.tier || 0) === i).length;
-      return `<button data-act="ztier" data-id="${p.id}" data-t="${i}" aria-pressed="${i === tier}"><b>${p.name} ${i + 1}</b><span>${i ? `PV ×${s.hp} · Dégâts ×${String(s.dmg).replace('.', ',')} · Équip. ×${s.drop}` : 'Difficulté normale'}</span>${n ? `<i>${n} héros</i>` : ''}</button>`; }).join('')}</div>`
-      : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp} · une clef par entrée</span>${keyN ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
-    <div><div class="label" style="margin-bottom:6px">Envoyer un héros</div><div class="send-list">${sends}</div></div>
-    <div class="drop-wrap"><table class="drop-table"><thead><tr><th>Monstre</th><th>Ressources</th><th>Équipement</th><th>Stasifié</th><th>Relique</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="hint">Taux par monstre vaincu pour 100 de prospection (ta meilleure : ${best}, soit ×${(best / 100).toFixed(2).replace('.', ',')}). Équipement et stasifié : taux par objet. <span style="color:var(--relic)">En jaune</span> : reliques. Clique sur un monstre pour le détail.</p>`;
-}
-
 /* ---------------------------- Vue : Inventaire ---------------------------- */
-const INV_FILTERS = [['all', 'Tout'], ['gear', 'Équipements'], ['res', 'Ressources'], ['harvest', 'Outils de récolte'], ['relic', 'Reliques']];
+const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['res', 'Ressources', '🧺']];
+const INV_SORTS = [['lvl', 'Niveau'], ['q', 'Qualité'], ['val', 'Valeur'], ['name', 'Nom']];
+const INV_RCATS = [['all', 'Toutes'], ['loot', 'Butin'], ['crop', 'Récoltes'], ['food', 'Repas'], ['rune', 'Runes'], ['rare', 'Rares'], ['key', 'Clefs']];
+const INV_RCAT_LABEL = { loot: 'Butin de monstres', crop: 'Récoltes', food: 'Repas', rune: 'Runes', rare: 'Ressources rares', key: 'Clefs de donjon' };
+const resCat = id => { const r = RESOURCES[id]; return r.key ? 'key' : r.food ? 'food' : r.rune ? 'rune' : r.crop ? 'crop' : r.rare ? 'rare' : 'loot'; };
 const gearKind = g => (ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const gearStatChips = g => Object.entries(g.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k] || 'var(--fg)'}">+${v} ${STAT_LABEL[k]}</i>`).join('');
+const relicPh = () => `--ph:-${Date.now() % 6000}ms;`;
 function gearTile(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
-  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" style="--c:${CLASSES[by.cls].color}"></span>` : ''}</button>`;
+  const sc = d.set ? SET_COL[d.set] : '';
+  return `<button class="tile ${qClass(g)}${sel ? ' sel' : ''}${by ? ' worn' : ''}${sc ? ' has-set' : ''}" style="${by ? `--c:${CLASSES[by.cls].color};` : ''}${sc ? `--sc:${sc};` : ''}${d.relic ? relicPh() : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}" title="${esc(d.name)} · niv. ${d.lvl}${d.set ? ' · ' + esc(SETS[d.set].name) : ''}${by ? ' · porté par ' + esc(by.name) : ''}">${itemIcon(g.id)}<span class="t-lv">${d.lvl}</span>${by ? `<span class="t-by" aria-label="Porté par ${esc(by.name)}">${emblem(by.cls, true)}<b>${esc(by.name.slice(0, 1).toUpperCase())}</b></span>` : ''}</button>`;
 }
 function resTile(id) {
   const r = RESOURCES[id]; const sel = ui.sel && ui.sel.k === 'res' && ui.sel.id === id;
   return `<button class="tile res${r.rare || r.key ? ' q-high' : ''}${sel ? ' sel' : ''}" data-act="pick" data-kind="res" data-id="${id}" title="${esc(r.name)} ×${fmt(st.res[id])}"><span class="t-emo">${r.icon}</span><span class="t-n num">${short(st.res[id])}</span></button>`;
 }
+function gearRow(g) {
+  const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
+  const type = d.relic ? 'Relique' : d.harvest ? HARVEST_SLOT_LABEL[d.slot] : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
+  return `<button class="iv-row ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}"><span class="tile sm ${qClass(g)}" style="${d.relic ? relicPh() : ''}">${itemIcon(g.id)}</span>
+    <span class="iv-n"><b>${esc(d.name)}</b><small>${type} · niv. ${d.lvl}${d.set ? ` · <u class="setn" style="--sc:${SET_COL[d.set]}">${esc(SETS[d.set].name.replace('Panoplie ', '').replace('de l’', '').replace('du ', '').replace("de l'", ''))}</u>` : ''}</small></span><span class="iv-st">${gearStatChips(g)}</span>
+    <span class="iv-r">${qualityTag(g)}${by ? `<span class="iv-by" style="--c:${CLASSES[by.cls].color}">${emblem(by.cls, true)}${esc(by.name)}</span>` : `<small class="iv-v">${fmt(itemValue(g))} K</small>`}</span></button>`;
+}
+function resRow(id) {
+  const r = RESOURCES[id]; const sel = ui.sel && ui.sel.k === 'res' && ui.sel.id === id;
+  return `<button class="iv-row${r.rare || r.key ? ' q-high' : ''}${sel ? ' sel' : ''}" data-act="pick" data-kind="res" data-id="${id}"><span class="tile sm res"><span class="t-emo">${r.icon}</span></span>
+    <span class="iv-n"><b>${esc(r.name)}</b><small>${INV_RCAT_LABEL[resCat(id)]}</small></span><span class="iv-st"><i class="num" style="color:var(--gold-2)">×${fmt(st.res[id])}</i></span>
+    <span class="iv-r"><small class="iv-v">${r.value} K l’unité</small><small class="iv-v num">${fmt(r.value * st.res[id])} K</small></span></button>`;
+}
+function invSection(title, icon, count, inner, list) {
+  return `<div class="iv-sec"><h4><span>${icon}</span>${title}<em class="num">${count}</em></h4>${list ? `<div class="iv-list">${inner}</div>` : `<div class="tiles">${inner}</div>`}</div>`;
+}
 function renderInventaire() {
   const f = INV_FILTERS.some(x => x[0] === ui.invFilter) ? ui.invFilter : 'all';
-  const resIds = Object.keys(st.res).filter(id => st.res[id] > 0).sort((a, b) => RESOURCES[b].value - RESOURCES[a].value);
-  const gs = [...st.gear].sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl || itemQuality(b) - itemQuality(a));
-  const counts = { all: resIds.length + gs.length, res: resIds.length, gear: 0, harvest: 0, relic: 0 };
-  for (const g of gs) counts[gearKind(g)]++;
-  const tiles = [];
-  if (f !== 'res') for (const g of gs) if (f === 'all' || gearKind(g) === f) tiles.push(gearTile(g));
-  if (f === 'all' || f === 'res') for (const id of resIds) tiles.push(resTile(id));
-  const total = resIds.reduce((s, id) => s + st.res[id] * RESOURCES[id].value, 0);
-  return `<div class="inv-layout"><section class="panel">
-    <div class="chips-row">${INV_FILTERS.map(([v, l]) => `<button class="fchip" data-act="invf" data-v="${v}" aria-pressed="${f === v}">${l}<small>${counts[v]}</small></button>`).join('')}</div>
-    <div class="inv-tools"><span class="sub">Valeur des ressources au marchand : ${kamasHtml(total)}</span><button class="btn sm" data-act="sellallres" ${resIds.length ? '' : 'disabled'}>Vendre les ressources communes</button></div>
-    ${tiles.length ? `<div class="tiles">${tiles.join('')}</div>` : `<div class="empty">Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.</div>`}
-    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. La pastille de couleur indique quel héros porte l’objet.</p>
+  const sort = INV_SORTS.some(x => x[0] === ui.invSort) ? ui.invSort : 'lvl', view = ui.invView === 'list' ? 'list' : 'grid';
+  const q = norm(ui.invQ || ''), rcat = INV_RCATS.some(x => x[0] === ui.invRcat) ? ui.invRcat : 'all';
+  const slot = ui.invSlot || 'all', freeOnly = !!ui.invFree;
+  const allRes = Object.keys(st.res).filter(id => st.res[id] > 0);
+  const counts = { all: 0, res: allRes.length, gear: 0, harvest: 0, relic: 0 };
+  for (const g of st.gear) counts[gearKind(g)]++;
+  counts.all = counts.res + counts.gear + counts.harvest + counts.relic;
+  const worn = st.gear.filter(g => equippedBy(st, g.uid)).length;
+  const stock = allRes.reduce((s, id) => s + st.res[id] * RESOURCES[id].value, 0), units = allRes.reduce((s, id) => s + st.res[id], 0);
+  const matchG = g => { const d = ITEMS[g.id]; if (q && !norm(d.name).includes(q)) return false; if (freeOnly && equippedBy(st, g.uid)) return false; return true; };
+  const gcmp = { lvl: (a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl || itemQuality(b) - itemQuality(a), q: (a, b) => (b.stasis ? 2 : 0) + itemQuality(b) - ((a.stasis ? 2 : 0) + itemQuality(a)) || ITEMS[b.id].lvl - ITEMS[a.id].lvl, val: (a, b) => itemValue(b) - itemValue(a), name: (a, b) => ITEMS[a.id].name.localeCompare(ITEMS[b.id].name, 'fr') }[sort];
+  const rcmp = { lvl: (a, b) => RESOURCES[b].value - RESOURCES[a].value, q: (a, b) => st.res[b] - st.res[a], val: (a, b) => RESOURCES[b].value * st.res[b] - RESOURCES[a].value * st.res[a], name: (a, b) => RESOURCES[a].name.localeCompare(RESOURCES[b].name, 'fr') }[sort];
+  const gearOf = kind => st.gear.filter(g => gearKind(g) === kind && matchG(g) && (kind !== 'gear' || slot === 'all' || (slot === 'anneau' ? ITEMS[g.id].slot === 'anneau' : ITEMS[g.id].slot === slot))).sort(gcmp);
+  const resList = allRes.filter(id => (!q || norm(RESOURCES[id].name).includes(q)) && (rcat === 'all' || resCat(id) === rcat)).sort(rcmp);
+  const isList = view === 'list', gT = isList ? gearRow : gearTile, rT = isList ? resRow : resTile;
+  const secs = [];
+  const gs = f === 'all' || f === 'gear' ? gearOf('gear') : [], hs = f === 'all' || f === 'harvest' ? gearOf('harvest') : [], rl = f === 'all' || f === 'relic' ? gearOf('relic') : [];
+  if (gs.length) secs.push(invSection('Équipements', '⚔️', gs.length, gs.map(gT).join(''), isList));
+  if (hs.length) secs.push(invSection('Outils de récolte', '🪓', hs.length, hs.map(gT).join(''), isList));
+  if (rl.length) secs.push(invSection('Reliques', '✨', rl.length, rl.map(gT).join(''), isList));
+  if ((f === 'all' || f === 'res') && resList.length) {
+    if (rcat === 'all' && f === 'res') for (const [c, l] of INV_RCATS.slice(1)) { const ids = resList.filter(id => resCat(id) === c); if (ids.length) secs.push(invSection(INV_RCAT_LABEL[c], { loot: '🦴', crop: '🌾', food: '🍞', rune: '🔮', rare: '💎', key: '🗝️' }[c], ids.length, ids.map(rT).join(''), isList)); }
+    else secs.push(invSection('Ressources', '🧺', resList.length, resList.map(rT).join(''), isList));
+  }
+  const slotChips = f === 'gear' ? `<div class="chips-row iv-sub">${[['all', 'Tous'], ...['arme', 'coiffe', 'cape', 'amulette', 'anneau', 'ceinture', 'bottes'].map(s => [s, SLOT_LABEL[s === 'anneau' ? 'anneau1' : s]])].map(([v, l]) => `<button class="fchip sm" data-act="invslot" data-v="${v}" aria-pressed="${slot === v}">${l}</button>`).join('')}</div>` : '';
+  const rcatChips = f === 'res' ? `<div class="chips-row iv-sub">${INV_RCATS.map(([v, l]) => `<button class="fchip sm" data-act="invrcat" data-v="${v}" aria-pressed="${rcat === v}">${l}</button>`).join('')}</div>` : '';
+  const sell = `<button class="btn sm" data-act="sellallres" ${allRes.length ? '' : 'disabled'} title="Vend toutes les ressources sauf les rares et les clefs">Vendre les ressources communes</button>`;
+  return `<div class="inv-layout"><section class="panel iv-panel">
+    <div class="iv-stats">
+      <div class="iv-stat"><span>⚔️</span><div><small>Objets</small><b class="num">${counts.gear + counts.harvest + counts.relic}</b><em>${worn} porté${worn > 1 ? 's' : ''}</em></div></div>
+      <div class="iv-stat"><span>🧺</span><div><small>Ressources</small><b class="num">${allRes.length}</b><em>${short(units)} unités</em></div></div>
+      <div class="iv-stat gold"><span>💰</span><div><small>Stock</small><b class="num">${fmt(stock)}</b><em>kamas</em></div></div>
+    </div>
+    <div class="iv-bar">
+      <label class="iv-search"><span aria-hidden="true">🔎</span><input id="invq" type="search" placeholder="Rechercher un objet…" value="${esc(ui.invQ || '')}" autocomplete="off" data-input="invq">${ui.invQ ? '<button type="button" class="iv-x" data-act="invqclear" aria-label="Effacer">✕</button>' : ''}</label>
+      <div class="iv-seg" role="group" aria-label="Affichage"><button data-act="invview" data-v="grid" aria-pressed="${!isList}" title="Grille">▦</button><button data-act="invview" data-v="list" aria-pressed="${isList}" title="Liste">☰</button></div>
+    </div>
+    <div class="chips-row iv-cats">${INV_FILTERS.map(([v, l, i]) => `<button class="fchip" data-act="invf" data-v="${v}" aria-pressed="${f === v}"><span class="ci">${i}</span>${l}<small>${counts[v]}</small></button>`).join('')}</div>
+    ${slotChips}${rcatChips}
+    <div class="iv-tools"><div class="iv-sort"><span class="sub">Trier</span>${INV_SORTS.map(([v, l]) => `<button class="fchip sm" data-act="invsort" data-v="${v}" aria-pressed="${sort === v}">${l}</button>`).join('')}</div>
+      <div class="iv-sort">${f !== 'res' ? `<button class="fchip sm" data-act="invfree" aria-pressed="${freeOnly}" title="Masquer les objets portés">Non portés</button>` : ''}${sell}</div></div>
+    ${secs.length ? secs.join('') : `<div class="empty">${q ? `Aucun résultat pour « ${esc(ui.invQ)} ».` : 'Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.'}</div>`}
+    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
   </section><aside class="panel inspector">${inspector()}</aside></div>`;
 }
 function inspector() {
   const s = ui.sel;
   if (s && s.k === 'gear') { const g = gearById(st, s.uid); if (g) return gearInspector(g); }
   if (s && s.k === 'res' && st.res[s.id] > 0) return resInspector(s.id);
-  return `<div class="insp-empty">${ICONS.inventaire}<b>Sélectionne un objet</b><p class="sub">Clique sur une case pour voir ses détails, l’équiper sur un héros ou le vendre.</p></div>`;
+  return `<div class="insp-empty">${ICONS.inventaire}<b>Sélectionne un objet</b><p class="sub">Clique sur une case pour voir ses détails, le comparer à ce que portent tes héros, l’équiper ou le vendre.</p></div>`;
+}
+function gearCurrent(d, h) {
+  if (d.relic) return h.relic; if (d.harvest) return (h.hequip || {})[d.slot];
+  const ss = slotsFor(d.slot); return h.equip[ss.find(s => !h.equip[s]) || ss[0]];
+}
+function gearDiff(g, cur) {
+  const o = cur ? gearById(st, cur).stats : {}; const ks = [...new Set([...Object.keys(g.stats), ...Object.keys(o)])];
+  return ks.map(k => [k, (g.stats[k] || 0) - (o[k] || 0)]).filter(([, v]) => v).map(([k, v]) => `<i class="${v > 0 ? 'up' : 'dn'}">${v > 0 ? '▲ +' : '▼ '}${v} ${STAT_LABEL[k]}</i>`).join('');
 }
 function gearInspector(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid);
   const type = d.relic ? 'Relique' : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]}` : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
   const req = d.harvest ? `Paysan ${d.lvl}` : `Niveau ${d.lvl}`;
   const canFor = h => (d.harvest ? st.jobs.paysan.lvl >= d.lvl : h.lvl >= d.lvl);
-  return `<div class="insp-head"><div class="tile lg ${qClass(g)}">${itemIcon(g.id)}</div><div class="ih-t"><b class="display">${esc(d.name)}</b><small>${type} · ${req}</small>${qualityTag(g)}</div></div>
-    <div class="insp-stats">${Object.entries(g.stats).map(([k, v]) => `<div class="s" style="--c:${STAT_COLOR[k] || 'var(--fg)'}"><span>+${v} ${STAT_LABEL[k]}</span><small>${d.stats[k][0]}–${d.stats[k][1]}</small></div>`).join('')}</div>
+  const stat = ([k, v]) => { const [a, b] = d.stats[k], pc = b === a ? 100 : Math.round((v - a) / (b - a) * 100);
+    return `<div class="s" style="--c:${STAT_COLOR[k] || 'var(--fg)'}"><span>+${v} ${STAT_LABEL[k]}</span><small>${a}–${b}</small><i class="roll"><b style="width:${Math.max(4, pc)}%"></b></i></div>`; };
+  const rows = st.heroes.map(h => { const on = by && by.id === h.id, ok = canFor(h), cur = gearCurrent(d, h), cd = cur ? ITEMS[gearById(st, cur).id] : null, diff = on ? '' : gearDiff(g, cur);
+    return `<button class="iv-eq${on ? ' here' : ''}" ${on || !ok ? 'disabled' : ''} data-act="equipon" data-uid="${g.uid}" data-hero="${h.id}" style="--c:${CLASSES[h.cls].color}">${emblem(h.cls, true)}<span class="iv-eqt"><b>${esc(h.name)}</b><small>${on ? 'Le porte déjà' : !ok ? `${req} requis` : cd ? `Remplace ${esc(cd.name)}` : 'Emplacement libre'}</small>${diff && ok ? `<span class="iv-diff">${diff}</span>` : ''}</span><span class="iv-go">${on ? '✓' : ok ? 'Équiper' : '🔒'}</span></button>`; }).join('');
+  return `<div class="insp-card ${qClass(g)}" style="${d.relic ? relicPh() : ''}"><div class="insp-head"><div class="tile lg ${qClass(g)}" style="${d.relic ? relicPh() : ''}">${itemIcon(g.id)}</div><div class="ih-t"><b class="display">${esc(d.name)}</b><small>${type} · ${req}</small><span class="ih-tags">${qualityTag(g)}${d.set ? `<span class="set-tag" style="--sc:${SET_COL[d.set]}">◆ ${esc(SETS[d.set].name)}</span>` : ''}</span></div></div></div>
+    <div class="insp-stats">${Object.entries(g.stats).map(stat).join('')}</div>
     ${d.set ? setBlock(d.set, by) : ''}
     ${by ? `<div class="eqby-line">${emblem(by.cls, true)}<span>Porté par <b>${esc(by.name)}</b></span><button class="btn sm ghost" data-act="unequipuid" data-uid="${g.uid}">Retirer</button></div>` : ''}
-    ${st.heroes.length ? `<div class="label">Équiper sur</div><div class="send-list">${st.heroes.map(h => { const on = by && by.id === h.id; const ok = canFor(h);
-      return heroChip(h, `data-act="equipon" data-uid="${g.uid}" data-hero="${h.id}" ${on || !ok ? 'disabled' : ''}`, on ? 'Le porte déjà' : ok ? 'Équiper' : `${req} requis`, (on ? 'here' : '') + ' sm'); }).join('')}</div>` : ''}
+    ${st.heroes.length ? `<div class="label">Équiper sur</div><div class="iv-eqs">${rows}</div>` : ''}
     <div class="insp-sell">${by ? '<span class="sub">Retire l’objet pour pouvoir le vendre.</span>' : ui.sellUid === g.uid
       ? `<button class="btn danger" data-act="sellgear" data-uid="${g.uid}">Confirmer la vente · ${fmt(itemValue(g))} K</button><button class="btn ghost" data-act="sellcancel">Annuler</button>`
       : `<button class="btn ghost" data-act="sellask" data-uid="${g.uid}">Vendre · ${fmt(itemValue(g))} kamas</button>`}</div>`;
@@ -1053,66 +1341,12 @@ function resInspector(id) {
   const from = Object.entries(MONSTERS).filter(([, m]) => !m.archi && m.drops.some(([x]) => x === id)).map(([mid, m]) => `<span class="use">${monIcon(mid)}<span>${m.name}</span><small>${pct(Math.min(1, m.drops.find(([x]) => x === id)[1]))}</small></span>`);
   const crop = CROPS.find(c => c.id === id);
   return `<div class="insp-head"><div class="tile lg res"><span class="t-emo">${r.icon}</span></div><div class="ih-t"><b class="display">${r.name}</b><small>${r.key ? 'Clef de donjon' : r.food ? 'Consommable' : r.crop ? 'Céréale' : r.rare ? 'Ressource rare' : 'Ressource'}</small><span class="qty num">×${fmt(n)}</span></div></div>
-    <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Valeur du stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
+    <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
     ${r.food ? `<div class="food-desc">${r.icon} ${r.food.desc}. Manger un nouveau repas remplace l’effet en cours.</div>
       <div class="label">Faire manger à</div><div class="send-list">${st.heroes.map(h => heroChip(h, `data-act="eat" data-id="${id}" data-hero="${h.id}"`, h.food ? `En cours · ${mmss(h.food.left)}` : 'Manger', 'sm')).join('')}</div>` : ''}
     <div class="insp-sell"><button class="btn sm" data-act="sellres" data-id="${id}" data-n="1">Vendre 1</button><button class="btn sm" data-act="sellres" data-id="${id}" data-n="10" ${n < 10 ? 'disabled' : ''}>Vendre 10</button><button class="btn sm danger" data-act="sellres" data-id="${id}" data-n="all">Tout vendre</button></div>
     ${uses.length ? `<div class="label">Utilisé dans</div><div class="uses">${uses.join('')}</div>` : ''}
     ${from.length || crop ? `<div class="label">Où l’obtenir</div><div class="uses">${crop ? `<span class="use">${crop.icon}<span>Récolte</span><small>${GATHER_JOBS[crop.job].name} ${crop.lvl}</small></span>` : ''}${from.join('')}</div>` : ''}`;
-}
-
-/* ---------------------------- Vue : Récolte ---------------------------- */
-function renderRecolte() {
-  const jid = GATHER_JOBS[ui.gjob] ? ui.gjob : Object.keys(GATHER_JOBS)[0];
-  const jobs = Object.entries(GATHER_JOBS).map(([id, j]) => { const s = st.jobs[id]; const n = st.heroes.filter(h => h.act && h.act.type === 'harvest' && findPlace('harvest', h.act.id).job === id).length;
-    return `<button class="jrow" data-act="gjob" data-v="${id}" aria-pressed="${jid === id}"><span class="jr-top"><b>${j.icon} ${j.name}</b><span class="lvl">Niv. ${s.lvl}</span></span><small>${j.makes}${n ? ` · ${n} au travail` : ''}</small>${bar('job thin', s.xp, jobXpToNext(s.lvl))}</button>`; }).join('');
-  const job = st.jobs[jid];
-  const rows = CROPS.filter(c => c.job === jid).map(c => {
-    const locked = job.lvl < c.lvl; const [qa, qb] = cropQty(st, c);
-    const sends = locked ? `<span class="lockt">🔒 ${GATHER_JOBS[c.job].name} niveau ${c.lvl}</span>` : st.heroes.length ? st.heroes.map(h => { const there = h.act && h.act.type === 'harvest' && h.act.id === c.id;
-      return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="harvest" data-id="${c.id}" ${there ? 'disabled' : ''}`, there ? 'Récolte ici' : h.act ? `Quitte ${esc(placeName(h.act))}` : 'Disponible', (there ? 'here' : '') + ' sm'); }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
-    return `<article class="crow${locked ? ' locked' : ''}"><div class="tile res"><span class="t-emo">${c.icon}</span><span class="t-n num">${short(st.res[c.id] || 0)}</span></div>
-      <div class="cr-main"><b>${c.name}</b><span class="badge-lv">Niv. ${c.lvl}</span><small class="sub">${c.where} · +${c.xp} XP · ${locked ? 'verrouillé' : `${qa === qb ? qa : `${qa}–${qb}`} par récolte`} · ${c.value} K pièce</small></div>
-      <div class="cr-send">${sends}</div></article>`;
-  }).join('');
-  return `<div class="split"><aside class="joblist">${jobs}</aside><section class="panel">
-    <div class="panel-h"><h3 class="display">${GATHER_JOBS[jid].icon} ${GATHER_JOBS[jid].name} <span class="lvl">Niv. ${job.lvl}</span></h3><span class="sub num">${fmt(job.xp)} / ${fmt(jobXpToNext(job.lvl))} XP</span></div>
-    ${bar('xp', job.xp, jobXpToNext(job.lvl))}
-    <p class="hint">${GATHER_JOBS[jid].text} Une récolte toutes les ${HARVEST_MS / 1000} s, plus vite avec des outils (onglet Héros › Récolte). La quantité augmente de 1 tous les 10 niveaux au-dessus du palier.</p>
-    <div class="crop-rows">${rows}</div></section></div>`;
-}
-
-/* ---------------------------- Vue : Ateliers ---------------------------- */
-function renderAteliers() {
-  if (!JOBS[ui.job]) ui.job = 'tailleur';
-  const isH = r => !!(ITEMS[r.out] && ITEMS[r.out].harvest);
-  const jobs = Object.entries(JOBS).map(([id, j]) => { const s = st.jobs[id]; const ready = RECIPES.filter(r => r.job === id && canCraft(st, r)).length;
-    return `<button class="jrow" data-act="job" data-v="${id}" aria-pressed="${ui.job === id}"><span class="jr-top"><b>${j.name}</b><span class="lvl">Niv. ${s.lvl}</span></span><small>${j.makes}</small>${bar('job thin', s.xp, jobXpToNext(s.lvl))}${ready ? `<i class="ready-n" title="Recettes fabricables">${ready}</i>` : ''}</button>`; }).join('');
-  const js = st.jobs[ui.job];
-  const nH = RECIPES.filter(r => r.job === ui.job && isH(r)).length, nC = RECIPES.filter(r => r.job === ui.job && !isH(r)).length;
-  if (ui.rtab === 'recolte' && !nH) ui.rtab = 'combat';
-  let list = RECIPES.map((r, i) => [r, i]).filter(([r]) => r.job === ui.job && (ui.rtab === 'recolte' ? isH(r) : !isH(r)));
-  if (ui.onlyCraft) list = list.filter(([r]) => canCraft(st, r));
-  const rows = list.map(([r, i]) => {
-    const locked = js.lvl < r.lvl; const max = maxCraftable(st, r);
-    const isRes = !!RESOURCES[r.out]; const d = isRes ? RESOURCES[r.out] : ITEMS[r.out];
-    const meta = isRes ? `${d.food ? `Consommable · ${d.food.desc}` : 'Clef de donjon'} · en stock : ${st.res[r.out] || 0}` : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]} · Paysan ${d.lvl}` : `${SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot]} · niveau ${d.lvl}${d.set ? ' · ' + SETS[d.set].name : ''}`;
-    return `<article class="rrow${locked ? ' locked' : ''}${max > 0 && !locked ? ' ready' : ''}">
-      <div class="tile${isRes ? ' res' : ''}">${isRes ? `<span class="t-emo">${d.icon}</span>` : itemIcon(r.out)}</div>
-      <div class="rr-main"><b>${esc(d.name)}</b><small class="sub">${meta}</small>${isRes ? '' : `<div class="rr-stats">${Object.entries(d.stats).map(([k, [a, b]]) => `<span style="--c:${STAT_COLOR[k]}">${a === b ? a : `${a}–${b}`} ${STAT_SHORT[k]}</span>`).join('')}</div>`}</div>
-      <div class="rr-ing">${Object.entries(r.ing).map(([id, n]) => { const have = st.res[id] || 0; return `<span class="ing ${have >= n ? 'ok' : 'no'}" title="${RESOURCES[id].name}">${RESOURCES[id].icon}<span class="ing-n">${RESOURCES[id].name}</span><b class="num">${fmt(have)}</b>/${n}</span>`; }).join('')}</div>
-      <div class="rr-act">${locked ? `<span class="lockt">🔒 ${JOBS[r.job].name} ${r.lvl}</span>` : `<button class="btn sm gold" data-act="craft" data-i="${i}" data-n="1" ${max < 1 ? 'disabled' : ''}>Fabriquer</button>
-        <button class="btn sm" data-act="craft" data-i="${i}" data-n="10" ${max < 2 ? 'disabled' : ''}>×${Math.min(10, Math.max(max, 2))}</button>`}
-        ${!locked && max > 0 ? `<small class="sub">${max} possible${max > 1 ? 's' : ''}</small>` : ''}</div>
-    </article>`;
-  }).join('');
-  return `<div class="split"><aside class="joblist">${jobs}</aside><section class="panel">
-    <div class="panel-h"><h3 class="display">${JOBS[ui.job].name} <span class="lvl">Niv. ${js.lvl}</span></h3><span class="sub num">${fmt(js.xp)} / ${fmt(jobXpToNext(js.lvl))} XP</span></div>
-    ${bar('job', js.xp, jobXpToNext(js.lvl))}
-    <div class="tools-row"><div class="seg"><button data-act="rtab" data-v="combat" aria-pressed="${ui.rtab !== 'recolte'}">Équipements de combat · ${nC}</button><button data-act="rtab" data-v="recolte" aria-pressed="${ui.rtab === 'recolte'}" ${nH ? '' : 'disabled'}>Métiers de récolte · ${nH}</button></div>
-      <button class="toggle" data-act="onlycraft" aria-pressed="${!!ui.onlyCraft}"><span class="tg" aria-hidden="true"></span>Seulement fabricables</button></div>
-    <div class="recipes">${rows || `<div class="empty sm">${ui.onlyCraft ? 'Aucune recette fabricable avec ton stock actuel.' : 'Aucune recette ici pour ce métier.'}</div>`}</div>
-    <p class="hint">Chaque objet reçoit un jet aléatoire dans sa fourchette. Le métier gagne de l’expérience à chaque fabrication.</p></section></div>`;
 }
 
 /* ---------------------------- Vue : Options ---------------------------- */
@@ -1137,7 +1371,7 @@ function renderOptions() {
 }
 
 /* ---------------------------- Rendu principal ---------------------------- */
-const RENDER = { combat: renderCombat, heros: renderHeros, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions };
+const RENDER = { combat: renderCombat, heros: renderHeros, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions, talents: renderTalents };
 function canRebuild() {
   if (pointerDown || Date.now() - lastScroll < 800) return false;
   const a = document.activeElement;
@@ -1146,13 +1380,16 @@ function canRebuild() {
 function renderMain(force) {
   if (!force && !canRebuild()) return;
   // Les listes défilantes gardent leur position quand la vue est redessinée
-  const keep = ['.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
+  const keep = ['.wm-scroll', '.map-list', '.joblist', '.drop-wrap', '.chips-row'].map(s => { const el = $(s); return el ? [s, el.scrollLeft, el.scrollTop] : null; }).filter(Boolean);
   // La page garde sa hauteur et sa position pendant le redessin : sans ça, le défilement saute quand le contenu change de taille
   const main = $('#main'), sy = window.scrollY, mh = main.offsetHeight; main.style.minHeight = mh + 'px';
+  const ae = document.activeElement, fk = ae && ae.id === 'invq' ? [ae.selectionStart, ae.selectionEnd] : null;
   main.innerHTML = (RENDER[ui.view] || renderCombat)();
   try { window.scrollTo(0, sy); } catch (e) {}
   requestAnimationFrame(() => { main.style.minHeight = ''; try { if (Math.abs(window.scrollY - sy) > 2 && document.documentElement.scrollHeight > sy) window.scrollTo(0, sy); } catch (e) {} });
+  if (fk) { const e = $('#invq'); if (e) { e.focus(); try { e.setSelectionRange(fk[0], fk[1]); } catch (x) {} } }
   for (const [s, l, t] of keep) { const el = $(s); if (el) { el.scrollLeft = l; el.scrollTop = t; } }
+  if (ui.view === 'carte') wmAfter();
   if (ui.view === 'combat') { ui.lastSig = combatSig(); ui.lastHs = Object.fromEntries(st.heroes.map(h => [h.id, heroSig(h)])); updateArchiBtn(); }
 }
 let lastSlow = 0;
@@ -1162,21 +1399,24 @@ function render(force) {
   if (force) { renderMain(true); lastSlow = now; return; }
   if (ui.view === 'combat' && st.heroes.length) {
     if (combatSig() !== ui.lastSig && !Object.keys(FURY_ANIM).length) { if (!redrawCards()) renderMain(); patchCombat(); } else patchCombat();
-  } else if (now - lastSlow > 1500 && ui.view !== 'options') {
-    renderMain(); lastSlow = now;
+  } else {
+    if (harvestViewFx(ui.view === 'recolte')) lastSlow = now; // un petit effet sur la carte de la plante : on retarde le redessin pour le laisser finir
+    if (ui.view === 'carte') { const sg = carteSig(); if (sg !== ui._carteSig) { ui._carteSig = sg; renderMain(); lastSlow = now; } return; }
+    if (ui.view === 'talents') { const h = selHero(), sg = h ? `${h.id}|${h.lvl}|${st.heroes.length}|${skillFree(h)}` : ''; if (sg !== ui._skSig) { ui._skSig = sg; renderMain(); lastSlow = now; } return; }
+    if (now - lastSlow > 1500 && ui.view !== 'options') { renderMain(); lastSlow = now; }
   }
 }
 function scrollTop() { try { window.scrollTo(0, 0); } catch (e) {} }
 
 /* ---------------------------- Actions ---------------------------- */
 const ACTIONS = {
-  view(d) { ui.view = d.v; ui.resetStep = 0; ui.sellUid = null; ui.recruitOpen = false; scrollTop(); },
+  view(d) { if (d.v === 'carte') ui._wmCenter = true; ui.view = d.v; ui.resetStep = 0; ui.sellUid = null; ui.recruitOpen = false; scrollTop(); },
   gohero(d) { ui.view = 'heros'; ui.hero = d.hero; ui.recruitOpen = false; scrollTop(); },
   gomap(d) { ui.view = 'carte'; if (d.hero) ui.hero = d.hero; ui.place = null; scrollTop(); },
   recruitnav() { ui.view = 'heros'; ui.recruitOpen = true; scrollTop(); },
   recruitopen() { ui.recruitOpen = true; },
   recruitclose() { ui.recruitOpen = false; },
-  place(d) { ui.place = { type: d.type, id: d.id }; },
+  place(d) { ui.place = { type: d.type, id: d.id }; ui._wmCenter = true; },
   gocraftkey() { ui.view = 'ateliers'; ui.job = 'bricoleur'; ui.rtab = 'combat'; scrollTop(); },
   gorecipe(d) { ui.view = 'ateliers'; ui.job = d.job; ui.rtab = d.h === '1' ? 'recolte' : 'combat'; scrollTop(); },
   send(d) { const h = heroById(d.hero); setActivity(st, h, d.type, d.id, +d.t || 0); toast(`${h.name} part pour ${placeName(h.act)}.`); },
@@ -1207,7 +1447,40 @@ const ACTIONS = {
     setTimeout(() => { delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 600); }, 3300);
     return 'keep';
   },
+  zmask(d) { const h = heroById(d.hero); if (h && setMask(h, d.mask)) { patchCombat(); saveGame(); } return 'keep'; },
+  sacolosse(d) {
+    const h = heroById(d.hero); if (!h || !bloodReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
+    const btn = card.querySelector('[data-k="bloodbtn"]'); if (btn) btn.hidden = true;
+    PF_HOLD[h.id] = {}; card.querySelectorAll('.unit.mon').forEach(el => { PF_HOLD[h.id][+el.dataset.mon] = +el.dataset.hp; }); // les PV des ennemis ne bougent qu'à l'impact
+    playColosse(card, h, {
+      pay: () => { const r = unleashColosse(st, h, liveEv); patchCombat(); return r; },
+      impact: () => { delete PF_HOLD[h.id]; card.querySelectorAll('.unit.mon').forEach(el => { const m = h.fight && h.fight.mons[+el.dataset.mon]; if (m) el.dataset.hp = m.hp; }); patchCombat(); },
+      heal: () => { const r = colosseHeal(st, h); patchCombat(); return r; },
+      done: () => { colosseHeal(st, h); delete PF_HOLD[h.id]; delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 700); patchCombat(); saveGame(); },
+    });
+    return 'keep';
+  },
+  xelchrono(d) {
+    const h = heroById(d.hero); if (!h || h.cls !== 'xelor' || FURY_ANIM[h.id]) return 'keep';
+    if ((h.chrono || 0) < CHRONO_MAX) { toast(`Le sablier se remplit à chaque Rembobinage (${h.chrono || 0}/${CHRONO_MAX}).`, 'warn'); return 'keep'; }
+    if (!chronoReady(h)) { toast('Envoie le Xélor dans une zone pour libérer l’Éclat du temps.', 'warn'); return 'keep'; }
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
+    const sum = chronoBurst(st, h, liveEv); saveGame();
+    playChrono(card, h, sum, () => { delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 600); patchCombat(); saveGame(); });
+    return 'keep';
+  },
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
+  talents(d) { if (d.hero) ui.hero = d.hero; ui.view = 'talents'; ui.skConfirm = false; ui.recruitOpen = false; scrollTop(); },
+  skhero(d) { ui.hero = d.hero; ui.skSel = null; ui.skConfirm = false; },
+  skbranch(d) { ui.skBranch = d.v; ui.skSel = null; },
+  sknode(d) { if (ui.skSel === d.id) return ACTIONS.skbuy(d); ui.skSel = d.id; },
+  skbuy(d) { const h = selHero(); const err = skillRank(st, h, d.id); if (err) toast(err, 'warn'); else { ui.skSel = d.id; ui.skJust = d.id; } },
+  skrespec() { ui.skConfirm = true; },
+  skrespec0() { ui.skConfirm = false; },
+  skrespec2() { const h = selHero(); const err = skillRespec(st, h); ui.skConfirm = false; ui.skSel = null; toast(err || `Points de ${h.name} rendus !`, err ? 'warn' : 'quest'); },
   alloc(d) { allocate(selHero(), d.stat, +d.n); },
   resetstats() { resetStats(st, selHero()); selHero().auto = ''; },
   equip(d) { const err = equip(st, selHero(), d.uid, d.slot || null); if (err) toast(err, 'warn'); },
@@ -1237,23 +1510,27 @@ const ACTIONS = {
     if (innerWidth < 1000) setTimeout(() => { const el = $('.inspector'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 30);
   },
   invf(d) { ui.invFilter = d.v; },
+  invsort(d) { ui.invSort = d.v; }, invview(d) { ui.invView = d.v; }, invslot(d) { ui.invSlot = d.v; }, invrcat(d) { ui.invRcat = d.v; }, invfree() { ui.invFree = !ui.invFree; },
+  invqclear() { ui.invQ = ''; },
   sellres(d) { const k = sellRes(st, d.id, d.n === 'all' ? Infinity : +d.n); if (k) toast(`+${fmt(k)} kamas`); },
   sellallres() { let k = 0; for (const id of Object.keys(st.res)) if (!RESOURCES[id].rare && !RESOURCES[id].key) k += sellRes(st, id, Infinity); if (k) toast(`Vendu pour ${fmt(k)} kamas`); },
   sellask(d) { ui.sellUid = d.uid; },
   sellcancel() { ui.sellUid = null; },
   sellgear(d) { const k = sellGear(st, d.uid); ui.sellUid = null; if (ui.sel && ui.sel.uid === d.uid) ui.sel = null; if (k) toast(`Vendu pour ${fmt(k)} kamas`); },
-  job(d) { ui.job = d.v; },
+  job(d) { ui.job = d.v; ui.rslot = ''; ui.fmConfirm = null; },
   rtab(d) { ui.rtab = d.v; },
   onlycraft() { ui.onlyCraft = !ui.onlyCraft; },
   gjob(d) { ui.gjob = d.v; },
-  craft(d) {
-    const r = RECIPES[+d.i]; const n = Math.min(+d.n, maxCraftable(st, r)); let last, lv = false, xp = 0;
-    const made = [];
-    for (let i = 0; i < n; i++) { last = craft(st, r); if (!last) break; xp += last.xp; lv = lv || last.lvUp; made.push(last); }
-    if (!last) return;
-    craftPop(r, made, xp);
-    if (lv) toast(`${JOBS[r.job].name} passe niveau ${st.jobs[r.job].lvl} !`, 'lvl');
-  },
+  craft(d) { atCraft(d); },
+  rslot(d) { ui.rslot = d.v || ''; },
+  fmsel(d) { ui.fmSel = d.uid; ui.fmConfirm = null; ui.fmLog = []; },
+  fmforge(d) { atForge(d); },
+  brkopen() { atBrkOpen(); return 'keep'; },
+  brkclose() { atBrkClose(); return 'keep'; },
+  brkslot(d) { const f = brkState(); if (!d.v) f.slots = []; else f.slots = f.slots.includes(d.v) ? f.slots.filter(s => s !== d.v) : [...f.slots, d.v]; f.confirm = false; brkRender(); return 'keep'; },
+  brkprotect() { const f = brkState(); f.protect = !f.protect; f.confirm = false; brkRender(); return 'keep'; },
+  brktoggle(d) { const f = brkState(); if (f.off[d.uid]) delete f.off[d.uid]; else f.off[d.uid] = 1; brkRefresh(); return 'keep'; },
+  brkgo() { const r = atBrkGo(); if (r === 'keep') return 'keep'; },
   eat(d) { const h = heroById(d.hero); const err = eat(st, h, d.id); if (err) toast(err, 'warn'); else toast(`${h.name} mange ${RESOURCES[d.id].name} : ${RESOURCES[d.id].food.desc}.`, 'quest'); },
   closeaway() { const b = $('#modal'); b.hidden = true; b.innerHTML = ''; return 'keep'; },
   layout(d) { applyLayout(d.v); ui._psig = ''; scrollTop(); },
@@ -1294,6 +1571,28 @@ const ACTIONS = {
   resetcancel() { ui.resetStep = 0; },
   reset() { st = newState(); ui.resetStep = 0; ui.hero = null; ui.view = 'combat'; ui._psig = ''; saveGame(); toast('Nouvelle partie.'); },
 };
+/* Appui long sur un bouton de masque : affiche ses effets (sans changer de masque) */
+(function () {
+  let timer = null, pop = null, held = false;
+  const hide = () => { clearTimeout(timer); timer = null; if (pop) { pop.remove(); pop = null; } };
+  const show = btn => {
+    const h = heroById(btn.dataset.hero); if (!h) return; const id = btn.dataset.mask, m = ZOB_MASKS[id], fv = h.ferv || 1;
+    const fx = { rire: `+${ZOB_RIRE_DMG + ZOB_FERV_STEP * fv} % de dégâts`, larme: `−${ZOB_LARME_DEF + ZOB_FERV_STEP * fv} % de dégâts subis, +${(ZOB_LARME_HEAL * fv).toFixed(1).replace('.0', '')} % de PV max par tour`, farce: `${ZOB_FARCE_CHANCE + ZOB_FERV_STEP * fv} % de chances de lancer un sort offensif deux fois` }[id];
+    pop = document.createElement('div'); pop.className = 'zmask-pop'; pop.setAttribute('role', 'tooltip');
+    pop.innerHTML = `<b>${m.icon} ${m.name}</b><span class="now">${fx}</span><small>Base : ${ZOB_TIPS[id].split(' : ')[1]}<br>Ferveur actuelle : ${fv}/${ZOB_FERV_MAX} (+${ZOB_FERV_STEP} % d’effet par point).</small><small class="rp">Changer de masque en combat déclenche une Rupture : la Ferveur explose sur tous les ennemis.</small>`;
+    document.body.appendChild(pop);
+    const r = btn.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+    pop.style.left = Math.max(8, Math.min(innerWidth - pw - 8, r.left + r.width / 2 - pw / 2)) + 'px';
+    pop.style.top = (r.top - ph - 10 < 8 ? r.bottom + 10 : r.top - ph - 10) + 'px';
+  };
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest && e.target.closest('.zmask'); if (!b) return;
+    held = false; hide(); timer = setTimeout(() => { held = true; show(b); }, 380);
+  });
+  ['pointerup', 'pointercancel', 'pointerleave', 'scroll'].forEach(t => document.addEventListener(t, () => { hide(); }, true));
+  document.addEventListener('click', e => { if (held && e.target.closest && e.target.closest('.zmask')) { e.stopPropagation(); e.preventDefault(); } held = false; }, true); // l'appui long ne change pas de masque
+  document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('.zmask')) e.preventDefault(); });
+})();
 document.addEventListener('click', e => {
   ui.click = { x: e.clientX, y: e.clientY };
   const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
@@ -1302,13 +1601,13 @@ document.addEventListener('click', e => {
   if (r !== 'keep') { saveGame(); render(true); }
 });
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act], [role="button"][data-act]')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-act], [role="button"][data-act], .mc-head')) { e.preventDefault(); e.target.click(); }
 });
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.dataset.change === 'auto') { const h = selHero(); h.auto = el.value; if (h.auto) autoAllocate(h); el.blur(); saveGame(); render(true); }
 });
-document.addEventListener('input', e => { if (e.target.dataset.input === 'rname') ui.recruitName = e.target.value; });
+document.addEventListener('input', e => { if (e.target.dataset.input === 'rname') ui.recruitName = e.target.value; if (e.target.dataset.input === 'invq') { ui.invQ = e.target.value; renderMain(true); } });
 document.addEventListener('pointerdown', e => {
   pointerDown = true;
   const t = e.target.closest('.nav-btn[data-act="view"]');

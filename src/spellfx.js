@@ -20,13 +20,13 @@ const SPELL_FX = {
   fleche_explosive:  ['arrow', '#ffb03a', '', 'explode'],
   fleche_punitive:   ['beam', '#b4ff7a'],
   pluie_fleches:     ['rain', '#c8ff9a', '➶'],
-  // Eniripsa : mots
-  mot_blessant:      ['proj', '#ff8ad8', '✦'],
-  mot_soignant:      ['heal', '#ff9fe0', '💗'],
-  mot_stimulant:     ['buff', '#ff8ad8', '✨'],
-  mot_interdit:      ['beam', '#c77dff'],
-  mot_regeneration:  ['heal', '#7dffb0', '💖', 1.5],
-  mot_tourmente:     ['wave', '#ff6ec7'],
+  // Zobal : masques (l'attaque dépend du masque porté, voir FX_KIND.zob)
+  grimace:           ['zob', '', '', 1],
+  tour_de_passe:     ['zob', '', '', .8],
+  danse_macabre:     ['zob', '', '', 1.1],
+  mascarade:         ['buff', '#d9a8ff', '🎭'],
+  rictus:            ['zob', '', '', 1.5],
+  carnaval:          ['zob', '', '', 1.8],
   // Sacrieur : sang
   assaut:            ['slash', '#d4202a'],
   absorption:        ['drain', '#ff2a3a'],
@@ -222,16 +222,18 @@ function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
   unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
   let variant = '';
-  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : '') : '';
-  if (art) { // le Iop (coup d'en haut, tourbillon, plongeon) et le Sram (fente, pas d'ombre, rafale) varient leurs coups
+  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : unit.querySelector('.hs-xelor') ? 'xel' : unit.querySelector('.hs-sacrieur') ? 'sac' : unit.querySelector('.hs-zobal') ? 'zob' : '') : '';
+  if (art === 'zob') { // une gestuelle par masque : rire (a), larmes (b), farce (c)
+    variant = { rire: 'atk-a', larme: 'atk-b', farce: 'atk-c' }[unit.dataset.mask] || 'atk-a'; unit.classList.add(variant);
+  } else if (art) { // le Iop (coup d'en haut, tourbillon, plongeon) et le Sram (fente, pas d'ombre, rafale) varient leurs coups
     const v = (unit._combo = ((unit._combo == null ? -1 : unit._combo) + 1 + (Math.random() < .5 ? 1 : 0)) % 3); /* jamais deux fois le même coup d'affilée */ variant = ['atk-a', 'atk-b', 'atk-c'][v];
-    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : ecaFlourish)(unit, v);
+    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : art === 'xel' ? xelFlourish : art === 'sac' ? sacFlourish : ecaFlourish)(unit, v);
   }
   setTimeout(() => {
     unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
     const n = unit._gNext; unit._gNext = null;
     if (n) requestAnimationFrame(() => heroGesture(unit, n));
-  }, k === 'atk' ? (variant ? 640 : 520) : 600);
+  }, k === 'atk' ? (art === 'zob' ? 940 : variant ? 640 : 520) : 600);
 }
 
 /* Cra : un tir différent par sort (a magique, b empoisonnée, c explosive, d punitive, e pluie).
@@ -332,6 +334,42 @@ function ecaFlourish(unit, v) {
   if (v === 1) { line(-10, 330); line(20, 380); setTimeout(() => coinBurst(sp, 7, '🪙'), 300); } // pièce éclair
   if (v === 2) { line(-45, 330); line(35, 360); setTimeout(() => coinBurst(sp, 6, '🐾'), 420); } // pirouette
 }
+/* Effets du Xélor : écho du temps (images bleutées qui traînent derrière lui), cadran qui s'ouvre, grains de sable dorés */
+function xelFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-xelor'); if (!svg) return;
+  for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'xl-ghost'; g.style.cssText = `--gx:${[16, 12, 8][v] * i}px;--gd:${i * 70}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 1100 + i * 70);
+  }
+  const ring = d => { const r = document.createElement('i'); r.className = 'xl-ring'; r.style.setProperty('--d', d + 'ms'); sp.appendChild(r); setTimeout(() => r.remove(), d + 800); };
+  ring(v === 1 ? 240 : 140); if (v === 2) ring(320);
+  const n = [8, 10, 14][v];
+  for (let i = 0; i < n; i++) {
+    const e = document.createElement('i'); e.className = 'xl-sand'; const a = -Math.PI * (.05 + Math.random() * .9) + (v === 0 ? -.5 : 0);
+    e.style.cssText = `--dx:${(Math.cos(a) * (22 + Math.random() * 42)).toFixed(0)}px;--dy:${(Math.sin(a) * (20 + Math.random() * 38)).toFixed(0)}px;--s:${(2.5 + Math.random() * 3.5).toFixed(1)}px;--d:${(140 + Math.random() * 260).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1300);
+  }
+}
+/* Effets du Sacrieur : images rémanentes sanglantes, arcs de lame, gouttes de sang */
+function sacFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'), svg = sp && sp.querySelector('.hs-sacrieur'); if (!svg) return;
+  for (let i = 1; i <= 3; i++) {
+    const g = document.createElement('div'); g.className = 'sc-ghost'; g.style.cssText = `--gx:${[18, 10, 14][v] * i}px;--gd:${i * 60}ms`;
+    const c = svg.cloneNode(true); const d = c.querySelector('defs'); if (d) d.remove(); g.appendChild(c);
+    sp.insertBefore(g, sp.firstChild); setTimeout(() => g.remove(), 1000 + i * 60);
+  }
+  const arc = (r, d) => { const e = document.createElement('i'); e.className = 'sc-slash'; e.style.cssText = `--r:${r}deg;--d:${d}ms`; sp.appendChild(e); setTimeout(() => e.remove(), d + 600); };
+  if (v === 0) arc(-40, 260); if (v === 1) { arc(-10, 200); arc(120, 300); arc(250, 400); } if (v === 2) { arc(-60, 320); arc(-20, 380); }
+  const n = [10, 14, 12][v];
+  for (let i = 0; i < n; i++) {
+    const e = document.createElement('i'); e.className = 'sc-drop'; const a = -Math.PI * (.05 + Math.random() * .8);
+    e.style.cssText = `--dx:${(Math.cos(a) * (24 + Math.random() * 46)).toFixed(0)}px;--dy:${(Math.sin(a) * (22 + Math.random() * 34)).toFixed(0)}px;--s:${(3 + Math.random() * 4).toFixed(1)}px;--d:${(240 + Math.random() * 260).toFixed(0)}ms`;
+    sp.appendChild(e); setTimeout(() => e.remove(), 1500);
+  }
+}
 function iopEmbers(sp, n) {
   for (let i = 0; i < n; i++) {
     const e = document.createElement('i'); e.className = 'ip-ember';
@@ -342,6 +380,172 @@ function iopEmbers(sp, n) {
 }
 
 /* Joue l'animation d'un sort dans la carte de combat d'un héros */
+/* ---------------------- Zobal : une attaque différente par masque ----------------------
+   😆 Rieur : éclat de rire solaire, « HA ! », croissants de sourire dorés qui explosent en étoile.
+   😢 Pleureur : nuage de chagrin, jets de larmes, vague de sanglot, éclaboussure et pluie.
+   🤪 Farceur : culbute folle, masques-boomerangs, confettis et « BOUM ! » de dessin animé. */
+const ZOB_CONF = ['#ffd24a', '#ff6aa8', '#5ee0d4', '#9ae860', '#c58aff', '#ff7a3a'];
+function zbFoeAt(scene, p) {
+  let best = null, bd = 1e9;
+  scene.querySelectorAll('.unit.mon').forEach(m => { const q = fxPos(scene, m.querySelector('.sprite') || m); if (!q) return; const d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = m; } });
+  return best;
+}
+function zbMark(el, cls, ms) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), ms); }
+function zbArc(a, b, lift, jit = 0) { return { dx: b.x - a.x, dy: b.y - a.y, mx: (b.x - a.x) * .5, my: (b.y - a.y) * .5 - lift + jit }; }
+function zobRire(scene, from, tos, pw, hero) {
+  const sw = hero.offsetWidth, sh = hero.offsetHeight, hd = { x: from.x + sw * .03, y: from.y - sh * .27 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
+  at(100, () => { // le rire éclate : soleil derrière le masque
+    const sun = fxEl(scene, 'zb-sun', hd.x, hd.y);
+    fxAnim(sun, [{ transform: 'translate(-50%,-50%) scale(.2) rotate(0deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.25) rotate(28deg)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-50%) scale(2.3) rotate(70deg)', opacity: 0 }], { duration: 780 });
+    const r = fxEl(scene, 'sfx-ring thick', hd.x, hd.y, '', '--c:#ffe27a'); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(2.6)', opacity: 0 }], { duration: 560 });
+  });
+  [0, 1, 2].forEach(i => at(120 + i * 140, () => {
+    const e = fxEl(scene, 'zb-txt', hd.x + (i - 1) * 20 + 8, hd.y - 12, 'HA!', `--c:#ffe27a;--o:#7a4300;--s:${11 + i * 2 + Math.round(pw * 2)}px`);
+    fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(.2) rotate(-12deg)', opacity: 0 }, { transform: `translate(-50%,-95%) scale(1.2) rotate(${(i - 1) * 12}deg)`, opacity: 1, offset: .25 }, { transform: `translate(-50%,-210%) scale(1) rotate(${(i - 1) * 16}deg)`, opacity: 0 }], { duration: 800 });
+  }));
+  tos.forEach((p, ti) => {
+    const n = Math.max(2, Math.round(2 + pw));
+    for (let k = 0; k < n; k++) at(330 + k * 85 + ti * 30, () => { // croissants de sourire dorés
+      const s = fxEl(scene, 'zb-smile', hd.x + 10, hd.y + 8), a = zbArc(hd, p, 46 + Math.random() * 26, (k - (n - 1) / 2) * 14);
+      fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(.4) rotate(0deg)', opacity: 0 }, { transform: `translate(calc(-50% + ${a.mx}px),calc(-50% + ${a.my}px)) scale(1.1) rotate(300deg)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${a.dx}px),calc(-50% + ${a.dy}px)) scale(1.5) rotate(640deg)`, opacity: 1 }], { duration: 430, easing: 'cubic-bezier(.4,0,.6,1)' });
+      for (let j = 1; j <= 5; j++) setTimeout(() => { if (!scene.isConnected) return; const f = j / 6, sp = fxEl(scene, 'sfx-spark', hd.x + 10 + a.dx * f, hd.y + 8 + a.dy * f + (Math.sin(f * Math.PI) * -(46 + 10)), '', '--c:#ffe27a'); fxAnim(sp, [{ transform: 'translate(-50%,-50%) scale(1.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }], { duration: 300 }); }, j * 70);
+      if (k === n - 1) setTimeout(() => { // impact : étoile d'or
+        if (!scene.isConnected) return;
+        const st = fxEl(scene, 'zb-star', p.x, p.y); fxAnim(st, [{ transform: 'translate(-50%,-50%) scale(.2) rotate(0deg)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${1.1 + pw * .35}) rotate(40deg)`, opacity: 1, offset: .35 }, { transform: `translate(-50%,-50%) scale(${1.6 + pw * .4}) rotate(80deg)`, opacity: 0 }], { duration: 520 });
+        for (let q = 0; q < 10; q++) { const ang = Math.random() * Math.PI * 2, d = 26 + Math.random() * 34, c = fxEl(scene, 'zb-coin', p.x, p.y);
+          fxAnim(c, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d}px),calc(-50% + ${Math.sin(ang) * d - 14}px)) scale(.5)`, opacity: 1, offset: .6 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d * 1.1}px),calc(-50% + ${Math.sin(ang) * d + 10}px)) scale(.2)`, opacity: 0 }], { duration: 560 + Math.random() * 200 }); }
+        zbMark(zbFoeAt(scene, p), 'zb-glow', 650);
+      }, 430);
+    });
+  });
+}
+function zobLarme(scene, from, tos, pw, hero) {
+  const sw = hero.offsetWidth, sh = hero.offsetHeight, hd = { x: from.x + sw * .03, y: from.y - sh * .27 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
+  const eyes = [{ x: hd.x - sw * .05, y: hd.y + sh * .02 }, { x: hd.x + sw * .08, y: hd.y + sh * .02 }];
+  at(40, () => { const e = fxEl(scene, 'zb-txt', hd.x - 6, hd.y - 14, 'snif…', '--c:#cfeaff;--o:#12386a;--s:12px'); fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 }, { transform: 'translate(-50%,-110%) scale(1)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-170%) scale(1)', opacity: 0 }], { duration: 700 }); });
+  for (let i = 0; i < 9; i++) eyes.forEach((ey, ei) => at(60 + i * 40 + ei * 20, () => { // les larmes ruissellent sur le masque
+    const d = fxEl(scene, 'zb-tear sm', ey.x, ey.y); fxAnim(d, [{ transform: 'translate(-50%,-50%) scale(.7)', opacity: 1 }, { transform: `translate(calc(-50% + ${(ei ? 5 : -5)}px),calc(-50% + 34px)) scale(1)`, opacity: 0 }], { duration: 420, easing: 'ease-in' }); }));
+  const top = { x: from.x + sw * .22, y: from.y - sh * .62 };
+  tos.forEach((p, ti) => {
+    at(380 + ti * 90, () => { // une énorme larme se forme, puis est lancée en cloche
+      const g = fxEl(scene, 'zb-tear big', top.x, top.y), dx = p.x - top.x, dy = p.y - top.y;
+      fxAnim(g, [{ transform: 'translate(-50%,-50%) scale(.1)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.2)', opacity: 1, offset: .22 }, { transform: `translate(calc(-50% + ${dx * .5}px),calc(-50% + ${dy * .5 - 70}px)) scale(1.3)`, opacity: 1, offset: .62 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.9)`, opacity: 1 }], { duration: 760, easing: 'ease-in-out' });
+    });
+    at(380 + 760 + ti * 90, () => { // la larme éclate en geyser
+      const gy = fxEl(scene, 'zb-geyser', p.x, p.y + 10);
+      fxAnim(gy, [{ transform: 'translate(-50%,-100%) scaleY(.1)', opacity: 1 }, { transform: `translate(-50%,-100%) scaleY(${1 + pw * .25})`, opacity: 1, offset: .35 }, { transform: `translate(-50%,-100%) scaleY(${1.1 + pw * .25}) scaleX(.5)`, opacity: 0 }], { duration: 640, easing: 'ease-out' });
+      for (let r = 0; r < 2; r++) { const rp = fxEl(scene, 'zb-ripple', p.x, p.y + 12); fxAnim(rp, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${2.2 + r * .8})`, opacity: 0 }], { duration: 620, delay: r * 110 }); }
+      for (let q = 0; q < 16; q++) { const ang = -Math.PI * (.1 + Math.random() * .8), d = 26 + Math.random() * 44, c = fxEl(scene, 'zb-tear sm', p.x, p.y);
+        fxAnim(c, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d}px),calc(-50% + ${Math.sin(ang) * d}px)) scale(.8)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d * 1.2}px),calc(-50% + ${Math.sin(ang) * d + 34}px)) scale(.4)`, opacity: 0 }], { duration: 560 + Math.random() * 200, easing: 'ease-out' }); }
+      zbMark(zbFoeAt(scene, p), 'zb-wet', 1000);
+    });
+  });
+}
+function zobFarce(scene, from, tos, pw, hero) {
+  const sw = hero.offsetWidth, sh = hero.offsetHeight, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
+  for (let i = 0; i < 10; i++) at(140 + i * 48, () => { // la culbute sème des étoiles de toutes les couleurs
+    for (let k = 0; k < 2; k++) { const a = Math.random() * Math.PI * 2, r = 16 + Math.random() * 26, c = ZOB_CONF[(i + k) % ZOB_CONF.length], s = fxEl(scene, 'sfx-spark', from.x + Math.cos(a) * 12, from.y - 10 + Math.sin(a) * 12, '', `--c:${c}`);
+      fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.5)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * r}px),calc(-50% + ${Math.sin(a) * r - 10}px)) scale(.2)`, opacity: 0 }], { duration: 460 }); }
+  });
+  tos.forEach((p, ti) => {
+    const n = 3 + Math.round(pw), cols = [['#ffc83a', '#d88a10'], ['#8ec4f4', '#3f78c8'], ['#9ae860', '#3f9a2a'], ['#ff7ab8', '#c83a7a'], ['#c58aff', '#6a30b8']];
+    for (let k = 0; k < n; k++) {
+      at(380 + k * 70 + ti * 30, () => { // masques-boomerangs
+        const m = fxEl(scene, 'zb-mini', from.x + sw * .1, from.y - sh * .05, '', `--c1:${cols[k % 5][0]};--c2:${cols[k % 5][1]}`), jy = (k - (n - 1) / 2) * 12, dx = p.x - from.x - sw * .1, dy = p.y - from.y + sh * .05;
+        fxAnim(m, [{ transform: 'translate(-50%,-50%) scale(.5) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx * .5}px),calc(-50% + ${dy * .5 - 34 + jy}px)) scale(1) rotate(360deg)`, opacity: 1, offset: .28 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy + jy * .4}px)) scale(1.35) rotate(640deg)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${dx * .45}px),calc(-50% + ${dy * .4 + 24 - jy}px)) scale(.9) rotate(900deg)`, opacity: 1, offset: .78 }, { transform: 'translate(-50%,-50%) scale(.5) rotate(1160deg)', opacity: 0 }], { duration: 860, easing: 'ease-in-out' });
+      });
+    }
+    at(380 + 400 + ti * 30, () => { // BOUM !
+      const b = fxEl(scene, 'zb-boum', p.x, p.y, '<span>BOUM !</span>'); fxAnim(b, [{ transform: 'translate(-50%,-50%) scale(.2) rotate(-14deg)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${1.1 + pw * .25}) rotate(6deg)`, opacity: 1, offset: .3 }, { transform: `translate(-50%,-50%) scale(${1 + pw * .2}) rotate(-3deg)`, opacity: 1, offset: .7 }, { transform: `translate(-50%,-50%) scale(${1.25 + pw * .2}) rotate(0deg)`, opacity: 0 }], { duration: 640 });
+      for (let q = 0; q < 26 + pw * 8; q++) { const ang = -Math.PI * (.02 + Math.random() * .96) + (Math.random() < .3 ? Math.PI : 0), d = 30 + Math.random() * 60, c = fxEl(scene, 'zb-conf', p.x, p.y, '', `background:${ZOB_CONF[q % ZOB_CONF.length]}`);
+        fxAnim(c, [{ transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d}px),calc(-50% + ${Math.sin(ang) * d}px)) rotate(${Math.random() * 540}deg)`, opacity: 1, offset: .45 }, { transform: `translate(calc(-50% + ${Math.cos(ang) * d * 1.3}px),calc(-50% + ${Math.sin(ang) * d + 60}px)) rotate(${Math.random() * 900}deg)`, opacity: 0 }], { duration: 900 + Math.random() * 400, easing: 'cubic-bezier(.2,.6,.4,1)' }); }
+      zbMark(zbFoeAt(scene, p), 'zb-boing', 760);
+    });
+  });
+}
+/* ---------- Zobal : APOTHÉOSE (la Ferveur atteint son maximum) ----------
+   Le monde s'assombrit, les trois masques tournoient de plus en plus vite autour du Zobal, fusionnent
+   en un Masque d'Or géant sous un soleil immense, onde de choc, piliers de lumière, pluie d'or. */
+function zobApotheose(scene0, unit) {
+  if (!FX_OK() || !scene0.isConnected) return;
+  // calque indépendant : la cinématique se joue jusqu'au bout même si le combat finit et que la scène est redessinée
+  const rc = scene0.getBoundingClientRect(), sc = rc.width / (scene0.offsetWidth || 1), scene = document.createElement('div');
+  scene.className = 'zb-overlay'; scene.style.cssText = `left:${rc.left}px;top:${rc.top}px;width:${scene0.offsetWidth}px;height:${scene0.offsetHeight}px;transform:scale(${sc})`;
+  document.body.appendChild(scene); setTimeout(() => scene.remove(), 4400);
+  const sp = unit.querySelector('.sprite') || unit, p0 = fxPos(scene, sp);
+  if (!p0) { scene.remove(); return; }
+  const W = scene.offsetWidth, H = scene.offsetHeight, hd = { x: p0.x, y: p0.y - H * .12 }, at = (ms, fn) => setTimeout(() => { if (scene.isConnected) fn(); }, ms);
+  const mid = { x: W * .5, y: H * .42 };
+  zbMark(unit, 'zob-apoint', 3000); zbMark(scene0, 'zb-shake', 3300);
+  const veil = fxEl(scene, 'zb-veil', 0, 0); fxAnim(veil, [{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: 1, offset: .82 }, { opacity: 0 }], { duration: 3900, easing: 'linear' });
+  const faces = [['😆', '#ffd24a'], ['😢', '#5ab0ff'], ['🤪', '#ff6ad0']], orbs = faces.map((f, i) => fxEl(scene, 'zb-orb', hd.x, hd.y, `<span>${f[0]}</span>`, `--c:${f[1]}`));
+  const T0 = performance.now(), TC = 1500;
+  (function spin(now) { // les masques tournent en spirale, de plus en plus vite, puis fondent vers le Zobal
+    const t = now - T0; if (!scene.isConnected) { orbs.forEach(o => o.remove()); return; }
+    const k = Math.min(1, t / TC), ang0 = t * (.004 + .012 * k * k), r = 18 + 38 * Math.sin(Math.min(1, k * 1.15) * Math.PI * .8) * (1 - k * k * .6);
+    orbs.forEach((o, i) => { const a = ang0 + i * Math.PI * 2 / 3, cx = hd.x + (mid.x - hd.x) * Math.pow(k, 3), cy = hd.y + (mid.y - hd.y) * Math.pow(k, 3);
+      o.style.left = (cx + Math.cos(a) * r * (1 - k * .85)) + 'px'; o.style.top = (cy + Math.sin(a) * r * .55 * (1 - k * .85)) + 'px'; o.style.opacity = t < 100 ? t / 100 : 1; o.style.transform = `translate(-50%,-50%) scale(${.8 + k * .5})`;
+      if (Math.random() < .5) { const s = fxEl(scene, 'sfx-spark', parseFloat(o.style.left), parseFloat(o.style.top), '', `--c:${faces[i][1]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.3)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(.1)', opacity: 0 }], { duration: 380 }); } });
+    if (t < TC) requestAnimationFrame(spin); else orbs.forEach(o => o.remove());
+  })(T0);
+  for (let i = 0; i < 14; i++) at(i * 100, () => { const a = Math.random() * 6.28, s = fxEl(scene, 'sfx-spark', hd.x + Math.cos(a) * 16, hd.y + 18, '', '--c:#ffe27a'); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.4)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * 14}px),calc(-50% - ${40 + Math.random() * 50}px)) scale(.1)`, opacity: 0 }], { duration: 700 }); });
+  const mask = unit.dataset.mask || 'rire', TH = {
+    rire: { v1: '#4a2a08aa', v2: '#120600d8', fl: '#fff3b0', rings: ['#fff3b0', '#ffb02e', '#ff7a3a'], txt: 'APOTHÉOSE !', tc: '#fff3b0', to: '#7a2a00' },
+    larme: { v1: '#0a2a5aaa', v2: '#020a1ed8', fl: '#cfeaff', rings: ['#e8f8ff', '#5ab0ff', '#2a58c8'], txt: 'DÉLUGE !', tc: '#e8f8ff', to: '#0a2a5a' },
+    farce: { v1: '#6a1060aa', v2: '#10021ed8', fl: '#ffffff', rings: ['#ff6ad0', '#5ee0d4', '#ffd24a'], txt: 'CARNAVAL !', tc: '#fff', to: '#5a0a50' } }[mask] || {};
+  veil.style.setProperty('--v1', TH.v1); veil.style.setProperty('--v2', TH.v2);
+  at(TC - 80, () => { const f = fxEl(scene, 'zb-flash', 0, 0, '', `--fl:${TH.fl}`); fxAnim(f, [{ opacity: 0 }, { opacity: .95, offset: .2 }, { opacity: 0 }], { duration: 560, easing: 'linear' }); });
+  const burst = (x, y, cols, n, d0) => { for (let i = 0; i < n; i++) { const a = i / n * 6.28 + Math.random() * .3, d = d0 * (.6 + Math.random() * .6), s = fxEl(scene, 'sfx-spark', x, y, '', `--c:${cols[i % cols.length]}`); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(1.8)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d * .8}px)) scale(.2)`, opacity: 0 }], { duration: 800 + Math.random() * 300, easing: 'cubic-bezier(.1,.7,.4,1)' }); } };
+  at(TC, () => {
+    const gm = fxEl(scene, 'zb-gmask ' + mask, mid.x, mid.y, '<i></i>');
+    fxAnim(gm, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(-180deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.5) rotate(8deg)', opacity: 1, offset: .22 }, { transform: 'translate(-50%,-50%) scale(1.15) rotate(-4deg)', opacity: 1, offset: .38 }, { transform: 'translate(-50%,-50%) scale(1.25) rotate(3deg)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-50%) scale(2.6) rotate(0deg)', opacity: 0 }], { duration: 2100 });
+    TH.rings.forEach((c, i) => { const r = fxEl(scene, 'sfx-ring thick', mid.x, mid.y, '', `--c:${c}`); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${14 + i * 3})`, opacity: 0 }], { duration: 900 + i * 150, delay: i * 120 }); });
+    const t = fxEl(scene, 'zb-txt zb-apotxt ' + mask, mid.x, H * .8, TH.txt, `--c:${TH.tc};--o:${TH.to};--s:30px`);
+    fxAnim(t, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.35)', opacity: 1, offset: .15 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-50%) scale(1.04)', opacity: 1, offset: .88 }, { transform: 'translate(-50%,-62%) scale(1.1)', opacity: 0 }], { duration: 2100 });
+    if (mask === 'larme') apoLarme(scene, W, H, mid, at, burst);
+    else if (mask === 'farce') apoFarce(scene, W, H, mid, at, burst);
+    else apoRire(scene, W, H, mid, at, burst);
+    scene0.querySelectorAll('.unit.mon').forEach(m => zbMark(m, mask === 'larme' ? 'zb-wet' : mask === 'farce' ? 'zb-boing' : 'zb-glow', 900));
+  });
+}
+/* Rieur : soleil d'or, éclats de rire, pluie d'or */
+function apoRire(scene, W, H, mid, at, burst) {
+  const sun = fxEl(scene, 'zb-sun mega', mid.x, mid.y);
+  fxAnim(sun, [{ transform: 'translate(-50%,-50%) scale(.1) rotate(0deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1) rotate(40deg)', opacity: 1, offset: .25 }, { transform: 'translate(-50%,-50%) scale(1.3) rotate(160deg)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-50%) scale(1.8) rotate(240deg)', opacity: 0 }], { duration: 2100, easing: 'linear' });
+  for (let i = 0; i < 9; i++) { const ray = fxEl(scene, 'zb-pillar', W * (i + .5) / 9, H); fxAnim(ray, [{ transform: 'translate(-50%,-100%) scaleY(0)', opacity: 0 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: .9, offset: .3 }, { transform: 'translate(-50%,-100%) scaleY(1)', opacity: 0 }], { duration: 1300, delay: Math.abs(i - 4) * 70 }); }
+  for (let i = 0; i < 12; i++) at(100 + i * 130, () => { const e = fxEl(scene, 'zb-txt', mid.x + (Math.random() - .5) * W * .6, H * (.25 + Math.random() * .5), 'HA!', `--c:#ffe27a;--o:#7a4300;--s:${11 + Math.round(Math.random() * 6)}px`); fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-90%) scale(1.2)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-190%) scale(1)', opacity: 0 }], { duration: 800 }); });
+  for (let i = 0; i < 54; i++) { const c = fxEl(scene, Math.random() < .55 ? 'zb-coin big' : 'zb-conf', Math.random() * W, -12, '', `background:${['#ffd24a', '#ffe27a', '#ffb02e', '#fff3b0'][i % 4]}`); fxAnim(c, [{ transform: 'translate(-50%,0) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * 50}px),${H + 20}px) rotate(${360 + Math.random() * 720}deg)`, opacity: 1 }], { duration: 900 + Math.random() * 800, delay: 150 + Math.random() * 1100, easing: 'cubic-bezier(.3,.4,.6,1)' }); }
+  for (let i = 0; i < 4; i++) at(250 + i * 380, () => { const x = W * (.15 + Math.random() * .7), y = H * (.2 + Math.random() * .4); burst(x, y, ['#ffd24a', '#fff3b0', '#ffb02e'], 16, 46); });
+}
+/* Pleureur : DÉLUGE — orage, éclairs, marée géante, geysers */
+function apoLarme(scene, W, H, mid, at, burst) {
+  for (let i = 0; i < 7; i++) { const c = fxEl(scene, 'zb-bigcloud', W * (i + .5) / 7, -4); fxAnim(c, [{ transform: 'translate(-50%,-100%) scale(.6)', opacity: 0 }, { transform: 'translate(-50%,-30%) scale(1.1)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-30%) scale(1.15)', opacity: 1, offset: .85 }, { transform: 'translate(-50%,-100%) scale(1)', opacity: 0 }], { duration: 2400, delay: i * 40 }); }
+  for (let i = 0; i < 4; i++) at(200 + i * 420, () => {
+    const x = W * (.12 + Math.random() * .76), b = fxEl(scene, 'zb-bolt', x, 0); fxAnim(b, [{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: .2, offset: .25 }, { opacity: 1, offset: .35 }, { opacity: 0 }], { duration: 420, easing: 'linear' });
+    const f = fxEl(scene, 'zb-flash', 0, 0, '', '--fl:#cfeaff'); fxAnim(f, [{ opacity: .22 }, { opacity: 0 }], { duration: 200 }); burst(x, H * .78, ['#e8f8ff', '#8ed0ff'], 10, 30); });
+  for (let i = 0; i < 110; i++) { const e = fxEl(scene, 'zb-rain', Math.random() * W, -24); fxAnim(e, [{ transform: 'translateY(0)', opacity: .95 }, { transform: `translateY(${H + 50}px)`, opacity: .95 }], { duration: 380 + Math.random() * 240, delay: Math.random() * 1700, easing: 'linear' }); }
+  const tide = fxEl(scene, 'zb-tide', 0, H + 4); fxAnim(tide, [{ transform: 'translate(-60%,-100%)', opacity: 1 }, { transform: `translate(${W + 120}px,-100%)`, opacity: 1 }], { duration: 1500, delay: 250, easing: 'cubic-bezier(.4,.1,.5,1)' });
+  for (let i = 0; i < 8; i++) at(250 + (i / 8) * 1350 + 120, () => { const x = W * (i + .5) / 8, g = fxEl(scene, 'zb-geyser', x, H * .86);
+    fxAnim(g, [{ transform: 'translate(-50%,-100%) scaleY(.1)', opacity: 1 }, { transform: 'translate(-50%,-100%) scale(1.6,2.1)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-100%) scale(.7,2.4)', opacity: 0 }], { duration: 760, easing: 'ease-out' });
+    const rp = fxEl(scene, 'zb-ripple', x, H * .86); fxAnim(rp, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(3)', opacity: 0 }], { duration: 640 });
+    for (let q = 0; q < 6; q++) { const a = -Math.PI * (.1 + Math.random() * .8), d = 20 + Math.random() * 40, s = fxEl(scene, 'zb-tear sm', x, H * .8); fxAnim(s, [{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d - 20}px))`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.2}px),calc(-50% + ${Math.sin(a) * d + 30}px))`, opacity: 0 }], { duration: 700 }); } });
+  for (let i = 0; i < 16; i++) at(80 + i * 90, () => { const s = fxEl(scene, 'zb-tear big', mid.x + (i % 2 ? 11 : -11), mid.y + 12); fxAnim(s, [{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 1 }, { transform: `translate(calc(-50% + ${(i % 2 ? 1 : -1) * (6 + Math.random() * 20)}px),${H * .55}px) scale(1)`, opacity: 0 }], { duration: 760, easing: 'ease-in' }); });
+}
+/* Farceur : CARNAVAL — projecteurs, feux d'artifice, serpentins, ballons, masques fous */
+function apoFarce(scene, W, H, mid, at, burst) {
+  [[.12, -26, '#ff6ad0'], [.88, 26, '#5ee0d4'], [.5, 0, '#ffd24a']].forEach(([x, r, c], i) => { const s = fxEl(scene, 'zb-spot', W * x, 0, '', `--c:${c}`); fxAnim(s, [{ transform: `translate(-50%,0) rotate(${r - 30}deg)`, opacity: 0 }, { transform: `translate(-50%,0) rotate(${r + 20}deg)`, opacity: .85, offset: .3 }, { transform: `translate(-50%,0) rotate(${r - 20}deg)`, opacity: .85, offset: .65 }, { transform: `translate(-50%,0) rotate(${r + 25}deg)`, opacity: 0 }], { duration: 2200, delay: i * 80, easing: 'ease-in-out' }); });
+  for (let i = 0; i < 7; i++) at(150 + i * 300, () => burst(W * (.1 + Math.random() * .8), H * (.18 + Math.random() * .45), ZOB_CONF, 20, 54 + Math.random() * 20));
+  [0, 1].forEach(side => { for (let i = 0; i < 40; i++) at(i * 14 + 60, () => { const rb = Math.random() < .4, c = fxEl(scene, rb ? 'zb-ribbon' : 'zb-conf', side ? W : 0, H * .95, '', `background:${ZOB_CONF[i % 6]}`), dx = (side ? -1 : 1) * (60 + Math.random() * W * .45), up = H * (.55 + Math.random() * .6);
+    fxAnim(c, [{ transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx * .6}px),calc(-50% - ${up}px)) rotate(${Math.random() * 540}deg)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${H * .2}px)) rotate(${Math.random() * 900}deg)`, opacity: 0 }], { duration: 1300 + Math.random() * 500, easing: 'cubic-bezier(.2,.6,.4,1)' }); }); });
+  for (let i = 0; i < 11; i++) { const bl = fxEl(scene, 'zb-balloon', W * (i + .5) / 11 + (Math.random() - .5) * 30, H + 30, '', `--c:${ZOB_CONF[i % 6]}`), sw = (Math.random() - .5) * 40; fxAnim(bl, [{ transform: 'translate(-50%,0)', opacity: 1 }, { transform: `translate(calc(-50% + ${sw}px),${-H * .6}px)`, opacity: 1, offset: .5 }, { transform: `translate(calc(-50% - ${sw}px),${-H * 1.4}px)`, opacity: 1 }], { duration: 1700 + Math.random() * 700, delay: 200 + Math.random() * 700, easing: 'ease-in-out' }); }
+  const cols = [['#ffc83a', '#d88a10'], ['#8ec4f4', '#3f78c8'], ['#9ae860', '#3f9a2a'], ['#ff7ab8', '#c83a7a'], ['#c58aff', '#6a30b8']];
+  for (let i = 0; i < 10; i++) { const m = fxEl(scene, 'zb-mini', mid.x, mid.y, '', `--c1:${cols[i % 5][0]};--c2:${cols[i % 5][1]}`), a = i / 10 * 6.28; fxAnim(m, [{ transform: 'translate(-50%,-50%) scale(.4) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * W * .36}px),calc(-50% + ${Math.sin(a) * H * .34}px)) scale(1.5) rotate(720deg)`, opacity: 1, offset: .55 }, { transform: `translate(calc(-50% + ${Math.cos(a + 1) * W * .1}px),calc(-50% + ${Math.sin(a + 1) * H * .1}px)) scale(.5) rotate(1400deg)`, opacity: 0 }], { duration: 1500, delay: i * 50, easing: 'ease-in-out' }); }
+}
+FX_KIND.zob = function (scene, from, tos, fx, hero) {
+  const unit = hero.closest('.unit'), mask = (unit && unit.dataset.mask) || 'rire', pw = fx[3] || 1;
+  (mask === 'larme' ? zobLarme : mask === 'farce' ? zobFarce : zobRire)(scene, from, tos, pw, hero);
+};
+
 function playSpellFx(card, cast) {
   if (!FX_OK()) return;
   const scene = card.querySelector('.scene'); if (!scene) return;

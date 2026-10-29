@@ -59,23 +59,35 @@ const CLASSES = {
       { id: 'pluie_fleches', name: 'Pluie de Flèches', lvl: 40, pa: 5, min: 18, max: 24, stat: 'agi', type: 'aoe', cd: 1 },
     ],
   },
-  eniripsa: {
-    name: 'Eniripsa', role: 'Soigneuse', main: 'deg', elem: 'int', hpMult: 0.95, color: '#c96fa8',
-    desc: 'Ses mots blessent et soignent. Très résistante sur la durée.',
-    passive: { name: 'Souffle Vital', points: [['💗','Souffle Vital','Régénère 4 % de ses PV max au début de chaque tour.'],['✨','Soins renforcés','Ses soins sont augmentés de 25 %.']], desc: 'Régénère 4 % de ses PV max au début de chaque tour. Ses soins sont augmentés de 25 %.' },
+  zobal: {
+    name: 'Zobal', role: 'Maître des masques', main: 'deg', elem: 'cha', hpMult: 1.0, color: '#8a4fd0',
+    desc: 'Change de masque comme de personnalité : chacun lui donne un style de combat.',
+    passive: { name: 'Bal Masqué', points: [
+      ['🎭','Trois masques','Il porte toujours un masque, à choisir sur sa carte. 😆 Rieur : +12 % de dégâts. 😢 Pleureur : −10 % de dégâts subis et un peu de soin à chaque tour. 🤪 Farceur : 15 % de chances que ses sorts offensifs soient lancés deux fois.'],
+      ['🔥','Ferveur','Chaque attaque qu’il lance a 50 % de chances de lui donner 1 point de Ferveur (10 max) et amplifie le pouvoir du masque (+4 % par point). Elle se garde d’un combat à l’autre. Au maximum, c’est l’Apothéose : +15 % de chances de coup critique, et la Ferveur reste pleine pendant 20 s avant de retomber.'],
+      ['💥','Rupture','Changer de masque en plein combat brise l’ancien : toute sa Ferveur explose en dégâts sur tous les ennemis, et la moitié lui reste pour le nouveau masque.'],
+      ['🃏','Bal costumé','Le masque porté se garde d’un combat à l’autre ; à chaque nouveau combat, la Ferveur repart de 1.']
+    ], desc: 'Trois masques à équiper (Rieur offensif, Pleureur défensif, Farceur chaotique). La Ferveur (10 max, 50 % de chances de +1 par attaque) monte tant qu’il garde son masque ; changer de masque déclenche une Rupture qui frappe tous les ennemis.' },
     spells: [
-      { id: 'mot_blessant', name: 'Mot Blessant', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
-      { id: 'mot_soignant', name: 'Mot Soignant', lvl: 1, pa: 3, min: 10, max: 14, stat: 'int', type: 'heal', max_: 1 },
-      { id: 'mot_stimulant', name: 'Mot Stimulant', lvl: 8, pa: 2, type: 'buff', buff: { deg: 30, res: 10 }, turns: 3, cd: 5 },
-      { id: 'mot_interdit', name: 'Mot Interdit', lvl: 15, pa: 4, min: 15, max: 20, stat: 'int', type: 'dmg', max_: 1 },
-      { id: 'mot_regeneration', name: 'Mot de Régénération', lvl: 30, pa: 4, min: 30, max: 40, stat: 'int', type: 'heal', cd: 3 },
-      { id: 'mot_tourmente', name: 'Mot Tourmenté', lvl: 45, pa: 4, min: 14, max: 18, stat: 'int', type: 'aoe', max_: 1 },
+      { id: 'grimace', name: 'Grimace', lvl: 1, pa: 3, min: 6, max: 9, stat: 'cha', type: 'dmg', max_: 2 },
+      { id: 'tour_de_passe', name: 'Tour de Passe-passe', lvl: 6, pa: 2, min: 5, max: 7, stat: 'cha', type: 'dmg', max_: 2 },
+      { id: 'danse_macabre', name: 'Danse Macabre', lvl: 14, pa: 3, min: 7, max: 10, stat: 'cha', type: 'aoe', max_: 1 },
+      { id: 'mascarade', name: 'Mascarade', lvl: 22, pa: 2, type: 'buff', buff: { deg: 35, res: 8 }, turns: 3, cd: 5 },
+      { id: 'rictus', name: 'Rictus Tragique', lvl: 30, pa: 4, min: 24, max: 32, stat: 'cha', type: 'dmg', cd: 1 },
+      { id: 'carnaval', name: 'Carnaval Sanglant', lvl: 42, pa: 5, min: 18, max: 24, stat: 'cha', type: 'aoe', cd: 2 },
     ],
   },
   sacrieur: {
     name: 'Sacrieur', role: 'Berserker endurant', main: 'deg', elem: 'for', hpMult: 1.35, color: '#a32f2f',
     desc: 'Énormément de vie. Vole la vie de ses adversaires.',
-    passive: { name: 'Souffrance', points: [['🩸','Souffrance','+1 % de dégâts finaux par % de PV manquant.'],['⚔️','Rage du sang','À 30 % de vie, ses dégâts sont multipliés par 1,7.']], desc: '+1 % de dégâts finaux par % de PV manquant.' },
+    passive: { name: 'Pacte de Sang', points: [
+      ['🩸','Pacte de sang','Au début de son tour, il s’ouvre volontairement les veines : −5 % de ses PV max (jamais sous 40 %) et il gagne 1 Stigmate.'],
+      ['✴️','Stigmates','Chaque coup reçu lui grave aussi un Stigmate. 6 au maximum par combat : chacun donne +8 % de dégâts finaux.'],
+      ['🪞','Douleur partagée','30 % des dégâts qu’il encaisse sont renvoyés à l’ennemi qui l’a frappé.'],
+      ['🧛','Soif de sang','Chaque ennemi qu’il achève lui rend 8 % de ses PV max.'],
+      ['👹','Colosse de Sang','Chaque PV perdu (Pacte de sang, coups reçus) remplit la jauge de Sang versé, qui persiste entre les combats. Pleine, clique sur le bouton : il sacrifie 35 % de ses PV actuels, passe en Berserk et un colosse de sang écrase tous les ennemis (dégâts accrus par le sang sacrifié et les Stigmates, résistances ignorées).'],
+      ['☠️','Martyre','Une fois par combat, un coup fatal le laisse à 12 % de ses PV : son sang explose et inflige 20 % de ses PV max à tous les ennemis, et ses Stigmates montent au maximum.']
+    ], desc: 'Il se saigne chaque tour pour accumuler des Stigmates (+8 % de dégâts chacun, 6 max), renvoie 30 % des coups reçus et se soigne en achevant ses ennemis. Le sang versé remplit une jauge : pleine, elle libère le Colosse de Sang, une attaque colossale sur tous les ennemis. Une fois par combat, un coup fatal déclenche le Martyre : il survit et son sang explose sur tous les ennemis.' },
     spells: [
       { id: 'assaut', name: 'Assaut', lvl: 1, pa: 3, min: 6, max: 9, stat: 'for', type: 'dmg', max_: 2 },
       { id: 'absorption', name: 'Absorption', lvl: 3, pa: 3, min: 6, max: 8, stat: 'for', type: 'drain', max_: 1 },
@@ -136,7 +148,7 @@ const CLASSES = {
   xelor: {
     name: 'Xélor', role: 'Mage du temps', main: 'deg', elem: 'int', hpMult: 0.95, color: '#3f73c4',
     desc: 'Accumule du temps à chaque sort, fige ses ennemis et rejoue des tours entiers.',
-    passive: { name: 'Sablier Temporel', points: [['⏳','Grains du temps','Chaque PA dépensé ajoute 1 grain au sablier (12 max).'],['🔁','Rembobinage','Sablier plein : il le vide et rejoue un tour complet, sans regagner de grains.'],['❄️','Distorsion','12 % de chance de figer la cible : elle passe sa prochaine attaque.'],['🎯','Temps arrêté','Une cible figée subit +25 % de dégâts.'],['🌀','Paradoxe','Une fois par combat : s’il tombe à 0 PV avec 6 grains ou plus, il revient aux PV du début de son tour (30 % minimum).']], desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : au début de son tour, le Xélor le vide et rejoue un tour complet, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
+    passive: { name: 'Sablier Temporel', points: [['⏳','Grains du temps','Chaque PA dépensé ajoute 1 grain au sablier (12 max).'],['🔁','Rembobinage','Sablier plein : il se vide aussitôt et le Xélor rejoue son tour, sans regagner de grains.'],['❄️','Distorsion','12 % de chance de figer la cible : elle passe sa prochaine attaque.'],['🎯','Temps arrêté','Une cible figée subit +25 % de dégâts.'],['⌛','Éclat du temps','Chaque Rembobinage remplit le sablier au-dessus de sa tête (4 rembobinages). Plein, un clic le brise : le Xélor vit 10 combats d’un coup, avec leur XP, leurs kamas et leur butin.'],['🌀','Paradoxe','Une fois par combat : s’il tombe à 0 PV avec 6 grains ou plus, il revient aux PV du début de son tour (30 % minimum).']], desc: 'Chaque PA dépensé ajoute 1 grain au sablier (12 max). Sablier plein : dès que le 12e grain tombe, le Xélor le vide et rejoue son tour, sans regagner de grains. Ses coups ont 12 % de chance de figer la cible (elle passe sa prochaine attaque) et une cible figée subit +25 % de dégâts. Paradoxe, une fois par combat : s’il tombe à 0 PV avec au moins 6 grains, il revient aux PV du début de son tour (30 % au minimum).' },
     spells: [
       { id: 'aiguille', name: 'Aiguille', lvl: 1, pa: 3, min: 6, max: 9, stat: 'int', type: 'dmg', max_: 2 },
       { id: 'gelure', name: 'Gelure', lvl: 4, pa: 2, min: 3, max: 5, stat: 'int', type: 'dmg', freeze: 30, max_: 1 },
@@ -256,11 +268,12 @@ const SUBZONES = [
 const ARCHI_RATE = 0.01, ARCHI_MULT = 2, ARCHI_REWARD = 6;
 const ARCHI_NAMES = { incarnam: 'Pissenlit Séculaire', astrub: 'Champ Champ Colossal', abraknydes: 'Sanglier Roi des Bois', cania: 'Bwork Chef de Guerre', koalaks: 'Mufafah Alpha', sidimote: 'Seigneur Chafer' };
 const ARCHIS = {}; // id de zone → id de l'archimonstre
-for (const z of ZONES) {
-  const best = z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
+function addArchi(z) {
+  const best = z.archiBase || z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
   const mid = 'archi_' + z.id; ARCHIS[z.id] = mid;
   MONSTERS[mid] = { ...MONSTERS[best], name: ARCHI_NAMES[z.id] || ('Archi-' + MONSTERS[best].name), archi: true, base: best, mult: ARCHI_MULT };
 }
+for (const z of ZONES) addArchi(z);
 const DUNGEONS = [
   { id: 'dj_bouftou', name: 'Donjon des Bouftous', region: 'Astrub', lvl: [14, 25], key: 'clef_bouftou',
     rooms: [['bouftou', 'bouftou', 'boufton_blanc'], ['boufton_blanc', 'boufton_blanc', 'bouftou_chef'], ['bouftou_chef', 'bouftou_chef', 'boufton_blanc']],
@@ -389,6 +402,7 @@ const MAX_JOB_LEVEL = 100;
    -------------------------------------------------------------------- */
 const GATHER_JOBS = {
   paysan: { name: 'Paysan', makes: 'Céréales', icon: '🌾', text: 'Fauche les champs d’Amakna. Chaque céréale se débloque à un palier de métier.' },
+  alchimiste: { name: 'Alchimiste', makes: 'Plantes et fleurs', icon: '🧪', text: 'Cueille les plantes rares des sous-bois et des montagnes. Chaque plante se débloque à un palier de métier.' },
 };
 const HARVEST_MS = 4000;   // durée d'une récolte
 const CROPS = [
@@ -400,11 +414,52 @@ const CROPS = [
   { id: 'seigle',  job: 'paysan', name: 'Seigle',  icon: '🌱', lvl: 50, xp: 30, value: 16, where: 'Plaines de Cania' },
   { id: 'riz',     job: 'paysan', name: 'Riz',     icon: '🍚', lvl: 50, xp: 30, value: 16, where: 'Rizières de Pandala' },
   { id: 'malt',    job: 'paysan', name: 'Malt',    icon: '🌰', lvl: 60, xp: 35, value: 21, where: 'Champs de Sufokia' },
-  { id: 'chanvre', job: 'paysan', name: 'Chanvre', icon: '🍀', lvl: 70, xp: 40, value: 27, where: 'Landes de Sidimote' },
+  { id: 'chanvre', job: 'paysan', name: 'Chanvre', icon: '🎋', lvl: 70, xp: 40, value: 27, where: 'Landes de Sidimote' },
+  /* Alchimiste : les plantes */
+  { id: 'ortie',      job: 'alchimiste', name: 'Ortie',               icon: '☘️', lvl: 1,   xp: 5,  value: 3,  where: "Forêt d'Astrub" },
+  { id: 'sauge',      job: 'alchimiste', name: 'Sauge',               icon: '🌿', lvl: 10,  xp: 10, value: 6,  where: 'Coin des Bouftous' },
+  { id: 'trefle',     job: 'alchimiste', name: 'Trèfle à 5 feuilles', icon: '🍀', lvl: 20,  xp: 15, value: 9,  where: 'Plaine des Porkass' },
+  { id: 'menthe',     job: 'alchimiste', name: 'Menthe sauvage',      icon: '🌱', lvl: 30,  xp: 20, value: 13, where: 'Forêt de Brâkmar' },
+  { id: 'orchidee',   job: 'alchimiste', name: 'Orchidée Freyesque',  icon: '🌸', lvl: 40,  xp: 25, value: 18, where: 'Marécages de Nauséabonde' },
+  { id: 'edelweiss',  job: 'alchimiste', name: 'Edelweiss',           icon: '🏵️', lvl: 50,  xp: 30, value: 24, where: 'Montagne des Craqueleurs' },
+  { id: 'pandouille', job: 'alchimiste', name: 'Graine de Pandouille', icon: '🥜', lvl: 60, xp: 35, value: 31, where: 'Forêt de Pandala' },
+  { id: 'ginseng',    job: 'alchimiste', name: 'Ginseng',             icon: '🥕', lvl: 70,  xp: 40, value: 39, where: 'Territoire des Dragoeufs' },
+  { id: 'belladone',  job: 'alchimiste', name: 'Belladone',           icon: '🫐', lvl: 80,  xp: 45, value: 48, where: 'Cimetière de Sidimote' },
+  { id: 'mandragore', job: 'alchimiste', name: 'Mandragore',          icon: '🧄', lvl: 90,  xp: 50, value: 58, where: 'Bois de Litneg' },
+  { id: 'perceneige', job: 'alchimiste', name: 'Perce-neige',         icon: '❄️', lvl: 100, xp: 55, value: 70, where: 'Sommets de Frigost' },
 ];
 /* XP de récolte divisée par 5 */
 for (const c of CROPS) c.xp = Math.max(1, Math.round(c.xp / 5));
 for (const c of CROPS) RESOURCES[c.id] = { name: c.name, icon: c.icon, value: c.value, crop: true };
+
+/* --------------------------------------------------------------------
+   RÉCOLTE — Maîtrise des plantes, Almanax du jour, Récolte miraculeuse
+   -------------------------------------------------------------------- */
+/* Rang de maîtrise d'une plante (nombre de récoltes) : +qty % de chance d'une unité en plus, +mir % de chance de miracle */
+const HARVEST_RANKS = [
+  { at: 0,    qty: 0,  mir: 0 },
+  { at: 250,  qty: 5,  mir: 0.5 },
+  { at: 1000, qty: 10, mir: 1 },
+  { at: 3000, qty: 15, mir: 1.5 },
+  { at: 7500, qty: 20, mir: 2 },
+  { at: 15000, qty: 50, mir: 12 },
+];
+const HARVEST_RANK_NAMES = {
+  paysan:     ['Glaneur', 'Moissonneur', 'Fermier', 'Maître des champs', 'Légende des blés', 'Divinité des moissons'],
+  alchimiste: ['Curieux', 'Herboriste', 'Apothicaire', 'Maître alchimiste', 'Sage des herbes', 'Maître des plantes sacrées'],
+};
+const MIRACLE_BASE = 3;   // % de chance de Récolte miraculeuse (quantité ×3, XP ×2)
+const ALMANAX_MULT = 2;   // quantité ×2 pour la plante de l'Almanax
+/* Numéro du jour (heure locale) : l'Almanax change à minuit */
+function dayNumber(t = Date.now()) { const d = new Date(t); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); }
+/* Almanax : chaque jour, une plante par métier (parmi celles déjà débloquées) rapporte ×2 */
+function almanaxCrop(job, lvl, t = Date.now()) {
+  const pool = CROPS.filter(c => c.job === job && c.lvl <= Math.max(1, lvl)); if (!pool.length) return null;
+  let x = (Math.imul(dayNumber(t), 374761393) + (job === 'paysan' ? 668265263 : 1274126177)) >>> 0;
+  x = Math.imul(x ^ (x >>> 13), 1274126177) >>> 0; x = (x ^ (x >>> 16)) >>> 0;
+  return pool[x % pool.length].id;
+}
+function msToMidnight(t = Date.now()) { const d = new Date(t); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - t; }
 
 const RECIPES = [
   { out: 'coiffe_aventurier', job: 'tailleur', lvl: 1, ing: { laine_bouftou: 3, plume_tofu: 2 } },
@@ -465,12 +520,75 @@ const CRAFT_COST_MULT = 3;
 for (const r of RECIPES) for (const k of Object.keys(r.ing)) r.ing[k] *= CRAFT_COST_MULT;
 
 /* --------------------------------------------------------------------
-   BOULANGER — consommables (hors multiplicateur de coût ci-dessus)
-   food : effet quand un héros le mange. speed = % de vitesse de combat, ms = durée
+   BOULANGER — repas (hors multiplicateur de coût ci-dessus)
+   food : { fx, ms } — effet quand un héros mange le plat, pendant ms millisecondes.
+   fx : speed (vitesse de combat), dmgPct (dégâts), xpPct (XP de combat), kamas (kamas gagnés), pp (prospection),
+        hpPct (PV max), res (% résistance), crit (% critique), dodge (% esquive),
+        rxp / rqty / rspd (récolte : XP, chance de quantité, vitesse)
    -------------------------------------------------------------------- */
-RESOURCES.pain_ble = { name: 'Pain de Blé', icon: '🍞', value: 150, food: { speed: 100, ms: 10 * 60 * 1000, desc: 'Vitesse de combat ×2 pendant 10 min' } };
-RECIPES.push({ out: 'pain_ble', job: 'boulanger', lvl: 1, ing: { ble: 100 } });
+const FOOD_FX = {
+  speed: ['Vitesse de combat', ' %'], dmgPct: ['Dégâts', ' %'], xpPct: ['XP de combat', ' %'], kamas: ['Kamas gagnés', ' %'], pp: ['Prospection', ''],
+  hpPct: ['PV max', ' %'], res: ['Résistance', ' %'], crit: ['Critique', ' %'], dodge: ['Esquive', ' %'],
+  rxp: ['XP de récolte', ' %'], rqty: ['Quantité récoltée', ' %'], rspd: ['Vitesse de récolte', ' %'],
+};
+function foodFxList(f) { return Object.entries(f.fx).map(([k, v]) => ({ k, v, label: FOOD_FX[k][0], txt: `+${v}${FOOD_FX[k][1]} ${FOOD_FX[k][0]}` })); }
+function defFood(id, lvl, name, icon, fx, min, ing, tale) {
+  const food = { fx, ms: min * 60 * 1000 }; food.desc = foodFxList(food).map(x => x.txt).join(' · ') + ` pendant ${min} min`;
+  const cost = Object.entries(ing).reduce((a, [k, n]) => a + RESOURCES[k].value * n, 0);
+  RESOURCES[id] = { name, icon, value: Math.round(cost * 1.2 / 10) * 10, food, tale };
+  RECIPES.push({ out: id, job: 'boulanger', lvl, ing });
+}
+defFood('pain_ble', 1, 'Pain de Blé', '🍞', { speed: 100 }, 10, { ble: 100 }, 'Le classique du matin. Croustillant, et ça file comme le vent.');
+defFood('galette_orge', 10, "Galette d'Orge", '🥞', { dmgPct: 10 }, 20, { orge: 130, dard_moskito: 60 }, 'Épaisse, dorée, et elle donne envie de cogner.');
+defFood('brioche_avoine', 20, "Brioche d'Avoine", '🥐', { kamas: 25 }, 20, { avoine: 160, queue_ecurouille: 120, pic_prespic: 40 }, 'Tellement bonne que les marchands paient plus cher à ta table.');
+defFood('tourte_houblon', 30, 'Tourte du Houblon', '🥧', { xpPct: 25 }, 20, { houblon: 180, defense_sanglier: 100, ecorce_abra: 60 }, 'Une bouchée et tout devient clair. Même les leçons de combat.');
+defFood('tisane_sauge', 35, 'Tisane de Sauge Sacrée', '🍵', { rxp: 40 }, 30, { sauge: 180, menthe: 90, ortie: 120 }, 'La sagesse des herbes dans une tasse. Les plantes se laissent mieux cueillir.');
+defFood('pain_lin', 40, 'Pain de Lin Épicé', '🥖', { pp: 35 }, 20, { lin: 200, carapace_scara: 80, fragment_craq: 60 }, 'Un parfum qui attire le butin comme les mouches.');
+defFood('seigle_noir', 50, 'Pain de Seigle Noir', '🍞', { res: 12 }, 25, { seigle: 220, oreille_bwork: 80, fragment_craq: 60 }, 'Dense comme un mur. Les coups glissent dessus.');
+defFood('makis_riz', 50, 'Makis de Pandala', '🍙', { crit: 10 }, 20, { riz: 220, oreille_bwork: 70, poil_koalak: 40 }, 'Roulés avec précision, servis avec tranchant.');
+defFood('cookie_trefle', 55, 'Cookie au Trèfle à 5 Feuilles', '🍪', { rqty: 30 }, 30, { trefle: 200, orchidee: 60, poil_koalak: 100 }, 'La chance se mange. Les champs sont plus généreux.');
+defFood('chope_malt', 60, 'Chope de Malt Brâkmarienne', '🍺', { hpPct: 25 }, 25, { malt: 240, peau_kanigrou: 80, poil_koalak: 60 }, 'Un gros cœur et de gros bras. Très gros.');
+defFood('soupe_chanvre', 70, 'Soupe de Chanvre du Paysan', '🍲', { rspd: 50 }, 30, { chanvre: 260, ortie: 150, croc_mufafah: 60, os_chafer: 40 }, 'Elle réveille les bras : la faux va deux fois plus vite.');
+defFood('fondue_royale', 75, 'Fondue du Bouftou Royal', '🫕', { dmgPct: 18, hpPct: 15 }, 30, { os_chafer: 150, croc_mufafah: 100, corne_royale: 2, laine_royale: 3 }, 'Un plat de roi. Il fait du bien à tout le corps.');
+defFood('tarte_edelweiss', 80, "Tarte à l'Edelweiss", '🥧', { dodge: 15, speed: 25 }, 25, { edelweiss: 240, os_chafer: 60, gelee_bleutee: 60 }, 'Légère comme un flocon : on ne te touche plus.');
+defFood('festin_mandragore', 90, 'Festin de Mandragore', '🍖', { xpPct: 30, kamas: 30, pp: 40 }, 30, { mandragore: 200, ginseng: 160, belladone: 80, ectoplasme: 60 }, 'Il crie quand on le coupe, mais qu’est-ce qu’il est bon.');
+defFood('banquet_dieux', 100, "Banquet des Dieux d'Amakna", '🍰', { dmgPct: 25, hpPct: 25, xpPct: 30, crit: 10, speed: 30 }, 45, { perceneige: 240, mandragore: 240, ectoplasme: 80, laine_royale: 3, nattes_bworkette: 2 }, 'Le repas ultime. Les héros s’en souviennent toute leur vie.');
+/* Plat du jour : un plat par jour (parmi ceux que tu sais faire) donne une portion offerte à chaque fabrication */
+function platDuJour(lvl, t = Date.now()) {
+  const pool = RECIPES.filter(r => r.job === 'boulanger' && r.lvl <= Math.max(1, lvl)); if (!pool.length) return null;
+  let x = (Math.imul(dayNumber(t), 2246822519) + 3266489917) >>> 0; x = Math.imul(x ^ (x >>> 15), 2654435761) >>> 0; x = (x ^ (x >>> 13)) >>> 0;
+  return pool[x % pool.length].out;
+}
 
+
+/* --------------------------------------------------------------------
+   MAÎTRISE DES RECETTES — plus tu fabriques une recette, mieux tu la maîtrises :
+   jet minimal garanti (floor) et chance de Jet Parfait (perf = tous les jets au maximum)
+   -------------------------------------------------------------------- */
+const MASTERY_RANKS = [
+  { name: 'Novice',       at: 0,   floor: 0,    perf: 0 },
+  { name: 'Apprenti',     at: 5,   floor: 0.10, perf: 0.01 },
+  { name: 'Compagnon',    at: 20,  floor: 0.25, perf: 0.02 },
+  { name: 'Maître',       at: 60,  floor: 0.40, perf: 0.04 },
+  { name: 'Grand Maître', at: 150, floor: 0.55, perf: 0.07 },
+];
+
+/* --------------------------------------------------------------------
+   FORGEMAGIE — le Forgemage brise les objets en runes (Brisage) et s'en sert pour
+   améliorer d'autres objets (Forgemagie). step : points gagnés par rune.
+   Un jet peut dépasser son maximum de 30 % (Surjet), mais les chances chutent.
+   -------------------------------------------------------------------- */
+JOBS.forgemage = { name: 'Forgemage', makes: 'Brisage et forgemagie' };
+const RUNES = {
+  vit:  { name: 'Vitalité',    icon: '❤️', step: 4, col: '#e8605a' },
+  sag:  { name: 'Sagesse',     icon: '🔮', step: 2, col: '#b58aff' },
+  deg:  { name: 'Dégâts',      icon: '⚔️', step: 2, col: '#ff9a4a' },
+  pp:   { name: 'Prospection', icon: '🍀', step: 2, col: '#5ee0a0' },
+  crit: { name: 'Critique',    icon: '🎯', step: 1, col: '#ff6a8a' },
+  res:  { name: 'Résistance',  icon: '🛡️', step: 1, col: '#8ec4f4' },
+};
+for (const [k, r] of Object.entries(RUNES)) RESOURCES['rune_' + k] = { name: 'Rune ' + r.name, icon: r.icon, value: 12 * r.step, rune: k };
+const FM_OVER = 1.3;
 
 /* --------------------------------------------------------------------
    DROPS D'ÉQUIPEMENT (très rares) — monstre -> objets, dans le thème de sa zone
@@ -524,7 +642,7 @@ const RELIC_DROPS = {
 };
 
 /* Coût de recrutement des héros (index = nombre de héros déjà possédés) */
-const RECRUIT_COST = [0, 4000, 30000, 160000];
+const RECRUIT_COST = [0, 4000, 25000, 60000, 140000, 300000, 650000, 1300000];
 
 const HERO_NAMES = [
   'Brakmouth', 'Pimprenelle', 'Tarnak', 'Mirabulle', 'Fendrel', 'Oswyna', 'Garrok', 'Sélénia', 'Kryssa', 'Bolgo', 'Elyndre', 'Patouf',
@@ -535,3 +653,103 @@ const HERO_NAMES = [
   'Azalée', 'Bastok', 'Cerisette', 'Draknor', 'Ebonix', 'Flocon', 'Gaïamène', 'Hargnor', 'Iris', 'Jabot', 'Kestrel', 'Lumina',
   'Mandrak', 'Nébuleuse', 'Olgrim', 'Paprika', 'Quartzine', 'Rouquin', 'Saphyra', 'Tonnerre', 'Ulysse', 'Vortan', 'Willow', 'Yzalis',
 ];
+
+/* --------------------------------------------------------------------
+   ARBRE DE COMPÉTENCES — 1 point tous les 3 niveaux, 6 voies
+   Chaque nœud : [id, nom, icône, rangs max, bonus par rang, ligne 0-5, colonne 0-2, prérequis (l'un des deux), coût par rang]
+   Stats : deg dmgPct dmg crit critDmg speed pa vit hpPct res dodge regen soin pp kamas xpPct
+           rxp rqty rspd rmir (récolte), foodPow foodDur (repas)
+   -------------------------------------------------------------------- */
+const SKILL_LEVELS_PER_POINT = 3;
+const SKILL_GATE = [0, 0, 3, 6, 10, 15];   // points déjà dépensés dans la voie pour ouvrir la ligne
+const SKILL_STAT = {
+  deg: ['Dégâts', ' %'], dmgPct: ['Dégâts finaux', ' %'], dmg: ['Dommages fixes', ''], crit: ['Critique', ' %'], critDmg: ['Dégâts critiques', ' %'],
+  speed: ['Vitesse de combat', ' %'], pa: ['PA', ''], vit: ['Vitalité', ''], hpPct: ['PV max', ' %'], res: ['Résistance', ' %'], dodge: ['Esquive', ' %'],
+  regen: ['Régénération par tour', ' % PV'], soin: ['Soins', ''], pp: ['Prospection', ''], kamas: ['Kamas gagnés', ' %'], xpPct: ['XP de combat', ' %'],
+  rxp: ['XP de récolte', ' %'], rqty: ['Quantité récoltée', ' %'], rspd: ['Vitesse de récolte', ' %'], rmir: ['Chance de miracle', ' %'],
+  foodPow: ['Effet des repas', ' %'], foodDur: ['Durée des repas', ' %'],
+};
+const SKILL_BRANCHES = [
+  { id: 'guerrier', name: 'Voie du Guerrier', icon: '⚔️', col: '#e0533f', text: 'Frapper plus fort, plus souvent, plus juste.',
+    per: { dmgPct: 0.3 },
+    mile: [[3, { dmgPct: 2 }], [6, { crit: 3, dmg: 5 }], [9, { deg: 5 }], [12, { critDmg: 15, dmgPct: 3 }], [15, { speed: 5 }], [18, { dmgPct: 5, crit: 3 }], [21, { deg: 8 }], [24, { critDmg: 20, dmg: 10 }], [27, { dmgPct: 6 }], [30, { crit: 5, dmgPct: 5 }], [33, { dmgPct: 10, critDmg: 25, speed: 10 }]],
+    nodes: [
+      ['a1', 'Poigne de Fer', '💪', 5, { deg: 3 }, 0, 1, [], 1],
+      ['a2', 'Lames Affûtées', '🗡️', 5, { dmg: 3 }, 1, 0, ['a1'], 1],
+      ['a3', 'Œil du Tueur', '👁️', 5, { crit: 1 }, 1, 2, ['a1'], 1],
+      ['a4', 'Rage Contenue', '😤', 5, { dmgPct: 2 }, 2, 1, ['a2', 'a3'], 1],
+      ['a5', 'Coup Fatal', '☠️', 4, { critDmg: 8 }, 3, 0, ['a4'], 1],
+      ['a6', 'Frénésie', '🔥', 4, { speed: 4 }, 3, 2, ['a4'], 1],
+      ['a7', "Maître d'Armes", '🏅', 3, { deg: 4, dmgPct: 2 }, 4, 1, ['a5', 'a6'], 1],
+      ['a8', 'Colère des Dieux', '⚡', 1, { pa: 1, crit: 5, dmgPct: 5 }, 5, 1, ['a7'], 3],
+    ] },
+  { id: 'rempart', name: 'Voie du Rempart', icon: '🛡️', col: '#55a8ea', text: 'Encaisser, esquiver, se relever.',
+    per: { hpPct: 0.4 },
+    mile: [[3, { vit: 40 }], [6, { res: 2 }], [9, { hpPct: 4 }], [12, { dodge: 2, regen: 0.3 }], [15, { vit: 60 }], [18, { hpPct: 5, res: 2 }], [21, { soin: 10 }], [24, { res: 3, dodge: 3 }], [27, { hpPct: 6 }], [30, { regen: 0.8, soin: 15 }], [33, { hpPct: 10, res: 4, dodge: 3 }]],
+    nodes: [
+      ['b1', 'Constitution', '❤️', 5, { vit: 25 }, 0, 1, [], 1],
+      ['b2', 'Peau de Pierre', '🪨', 5, { res: 1 }, 1, 0, ['b1'], 1],
+      ['b3', 'Esquive Féline', '🐈', 5, { dodge: 1 }, 1, 2, ['b1'], 1],
+      ['b4', 'Cœur Robuste', '💖', 5, { hpPct: 3 }, 2, 1, ['b2', 'b3'], 1],
+      ['b5', 'Soins Vitaux', '🩹', 4, { soin: 5 }, 3, 0, ['b4'], 1],
+      ['b6', 'Seconde Peau', '🌿', 4, { regen: 0.6 }, 3, 2, ['b4'], 1],
+      ['b7', 'Forteresse', '🏰', 3, { hpPct: 4, res: 1 }, 4, 1, ['b5', 'b6'], 1],
+      ['b8', 'Inébranlable', '🗿', 1, { hpPct: 18, res: 5, regen: 1.5 }, 5, 1, ['b7'], 3],
+    ] },
+  { id: 'vent', name: 'Voie du Vent', icon: '🌪️', col: '#74c552', text: 'La vitesse avant tout : jouer avant les autres.',
+    per: { speed: 0.5 },
+    mile: [[3, { speed: 5 }], [6, { dodge: 2 }], [9, { crit: 2 }], [12, { speed: 8, pp: 10 }], [15, { dodge: 2 }], [18, { dmgPct: 4, speed: 6 }], [21, { crit: 3 }], [24, { speed: 10, critDmg: 10 }], [27, { dodge: 3 }], [30, { dmgPct: 5, crit: 3 }], [33, { speed: 15, dodge: 4, dmgPct: 5 }]],
+    nodes: [
+      ['c1', 'Pas Léger', '👟', 5, { speed: 3 }, 0, 1, [], 1],
+      ['c2', 'Réflexes', '⚡', 5, { dodge: 1 }, 1, 0, ['c1'], 1],
+      ['c3', 'Visée', '🎯', 5, { crit: 1 }, 1, 2, ['c1'], 1],
+      ['c4', 'Souffle Court', '💨', 5, { speed: 3 }, 2, 1, ['c2', 'c3'], 1],
+      ['c5', 'Lame de Vent', '🍃', 4, { dmgPct: 2.5 }, 3, 0, ['c4'], 1],
+      ['c6', "Coup d'Œil", '🔭', 4, { pp: 6 }, 3, 2, ['c4'], 1],
+      ['c7', 'Tourbillon', '🌀', 3, { speed: 4, crit: 1 }, 4, 1, ['c5', 'c6'], 1],
+      ['c8', 'Maître du Temps', '⏳', 1, { speed: 25, dodge: 4, critDmg: 15 }, 5, 1, ['c7'], 3],
+    ] },
+  { id: 'marchand', name: 'Voie du Marchand', icon: '💰', col: '#e8aa2e', text: 'Kamas, butin et savoir : tout se monnaie.',
+    per: { kamas: 0.5 },
+    mile: [[3, { kamas: 5 }], [6, { pp: 15 }], [9, { xpPct: 4 }], [12, { kamas: 8, pp: 10 }], [15, { xpPct: 4 }], [18, { pp: 25, kamas: 6 }], [21, { kamas: 8 }], [24, { xpPct: 8, pp: 15 }], [27, { kamas: 10 }], [30, { xpPct: 8, pp: 25 }], [33, { kamas: 20, xpPct: 10, pp: 30 }]],
+    nodes: [
+      ['d1', 'Bourse Pleine', '👛', 5, { kamas: 4 }, 0, 1, [], 1],
+      ['d2', 'Flair', '👃', 5, { pp: 8 }, 1, 0, ['d1'], 1],
+      ['d3', 'Érudit', '📚', 5, { xpPct: 3 }, 1, 2, ['d1'], 1],
+      ['d4', 'Négociant', '🤝', 5, { kamas: 4 }, 2, 1, ['d2', 'd3'], 1],
+      ['d5', 'Chasseur de Trésors', '🗺️', 4, { pp: 10 }, 3, 0, ['d4'], 1],
+      ['d6', 'Savoir Infus', '🔮', 4, { xpPct: 3 }, 3, 2, ['d4'], 1],
+      ['d7', 'Magnat', '🏦', 3, { kamas: 6, pp: 10 }, 4, 1, ['d5', 'd6'], 1],
+      ['d8', "Roi d'Astrub", '👑', 1, { kamas: 30, xpPct: 15, pp: 30 }, 5, 1, ['d7'], 3],
+    ] },
+  { id: 'paysan', name: 'Voie des Champs', icon: '🌾', col: '#9cba52', text: 'La terre donne plus à qui sait la cueillir.',
+    per: { rspd: 0.6 },
+    mile: [[3, { rspd: 6 }], [6, { rxp: 8 }], [9, { rqty: 6 }], [12, { rspd: 8, rmir: 0.5 }], [15, { rxp: 8 }], [18, { rqty: 8, rmir: 0.5 }], [21, { rspd: 10 }], [24, { rxp: 12, rqty: 8 }], [27, { rmir: 1 }], [30, { rspd: 12, rqty: 10 }], [33, { rmir: 2, rxp: 15, rspd: 15 }]],
+    nodes: [
+      ['e1', 'Doigts de Fée', '🤲', 5, { rspd: 4 }, 0, 1, [], 1],
+      ['e2', 'Bonne Graine', '🌱', 5, { rqty: 4 }, 1, 0, ['e1'], 1],
+      ['e3', 'Sagesse des Champs', '📖', 5, { rxp: 5 }, 1, 2, ['e1'], 1],
+      ['e4', 'Main Verte', '🌿', 5, { rspd: 4 }, 2, 1, ['e2', 'e3'], 1],
+      ['e5', 'Moisson Abondante', '🧺', 4, { rqty: 5 }, 3, 0, ['e4'], 1],
+      ['e6', 'Chance du Paysan', '🍀', 4, { rmir: 0.6 }, 3, 2, ['e4'], 1],
+      ['e7', 'Alchimie Instinctive', '⚗️', 3, { rxp: 6, rqty: 4 }, 4, 1, ['e5', 'e6'], 1],
+      ['e8', 'Avatar des Moissons', '🌻', 1, { rmir: 5, rspd: 30, rqty: 20 }, 5, 1, ['e7'], 3],
+    ] },
+  { id: 'gourmet', name: 'Voie du Gourmet', icon: '🍞', col: '#f08a6a', text: 'Les repas deviennent plus forts et durent plus longtemps.',
+    per: { foodPow: 0.6 },
+    mile: [[3, { foodPow: 5 }], [6, { foodDur: 10 }], [9, { hpPct: 2 }], [12, { foodPow: 8, vit: 40 }], [15, { foodDur: 12 }], [18, { foodPow: 8, dmgPct: 2 }], [21, { hpPct: 3 }], [24, { foodDur: 15, foodPow: 8 }], [27, { regen: 0.4 }], [30, { foodPow: 10, dmgPct: 3 }], [33, { foodPow: 20, foodDur: 25, hpPct: 5 }]],
+    nodes: [
+      ['f1', 'Palais Fin', '👅', 5, { foodPow: 4 }, 0, 1, [], 1],
+      ['f2', 'Gros Appétit', '🍽️', 5, { foodDur: 6 }, 1, 0, ['f1'], 1],
+      ['f3', "Estomac d'Acier", '🥣', 5, { vit: 20 }, 1, 2, ['f1'], 1],
+      ['f4', 'Cuisson Parfaite', '👨‍🍳', 5, { foodPow: 4 }, 2, 1, ['f2', 'f3'], 1],
+      ['f5', 'Garde-Manger', '🏺', 4, { foodDur: 8 }, 3, 0, ['f4'], 1],
+      ['f6', 'Bonne Chère', '🍷', 4, { regen: 0.5 }, 3, 2, ['f4'], 1],
+      ['f7', 'Gastronome', '🎖️', 3, { foodPow: 6, foodDur: 10 }, 4, 1, ['f5', 'f6'], 1],
+      ['f8', 'Festin Éternel', '🍰', 1, { foodPow: 40, foodDur: 50, hpPct: 8 }, 5, 1, ['f7'], 3],
+    ] },
+];
+/* Bonus de puissance selon le total de points dépensés (toutes voies) */
+const SKILL_GLOBAL = [[15, { dmgPct: 3, hpPct: 3 }], [30, { xpPct: 5, kamas: 5 }], [45, { dmgPct: 5, hpPct: 5 }], [60, { crit: 3, speed: 8, pp: 20 }]];
+const SKILL_NODE = {}; for (const b of SKILL_BRANCHES) for (const n of b.nodes) SKILL_NODE[n[0]] = { id: n[0], name: n[1], icon: n[2], max: n[3], fx: n[4], r: n[5], c: n[6], req: n[7], cost: n[8], branch: b.id };
+function skillFmt(k, v) { const s = SKILL_STAT[k]; return `+${String(+v.toFixed(2)).replace('.', ',')}${s[1]} ${s[0]}`; }
