@@ -72,6 +72,13 @@ function wmSubScenery() {
   o += pine(1112, 344, 1.1, '#2f6a5a', true) + pine(1252, 336, 1.2, '#2f6a5a', true) + pine(1272, 366, .9, '#3a7a68', true) + pine(1136, 372, .85, '#3a7a68', true);
   for (const [x, y, s] of [[1236, 358, 1], [1196, 372, .8], [1262, 322, .7]]) o += `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0-16 5-4 0 0-5-4Z" fill="#9fe8ff" stroke="#3a8ab8" stroke-width=".8"/><path d="M0-16 5-4 0 0Z" fill="#fff" opacity=".35"/><path d="M-7-8-3-2-7 0-10-3Z" fill="#c8f2ff" stroke="#3a8ab8" stroke-width=".7"/></g>`;
   o += rock(1150, 352, .8, '#b8c8d8') + rock(1226, 376, .7, '#b8c8d8');
+  // prolongement vers l'est (la carte s'élargit pour le donjon du Mansot Royal)
+  o += `<ellipse cx="1334" cy="352" rx="84" ry="34" fill="#a8c8e4" opacity=".45"/><ellipse cx="1330" cy="346" rx="66" ry="25" fill="#f2f8ff" opacity=".65"/>`;
+  o += pine(1306, 350, 1.15, '#2f6a5a', true) + pine(1352, 342, 1.3, '#2f6a5a', true) + pine(1372, 372, .9, '#3a7a68', true) + pine(1318, 382, .8, '#3a7a68', true) + pine(1342, 392, .7, '#3a7a68', true);
+  for (const [x, y, k] of [[1296, 372, .8], [1366, 334, .7], [1330, 368, .9]]) o += `<g transform="translate(${x} ${y}) scale(${k})"><path d="M0-16 5-4 0 0-5-4Z" fill="#9fe8ff" stroke="#3a8ab8" stroke-width=".8" stroke-linejoin="round"/><path d="M0-16 5-4 0 0Z" fill="#fff" opacity=".4"/></g>`;
+  o += rock(1292, 396, .7, '#b8c8d8') + rock(1364, 388, .6, '#b8c8d8');
+  // entrée du donjon du Mansot Royal : porche de glace
+  o += `<g transform="translate(1318 150)"><ellipse cx="0" cy="2" rx="40" ry="6" fill="#000" opacity=".22"/><path d="M-36 0-10-46 10-46 36 0Z" fill="#c4d8ec"/><path d="M-10-46 10-46 36 0H12Z" fill="#7a96b4" opacity=".6"/><path d="M-11 0v-12a11 13 0 0 1 22 0V0Z" fill="#1a2a3e"/><path d="M-7 0v-10a7 9 0 0 1 14 0V0Z" fill="#6ad4ff" opacity=".5"/></g>`;
   return o;
 }
 
@@ -83,7 +90,7 @@ function wmSubAnim() {
   o += `<g class="wm-aurora" ${P(9000)}><path d="M1040 14C1100 40 1130 4 1180 28S1250 6 1290 30V112C1250 90 1220 120 1170 96S1090 124 1040 100Z" fill="url(#wmAur)"/></g>`;
   o += `<g class="wm-aurora" style="animation-delay:-4000ms;animation-duration:12000ms;opacity:.7"><path d="M1090 8C1140 30 1180 0 1230 22S1270 10 1290 18V80C1250 70 1210 96 1170 76S1120 86 1090 70Z" fill="url(#wmAur)"/></g>`;
   /* flocons */
-  for (let i = 0; i < 16; i++) { const x = 1100 + _rn(i + 400) * 180, T = 5200 + _rn(i + 410) * 3600; o += `<circle class="wm-snow" cx="${x.toFixed(0)}" cy="${(250 + _rn(i + 420) * 20).toFixed(0)}" r="${(1 + _rn(i + 430) * 1.2).toFixed(1)}" fill="#fff" opacity=".9" ${P(T, i)}/>`; }
+  for (let i = 0; i < 16; i++) { const x = 1100 + _rn(i + 400) * 270, T = 5200 + _rn(i + 410) * 3600; o += `<circle class="wm-snow" cx="${x.toFixed(0)}" cy="${(250 + _rn(i + 420) * 20).toFixed(0)}" r="${(1 + _rn(i + 430) * 1.2).toFixed(1)}" fill="#fff" opacity=".9" ${P(T, i)}/>`; }
   /* braises et fumée du volcan */
   for (let i = 0; i < 7; i++) { const x = 1196 + _rn(i + 440) * 18 - 6, T = 3000 + _rn(i + 450) * 2200; o += `<circle class="wm-ember" cx="${x.toFixed(0)}" cy="118" r="${(1 + _rn(i + 460)).toFixed(1)}" fill="#ffb04a" ${P(T, i)}/>`; }
   for (let i = 0; i < 3; i++) o += `<circle class="wm-smoke" cx="${1198 + i * 5}" cy="112" r="${7 + i * 2}" fill="#8a7a78" ${P(7000, i)}/>`;
@@ -104,15 +111,17 @@ function wmSubAnim() {
 
 /* Bandeau « Sous-zones » (zone mère) ou « Zone mère » (sous-zone) */
 function wmLinked(p, type) {
-  if (type !== 'zone') return '';
-  const par = p.sub ? ZONES.find(z => z.id === p.parent) : null;
-  const kids = ZONES.filter(z => z.sub && z.parent === p.id);
-  if (!par && !kids.length) return '';
-  const chip = (z, rel) => {
-    const [rd, rl] = readiness(z), big = z.monsters.find(m => MONSTERS[m].big) || z.monsters[0];
-    const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === z.id).length;
-    return `<button class="lk${z.sub ? ' sub' : ''}" data-act="place" data-type="zone" data-id="${z.id}" style="${themeStyle(_wmTh(z.region))}" title="${rl}">
+  const par = type === 'zone' ? (p.sub ? ZONES.find(z => z.id === p.parent) : null) : (WM_LINK[p.id] ? ZONES.find(z => z.id === WM_LINK[p.id]) : null);
+  const kids = type === 'zone' ? ZONES.filter(z => z.sub && z.parent === p.id) : [];
+  const djs = type === 'zone' ? DUNGEONS.filter(d => WM_LINK[d.id] === p.id) : [];
+  if (!par && !kids.length && !djs.length) return '';
+  const chip = (z, rel, t = 'zone') => {
+    const [rd, rl] = readiness(z), big = t === 'dungeon' ? z.boss[0] : (z.monsters.find(m => MONSTERS[m].big) || z.archiBase || z.monsters[0]);
+    const n = st.heroes.filter(h => h.act && h.act.type === t && h.act.id === z.id).length;
+    return `<button class="lk${z.sub ? ' sub' : ''}" data-act="place" data-type="${t}" data-id="${z.id}" style="${themeStyle(_wmTh(z.region))}" title="${rl}">
       <span class="lk-ic">${monIcon(big)}</span><span class="lk-t"><small>${rel}</small><b>${z.name}</b></span><span class="lk-lv"><em class="rd ${rd}">niv. ${z.lvl[0]}–${z.lvl[1]}</em>${n ? `<i class="lk-n">${n} 🧑</i>` : ''}</span></button>`;
   };
-  return `<div class="linked"><span class="label">${par ? 'Zone mère' : kids.length > 1 ? 'Sous-zones' : 'Sous-zone'}</span><div class="lk-row">${par ? chip(par, 'Retour à') : ''}${kids.map(k => chip(k, k.lvl[0] > p.lvl[1] ? 'Plus loin' : 'À explorer')).join('')}</div></div>`;
+  const near = kids.length + djs.length;
+  const lab = par ? (near ? 'Zone mère et alentours' : 'Zone mère') : near > 1 ? 'Sous-zones et donjons' : kids.length ? 'Sous-zone' : 'Donjon';
+  return `<div class="linked"><span class="label">${lab}</span><div class="lk-row">${par ? chip(par, 'Retour à') : ''}${kids.map(k => chip(k, k.lvl[0] > p.lvl[1] ? 'Plus loin' : 'À explorer')).join('')}${djs.map(d => chip(d, 'Donjon', 'dungeon')).join('')}</div></div>`;
 }

@@ -1,9 +1,10 @@
 /* =====================================================================
    SOUS-ZONES DE LA CARTE — des coins de Dofus rattachés aux zones principales
-   Chaque sous-zone a ses monstres, un GROS MONSTRE (le plus fort, avec relique et archimonstre),
-   sa panoplie et sa relique. Les archimonstres sont créés comme pour les zones (addArchi).
+   Chaque sous-zone a ses monstres, un GROS MONSTRE (avec archimonstre), sa panoplie et sa relique.
    Île des Wabbits · Lac des Blops · Village Kanniboul · Territoire des Porcos
-   Sanctuaire des Dragoeufs · Frigost (Excavation du Mansot Royal)
+   Sanctuaire des Dragoeufs · Frigost
+   Trois gros monstres ont leur propre DONJON (Dragon Cochon, Crocabulia, Mansot Royal) : ils n'apparaissent
+   plus dans leur zone, qui a un autre gros monstre (zone.archiBase) dont l'archimonstre est la version ×2.
    Les niveaux de métier des recettes restent ≤ 100 (MAX_JOB_LEVEL).
    ===================================================================== */
 
@@ -40,6 +41,10 @@ Object.assign(RESOURCES, {
   croc_givre:         { name: 'Croc de Givre', icon: '🧊', value: 110 },
   eclat_givre:        { name: 'Éclat de Glace Éternelle', icon: '💎', value: 116 },
   cristal_mansot:     { name: 'Cristal du Mansot Royal', icon: '🔷', value: 900, rare: true },
+  /* Clefs des donjons de sous-zone (fabriquées par le Bricoleur) */
+  clef_dragon_cochon: { name: 'Clef du Repaire du Dragon Cochon', icon: '🗝️', value: 300, key: true },
+  clef_crocabulia:    { name: "Clef de l'Antre de Crocabulia", icon: '🗝️', value: 450, key: true },
+  clef_mansot:        { name: "Clef de l'Excavation du Mansot Royal", icon: '🗝️', value: 650, key: true },
 });
 
 /* ---------------------------- Monstres ----------------------------
@@ -70,21 +75,27 @@ Object.assign(MONSTERS, {
   porsalu:       { name: 'Porsalu', icon: '🐖', lvl: 74, hpm: 1.1, dm: 1.15, drops: [['couenne_porsalu', 0.45], ['jambon_farle', 0.12]] },
   cochon_farle:  { name: 'Cochon de Farle', icon: '🐷', lvl: 78, hpm: 1.5, dm: 0.95, res: 8, drops: [['jambon_farle', 0.45], ['couenne_porsalu', 0.15]] },
   don_dorgan:    { name: 'Don Dorgan', icon: '🎩', lvl: 82, hpm: 1.2, dm: 1.3, drops: [['groin_dorgan', 0.45], ['jambon_farle', 0.12]] },
-  dragon_cochon: { name: 'Dragon Cochon', icon: '🐲', lvl: 88, hpm: 2.5, dm: 1.2, res: 14, big: true,
+  verrat_guerre: { name: 'Verrat de Guerre', icon: '🐗', lvl: 86, hpm: 2.4, dm: 1.25, res: 12, big: true, // base de l'archimonstre de la zone
+                   drops: [['groin_dorgan', 0.8], ['jambon_farle', 0.6], ['couenne_porsalu', 0.6]] },
+  dragon_cochon: { name: 'Dragon Cochon', icon: '🐲', lvl: 88, hpm: 3, dm: 1.2, res: 14, big: true, boss: true, // boss de donjon
                    drops: [['ecaille_cochon', 0.3], ['groin_dorgan', 0.8], ['jambon_farle', 0.6], ['couenne_porsalu', 0.6]] },
 
   /* Sanctuaire des Dragoeufs (90-104) */
   dragoeuf_guerrier: { name: 'Dragoeuf Guerrier', icon: '🥚', lvl: 90, hpm: 1.3, dm: 1.2, res: 8, drops: [['coquille_dragoeuf', 0.45], ['ecaille_dore', 0.12]] },
   dragoss_dore:      { name: 'Dragoss Doré', icon: '🐲', lvl: 94, hpm: 1.1, dm: 1.25, drops: [['ecaille_dore', 0.45], ['coquille_dragoeuf', 0.12]] },
   dragueuse:         { name: 'Dragueuse', icon: '🔥', lvl: 98, hpm: 1.0, dm: 1.4, drops: [['braise_dragueuse', 0.45], ['ecaille_dore', 0.12]] },
-  crocabulia:        { name: 'Crocabulia', icon: '🐊', lvl: 104, hpm: 2.6, dm: 1.25, res: 15, big: true,
+  mere_dragoeuf:     { name: 'Mère Dragoeuf', icon: '🐉', lvl: 102, hpm: 2.5, dm: 1.3, res: 14, big: true, // base de l'archimonstre de la zone
+                       drops: [['braise_dragueuse', 0.8], ['ecaille_dore', 0.6], ['coquille_dragoeuf', 0.6]] },
+  crocabulia:        { name: 'Crocabulia', icon: '🐊', lvl: 104, hpm: 3.1, dm: 1.25, res: 15, big: true, boss: true, // boss de donjon
                        drops: [['oeuf_crocabulia', 0.3], ['braise_dragueuse', 0.8], ['ecaille_dore', 0.6], ['coquille_dragoeuf', 0.6]] },
 
   /* Frigost — Excavation du Mansot Royal (108-126) */
   timansot:      { name: 'Timansot', icon: '🧸', lvl: 108, hpm: 1.0, dm: 1.2, drops: [['poil_mansot', 0.45], ['croc_givre', 0.12]] },
   mansobese:     { name: 'Mansobèse', icon: '🦣', lvl: 113, hpm: 1.7, dm: 0.95, res: 10, drops: [['croc_givre', 0.45], ['poil_mansot', 0.15]] },
   shamansot:     { name: 'Shamansot', icon: '🧙', lvl: 118, hpm: 1.0, dm: 1.4, drops: [['eclat_givre', 0.45], ['poil_mansot', 0.12]] },
-  mansot_royal:  { name: 'Mansot Royal', icon: '👑', lvl: 126, hpm: 2.7, dm: 1.25, res: 15, big: true,
+  mansot_colosse: { name: 'Mansot Colosse', icon: '🦣', lvl: 124, hpm: 2.6, dm: 1.3, res: 14, big: true, // base de l'archimonstre de la zone
+                   drops: [['eclat_givre', 0.8], ['croc_givre', 0.6], ['poil_mansot', 0.6]] },
+  mansot_royal:  { name: 'Mansot Royal', icon: '👑', lvl: 126, hpm: 3.2, dm: 1.25, res: 15, big: true, boss: true, // boss de donjon
                    drops: [['cristal_mansot', 0.3], ['eclat_givre', 0.8], ['croc_givre', 0.6], ['poil_mansot', 0.6]] },
 });
 
@@ -96,18 +107,34 @@ ZONES.push(
     text: 'Dans les eaux troubles du lac de Cania, les blops de toutes les couleurs se dandinent autour de leur souverain multicolore.' },
   { id: 'kanniboul', sub: true, parent: 'koalaks', name: 'Village Kanniboul', region: 'Moon', lvl: [52, 66], monsters: ['kanniboul_jav', 'kanniboul_ark', 'kanniboul_sarbak', 'kanniboul_ebil'],
     text: "Au cœur de l'île de Moon, une tribu masquée défend son village à coups de javelots, de flèches et de sarbacanes." },
-  { id: 'porcos', sub: true, parent: 'sidimote', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan', 'dragon_cochon'],
-    text: "Fermes, boue et lard : le territoire des Porcos, que protège un dragon d'un genre très particulier." },
-  { id: 'dragoeufs', sub: true, parent: 'sidimote', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse', 'crocabulia'],
-    text: 'Un sanctuaire de coquilles brûlantes où les œufs éclosent en dragons. Crocabulia veille sur la couvée.' },
-  { id: 'frigost', sub: true, parent: 'porcos', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot', 'mansot_royal'],
+  { id: 'porcos', sub: true, parent: 'sidimote', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan'], archiBase: 'verrat_guerre',
+    text: "Fermes, boue et lard : le territoire des Porcos. Un verrat de guerre rôde, et le repaire du Dragon Cochon n'est pas loin." },
+  { id: 'dragoeufs', sub: true, parent: 'sidimote', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse'], archiBase: 'mere_dragoeuf',
+    text: "Un sanctuaire de coquilles brûlantes où les œufs éclosent en dragons. L'antre de Crocabulia s'ouvre au fond de la couvée." },
+  { id: 'frigost', sub: true, parent: 'porcos', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot'], archiBase: 'mansot_colosse',
     text: "Sur la banquise de Frigost, les Mansots creusent l'excavation de leur roi. Prévois un gros manteau." },
 );
 Object.assign(ARCHI_NAMES, {
   wabbits: 'Wa Wabbit Impérial', blops: 'Blop Prismatique Primordial', kanniboul: 'Ebil le Dévoreur',
-  porcos: 'Dragon Cochon Ancestral', dragoeufs: "Crocabulia l'Insatiable", frigost: 'Mansot Souverain des Glaces',
+  porcos: 'Verrat de Guerre Légendaire', dragoeufs: 'Mère Dragoeuf Primordiale', frigost: 'Mansot Colosse Éternel',
 });
 for (const z of ZONES) if (z.sub) addArchi(z);
+
+/* ---------------------------- Donjons des gros monstres ---------------------------- */
+DUNGEONS.push(
+  { id: 'dj_dragon_cochon', name: 'Repaire du Dragon Cochon', region: 'Porcos', lvl: [82, 92], key: 'clef_dragon_cochon',
+    rooms: [['porsalu', 'porsalu', 'cochon_farle'], ['cochon_farle', 'don_dorgan'], ['don_dorgan', 'don_dorgan', 'porsalu']],
+    boss: ['dragon_cochon', 'don_dorgan'], bonusXp: 1.5,
+    text: 'Au fond des porcheries, le Dragon Cochon couve son trésor de lard et de pièces d’or. Une clef par entrée.' },
+  { id: 'dj_crocabulia', name: 'Antre de Crocabulia', region: 'Dragoeufs', lvl: [98, 108], key: 'clef_crocabulia',
+    rooms: [['dragoeuf_guerrier', 'dragoeuf_guerrier', 'dragoss_dore'], ['dragoss_dore', 'dragueuse'], ['dragueuse', 'dragueuse', 'dragoeuf_guerrier']],
+    boss: ['crocabulia', 'dragueuse'], bonusXp: 1.5,
+    text: 'Crocabulia, mi-crocodile mi-dragon, garde la couvée dans une caverne brûlante. Une clef par entrée.' },
+  { id: 'dj_mansot', name: 'Excavation du Mansot Royal', region: 'Frigost', lvl: [120, 130], key: 'clef_mansot',
+    rooms: [['timansot', 'timansot', 'mansobese'], ['mansobese', 'shamansot'], ['shamansot', 'shamansot', 'timansot']],
+    boss: ['mansot_royal', 'shamansot'], bonusXp: 1.5,
+    text: 'Sous la glace, le Mansot Royal siège sur un trône de cristal. Une clef par entrée.' },
+);
 
 /* ---------------------------- Panoplies ---------------------------- */
 Object.assign(SETS, {
@@ -209,6 +236,10 @@ Object.assign(ITEMS, {
     { out: 'bottes_mansot', job: 'cordonnier', lvl: 96, ing: { croc_givre: 14, poil_mansot: 8 } },
     { out: 'ceinture_mansot', job: 'cordonnier', lvl: 98, ing: { eclat_givre: 12, croc_givre: 8 } },
     { out: 'masse_mansot', job: 'forgeron', lvl: 100, ing: { cristal_mansot: 1, eclat_givre: 14, croc_givre: 12, poil_mansot: 10 } },
+    /* Clefs de donjon (Bricoleur) */
+    { out: 'clef_dragon_cochon', job: 'bricoleur', lvl: 60, ing: { groin_dorgan: 10, jambon_farle: 8, couenne_porsalu: 8 } },
+    { out: 'clef_crocabulia', job: 'bricoleur', lvl: 80, ing: { braise_dragueuse: 10, ecaille_dore: 8, coquille_dragoeuf: 8 } },
+    { out: 'clef_mansot', job: 'bricoleur', lvl: 100, ing: { eclat_givre: 10, croc_givre: 8, poil_mansot: 8 } },
   ];
   for (const r of R) { for (const k of Object.keys(r.ing)) r.ing[k] *= CRAFT_COST_MULT; RECIPES.push(r); }
 }
@@ -222,13 +253,16 @@ Object.assign(GEAR_DROPS, {
   kanniboul_jav: ['bottes_kanniboul', 'ceinture_kanniboul'], kanniboul_ark: ['cape_kanniboul', 'bottes_kanniboul'], kanniboul_sarbak: ['coiffe_kanniboul', 'ceinture_kanniboul'],
   kanniboul_ebil: ['lance_kanniboul', 'coiffe_kanniboul', 'cape_kanniboul'],
   porsalu: ['ceinture_porcos'], cochon_farle: ['cape_porcos', 'ceinture_porcos'], don_dorgan: ['coiffe_porcos', 'amulette_porcos'],
+  verrat_guerre: ['cape_porcos', 'ceinture_porcos', 'amulette_porcos'],
   dragon_cochon: ['rotissoire_cochon', 'amulette_porcos', 'coiffe_porcos'],
   dragoeuf_guerrier: ['coiffe_dragoeuf'], dragoss_dore: ['cape_dragoeuf', 'anneau_dragoeuf'], dragueuse: ['amulette_dragoeuf', 'anneau_dragoeuf'],
+  mere_dragoeuf: ['cape_dragoeuf', 'anneau_dragoeuf', 'coiffe_dragoeuf'],
   crocabulia: ['croc_crocabulia', 'amulette_dragoeuf', 'cape_dragoeuf'],
   timansot: ['bottes_mansot', 'ceinture_mansot'], mansobese: ['coiffe_mansot', 'cape_mansot'], shamansot: ['cape_mansot', 'ceinture_mansot'],
+  mansot_colosse: ['coiffe_mansot', 'bottes_mansot', 'ceinture_mansot'],
   mansot_royal: ['masse_mansot', 'coiffe_mansot', 'bottes_mansot'],
 });
 Object.assign(RELIC_DROPS, {
   wa_wabbit: [['relique_wabbit', 0.0005]], blop_royal: [['relique_blop', 0.0005]], kanniboul_ebil: [['relique_kanniboul', 0.0005]],
-  dragon_cochon: [['relique_porcos', 0.0005]], crocabulia: [['relique_dragoeuf', 0.0005]], mansot_royal: [['relique_mansot', 0.0005]],
+  dragon_cochon: [['relique_porcos', 0.02]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
 });

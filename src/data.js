@@ -269,7 +269,7 @@ const ARCHI_RATE = 0.01, ARCHI_MULT = 2, ARCHI_REWARD = 6;
 const ARCHI_NAMES = { incarnam: 'Pissenlit Séculaire', astrub: 'Champ Champ Colossal', abraknydes: 'Sanglier Roi des Bois', cania: 'Bwork Chef de Guerre', koalaks: 'Mufafah Alpha', sidimote: 'Seigneur Chafer' };
 const ARCHIS = {}; // id de zone → id de l'archimonstre
 function addArchi(z) {
-  const best = z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
+  const best = z.archiBase || z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
   const mid = 'archi_' + z.id; ARCHIS[z.id] = mid;
   MONSTERS[mid] = { ...MONSTERS[best], name: ARCHI_NAMES[z.id] || ('Archi-' + MONSTERS[best].name), archi: true, base: best, mult: ARCHI_MULT };
 }

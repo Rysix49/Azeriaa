@@ -441,6 +441,65 @@ function _mansotRoyal() {
 }
 Object.assign(MON_ART2, { timansot: _timansot(), mansobese: _mansobese(), shamansot: _shamansot(), mansot_royal: _mansotRoyal() });
 
+/* =====================================================================
+   BASES D'ARCHIMONSTRE : Verrat de Guerre (Porcos), Mère Dragoeuf (Dragoeufs), Mansot Colosse (Frigost)
+   ===================================================================== */
+function _verrat() {
+  const bd = _q(), mn = _q(), ar = _q(), sn = _q();
+  const defs = _qrg(bd, [[0, '#c88a52'], [.5, '#8a5430'], [1, '#3e2410']], .4, .28, .95) + _qlg(mn, [[0, '#5a3a22'], [1, '#1e1008']]) + _qlg(ar, [[0, '#f4f8ff'], [.5, '#a8b4c8'], [1, '#4a5468']], 0, 0, 1, 1) + _qrg(sn, [[0, '#f0b0a8'], [1, '#b8605a']], .4, .3, .9);
+  const K = 'stroke="#1e1008" stroke-width="2.2" stroke-linejoin="round"';
+  const hoof = x => `<path d="M${x - 7} 100v12c-3 0-5 1-5 4h18c0-3-2-4-5-4v-12Z" fill="url(#${bd})" ${K}/><path d="M${x - 7} 116h12" stroke="#1e1008" stroke-width="2.4"/>`;
+  const body = `${_qsh(40)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M26 82C14 80 10 70 16 64" stroke="#1e1008" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M26 82C14 80 10 70 16 64" stroke="url(#${bd})" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M16 64 10 62 14 56Z" fill="#3e2410" ${K}/></g>
+    ${hoof(40)}${hoof(86)}
+    <path d="M24 84C22 64 40 52 64 52 88 52 104 64 102 86 100 102 84 108 64 108 44 108 26 102 24 84Z" fill="url(#${bd})" ${K}/>
+    <path d="M30 62 36 48 42 58 50 44 56 56 64 42 70 55 78 43 84 56 92 46 96 62" fill="url(#${mn})" ${K}/>
+    <path d="M32 72c10-10 36-16 62-6" stroke="#fff" stroke-width="2.4" fill="none" opacity=".25" stroke-linecap="round"/>
+    <path d="M36 74C44 62 60 58 76 62L84 98C66 104 44 100 36 90Z" fill="url(#${ar})" ${K}/><path d="M48 66 52 96M62 64 66 100" stroke="#3a4254" stroke-width="1.4" opacity=".7"/>${[[44, 72], [44, 90], [58, 70], [58, 96], [72, 70], [74, 96]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.7" fill="#d9a441" stroke="#6a4a0a" stroke-width=".7"/>`).join('')}
+    <path d="M40 70C48 64 60 62 72 64" stroke="#fff" stroke-width="2" fill="none" opacity=".6" stroke-linecap="round"/>
+    <g class="p-limb"><path d="M54 90c-2 8 2 14 12 14" stroke="#1e1008" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M54 90c-2 8 2 14 12 14" stroke="url(#${bd})" stroke-width="7.4" fill="none" stroke-linecap="round"/></g>
+    <path d="M80 66C92 56 112 58 118 72 122 84 116 94 104 96 92 98 82 90 80 80Z" fill="url(#${bd})" ${K}/>
+    <path d="M104 74C112 70 122 76 122 84 122 92 112 96 106 92Z" fill="url(#${sn})" ${K}/><ellipse cx="116.4" cy="82" rx="1.6" ry="2.4" fill="#3a1410"/><ellipse cx="116" cy="90" rx="1.6" ry="2.2" fill="#3a1410" opacity="0"/>
+    <g class="p-jaw"><path d="M100 92C108 100 118 98 120 92" stroke="#1e1008" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M104 94 100 74C96 82 96 88 100 92Z" fill="#f8f2dc" ${K}/><path d="M112 96 118 78C122 86 120 94 114 98Z" fill="#f8f2dc" ${K}/></g>
+    <path d="M84 62 86 48 98 58Z" fill="url(#${bd})" ${K}/>
+    ${_qeye(98, 72, 3.8, '#e8281a', 1, '#fff2c8')}<path class="p-brow" d="M90 64 108 70" stroke="#1e1008" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M82 66C84 52 96 46 108 52 110 58 108 62 106 64 98 60 90 60 82 66Z" fill="url(#${ar})" ${K}/><path d="M92 50 96 38 100 52M102 52 108 42 108 56" fill="url(#${ar})" ${K}/><path d="M88 58 98 54" stroke="#fff" stroke-width="1.4" opacity=".7"/>
+    <path d="M78 74c-10-4-18 0-22 8" stroke="#1e1008" stroke-width="0" fill="none"/>
+  </g></g>`;
+  return _msvg('verrat_guerre', defs, body);
+}
+function _mereDragoeuf() {
+  const sk = _q(), bl = _q(), wg = _q(), eg = _q(), nst = _q();
+  const defs = _qrg(sk, [[0, '#c8e870'], [.5, '#5aa83a'], [1, '#1e5a22']], .4, .28, .95) + _qlg(bl, [[0, '#fff4c0'], [1, '#e0b860']]) + _qlg(wg, [[0, '#ff9a4a'], [1, '#b0281a']], 0, 0, 1, 1) + _qrg(eg, [[0, '#f4ffd0'], [.6, '#a8d060'], [1, '#4a7a22']], .4, .3, .9) + _qlg(nst, [[0, '#8a5a2e'], [1, '#3a2008']]);
+  const K = 'stroke="#14300c" stroke-width="2.2" stroke-linejoin="round"';
+  const egg = (x, y, r, rot = 0) => `<g ${_vb} transform="translate(${x} ${y}) rotate(${rot})"><ellipse cx="0" cy="0" rx="${r}" ry="${r * 1.22}" fill="url(#${eg})" stroke="#2a4a12" stroke-width="1.8"/><circle cx="${-r * .3}" cy="${-r * .3}" r="${r * .22}" fill="#3a6a18" opacity=".5"/><circle cx="${r * .35}" cy="${r * .3}" r="${r * .18}" fill="#3a6a18" opacity=".5"/><path d="M${-r * .5} ${-r * .6}q${r * .3}-${r * .5} ${r * .8}-${r * .4}" stroke="#fff" stroke-width="1.6" fill="none" opacity=".7" stroke-linecap="round"/></g>`;
+  const body = `${_qsh(42)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M34 98C14 100 6 86 12 72 16 66 24 68 22 76" stroke="#14300c" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M34 98C14 100 6 86 12 72 16 66 24 68 22 76" stroke="url(#${sk})" stroke-width="7.4" fill="none" stroke-linecap="round"/><path d="M22 76 12 72 20 88Z" fill="#ffc82e" stroke="#8a5a0a" stroke-width="1.4" stroke-linejoin="round"/></g>
+    <g class="p-wing"><path d="M52 70C38 46 18 36 6 16 20 20 28 14 32 6 34 18 40 24 48 24 48 34 54 40 60 44 66 52 64 62 58 72Z" fill="url(#${wg})" stroke="#4a0e08" stroke-width="2.2" stroke-linejoin="round"/><path d="M58 72 6 16M58 72 32 6M58 72 48 24" stroke="#4a0e08" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M12 20c8 2 16-1 20-8" stroke="#fff" stroke-width="1" fill="none" opacity=".5"/></g>
+    <ellipse cx="62" cy="112" rx="44" ry="10" fill="url(#${nst})" ${K}/><path d="M24 110c6 6 20 8 38 8s32-2 38-8" stroke="#6a4420" stroke-width="1.4" fill="none" opacity=".7"/>
+    ${egg(30, 106, 8, -14)}${egg(54, 112, 7.4, 6)}${egg(98, 108, 8, 12)}
+    <path d="M34 90C30 66 48 52 70 54 92 56 100 74 94 94 90 108 76 112 62 112 48 112 36 106 34 90Z" fill="url(#${sk})" ${K}/>
+    <path d="M60 74C72 76 90 84 90 100 90 108 78 112 66 112 56 112 52 100 52 90 52 82 54 76 60 74Z" fill="url(#${bl})" stroke="#b0903a" stroke-width="1.6"/><path d="M56 88h32M56 96h30M58 104h26" stroke="#b0903a" stroke-width="1.3" opacity=".7" stroke-linecap="round"/>
+    ${_scaleRow(42, 66, 4, 7, '#14300c', .3)}${_scaleRow(40, 76, 3, 7, '#14300c', .25)}
+    <path d="M42 70C46 62 56 58 66 58" stroke="#fff" stroke-width="2.4" fill="none" opacity=".5" stroke-linecap="round"/>
+    <path d="M72 64C74 50 82 40 94 40 102 40 106 48 104 58L90 66Z" fill="url(#${sk})" ${K}/>
+    <g class="p-jaw"><path d="M88 42C88 30 100 26 110 32 120 38 124 46 122 52 116 56 108 54 100 52 92 52 88 48 88 42Z" fill="url(#${sk})" ${K}/><path d="M118 50l-3 5 5-3ZM110 54l-2 5 4-3.4Z" fill="#fff" stroke="#14300c" stroke-width=".9"/><circle cx="118" cy="42" r="1.6" fill="#14300c"/></g>
+    ${_qeye(102, 38, 4.4, '#ffb01a', 1.2, '#fff8d8')}<path class="p-brow" d="M94 30 110 35" stroke="#14300c" stroke-width="3" stroke-linecap="round"/>
+    <path d="M92 34 82 14 98 26ZM100 28 102 8 110 24ZM106 30 118 14 114 32Z" fill="#fff0c8" stroke="#7a5a28" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M70 52 74 40 82 50 86 38 92 48" stroke="#ffc82e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <g class="p-glow"><path d="M18 50l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#fff" opacity=".9"/></g>
+  </g></g>`;
+  return _msvg('mere_dragoeuf', defs, body);
+}
+function _mansotColosse() {
+  const ic = ['#f4faff', '#a8c0e0', '#4a68a0'];
+  const spikes = `<g ${_vb}><path d="M40 62 30 40 48 56ZM52 52 48 30 62 50ZM30 78 14 62 36 68Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="1.8" stroke-linejoin="round"/><path d="M32 46 40 58M50 36 56 48" stroke="#fff" stroke-width="1.2" opacity=".8"/></g>`;
+  const club = `<g class="p-limb"><path d="M112 118 106 54" stroke="#4a3a2a" stroke-width="5" stroke-linecap="round"/><path d="M112 118 106 54" stroke="#a88a62" stroke-width="1.4" opacity=".6"/><path d="M96 54 100 30 112 20 122 34 118 54 108 62Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="2" stroke-linejoin="round"/><path d="M100 30 108 42 118 34M108 42 108 62" stroke="#fff" stroke-width="1.2" opacity=".8" fill="none"/><path d="M94 40 86 34 98 32ZM122 40 130 34 124 46Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="1.4" stroke-linejoin="round"/><g class="p-glow"><circle cx="109" cy="40" r="14" fill="#9ee0ff" opacity=".35"/></g></g>`;
+  const crown = `<path d="M54 26 58 10 64 22 70 6 76 22 82 10 86 28Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="2" stroke-linejoin="round"/><path d="M62 24 66 14M70 22V10M78 24 76 14" stroke="#fff" stroke-width="1.2" opacity=".8" stroke-linecap="round"/>`;
+  return _mansot('mansot_colosse', { s: 1.08, w: 1.18, fur: ic, hx: 74, hy: 44, eye: '#ff6a6a', brow: '#cfe6f8', back: '', belly: spikes, hold: club, headgear: crown });
+}
+Object.assign(MON_ART2, { verrat_guerre: _verrat(), mere_dragoeuf: _mereDragoeuf(), mansot_colosse: _mansotColosse() });
+
 //@@FAMILIES-END
 /* =====================================================================
    Enregistrement (+ archimonstres : même dessin que leur modèle, agrandi et nimbé d'or en CSS)

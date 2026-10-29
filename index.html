@@ -3344,9 +3344,9 @@ label.btn { cursor: pointer; }
 /* =====================================================================
    SOUS-ZONES DE LA CARTE (Île des Wabbits, Lac des Blops, Kanniboul, Porcos, Dragoeufs, Frigost)
    ===================================================================== */
-.wm { aspect-ratio: 1280 / 430; min-width: 1075px; }
-@media (max-width: 700px) { .wm { min-width: 1030px; } }
-@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1460px); } }
+.wm { aspect-ratio: 1400 / 430; min-width: 1180px; }
+@media (max-width: 700px) { .wm { min-width: 1130px; } }
+@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1580px); } }
 .wm-svg g, .wm-svg ellipse, .wm-svg circle { transform-box: fill-box; }
 .wn.sub { width: 46px; height: 46px; }
 .wn.sub .wn-art { border-width: 2.5px; font-size: 25px; padding-bottom: 4px; border-color: color-mix(in srgb, var(--ground) 30%, #fff);
@@ -3499,7 +3499,7 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .place-banner h2 { font-size: 28px; }
 :root[data-layout="mobile"] .pb-mons { font-size: 36px; }
 :root[data-layout="mobile"] .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-:root[data-layout="mobile"] .wm { min-width: 1030px; }
+:root[data-layout="mobile"] .wm { min-width: 1130px; }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -3508,7 +3508,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793234157';
+const BUILD_ID = '1793234863';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3780,7 +3780,7 @@ const ARCHI_RATE = 0.01, ARCHI_MULT = 2, ARCHI_REWARD = 6;
 const ARCHI_NAMES = { incarnam: 'Pissenlit Séculaire', astrub: 'Champ Champ Colossal', abraknydes: 'Sanglier Roi des Bois', cania: 'Bwork Chef de Guerre', koalaks: 'Mufafah Alpha', sidimote: 'Seigneur Chafer' };
 const ARCHIS = {}; // id de zone → id de l'archimonstre
 function addArchi(z) {
-  const best = z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
+  const best = z.archiBase || z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
   const mid = 'archi_' + z.id; ARCHIS[z.id] = mid;
   MONSTERS[mid] = { ...MONSTERS[best], name: ARCHI_NAMES[z.id] || ('Archi-' + MONSTERS[best].name), archi: true, base: best, mult: ARCHI_MULT };
 }
@@ -4266,10 +4266,11 @@ const SKILL_NODE = {}; for (const b of SKILL_BRANCHES) for (const n of b.nodes) 
 function skillFmt(k, v) { const s = SKILL_STAT[k]; return `+${String(+v.toFixed(2)).replace('.', ',')}${s[1]} ${s[0]}`; }
 /* =====================================================================
    SOUS-ZONES DE LA CARTE — des coins de Dofus rattachés aux zones principales
-   Chaque sous-zone a ses monstres, un GROS MONSTRE (le plus fort, avec relique et archimonstre),
-   sa panoplie et sa relique. Les archimonstres sont créés comme pour les zones (addArchi).
+   Chaque sous-zone a ses monstres, un GROS MONSTRE (avec archimonstre), sa panoplie et sa relique.
    Île des Wabbits · Lac des Blops · Village Kanniboul · Territoire des Porcos
-   Sanctuaire des Dragoeufs · Frigost (Excavation du Mansot Royal)
+   Sanctuaire des Dragoeufs · Frigost
+   Trois gros monstres ont leur propre DONJON (Dragon Cochon, Crocabulia, Mansot Royal) : ils n'apparaissent
+   plus dans leur zone, qui a un autre gros monstre (zone.archiBase) dont l'archimonstre est la version ×2.
    Les niveaux de métier des recettes restent ≤ 100 (MAX_JOB_LEVEL).
    ===================================================================== */
 
@@ -4306,6 +4307,10 @@ Object.assign(RESOURCES, {
   croc_givre:         { name: 'Croc de Givre', icon: '🧊', value: 110 },
   eclat_givre:        { name: 'Éclat de Glace Éternelle', icon: '💎', value: 116 },
   cristal_mansot:     { name: 'Cristal du Mansot Royal', icon: '🔷', value: 900, rare: true },
+  /* Clefs des donjons de sous-zone (fabriquées par le Bricoleur) */
+  clef_dragon_cochon: { name: 'Clef du Repaire du Dragon Cochon', icon: '🗝️', value: 300, key: true },
+  clef_crocabulia:    { name: "Clef de l'Antre de Crocabulia", icon: '🗝️', value: 450, key: true },
+  clef_mansot:        { name: "Clef de l'Excavation du Mansot Royal", icon: '🗝️', value: 650, key: true },
 });
 
 /* ---------------------------- Monstres ----------------------------
@@ -4336,21 +4341,27 @@ Object.assign(MONSTERS, {
   porsalu:       { name: 'Porsalu', icon: '🐖', lvl: 74, hpm: 1.1, dm: 1.15, drops: [['couenne_porsalu', 0.45], ['jambon_farle', 0.12]] },
   cochon_farle:  { name: 'Cochon de Farle', icon: '🐷', lvl: 78, hpm: 1.5, dm: 0.95, res: 8, drops: [['jambon_farle', 0.45], ['couenne_porsalu', 0.15]] },
   don_dorgan:    { name: 'Don Dorgan', icon: '🎩', lvl: 82, hpm: 1.2, dm: 1.3, drops: [['groin_dorgan', 0.45], ['jambon_farle', 0.12]] },
-  dragon_cochon: { name: 'Dragon Cochon', icon: '🐲', lvl: 88, hpm: 2.5, dm: 1.2, res: 14, big: true,
+  verrat_guerre: { name: 'Verrat de Guerre', icon: '🐗', lvl: 86, hpm: 2.4, dm: 1.25, res: 12, big: true, // base de l'archimonstre de la zone
+                   drops: [['groin_dorgan', 0.8], ['jambon_farle', 0.6], ['couenne_porsalu', 0.6]] },
+  dragon_cochon: { name: 'Dragon Cochon', icon: '🐲', lvl: 88, hpm: 3, dm: 1.2, res: 14, big: true, boss: true, // boss de donjon
                    drops: [['ecaille_cochon', 0.3], ['groin_dorgan', 0.8], ['jambon_farle', 0.6], ['couenne_porsalu', 0.6]] },
 
   /* Sanctuaire des Dragoeufs (90-104) */
   dragoeuf_guerrier: { name: 'Dragoeuf Guerrier', icon: '🥚', lvl: 90, hpm: 1.3, dm: 1.2, res: 8, drops: [['coquille_dragoeuf', 0.45], ['ecaille_dore', 0.12]] },
   dragoss_dore:      { name: 'Dragoss Doré', icon: '🐲', lvl: 94, hpm: 1.1, dm: 1.25, drops: [['ecaille_dore', 0.45], ['coquille_dragoeuf', 0.12]] },
   dragueuse:         { name: 'Dragueuse', icon: '🔥', lvl: 98, hpm: 1.0, dm: 1.4, drops: [['braise_dragueuse', 0.45], ['ecaille_dore', 0.12]] },
-  crocabulia:        { name: 'Crocabulia', icon: '🐊', lvl: 104, hpm: 2.6, dm: 1.25, res: 15, big: true,
+  mere_dragoeuf:     { name: 'Mère Dragoeuf', icon: '🐉', lvl: 102, hpm: 2.5, dm: 1.3, res: 14, big: true, // base de l'archimonstre de la zone
+                       drops: [['braise_dragueuse', 0.8], ['ecaille_dore', 0.6], ['coquille_dragoeuf', 0.6]] },
+  crocabulia:        { name: 'Crocabulia', icon: '🐊', lvl: 104, hpm: 3.1, dm: 1.25, res: 15, big: true, boss: true, // boss de donjon
                        drops: [['oeuf_crocabulia', 0.3], ['braise_dragueuse', 0.8], ['ecaille_dore', 0.6], ['coquille_dragoeuf', 0.6]] },
 
   /* Frigost — Excavation du Mansot Royal (108-126) */
   timansot:      { name: 'Timansot', icon: '🧸', lvl: 108, hpm: 1.0, dm: 1.2, drops: [['poil_mansot', 0.45], ['croc_givre', 0.12]] },
   mansobese:     { name: 'Mansobèse', icon: '🦣', lvl: 113, hpm: 1.7, dm: 0.95, res: 10, drops: [['croc_givre', 0.45], ['poil_mansot', 0.15]] },
   shamansot:     { name: 'Shamansot', icon: '🧙', lvl: 118, hpm: 1.0, dm: 1.4, drops: [['eclat_givre', 0.45], ['poil_mansot', 0.12]] },
-  mansot_royal:  { name: 'Mansot Royal', icon: '👑', lvl: 126, hpm: 2.7, dm: 1.25, res: 15, big: true,
+  mansot_colosse: { name: 'Mansot Colosse', icon: '🦣', lvl: 124, hpm: 2.6, dm: 1.3, res: 14, big: true, // base de l'archimonstre de la zone
+                   drops: [['eclat_givre', 0.8], ['croc_givre', 0.6], ['poil_mansot', 0.6]] },
+  mansot_royal:  { name: 'Mansot Royal', icon: '👑', lvl: 126, hpm: 3.2, dm: 1.25, res: 15, big: true, boss: true, // boss de donjon
                    drops: [['cristal_mansot', 0.3], ['eclat_givre', 0.8], ['croc_givre', 0.6], ['poil_mansot', 0.6]] },
 });
 
@@ -4362,18 +4373,34 @@ ZONES.push(
     text: 'Dans les eaux troubles du lac de Cania, les blops de toutes les couleurs se dandinent autour de leur souverain multicolore.' },
   { id: 'kanniboul', sub: true, parent: 'koalaks', name: 'Village Kanniboul', region: 'Moon', lvl: [52, 66], monsters: ['kanniboul_jav', 'kanniboul_ark', 'kanniboul_sarbak', 'kanniboul_ebil'],
     text: "Au cœur de l'île de Moon, une tribu masquée défend son village à coups de javelots, de flèches et de sarbacanes." },
-  { id: 'porcos', sub: true, parent: 'sidimote', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan', 'dragon_cochon'],
-    text: "Fermes, boue et lard : le territoire des Porcos, que protège un dragon d'un genre très particulier." },
-  { id: 'dragoeufs', sub: true, parent: 'sidimote', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse', 'crocabulia'],
-    text: 'Un sanctuaire de coquilles brûlantes où les œufs éclosent en dragons. Crocabulia veille sur la couvée.' },
-  { id: 'frigost', sub: true, parent: 'porcos', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot', 'mansot_royal'],
+  { id: 'porcos', sub: true, parent: 'sidimote', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan'], archiBase: 'verrat_guerre',
+    text: "Fermes, boue et lard : le territoire des Porcos. Un verrat de guerre rôde, et le repaire du Dragon Cochon n'est pas loin." },
+  { id: 'dragoeufs', sub: true, parent: 'sidimote', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse'], archiBase: 'mere_dragoeuf',
+    text: "Un sanctuaire de coquilles brûlantes où les œufs éclosent en dragons. L'antre de Crocabulia s'ouvre au fond de la couvée." },
+  { id: 'frigost', sub: true, parent: 'porcos', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot'], archiBase: 'mansot_colosse',
     text: "Sur la banquise de Frigost, les Mansots creusent l'excavation de leur roi. Prévois un gros manteau." },
 );
 Object.assign(ARCHI_NAMES, {
   wabbits: 'Wa Wabbit Impérial', blops: 'Blop Prismatique Primordial', kanniboul: 'Ebil le Dévoreur',
-  porcos: 'Dragon Cochon Ancestral', dragoeufs: "Crocabulia l'Insatiable", frigost: 'Mansot Souverain des Glaces',
+  porcos: 'Verrat de Guerre Légendaire', dragoeufs: 'Mère Dragoeuf Primordiale', frigost: 'Mansot Colosse Éternel',
 });
 for (const z of ZONES) if (z.sub) addArchi(z);
+
+/* ---------------------------- Donjons des gros monstres ---------------------------- */
+DUNGEONS.push(
+  { id: 'dj_dragon_cochon', name: 'Repaire du Dragon Cochon', region: 'Porcos', lvl: [82, 92], key: 'clef_dragon_cochon',
+    rooms: [['porsalu', 'porsalu', 'cochon_farle'], ['cochon_farle', 'don_dorgan'], ['don_dorgan', 'don_dorgan', 'porsalu']],
+    boss: ['dragon_cochon', 'don_dorgan'], bonusXp: 1.5,
+    text: 'Au fond des porcheries, le Dragon Cochon couve son trésor de lard et de pièces d’or. Une clef par entrée.' },
+  { id: 'dj_crocabulia', name: 'Antre de Crocabulia', region: 'Dragoeufs', lvl: [98, 108], key: 'clef_crocabulia',
+    rooms: [['dragoeuf_guerrier', 'dragoeuf_guerrier', 'dragoss_dore'], ['dragoss_dore', 'dragueuse'], ['dragueuse', 'dragueuse', 'dragoeuf_guerrier']],
+    boss: ['crocabulia', 'dragueuse'], bonusXp: 1.5,
+    text: 'Crocabulia, mi-crocodile mi-dragon, garde la couvée dans une caverne brûlante. Une clef par entrée.' },
+  { id: 'dj_mansot', name: 'Excavation du Mansot Royal', region: 'Frigost', lvl: [120, 130], key: 'clef_mansot',
+    rooms: [['timansot', 'timansot', 'mansobese'], ['mansobese', 'shamansot'], ['shamansot', 'shamansot', 'timansot']],
+    boss: ['mansot_royal', 'shamansot'], bonusXp: 1.5,
+    text: 'Sous la glace, le Mansot Royal siège sur un trône de cristal. Une clef par entrée.' },
+);
 
 /* ---------------------------- Panoplies ---------------------------- */
 Object.assign(SETS, {
@@ -4475,6 +4502,10 @@ Object.assign(ITEMS, {
     { out: 'bottes_mansot', job: 'cordonnier', lvl: 96, ing: { croc_givre: 14, poil_mansot: 8 } },
     { out: 'ceinture_mansot', job: 'cordonnier', lvl: 98, ing: { eclat_givre: 12, croc_givre: 8 } },
     { out: 'masse_mansot', job: 'forgeron', lvl: 100, ing: { cristal_mansot: 1, eclat_givre: 14, croc_givre: 12, poil_mansot: 10 } },
+    /* Clefs de donjon (Bricoleur) */
+    { out: 'clef_dragon_cochon', job: 'bricoleur', lvl: 60, ing: { groin_dorgan: 10, jambon_farle: 8, couenne_porsalu: 8 } },
+    { out: 'clef_crocabulia', job: 'bricoleur', lvl: 80, ing: { braise_dragueuse: 10, ecaille_dore: 8, coquille_dragoeuf: 8 } },
+    { out: 'clef_mansot', job: 'bricoleur', lvl: 100, ing: { eclat_givre: 10, croc_givre: 8, poil_mansot: 8 } },
   ];
   for (const r of R) { for (const k of Object.keys(r.ing)) r.ing[k] *= CRAFT_COST_MULT; RECIPES.push(r); }
 }
@@ -4488,15 +4519,18 @@ Object.assign(GEAR_DROPS, {
   kanniboul_jav: ['bottes_kanniboul', 'ceinture_kanniboul'], kanniboul_ark: ['cape_kanniboul', 'bottes_kanniboul'], kanniboul_sarbak: ['coiffe_kanniboul', 'ceinture_kanniboul'],
   kanniboul_ebil: ['lance_kanniboul', 'coiffe_kanniboul', 'cape_kanniboul'],
   porsalu: ['ceinture_porcos'], cochon_farle: ['cape_porcos', 'ceinture_porcos'], don_dorgan: ['coiffe_porcos', 'amulette_porcos'],
+  verrat_guerre: ['cape_porcos', 'ceinture_porcos', 'amulette_porcos'],
   dragon_cochon: ['rotissoire_cochon', 'amulette_porcos', 'coiffe_porcos'],
   dragoeuf_guerrier: ['coiffe_dragoeuf'], dragoss_dore: ['cape_dragoeuf', 'anneau_dragoeuf'], dragueuse: ['amulette_dragoeuf', 'anneau_dragoeuf'],
+  mere_dragoeuf: ['cape_dragoeuf', 'anneau_dragoeuf', 'coiffe_dragoeuf'],
   crocabulia: ['croc_crocabulia', 'amulette_dragoeuf', 'cape_dragoeuf'],
   timansot: ['bottes_mansot', 'ceinture_mansot'], mansobese: ['coiffe_mansot', 'cape_mansot'], shamansot: ['cape_mansot', 'ceinture_mansot'],
+  mansot_colosse: ['coiffe_mansot', 'bottes_mansot', 'ceinture_mansot'],
   mansot_royal: ['masse_mansot', 'coiffe_mansot', 'bottes_mansot'],
 });
 Object.assign(RELIC_DROPS, {
   wa_wabbit: [['relique_wabbit', 0.0005]], blop_royal: [['relique_blop', 0.0005]], kanniboul_ebil: [['relique_kanniboul', 0.0005]],
-  dragon_cochon: [['relique_porcos', 0.0005]], crocabulia: [['relique_dragoeuf', 0.0005]], mansot_royal: [['relique_mansot', 0.0005]],
+  dragon_cochon: [['relique_porcos', 0.02]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
 });
 /* =====================================================================
    AMAKNA IDLE — MOTEUR
@@ -8325,6 +8359,65 @@ function _mansotRoyal() {
 }
 Object.assign(MON_ART2, { timansot: _timansot(), mansobese: _mansobese(), shamansot: _shamansot(), mansot_royal: _mansotRoyal() });
 
+/* =====================================================================
+   BASES D'ARCHIMONSTRE : Verrat de Guerre (Porcos), Mère Dragoeuf (Dragoeufs), Mansot Colosse (Frigost)
+   ===================================================================== */
+function _verrat() {
+  const bd = _q(), mn = _q(), ar = _q(), sn = _q();
+  const defs = _qrg(bd, [[0, '#c88a52'], [.5, '#8a5430'], [1, '#3e2410']], .4, .28, .95) + _qlg(mn, [[0, '#5a3a22'], [1, '#1e1008']]) + _qlg(ar, [[0, '#f4f8ff'], [.5, '#a8b4c8'], [1, '#4a5468']], 0, 0, 1, 1) + _qrg(sn, [[0, '#f0b0a8'], [1, '#b8605a']], .4, .3, .9);
+  const K = 'stroke="#1e1008" stroke-width="2.2" stroke-linejoin="round"';
+  const hoof = x => `<path d="M${x - 7} 100v12c-3 0-5 1-5 4h18c0-3-2-4-5-4v-12Z" fill="url(#${bd})" ${K}/><path d="M${x - 7} 116h12" stroke="#1e1008" stroke-width="2.4"/>`;
+  const body = `${_qsh(40)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M26 82C14 80 10 70 16 64" stroke="#1e1008" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M26 82C14 80 10 70 16 64" stroke="url(#${bd})" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M16 64 10 62 14 56Z" fill="#3e2410" ${K}/></g>
+    ${hoof(40)}${hoof(86)}
+    <path d="M24 84C22 64 40 52 64 52 88 52 104 64 102 86 100 102 84 108 64 108 44 108 26 102 24 84Z" fill="url(#${bd})" ${K}/>
+    <path d="M30 62 36 48 42 58 50 44 56 56 64 42 70 55 78 43 84 56 92 46 96 62" fill="url(#${mn})" ${K}/>
+    <path d="M32 72c10-10 36-16 62-6" stroke="#fff" stroke-width="2.4" fill="none" opacity=".25" stroke-linecap="round"/>
+    <path d="M36 74C44 62 60 58 76 62L84 98C66 104 44 100 36 90Z" fill="url(#${ar})" ${K}/><path d="M48 66 52 96M62 64 66 100" stroke="#3a4254" stroke-width="1.4" opacity=".7"/>${[[44, 72], [44, 90], [58, 70], [58, 96], [72, 70], [74, 96]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.7" fill="#d9a441" stroke="#6a4a0a" stroke-width=".7"/>`).join('')}
+    <path d="M40 70C48 64 60 62 72 64" stroke="#fff" stroke-width="2" fill="none" opacity=".6" stroke-linecap="round"/>
+    <g class="p-limb"><path d="M54 90c-2 8 2 14 12 14" stroke="#1e1008" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M54 90c-2 8 2 14 12 14" stroke="url(#${bd})" stroke-width="7.4" fill="none" stroke-linecap="round"/></g>
+    <path d="M80 66C92 56 112 58 118 72 122 84 116 94 104 96 92 98 82 90 80 80Z" fill="url(#${bd})" ${K}/>
+    <path d="M104 74C112 70 122 76 122 84 122 92 112 96 106 92Z" fill="url(#${sn})" ${K}/><ellipse cx="116.4" cy="82" rx="1.6" ry="2.4" fill="#3a1410"/><ellipse cx="116" cy="90" rx="1.6" ry="2.2" fill="#3a1410" opacity="0"/>
+    <g class="p-jaw"><path d="M100 92C108 100 118 98 120 92" stroke="#1e1008" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M104 94 100 74C96 82 96 88 100 92Z" fill="#f8f2dc" ${K}/><path d="M112 96 118 78C122 86 120 94 114 98Z" fill="#f8f2dc" ${K}/></g>
+    <path d="M84 62 86 48 98 58Z" fill="url(#${bd})" ${K}/>
+    ${_qeye(98, 72, 3.8, '#e8281a', 1, '#fff2c8')}<path class="p-brow" d="M90 64 108 70" stroke="#1e1008" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M82 66C84 52 96 46 108 52 110 58 108 62 106 64 98 60 90 60 82 66Z" fill="url(#${ar})" ${K}/><path d="M92 50 96 38 100 52M102 52 108 42 108 56" fill="url(#${ar})" ${K}/><path d="M88 58 98 54" stroke="#fff" stroke-width="1.4" opacity=".7"/>
+    <path d="M78 74c-10-4-18 0-22 8" stroke="#1e1008" stroke-width="0" fill="none"/>
+  </g></g>`;
+  return _msvg('verrat_guerre', defs, body);
+}
+function _mereDragoeuf() {
+  const sk = _q(), bl = _q(), wg = _q(), eg = _q(), nst = _q();
+  const defs = _qrg(sk, [[0, '#c8e870'], [.5, '#5aa83a'], [1, '#1e5a22']], .4, .28, .95) + _qlg(bl, [[0, '#fff4c0'], [1, '#e0b860']]) + _qlg(wg, [[0, '#ff9a4a'], [1, '#b0281a']], 0, 0, 1, 1) + _qrg(eg, [[0, '#f4ffd0'], [.6, '#a8d060'], [1, '#4a7a22']], .4, .3, .9) + _qlg(nst, [[0, '#8a5a2e'], [1, '#3a2008']]);
+  const K = 'stroke="#14300c" stroke-width="2.2" stroke-linejoin="round"';
+  const egg = (x, y, r, rot = 0) => `<g ${_vb} transform="translate(${x} ${y}) rotate(${rot})"><ellipse cx="0" cy="0" rx="${r}" ry="${r * 1.22}" fill="url(#${eg})" stroke="#2a4a12" stroke-width="1.8"/><circle cx="${-r * .3}" cy="${-r * .3}" r="${r * .22}" fill="#3a6a18" opacity=".5"/><circle cx="${r * .35}" cy="${r * .3}" r="${r * .18}" fill="#3a6a18" opacity=".5"/><path d="M${-r * .5} ${-r * .6}q${r * .3}-${r * .5} ${r * .8}-${r * .4}" stroke="#fff" stroke-width="1.6" fill="none" opacity=".7" stroke-linecap="round"/></g>`;
+  const body = `${_qsh(42)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M34 98C14 100 6 86 12 72 16 66 24 68 22 76" stroke="#14300c" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M34 98C14 100 6 86 12 72 16 66 24 68 22 76" stroke="url(#${sk})" stroke-width="7.4" fill="none" stroke-linecap="round"/><path d="M22 76 12 72 20 88Z" fill="#ffc82e" stroke="#8a5a0a" stroke-width="1.4" stroke-linejoin="round"/></g>
+    <g class="p-wing"><path d="M52 70C38 46 18 36 6 16 20 20 28 14 32 6 34 18 40 24 48 24 48 34 54 40 60 44 66 52 64 62 58 72Z" fill="url(#${wg})" stroke="#4a0e08" stroke-width="2.2" stroke-linejoin="round"/><path d="M58 72 6 16M58 72 32 6M58 72 48 24" stroke="#4a0e08" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M12 20c8 2 16-1 20-8" stroke="#fff" stroke-width="1" fill="none" opacity=".5"/></g>
+    <ellipse cx="62" cy="112" rx="44" ry="10" fill="url(#${nst})" ${K}/><path d="M24 110c6 6 20 8 38 8s32-2 38-8" stroke="#6a4420" stroke-width="1.4" fill="none" opacity=".7"/>
+    ${egg(30, 106, 8, -14)}${egg(54, 112, 7.4, 6)}${egg(98, 108, 8, 12)}
+    <path d="M34 90C30 66 48 52 70 54 92 56 100 74 94 94 90 108 76 112 62 112 48 112 36 106 34 90Z" fill="url(#${sk})" ${K}/>
+    <path d="M60 74C72 76 90 84 90 100 90 108 78 112 66 112 56 112 52 100 52 90 52 82 54 76 60 74Z" fill="url(#${bl})" stroke="#b0903a" stroke-width="1.6"/><path d="M56 88h32M56 96h30M58 104h26" stroke="#b0903a" stroke-width="1.3" opacity=".7" stroke-linecap="round"/>
+    ${_scaleRow(42, 66, 4, 7, '#14300c', .3)}${_scaleRow(40, 76, 3, 7, '#14300c', .25)}
+    <path d="M42 70C46 62 56 58 66 58" stroke="#fff" stroke-width="2.4" fill="none" opacity=".5" stroke-linecap="round"/>
+    <path d="M72 64C74 50 82 40 94 40 102 40 106 48 104 58L90 66Z" fill="url(#${sk})" ${K}/>
+    <g class="p-jaw"><path d="M88 42C88 30 100 26 110 32 120 38 124 46 122 52 116 56 108 54 100 52 92 52 88 48 88 42Z" fill="url(#${sk})" ${K}/><path d="M118 50l-3 5 5-3ZM110 54l-2 5 4-3.4Z" fill="#fff" stroke="#14300c" stroke-width=".9"/><circle cx="118" cy="42" r="1.6" fill="#14300c"/></g>
+    ${_qeye(102, 38, 4.4, '#ffb01a', 1.2, '#fff8d8')}<path class="p-brow" d="M94 30 110 35" stroke="#14300c" stroke-width="3" stroke-linecap="round"/>
+    <path d="M92 34 82 14 98 26ZM100 28 102 8 110 24ZM106 30 118 14 114 32Z" fill="#fff0c8" stroke="#7a5a28" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M70 52 74 40 82 50 86 38 92 48" stroke="#ffc82e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <g class="p-glow"><path d="M18 50l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#fff" opacity=".9"/></g>
+  </g></g>`;
+  return _msvg('mere_dragoeuf', defs, body);
+}
+function _mansotColosse() {
+  const ic = ['#f4faff', '#a8c0e0', '#4a68a0'];
+  const spikes = `<g ${_vb}><path d="M40 62 30 40 48 56ZM52 52 48 30 62 50ZM30 78 14 62 36 68Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="1.8" stroke-linejoin="round"/><path d="M32 46 40 58M50 36 56 48" stroke="#fff" stroke-width="1.2" opacity=".8"/></g>`;
+  const club = `<g class="p-limb"><path d="M112 118 106 54" stroke="#4a3a2a" stroke-width="5" stroke-linecap="round"/><path d="M112 118 106 54" stroke="#a88a62" stroke-width="1.4" opacity=".6"/><path d="M96 54 100 30 112 20 122 34 118 54 108 62Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="2" stroke-linejoin="round"/><path d="M100 30 108 42 118 34M108 42 108 62" stroke="#fff" stroke-width="1.2" opacity=".8" fill="none"/><path d="M94 40 86 34 98 32ZM122 40 130 34 124 46Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="1.4" stroke-linejoin="round"/><g class="p-glow"><circle cx="109" cy="40" r="14" fill="#9ee0ff" opacity=".35"/></g></g>`;
+  const crown = `<path d="M54 26 58 10 64 22 70 6 76 22 82 10 86 28Z" fill="#cfeeff" stroke="#2a6aa0" stroke-width="2" stroke-linejoin="round"/><path d="M62 24 66 14M70 22V10M78 24 76 14" stroke="#fff" stroke-width="1.2" opacity=".8" stroke-linecap="round"/>`;
+  return _mansot('mansot_colosse', { s: 1.08, w: 1.18, fur: ic, hx: 74, hy: 44, eye: '#ff6a6a', brow: '#cfe6f8', back: '', belly: spikes, hold: club, headgear: crown });
+}
+Object.assign(MON_ART2, { verrat_guerre: _verrat(), mere_dragoeuf: _mereDragoeuf(), mansot_colosse: _mansotColosse() });
+
 //@@FAMILIES-END
 /* =====================================================================
    Enregistrement (+ archimonstres : même dessin que leur modèle, agrandi et nimbé d'or en CSS)
@@ -10766,11 +10859,11 @@ function skBranch(h, b, just) {
    VUE CARTE — carte du monde illustrée et animée + fiches de monstres
    (remplace renderCarte / placeDetail de ui2.js)
    ===================================================================== */
-const WM_W = 1280, WM_H = 430;
+const WM_W = 1400, WM_H = 430;
 const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150],
     wabbits: [268, 338], blops: [590, 322], kanniboul: [872, 338], porcos: [1034, 282], dragoeufs: [1132, 146], frigost: [1216, 304] },
-  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62] } };
-const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania' };
+  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62], dj_dragon_cochon: [982, 44], dj_crocabulia: [1176, 38], dj_mansot: [1318, 118] } };
+const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania', dj_dragon_cochon: 'porcos', dj_crocabulia: 'dragoeufs', dj_mansot: 'frigost' };
 for (const z of ZONES) if (z.sub) WM_LINK[z.id] = z.parent; // chemin en pointillés vers la zone mère
 const cph = p => `animation-delay:-${Date.now() % p}ms`;
 const _mx = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
@@ -10846,7 +10939,7 @@ function readiness(p) {
 function wmNode(p, type) {
   const [x, y] = WM_POS[type][p.id]; const sel = ui.place.type === type && ui.place.id === p.id;
   const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : p.sub ? (mons.find(m => MONSTERS[m].big) || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
+  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : p.sub ? (mons.find(m => MONSTERS[m].big) || p.archiBase || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
   const th = _wmTh(p.region), keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
   return `<button class="wn ${type}${p.sub ? ' sub' : ''}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / WM_W * 100).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
     ${p.sub ? `<span class="wn-orbit" style="${cph(18000)}"></span>` : ''}<span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
@@ -11005,6 +11098,13 @@ function wmSubScenery() {
   o += pine(1112, 344, 1.1, '#2f6a5a', true) + pine(1252, 336, 1.2, '#2f6a5a', true) + pine(1272, 366, .9, '#3a7a68', true) + pine(1136, 372, .85, '#3a7a68', true);
   for (const [x, y, s] of [[1236, 358, 1], [1196, 372, .8], [1262, 322, .7]]) o += `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0-16 5-4 0 0-5-4Z" fill="#9fe8ff" stroke="#3a8ab8" stroke-width=".8"/><path d="M0-16 5-4 0 0Z" fill="#fff" opacity=".35"/><path d="M-7-8-3-2-7 0-10-3Z" fill="#c8f2ff" stroke="#3a8ab8" stroke-width=".7"/></g>`;
   o += rock(1150, 352, .8, '#b8c8d8') + rock(1226, 376, .7, '#b8c8d8');
+  // prolongement vers l'est (la carte s'élargit pour le donjon du Mansot Royal)
+  o += `<ellipse cx="1334" cy="352" rx="84" ry="34" fill="#a8c8e4" opacity=".45"/><ellipse cx="1330" cy="346" rx="66" ry="25" fill="#f2f8ff" opacity=".65"/>`;
+  o += pine(1306, 350, 1.15, '#2f6a5a', true) + pine(1352, 342, 1.3, '#2f6a5a', true) + pine(1372, 372, .9, '#3a7a68', true) + pine(1318, 382, .8, '#3a7a68', true) + pine(1342, 392, .7, '#3a7a68', true);
+  for (const [x, y, k] of [[1296, 372, .8], [1366, 334, .7], [1330, 368, .9]]) o += `<g transform="translate(${x} ${y}) scale(${k})"><path d="M0-16 5-4 0 0-5-4Z" fill="#9fe8ff" stroke="#3a8ab8" stroke-width=".8" stroke-linejoin="round"/><path d="M0-16 5-4 0 0Z" fill="#fff" opacity=".4"/></g>`;
+  o += rock(1292, 396, .7, '#b8c8d8') + rock(1364, 388, .6, '#b8c8d8');
+  // entrée du donjon du Mansot Royal : porche de glace
+  o += `<g transform="translate(1318 150)"><ellipse cx="0" cy="2" rx="40" ry="6" fill="#000" opacity=".22"/><path d="M-36 0-10-46 10-46 36 0Z" fill="#c4d8ec"/><path d="M-10-46 10-46 36 0H12Z" fill="#7a96b4" opacity=".6"/><path d="M-11 0v-12a11 13 0 0 1 22 0V0Z" fill="#1a2a3e"/><path d="M-7 0v-10a7 9 0 0 1 14 0V0Z" fill="#6ad4ff" opacity=".5"/></g>`;
   return o;
 }
 
@@ -11016,7 +11116,7 @@ function wmSubAnim() {
   o += `<g class="wm-aurora" ${P(9000)}><path d="M1040 14C1100 40 1130 4 1180 28S1250 6 1290 30V112C1250 90 1220 120 1170 96S1090 124 1040 100Z" fill="url(#wmAur)"/></g>`;
   o += `<g class="wm-aurora" style="animation-delay:-4000ms;animation-duration:12000ms;opacity:.7"><path d="M1090 8C1140 30 1180 0 1230 22S1270 10 1290 18V80C1250 70 1210 96 1170 76S1120 86 1090 70Z" fill="url(#wmAur)"/></g>`;
   /* flocons */
-  for (let i = 0; i < 16; i++) { const x = 1100 + _rn(i + 400) * 180, T = 5200 + _rn(i + 410) * 3600; o += `<circle class="wm-snow" cx="${x.toFixed(0)}" cy="${(250 + _rn(i + 420) * 20).toFixed(0)}" r="${(1 + _rn(i + 430) * 1.2).toFixed(1)}" fill="#fff" opacity=".9" ${P(T, i)}/>`; }
+  for (let i = 0; i < 16; i++) { const x = 1100 + _rn(i + 400) * 270, T = 5200 + _rn(i + 410) * 3600; o += `<circle class="wm-snow" cx="${x.toFixed(0)}" cy="${(250 + _rn(i + 420) * 20).toFixed(0)}" r="${(1 + _rn(i + 430) * 1.2).toFixed(1)}" fill="#fff" opacity=".9" ${P(T, i)}/>`; }
   /* braises et fumée du volcan */
   for (let i = 0; i < 7; i++) { const x = 1196 + _rn(i + 440) * 18 - 6, T = 3000 + _rn(i + 450) * 2200; o += `<circle class="wm-ember" cx="${x.toFixed(0)}" cy="118" r="${(1 + _rn(i + 460)).toFixed(1)}" fill="#ffb04a" ${P(T, i)}/>`; }
   for (let i = 0; i < 3; i++) o += `<circle class="wm-smoke" cx="${1198 + i * 5}" cy="112" r="${7 + i * 2}" fill="#8a7a78" ${P(7000, i)}/>`;
@@ -11037,17 +11137,19 @@ function wmSubAnim() {
 
 /* Bandeau « Sous-zones » (zone mère) ou « Zone mère » (sous-zone) */
 function wmLinked(p, type) {
-  if (type !== 'zone') return '';
-  const par = p.sub ? ZONES.find(z => z.id === p.parent) : null;
-  const kids = ZONES.filter(z => z.sub && z.parent === p.id);
-  if (!par && !kids.length) return '';
-  const chip = (z, rel) => {
-    const [rd, rl] = readiness(z), big = z.monsters.find(m => MONSTERS[m].big) || z.monsters[0];
-    const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === z.id).length;
-    return `<button class="lk${z.sub ? ' sub' : ''}" data-act="place" data-type="zone" data-id="${z.id}" style="${themeStyle(_wmTh(z.region))}" title="${rl}">
+  const par = type === 'zone' ? (p.sub ? ZONES.find(z => z.id === p.parent) : null) : (WM_LINK[p.id] ? ZONES.find(z => z.id === WM_LINK[p.id]) : null);
+  const kids = type === 'zone' ? ZONES.filter(z => z.sub && z.parent === p.id) : [];
+  const djs = type === 'zone' ? DUNGEONS.filter(d => WM_LINK[d.id] === p.id) : [];
+  if (!par && !kids.length && !djs.length) return '';
+  const chip = (z, rel, t = 'zone') => {
+    const [rd, rl] = readiness(z), big = t === 'dungeon' ? z.boss[0] : (z.monsters.find(m => MONSTERS[m].big) || z.archiBase || z.monsters[0]);
+    const n = st.heroes.filter(h => h.act && h.act.type === t && h.act.id === z.id).length;
+    return `<button class="lk${z.sub ? ' sub' : ''}" data-act="place" data-type="${t}" data-id="${z.id}" style="${themeStyle(_wmTh(z.region))}" title="${rl}">
       <span class="lk-ic">${monIcon(big)}</span><span class="lk-t"><small>${rel}</small><b>${z.name}</b></span><span class="lk-lv"><em class="rd ${rd}">niv. ${z.lvl[0]}–${z.lvl[1]}</em>${n ? `<i class="lk-n">${n} 🧑</i>` : ''}</span></button>`;
   };
-  return `<div class="linked"><span class="label">${par ? 'Zone mère' : kids.length > 1 ? 'Sous-zones' : 'Sous-zone'}</span><div class="lk-row">${par ? chip(par, 'Retour à') : ''}${kids.map(k => chip(k, k.lvl[0] > p.lvl[1] ? 'Plus loin' : 'À explorer')).join('')}</div></div>`;
+  const near = kids.length + djs.length;
+  const lab = par ? (near ? 'Zone mère et alentours' : 'Zone mère') : near > 1 ? 'Sous-zones et donjons' : kids.length ? 'Sous-zone' : 'Donjon';
+  return `<div class="linked"><span class="label">${lab}</span><div class="lk-row">${par ? chip(par, 'Retour à') : ''}${kids.map(k => chip(k, k.lvl[0] > p.lvl[1] ? 'Plus loin' : 'À explorer')).join('')}${djs.map(d => chip(d, 'Donjon', 'dungeon')).join('')}</div></div>`;
 }
 /* =====================================================================
    AMAKNA IDLE — INTERFACE v2
