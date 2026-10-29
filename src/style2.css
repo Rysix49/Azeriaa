@@ -3332,3 +3332,51 @@ label.btn { cursor: pointer; }
 .mc { cursor: pointer; } .mc:hover { border-color: #e8aa2e77; transform: translateY(-1px); } .mc { transition: border-color .2s, box-shadow .2s, transform .15s; }
 .mc-more { font-size: 11px; font-weight: 800; color: var(--gold); margin-top: -2px; letter-spacing: .02em; } .mc.open .mc-more { color: var(--dim); }
 .mc-detail { cursor: default; }
+
+/* =====================================================================
+   SOUS-ZONES DE LA CARTE (Île des Wabbits, Lac des Blops, Kanniboul, Porcos, Dragoeufs, Frigost)
+   ===================================================================== */
+.wm { aspect-ratio: 1280 / 430; min-width: 1075px; }
+@media (max-width: 700px) { .wm { min-width: 1030px; } }
+@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1460px); } }
+.wm-svg g, .wm-svg ellipse, .wm-svg circle { transform-box: fill-box; }
+.wn.sub { width: 46px; height: 46px; }
+.wn.sub .wn-art { border-width: 2.5px; font-size: 25px; padding-bottom: 4px; border-color: color-mix(in srgb, var(--ground) 30%, #fff);
+  box-shadow: 0 4px 10px #000a, 0 0 14px color-mix(in srgb, var(--ground) 70%, transparent), inset 0 -5px 8px #0006, inset 0 3px 5px #ffffff40; }
+.wn-orbit { position: absolute; inset: -7px; border-radius: 50%; border: 2px dashed color-mix(in srgb, var(--ground) 25%, #fff); opacity: .85; pointer-events: none; animation: wn-orbit 18s linear infinite; }
+@keyframes wn-orbit { to { transform: rotate(360deg); } }
+.wn.sub.sel .wn-orbit { border-color: var(--gold-2); opacity: 1; }
+.wn.sub .wn-ring { inset: -9px; }
+.wn.sub .wn-dot { width: 18px; height: 18px; font-size: 10px; left: -5px; top: -5px; }
+.wn.sub .wn-lab { min-width: 96px; padding: 2px 9px 3px; top: calc(100% + 7px); }
+.wn.sub .wn-lab b { font-size: 13px; } .wn.sub .wn-lab small { font-size: 10px; color: #bfe0ff; }
+.wn.sub.sel .wn-lab small { color: var(--muted); }
+/* animations de décor */
+.wm-aurora { animation: wm-aurora 9s ease-in-out infinite; transform-origin: 50% 100%; } @keyframes wm-aurora { 0%, 100% { opacity: .35; transform: translateX(0) scaleY(.92); } 50% { opacity: .95; transform: translateX(14px) scaleY(1.08); } }
+.wm-snow { animation: wm-snow 6s linear infinite; } @keyframes wm-snow { from { transform: translate(0, 0); opacity: 0; } 12% { opacity: .95; } to { transform: translate(-14px, 120px); opacity: 0; } }
+.wm-ember { animation: wm-ember 3.6s ease-out infinite; } @keyframes wm-ember { from { transform: translate(0, 0); opacity: 0; } 15% { opacity: 1; } to { transform: translate(8px, -34px); opacity: 0; } }
+.wm-smoke { animation: wm-smoke 7s ease-out infinite; opacity: 0; } @keyframes wm-smoke { from { transform: translate(0, 0) scale(.6); opacity: 0; } 20% { opacity: .35; } to { transform: translate(14px, -46px) scale(1.7); opacity: 0; } }
+.wm-lavaglow { animation: wm-lavaglow 2.6s ease-in-out infinite; } @keyframes wm-lavaglow { 0%, 100% { opacity: .55; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.12); } }
+.wm-blopb { animation: wm-blopb 2.4s ease-in-out infinite; } @keyframes wm-blopb { 0%, 100% { transform: translateY(0) scale(1, 1); } 40% { transform: translateY(-4px) scale(.94, 1.08); } 60% { transform: translateY(-4px) scale(.94, 1.08); } 80% { transform: translateY(0) scale(1.1, .88); } }
+.wm-ripple { animation: wm-ripple 3.6s ease-out infinite; } @keyframes wm-ripple { from { transform: scale(.4); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+.wm-flame { animation: wm-flame .9s ease-in-out infinite; transform-origin: 50% 100%; } @keyframes wm-flame { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.88, 1.18) skewX(3deg); } }
+.wm-pig { animation: wm-pig 2.8s ease-in-out infinite; } @keyframes wm-pig { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(5px, -1.5px); } 50% { transform: translate(10px, 0); } 75% { transform: translate(5px, 1px); } }
+@media (prefers-reduced-motion: reduce) { .wm-aurora, .wm-snow, .wm-ember, .wm-smoke, .wm-lavaglow, .wm-blopb, .wm-ripple, .wm-flame, .wm-pig, .wn-orbit { animation: none !important; } }
+/* liens entre zone mère et sous-zones */
+.linked { display: flex; flex-direction: column; gap: 6px; }
+.lk-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.lk { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 7px; border-radius: 16px; border: 1px solid #ffffff24; color: var(--fg); text-align: left; cursor: pointer; min-width: 0; flex: 1 1 250px; max-width: 420px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--sky) 26%, #12150e), color-mix(in srgb, var(--ground) 34%, #12150e)); box-shadow: 0 3px 10px #0005, inset 0 1px 0 #ffffff14; transition: transform .15s, border-color .15s, box-shadow .15s; }
+.lk:hover { transform: translateY(-2px); border-color: var(--gold-2); box-shadow: 0 6px 16px #0007, 0 0 0 1px #e8aa2e55; }
+.lk-ic { flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: end center; padding-bottom: 3px; font-size: 28px; overflow: hidden; border: 2px solid #fff8dc; box-shadow: 0 3px 7px #0008;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sky) 60%, #0e110b) 0 56%, color-mix(in srgb, var(--ground) 70%, #0e110b) 56%); }
+.lk-ic .ms { transform: scale(1.12); transform-origin: 50% 100%; }
+.lk-t { display: flex; flex-direction: column; min-width: 0; } .lk-t small { color: var(--muted); font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.lk-t b { font-family: var(--f-display); font-size: 16px; line-height: 1.1; font-weight: 600; }
+.lk-lv { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex: none; } .lk-lv .rd { font-style: normal; }
+.lk-n { font-style: normal; font-size: 11px; color: var(--gold-2); font-weight: 800; }
+/* gros monstres */
+.mc-tags .bg { color: #d8b4ff; border-color: #a06ae888; background: #a06ae822; }
+.mc.big { background: radial-gradient(ellipse at 0 0, #a06ae81c, transparent 60%), linear-gradient(180deg, #1e1a26, #141018); border-color: #a06ae844; }
+.mc.big.archi { background: radial-gradient(ellipse at 0 0, #e8aa2e24, transparent 60%), linear-gradient(180deg, #221e18, #15120c); border-color: #e8aa2e66; }
+.unit.mon.big .sprite.has-art .ms { width: 74px; height: 74px; }

@@ -3340,6 +3340,54 @@ label.btn { cursor: pointer; }
 .mc { cursor: pointer; } .mc:hover { border-color: #e8aa2e77; transform: translateY(-1px); } .mc { transition: border-color .2s, box-shadow .2s, transform .15s; }
 .mc-more { font-size: 11px; font-weight: 800; color: var(--gold); margin-top: -2px; letter-spacing: .02em; } .mc.open .mc-more { color: var(--dim); }
 .mc-detail { cursor: default; }
+
+/* =====================================================================
+   SOUS-ZONES DE LA CARTE (Île des Wabbits, Lac des Blops, Kanniboul, Porcos, Dragoeufs, Frigost)
+   ===================================================================== */
+.wm { aspect-ratio: 1280 / 430; min-width: 1075px; }
+@media (max-width: 700px) { .wm { min-width: 1030px; } }
+@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1460px); } }
+.wm-svg g, .wm-svg ellipse, .wm-svg circle { transform-box: fill-box; }
+.wn.sub { width: 46px; height: 46px; }
+.wn.sub .wn-art { border-width: 2.5px; font-size: 25px; padding-bottom: 4px; border-color: color-mix(in srgb, var(--ground) 30%, #fff);
+  box-shadow: 0 4px 10px #000a, 0 0 14px color-mix(in srgb, var(--ground) 70%, transparent), inset 0 -5px 8px #0006, inset 0 3px 5px #ffffff40; }
+.wn-orbit { position: absolute; inset: -7px; border-radius: 50%; border: 2px dashed color-mix(in srgb, var(--ground) 25%, #fff); opacity: .85; pointer-events: none; animation: wn-orbit 18s linear infinite; }
+@keyframes wn-orbit { to { transform: rotate(360deg); } }
+.wn.sub.sel .wn-orbit { border-color: var(--gold-2); opacity: 1; }
+.wn.sub .wn-ring { inset: -9px; }
+.wn.sub .wn-dot { width: 18px; height: 18px; font-size: 10px; left: -5px; top: -5px; }
+.wn.sub .wn-lab { min-width: 96px; padding: 2px 9px 3px; top: calc(100% + 7px); }
+.wn.sub .wn-lab b { font-size: 13px; } .wn.sub .wn-lab small { font-size: 10px; color: #bfe0ff; }
+.wn.sub.sel .wn-lab small { color: var(--muted); }
+/* animations de décor */
+.wm-aurora { animation: wm-aurora 9s ease-in-out infinite; transform-origin: 50% 100%; } @keyframes wm-aurora { 0%, 100% { opacity: .35; transform: translateX(0) scaleY(.92); } 50% { opacity: .95; transform: translateX(14px) scaleY(1.08); } }
+.wm-snow { animation: wm-snow 6s linear infinite; } @keyframes wm-snow { from { transform: translate(0, 0); opacity: 0; } 12% { opacity: .95; } to { transform: translate(-14px, 120px); opacity: 0; } }
+.wm-ember { animation: wm-ember 3.6s ease-out infinite; } @keyframes wm-ember { from { transform: translate(0, 0); opacity: 0; } 15% { opacity: 1; } to { transform: translate(8px, -34px); opacity: 0; } }
+.wm-smoke { animation: wm-smoke 7s ease-out infinite; opacity: 0; } @keyframes wm-smoke { from { transform: translate(0, 0) scale(.6); opacity: 0; } 20% { opacity: .35; } to { transform: translate(14px, -46px) scale(1.7); opacity: 0; } }
+.wm-lavaglow { animation: wm-lavaglow 2.6s ease-in-out infinite; } @keyframes wm-lavaglow { 0%, 100% { opacity: .55; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.12); } }
+.wm-blopb { animation: wm-blopb 2.4s ease-in-out infinite; } @keyframes wm-blopb { 0%, 100% { transform: translateY(0) scale(1, 1); } 40% { transform: translateY(-4px) scale(.94, 1.08); } 60% { transform: translateY(-4px) scale(.94, 1.08); } 80% { transform: translateY(0) scale(1.1, .88); } }
+.wm-ripple { animation: wm-ripple 3.6s ease-out infinite; } @keyframes wm-ripple { from { transform: scale(.4); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+.wm-flame { animation: wm-flame .9s ease-in-out infinite; transform-origin: 50% 100%; } @keyframes wm-flame { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.88, 1.18) skewX(3deg); } }
+.wm-pig { animation: wm-pig 2.8s ease-in-out infinite; } @keyframes wm-pig { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(5px, -1.5px); } 50% { transform: translate(10px, 0); } 75% { transform: translate(5px, 1px); } }
+@media (prefers-reduced-motion: reduce) { .wm-aurora, .wm-snow, .wm-ember, .wm-smoke, .wm-lavaglow, .wm-blopb, .wm-ripple, .wm-flame, .wm-pig, .wn-orbit { animation: none !important; } }
+/* liens entre zone mère et sous-zones */
+.linked { display: flex; flex-direction: column; gap: 6px; }
+.lk-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.lk { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 7px; border-radius: 16px; border: 1px solid #ffffff24; color: var(--fg); text-align: left; cursor: pointer; min-width: 0; flex: 1 1 250px; max-width: 420px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--sky) 26%, #12150e), color-mix(in srgb, var(--ground) 34%, #12150e)); box-shadow: 0 3px 10px #0005, inset 0 1px 0 #ffffff14; transition: transform .15s, border-color .15s, box-shadow .15s; }
+.lk:hover { transform: translateY(-2px); border-color: var(--gold-2); box-shadow: 0 6px 16px #0007, 0 0 0 1px #e8aa2e55; }
+.lk-ic { flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: end center; padding-bottom: 3px; font-size: 28px; overflow: hidden; border: 2px solid #fff8dc; box-shadow: 0 3px 7px #0008;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sky) 60%, #0e110b) 0 56%, color-mix(in srgb, var(--ground) 70%, #0e110b) 56%); }
+.lk-ic .ms { transform: scale(1.12); transform-origin: 50% 100%; }
+.lk-t { display: flex; flex-direction: column; min-width: 0; } .lk-t small { color: var(--muted); font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.lk-t b { font-family: var(--f-display); font-size: 16px; line-height: 1.1; font-weight: 600; }
+.lk-lv { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex: none; } .lk-lv .rd { font-style: normal; }
+.lk-n { font-style: normal; font-size: 11px; color: var(--gold-2); font-weight: 800; }
+/* gros monstres */
+.mc-tags .bg { color: #d8b4ff; border-color: #a06ae888; background: #a06ae822; }
+.mc.big { background: radial-gradient(ellipse at 0 0, #a06ae81c, transparent 60%), linear-gradient(180deg, #1e1a26, #141018); border-color: #a06ae844; }
+.mc.big.archi { background: radial-gradient(ellipse at 0 0, #e8aa2e24, transparent 60%), linear-gradient(180deg, #221e18, #15120c); border-color: #e8aa2e66; }
+.unit.mon.big .sprite.has-art .ms { width: 74px; height: 74px; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -3451,6 +3499,7 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .place-banner h2 { font-size: 28px; }
 :root[data-layout="mobile"] .pb-mons { font-size: 36px; }
 :root[data-layout="mobile"] .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+:root[data-layout="mobile"] .wm { min-width: 1030px; }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -3459,7 +3508,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793231834';
+const BUILD_ID = '1793234157';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3730,11 +3779,12 @@ const SUBZONES = [
 const ARCHI_RATE = 0.01, ARCHI_MULT = 2, ARCHI_REWARD = 6;
 const ARCHI_NAMES = { incarnam: 'Pissenlit Séculaire', astrub: 'Champ Champ Colossal', abraknydes: 'Sanglier Roi des Bois', cania: 'Bwork Chef de Guerre', koalaks: 'Mufafah Alpha', sidimote: 'Seigneur Chafer' };
 const ARCHIS = {}; // id de zone → id de l'archimonstre
-for (const z of ZONES) {
+function addArchi(z) {
   const best = z.monsters.reduce((a, b) => (MONSTERS[b].lvl > MONSTERS[a].lvl ? b : a));
   const mid = 'archi_' + z.id; ARCHIS[z.id] = mid;
   MONSTERS[mid] = { ...MONSTERS[best], name: ARCHI_NAMES[z.id] || ('Archi-' + MONSTERS[best].name), archi: true, base: best, mult: ARCHI_MULT };
 }
+for (const z of ZONES) addArchi(z);
 const DUNGEONS = [
   { id: 'dj_bouftou', name: 'Donjon des Bouftous', region: 'Astrub', lvl: [14, 25], key: 'clef_bouftou',
     rooms: [['bouftou', 'bouftou', 'boufton_blanc'], ['boufton_blanc', 'boufton_blanc', 'bouftou_chef'], ['bouftou_chef', 'bouftou_chef', 'boufton_blanc']],
@@ -4214,6 +4264,240 @@ const SKILL_BRANCHES = [
 const SKILL_GLOBAL = [[15, { dmgPct: 3, hpPct: 3 }], [30, { xpPct: 5, kamas: 5 }], [45, { dmgPct: 5, hpPct: 5 }], [60, { crit: 3, speed: 8, pp: 20 }]];
 const SKILL_NODE = {}; for (const b of SKILL_BRANCHES) for (const n of b.nodes) SKILL_NODE[n[0]] = { id: n[0], name: n[1], icon: n[2], max: n[3], fx: n[4], r: n[5], c: n[6], req: n[7], cost: n[8], branch: b.id };
 function skillFmt(k, v) { const s = SKILL_STAT[k]; return `+${String(+v.toFixed(2)).replace('.', ',')}${s[1]} ${s[0]}`; }
+/* =====================================================================
+   SOUS-ZONES DE LA CARTE — des coins de Dofus rattachés aux zones principales
+   Chaque sous-zone a ses monstres, un GROS MONSTRE (le plus fort, avec relique et archimonstre),
+   sa panoplie et sa relique. Les archimonstres sont créés comme pour les zones (addArchi).
+   Île des Wabbits · Lac des Blops · Village Kanniboul · Territoire des Porcos
+   Sanctuaire des Dragoeufs · Frigost (Excavation du Mansot Royal)
+   Les niveaux de métier des recettes restent ≤ 100 (MAX_JOB_LEVEL).
+   ===================================================================== */
+
+/* ---------------------------- Ressources ---------------------------- */
+Object.assign(RESOURCES, {
+  /* Île des Wabbits */
+  oreille_wabbit:     { name: 'Oreille de Wabbit', icon: '🐰', value: 14 },
+  carotte_doree:      { name: 'Carotte Dorée', icon: '🥕', value: 18 },
+  fourrure_wabbit:    { name: 'Fourrure de Wabbit', icon: '🐇', value: 22 },
+  couronne_wabbit:    { name: 'Couronne du Wa Wabbit', icon: '⚜️', value: 280, rare: true },
+  /* Lac des Blops */
+  gelee_coco:         { name: 'Gelée de Blop Coco', icon: '🥥', value: 26 },
+  gelee_griotte:      { name: 'Gelée de Blop Griotte', icon: '🍒', value: 28 },
+  gelee_indigo:       { name: 'Gelée de Blop Indigo', icon: '🫐', value: 30 },
+  gelee_reinette:     { name: 'Gelée de Blop Reinette', icon: '🍏', value: 32 },
+  gelee_multicolore:  { name: 'Gelée Royale Multicolore', icon: '🌈', value: 420, rare: true },
+  /* Village Kanniboul */
+  pointe_javelot:     { name: 'Pointe de Javelot', icon: '🔱', value: 44 },
+  plume_kanniboul:    { name: 'Plume de Kanniboul', icon: '🦚', value: 48 },
+  masque_tribal:      { name: 'Masque Tribal', icon: '🎭', value: 52 },
+  totem_ebil:         { name: "Totem d'Ebil", icon: '🗿', value: 560, rare: true },
+  /* Territoire des Porcos */
+  couenne_porsalu:    { name: 'Couenne de Porsalu', icon: '🥓', value: 62 },
+  jambon_farle:       { name: 'Jambon de Farle', icon: '🍖', value: 68 },
+  groin_dorgan:       { name: 'Groin de Don Dorgan', icon: '🐽', value: 74 },
+  ecaille_cochon:     { name: 'Écaille du Dragon Cochon', icon: '🐉', value: 640, rare: true },
+  /* Sanctuaire des Dragoeufs */
+  coquille_dragoeuf:  { name: 'Coquille de Dragoeuf', icon: '🥚', value: 82 },
+  ecaille_dore:       { name: 'Écaille de Dragoss Doré', icon: '🐲', value: 90 },
+  braise_dragueuse:   { name: 'Braise de Dragueuse', icon: '🔥', value: 96 },
+  oeuf_crocabulia:    { name: 'Œuf de Crocabulia', icon: '🪺', value: 780, rare: true },
+  /* Frigost */
+  poil_mansot:        { name: 'Poil de Mansot', icon: '🧣', value: 104 },
+  croc_givre:         { name: 'Croc de Givre', icon: '🧊', value: 110 },
+  eclat_givre:        { name: 'Éclat de Glace Éternelle', icon: '💎', value: 116 },
+  cristal_mansot:     { name: 'Cristal du Mansot Royal', icon: '🔷', value: 900, rare: true },
+});
+
+/* ---------------------------- Monstres ----------------------------
+   big : gros monstre de la sous-zone (il porte la relique ; son archimonstre est le ×2 de la sous-zone) */
+Object.assign(MONSTERS, {
+  /* Île des Wabbits (22-34) */
+  wabbit:        { name: 'Wabbit', icon: '🐰', lvl: 22, hpm: 0.9, dm: 1.1, drops: [['oreille_wabbit', 0.5], ['carotte_doree', 0.15]] },
+  black_wabbit:  { name: 'Black Wabbit', icon: '🐇', lvl: 26, hpm: 1, dm: 1.2, drops: [['carotte_doree', 0.45], ['oreille_wabbit', 0.2]] },
+  wo_wabbit:     { name: 'Wo Wabbit', icon: '🐰', lvl: 30, hpm: 1.4, dm: 1.05, res: 8, drops: [['fourrure_wabbit', 0.45], ['carotte_doree', 0.15]] },
+  wa_wabbit:     { name: 'Wa Wabbit', icon: '👑', lvl: 34, hpm: 2.3, dm: 1.2, res: 12, big: true, drops: [['couronne_wabbit', 0.3], ['fourrure_wabbit', 0.8], ['carotte_doree', 0.5]] },
+
+  /* Lac des Blops (37-50) */
+  blop_coco:     { name: 'Blop Coco', icon: '🟤', lvl: 37, hpm: 1.25, dm: 0.95, drops: [['gelee_coco', 0.5]] },
+  blop_griotte:  { name: 'Blop Griotte', icon: '🔴', lvl: 40, hpm: 1.1, dm: 1.15, drops: [['gelee_griotte', 0.5]] },
+  blop_indigo:   { name: 'Blop Indigo', icon: '🔵', lvl: 43, hpm: 1.15, dm: 1.1, res: 8, drops: [['gelee_indigo', 0.5]] },
+  blop_reinette: { name: 'Blop Reinette', icon: '🟢', lvl: 46, hpm: 1.2, dm: 1.05, drops: [['gelee_reinette', 0.5]] },
+  blop_royal:    { name: 'Blop Multicolore Royal', icon: '🌈', lvl: 50, hpm: 2.5, dm: 1.15, res: 12, big: true,
+                   drops: [['gelee_multicolore', 0.3], ['gelee_coco', 0.6], ['gelee_griotte', 0.6], ['gelee_indigo', 0.6], ['gelee_reinette', 0.6]] },
+
+  /* Village Kanniboul — Île de Moon (54-66) */
+  kanniboul_jav:    { name: 'Kanniboul Jav', icon: '🗡️', lvl: 54, hpm: 1, dm: 1.2, drops: [['pointe_javelot', 0.45], ['masque_tribal', 0.12]] },
+  kanniboul_ark:    { name: 'Kanniboul Ark', icon: '🏹', lvl: 58, hpm: 0.9, dm: 1.3, drops: [['plume_kanniboul', 0.45], ['pointe_javelot', 0.12]] },
+  kanniboul_sarbak: { name: 'Kanniboul Sarbak', icon: '🎯', lvl: 62, hpm: 1, dm: 1.25, drops: [['masque_tribal', 0.45], ['plume_kanniboul', 0.12]] },
+  kanniboul_ebil:   { name: 'Kanniboul Ebil', icon: '👺', lvl: 66, hpm: 2.4, dm: 1.2, res: 12, big: true,
+                      drops: [['totem_ebil', 0.3], ['masque_tribal', 0.8], ['plume_kanniboul', 0.6], ['pointe_javelot', 0.6]] },
+
+  /* Territoire des Porcos (74-88) */
+  porsalu:       { name: 'Porsalu', icon: '🐖', lvl: 74, hpm: 1.1, dm: 1.15, drops: [['couenne_porsalu', 0.45], ['jambon_farle', 0.12]] },
+  cochon_farle:  { name: 'Cochon de Farle', icon: '🐷', lvl: 78, hpm: 1.5, dm: 0.95, res: 8, drops: [['jambon_farle', 0.45], ['couenne_porsalu', 0.15]] },
+  don_dorgan:    { name: 'Don Dorgan', icon: '🎩', lvl: 82, hpm: 1.2, dm: 1.3, drops: [['groin_dorgan', 0.45], ['jambon_farle', 0.12]] },
+  dragon_cochon: { name: 'Dragon Cochon', icon: '🐲', lvl: 88, hpm: 2.5, dm: 1.2, res: 14, big: true,
+                   drops: [['ecaille_cochon', 0.3], ['groin_dorgan', 0.8], ['jambon_farle', 0.6], ['couenne_porsalu', 0.6]] },
+
+  /* Sanctuaire des Dragoeufs (90-104) */
+  dragoeuf_guerrier: { name: 'Dragoeuf Guerrier', icon: '🥚', lvl: 90, hpm: 1.3, dm: 1.2, res: 8, drops: [['coquille_dragoeuf', 0.45], ['ecaille_dore', 0.12]] },
+  dragoss_dore:      { name: 'Dragoss Doré', icon: '🐲', lvl: 94, hpm: 1.1, dm: 1.25, drops: [['ecaille_dore', 0.45], ['coquille_dragoeuf', 0.12]] },
+  dragueuse:         { name: 'Dragueuse', icon: '🔥', lvl: 98, hpm: 1.0, dm: 1.4, drops: [['braise_dragueuse', 0.45], ['ecaille_dore', 0.12]] },
+  crocabulia:        { name: 'Crocabulia', icon: '🐊', lvl: 104, hpm: 2.6, dm: 1.25, res: 15, big: true,
+                       drops: [['oeuf_crocabulia', 0.3], ['braise_dragueuse', 0.8], ['ecaille_dore', 0.6], ['coquille_dragoeuf', 0.6]] },
+
+  /* Frigost — Excavation du Mansot Royal (108-126) */
+  timansot:      { name: 'Timansot', icon: '🧸', lvl: 108, hpm: 1.0, dm: 1.2, drops: [['poil_mansot', 0.45], ['croc_givre', 0.12]] },
+  mansobese:     { name: 'Mansobèse', icon: '🦣', lvl: 113, hpm: 1.7, dm: 0.95, res: 10, drops: [['croc_givre', 0.45], ['poil_mansot', 0.15]] },
+  shamansot:     { name: 'Shamansot', icon: '🧙', lvl: 118, hpm: 1.0, dm: 1.4, drops: [['eclat_givre', 0.45], ['poil_mansot', 0.12]] },
+  mansot_royal:  { name: 'Mansot Royal', icon: '👑', lvl: 126, hpm: 2.7, dm: 1.25, res: 15, big: true,
+                   drops: [['cristal_mansot', 0.3], ['eclat_givre', 0.8], ['croc_givre', 0.6], ['poil_mansot', 0.6]] },
+});
+
+/* ---------------------------- Sous-zones ---------------------------- */
+ZONES.push(
+  { id: 'wabbits', sub: true, parent: 'abraknydes', name: 'Île des Wabbits', region: 'Wabbits', lvl: [21, 34], monsters: ['wabbit', 'black_wabbit', 'wo_wabbit', 'wa_wabbit'],
+    text: 'Une île verdoyante où les lapins ont pris le pouvoir. Le Wa Wabbit règne sur son château de carottes.' },
+  { id: 'blops', sub: true, parent: 'cania', name: 'Lac des Blops', region: 'Blops', lvl: [36, 50], monsters: ['blop_coco', 'blop_griotte', 'blop_indigo', 'blop_reinette', 'blop_royal'],
+    text: 'Dans les eaux troubles du lac de Cania, les blops de toutes les couleurs se dandinent autour de leur souverain multicolore.' },
+  { id: 'kanniboul', sub: true, parent: 'koalaks', name: 'Village Kanniboul', region: 'Moon', lvl: [52, 66], monsters: ['kanniboul_jav', 'kanniboul_ark', 'kanniboul_sarbak', 'kanniboul_ebil'],
+    text: "Au cœur de l'île de Moon, une tribu masquée défend son village à coups de javelots, de flèches et de sarbacanes." },
+  { id: 'porcos', sub: true, parent: 'sidimote', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan', 'dragon_cochon'],
+    text: "Fermes, boue et lard : le territoire des Porcos, que protège un dragon d'un genre très particulier." },
+  { id: 'dragoeufs', sub: true, parent: 'sidimote', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse', 'crocabulia'],
+    text: 'Un sanctuaire de coquilles brûlantes où les œufs éclosent en dragons. Crocabulia veille sur la couvée.' },
+  { id: 'frigost', sub: true, parent: 'porcos', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot', 'mansot_royal'],
+    text: "Sur la banquise de Frigost, les Mansots creusent l'excavation de leur roi. Prévois un gros manteau." },
+);
+Object.assign(ARCHI_NAMES, {
+  wabbits: 'Wa Wabbit Impérial', blops: 'Blop Prismatique Primordial', kanniboul: 'Ebil le Dévoreur',
+  porcos: 'Dragon Cochon Ancestral', dragoeufs: "Crocabulia l'Insatiable", frigost: 'Mansot Souverain des Glaces',
+});
+for (const z of ZONES) if (z.sub) addArchi(z);
+
+/* ---------------------------- Panoplies ---------------------------- */
+Object.assign(SETS, {
+  wabbit:    { name: 'Panoplie du Wabbit',    bonus: { 2: { pp: 12 }, 3: { deg: 25, pp: 20 }, 4: { deg: 35, dodge: 3, pp: 30 }, 5: { deg: 55, dodge: 5, crit: 2, pp: 40 } } },
+  blop:      { name: 'Panoplie Blop',         bonus: { 2: { res: 3 }, 3: { vit: 60, deg: 20 }, 4: { vit: 90, deg: 45, res: 6 }, 5: { vit: 130, deg: 80, res: 8, regen: 1 } } },
+  kanniboul: { name: 'Panoplie Kanniboul',    bonus: { 2: { deg: 30 }, 3: { deg: 60, crit: 3 }, 4: { deg: 100, crit: 4, dodge: 3 }, 5: { deg: 150, crit: 6, dodge: 5 } } },
+  porcos:    { name: 'Panoplie du Porcos',    bonus: { 2: { vit: 60 }, 3: { deg: 50, vit: 120 }, 4: { deg: 90, vit: 170, res: 7 }, 5: { deg: 130, vit: 230, res: 10, kamas: 10 } } },
+  dragoeuf:  { name: 'Panoplie du Dragoeuf',  bonus: { 2: { vit: 100 }, 3: { deg: 60, vit: 160 }, 4: { deg: 110, vit: 220, crit: 3 }, 5: { deg: 160, vit: 300, crit: 5, res: 8 } } },
+  mansot:    { name: 'Panoplie du Mansot',    bonus: { 2: { vit: 140 }, 3: { deg: 80, vit: 220, res: 6 }, 4: { deg: 140, vit: 300, res: 9 }, 5: { deg: 210, vit: 400, res: 12, dodge: 4 } } },
+});
+
+/* ---------------------------- Équipements & reliques ---------------------------- */
+Object.assign(ITEMS, {
+  /* Panoplie du Wabbit — oreilles, pattes et carottes */
+  coiffe_wabbit:   { icon: '🐰', name: 'Coiffe du Wabbit', slot: 'coiffe', lvl: 24, set: 'wabbit', stats: { deg: [12, 18], vit: [32, 48], pp: [10, 16] } },
+  bottes_wabbit:   { icon: '🐾', name: 'Pattes de Wabbit', slot: 'bottes', lvl: 26, set: 'wabbit', stats: { deg: [18, 28], vit: [14, 22], dodge: [2, 4] } },
+  anneau_wabbit:   { icon: '🥕', name: 'Anneau de la Carotte Dorée', slot: 'anneau', lvl: 28, set: 'wabbit', stats: { deg: [17, 27], pp: [14, 22] } },
+  cape_wabbit:     { icon: '🧥', name: 'Cape du Wa Wabbit', slot: 'cape', lvl: 32, set: 'wabbit', stats: { vit: [30, 46], sag: [14, 26], pp: [12, 20] } },
+  sceptre_wabbit:  { icon: '🔱', name: 'Sceptre du Wa Wabbit', slot: 'arme', lvl: 34, set: 'wabbit', stats: { deg: [45, 68], crit: [1, 2] } },
+  relique_wabbit:  { name: 'Patte de Lapin du Wa Wabbit', slot: 'relique', lvl: 30, relic: true, stats: { kamas: [15, 25], dodge: [4, 7], pp: [15, 25] } },
+
+  /* Panoplie Blop — une couleur par pièce, la masse est multicolore */
+  coiffe_blop:     { icon: '🟤', name: 'Coiffe Blop Coco', slot: 'coiffe', lvl: 38, set: 'blop', stats: { deg: [14, 22], vit: [52, 74], res: [2, 4] } },
+  cape_blop:       { icon: '🔴', name: 'Cape Blop Griotte', slot: 'cape', lvl: 40, set: 'blop', stats: { deg: [24, 36], vit: [30, 46], pp: [14, 22] } },
+  amulette_blop:   { icon: '🔵', name: 'Amulette Blop Indigo', slot: 'amulette', lvl: 44, set: 'blop', stats: { vit: [55, 84], res: [3, 5], pp: [16, 28] } },
+  anneau_blop:     { icon: '🟢', name: 'Anneau Blop Reinette', slot: 'anneau', lvl: 46, set: 'blop', stats: { deg: [28, 40], pp: [18, 30], sag: [8, 14] } },
+  masse_blop:      { icon: '🌈', name: 'Masse du Blop Multicolore', slot: 'arme', lvl: 49, set: 'blop', stats: { deg: [66, 98], vit: [15, 30] } },
+  relique_blop:    { name: 'Cœur Prismatique du Blop Royal', slot: 'relique', lvl: 48, relic: true, stats: { regen: [3, 4], res: [5, 8], vit: [40, 70] } },
+
+  /* Panoplie Kanniboul — os, plumes et masques */
+  coiffe_kanniboul:  { icon: '🎭', name: 'Masque du Kanniboul', slot: 'coiffe', lvl: 54, set: 'kanniboul', stats: { deg: [24, 36], vit: [50, 76], crit: [1, 2] } },
+  cape_kanniboul:    { icon: '🦚', name: 'Pagne de Plumes', slot: 'cape', lvl: 58, set: 'kanniboul', stats: { deg: [20, 32], vit: [66, 98], dodge: [2, 4] } },
+  ceinture_kanniboul:{ icon: '🦴', name: "Ceinture d'Os", slot: 'ceinture', lvl: 60, set: 'kanniboul', stats: { deg: [30, 46], vit: [40, 58] } },
+  bottes_kanniboul:  { icon: '🥾', name: 'Sandales du Chasseur', slot: 'bottes', lvl: 62, set: 'kanniboul', stats: { deg: [42, 58], vit: [34, 50], dodge: [3, 5] } },
+  lance_kanniboul:   { icon: '🔱', name: "Javelot d'Ebil", slot: 'arme', lvl: 64, set: 'kanniboul', stats: { deg: [68, 98], crit: [2, 4] } },
+  relique_kanniboul: { name: "Totem d'Ebil", slot: 'relique', lvl: 62, relic: true, stats: { deg: [20, 35], dmgPct: [10, 16], crit: [3, 6] } },
+
+  /* Panoplie du Porcos — lard, boucle et grosse chaîne dorée */
+  coiffe_porcos:   { icon: '🎩', name: 'Chapeau de Don Dorgan', slot: 'coiffe', lvl: 76, set: 'porcos', stats: { deg: [28, 42], vit: [70, 104], pp: [24, 38] } },
+  cape_porcos:     { icon: '🧥', name: 'Redingote de Farle', slot: 'cape', lvl: 78, set: 'porcos', stats: { vit: [80, 116], sag: [24, 40], res: [2, 4] } },
+  ceinture_porcos: { icon: '🎗️', name: 'Ceinture du Porsalu', slot: 'ceinture', lvl: 80, set: 'porcos', stats: { deg: [32, 50], vit: [52, 72] } },
+  amulette_porcos: { icon: '📿', name: 'Médaillon du Porcos', slot: 'amulette', lvl: 82, set: 'porcos', stats: { vit: [90, 130], res: [4, 6], pp: [28, 46] } },
+  rotissoire_cochon:{ icon: '🍖', name: 'Rôtissoire du Dragon Cochon', slot: 'arme', lvl: 88, set: 'porcos', stats: { deg: [78, 112], vit: [20, 35] } },
+  relique_porcos:  { name: 'Tirelire du Dragon Cochon', slot: 'relique', lvl: 80, relic: true, stats: { kamas: [50, 80], vit: [80, 130] } },
+
+  /* Panoplie du Dragoeuf — coquille, ailes et braise */
+  coiffe_dragoeuf:  { icon: '🥚', name: 'Coquille du Dragoeuf', slot: 'coiffe', lvl: 90, set: 'dragoeuf', stats: { deg: [36, 52], vit: [90, 130], res: [2, 4] } },
+  cape_dragoeuf:    { icon: '🦇', name: 'Ailes de Dragoss', slot: 'cape', lvl: 94, set: 'dragoeuf', stats: { vit: [100, 144], sag: [34, 54], dodge: [3, 5] } },
+  amulette_dragoeuf:{ icon: '📿', name: 'Collier de Dragueuse', slot: 'amulette', lvl: 96, set: 'dragoeuf', stats: { deg: [40, 58], vit: [100, 140], pp: [30, 50] } },
+  anneau_dragoeuf:  { icon: '💍', name: 'Anneau de Dragoss Doré', slot: 'anneau', lvl: 98, set: 'dragoeuf', stats: { deg: [52, 72], pp: [32, 52], crit: [1, 2] } },
+  croc_crocabulia:  { icon: '🦷', name: 'Croc de Crocabulia', slot: 'arme', lvl: 104, set: 'dragoeuf', stats: { deg: [100, 140], crit: [3, 5] } },
+  relique_dragoeuf: { name: 'Œuf de Crocabulia', slot: 'relique', lvl: 100, relic: true, stats: { speed: [18, 28], dmgPct: [12, 18], vit: [80, 120] } },
+
+  /* Panoplie du Mansot — fourrure, givre et glace éternelle */
+  coiffe_mansot:   { icon: '🧣', name: 'Capuche du Mansot', slot: 'coiffe', lvl: 108, set: 'mansot', stats: { deg: [46, 66], vit: [110, 160], res: [3, 5] } },
+  cape_mansot:     { icon: '🧥', name: 'Manteau du Mansot', slot: 'cape', lvl: 112, set: 'mansot', stats: { vit: [120, 170], sag: [40, 62], res: [3, 5] } },
+  bottes_mansot:   { icon: '🥾', name: 'Bottes de Givre', slot: 'bottes', lvl: 114, set: 'mansot', stats: { deg: [58, 80], vit: [70, 100], dodge: [4, 6] } },
+  ceinture_mansot: { icon: '🎗️', name: 'Ceinture de Glace', slot: 'ceinture', lvl: 118, set: 'mansot', stats: { deg: [54, 76], vit: [80, 116], pp: [36, 58] } },
+  masse_mansot:    { icon: '🔨', name: 'Masse du Mansot Royal', slot: 'arme', lvl: 126, set: 'mansot', stats: { deg: [120, 168], crit: [3, 6] } },
+  relique_mansot:  { name: 'Cœur de Givre du Mansot Royal', slot: 'relique', lvl: 120, relic: true, stats: { res: [8, 12], dmgPct: [14, 20], dodge: [4, 7] } },
+});
+
+/* ---------------------------- Recettes (coût ×CRAFT_COST_MULT appliqué ici) ---------------------------- */
+{
+  const R = [
+    /* Wabbits */
+    { out: 'coiffe_wabbit', job: 'tailleur', lvl: 20, ing: { oreille_wabbit: 14, fourrure_wabbit: 6 } },
+    { out: 'bottes_wabbit', job: 'cordonnier', lvl: 22, ing: { fourrure_wabbit: 12, carotte_doree: 6 } },
+    { out: 'anneau_wabbit', job: 'bijoutier', lvl: 24, ing: { carotte_doree: 12, oreille_wabbit: 6 } },
+    { out: 'cape_wabbit', job: 'tailleur', lvl: 27, ing: { fourrure_wabbit: 16, oreille_wabbit: 10, carotte_doree: 4 } },
+    { out: 'sceptre_wabbit', job: 'forgeron', lvl: 30, ing: { couronne_wabbit: 1, carotte_doree: 14, fourrure_wabbit: 8 } },
+    /* Blops */
+    { out: 'coiffe_blop', job: 'tailleur', lvl: 33, ing: { gelee_coco: 14, gelee_reinette: 6 } },
+    { out: 'cape_blop', job: 'tailleur', lvl: 35, ing: { gelee_griotte: 14, gelee_coco: 8 } },
+    { out: 'amulette_blop', job: 'bijoutier', lvl: 38, ing: { gelee_indigo: 12, gelee_griotte: 8, gelee_reinette: 4 } },
+    { out: 'anneau_blop', job: 'bijoutier', lvl: 40, ing: { gelee_reinette: 12, gelee_indigo: 8 } },
+    { out: 'masse_blop', job: 'forgeron', lvl: 43, ing: { gelee_multicolore: 1, gelee_coco: 8, gelee_griotte: 8, gelee_indigo: 8, gelee_reinette: 8 } },
+    /* Kanniboul */
+    { out: 'coiffe_kanniboul', job: 'tailleur', lvl: 46, ing: { masque_tribal: 12, plume_kanniboul: 6 } },
+    { out: 'cape_kanniboul', job: 'tailleur', lvl: 50, ing: { plume_kanniboul: 14, masque_tribal: 6, pointe_javelot: 4 } },
+    { out: 'ceinture_kanniboul', job: 'cordonnier', lvl: 52, ing: { pointe_javelot: 12, masque_tribal: 8 } },
+    { out: 'bottes_kanniboul', job: 'cordonnier', lvl: 54, ing: { plume_kanniboul: 10, pointe_javelot: 10 } },
+    { out: 'lance_kanniboul', job: 'forgeron', lvl: 56, ing: { totem_ebil: 1, pointe_javelot: 16, masque_tribal: 8, plume_kanniboul: 8 } },
+    /* Porcos */
+    { out: 'coiffe_porcos', job: 'tailleur', lvl: 64, ing: { groin_dorgan: 10, couenne_porsalu: 8 } },
+    { out: 'cape_porcos', job: 'tailleur', lvl: 66, ing: { jambon_farle: 14, couenne_porsalu: 10 } },
+    { out: 'ceinture_porcos', job: 'cordonnier', lvl: 68, ing: { couenne_porsalu: 12, jambon_farle: 8 } },
+    { out: 'amulette_porcos', job: 'bijoutier', lvl: 70, ing: { groin_dorgan: 12, jambon_farle: 8 } },
+    { out: 'rotissoire_cochon', job: 'forgeron', lvl: 76, ing: { ecaille_cochon: 1, groin_dorgan: 14, jambon_farle: 12, couenne_porsalu: 10 } },
+    /* Dragoeufs */
+    { out: 'coiffe_dragoeuf', job: 'tailleur', lvl: 78, ing: { coquille_dragoeuf: 14, ecaille_dore: 6 } },
+    { out: 'cape_dragoeuf', job: 'tailleur', lvl: 80, ing: { ecaille_dore: 14, coquille_dragoeuf: 8 } },
+    { out: 'amulette_dragoeuf', job: 'bijoutier', lvl: 82, ing: { braise_dragueuse: 10, ecaille_dore: 8 } },
+    { out: 'anneau_dragoeuf', job: 'bijoutier', lvl: 84, ing: { braise_dragueuse: 12, coquille_dragoeuf: 8 } },
+    { out: 'croc_crocabulia', job: 'forgeron', lvl: 90, ing: { oeuf_crocabulia: 1, braise_dragueuse: 14, ecaille_dore: 12, coquille_dragoeuf: 10 } },
+    /* Frigost */
+    { out: 'coiffe_mansot', job: 'tailleur', lvl: 92, ing: { poil_mansot: 14, croc_givre: 6 } },
+    { out: 'cape_mansot', job: 'tailleur', lvl: 94, ing: { poil_mansot: 16, eclat_givre: 6 } },
+    { out: 'bottes_mansot', job: 'cordonnier', lvl: 96, ing: { croc_givre: 14, poil_mansot: 8 } },
+    { out: 'ceinture_mansot', job: 'cordonnier', lvl: 98, ing: { eclat_givre: 12, croc_givre: 8 } },
+    { out: 'masse_mansot', job: 'forgeron', lvl: 100, ing: { cristal_mansot: 1, eclat_givre: 14, croc_givre: 12, poil_mansot: 10 } },
+  ];
+  for (const r of R) { for (const k of Object.keys(r.ing)) r.ing[k] *= CRAFT_COST_MULT; RECIPES.push(r); }
+}
+
+/* ---------------------------- Butin ---------------------------- */
+Object.assign(GEAR_DROPS, {
+  wabbit: ['coiffe_wabbit', 'bottes_wabbit'], black_wabbit: ['anneau_wabbit', 'coiffe_wabbit'], wo_wabbit: ['cape_wabbit', 'bottes_wabbit'],
+  wa_wabbit: ['sceptre_wabbit', 'cape_wabbit', 'anneau_wabbit'],
+  blop_coco: ['coiffe_blop'], blop_griotte: ['cape_blop'], blop_indigo: ['amulette_blop'], blop_reinette: ['anneau_blop'],
+  blop_royal: ['masse_blop', 'amulette_blop', 'cape_blop'],
+  kanniboul_jav: ['bottes_kanniboul', 'ceinture_kanniboul'], kanniboul_ark: ['cape_kanniboul', 'bottes_kanniboul'], kanniboul_sarbak: ['coiffe_kanniboul', 'ceinture_kanniboul'],
+  kanniboul_ebil: ['lance_kanniboul', 'coiffe_kanniboul', 'cape_kanniboul'],
+  porsalu: ['ceinture_porcos'], cochon_farle: ['cape_porcos', 'ceinture_porcos'], don_dorgan: ['coiffe_porcos', 'amulette_porcos'],
+  dragon_cochon: ['rotissoire_cochon', 'amulette_porcos', 'coiffe_porcos'],
+  dragoeuf_guerrier: ['coiffe_dragoeuf'], dragoss_dore: ['cape_dragoeuf', 'anneau_dragoeuf'], dragueuse: ['amulette_dragoeuf', 'anneau_dragoeuf'],
+  crocabulia: ['croc_crocabulia', 'amulette_dragoeuf', 'cape_dragoeuf'],
+  timansot: ['bottes_mansot', 'ceinture_mansot'], mansobese: ['coiffe_mansot', 'cape_mansot'], shamansot: ['cape_mansot', 'ceinture_mansot'],
+  mansot_royal: ['masse_mansot', 'coiffe_mansot', 'bottes_mansot'],
+});
+Object.assign(RELIC_DROPS, {
+  wa_wabbit: [['relique_wabbit', 0.0005]], blop_royal: [['relique_blop', 0.0005]], kanniboul_ebil: [['relique_kanniboul', 0.0005]],
+  dragon_cochon: [['relique_porcos', 0.0005]], crocabulia: [['relique_dragoeuf', 0.0005]], mansot_royal: [['relique_mansot', 0.0005]],
+});
 /* =====================================================================
    AMAKNA IDLE — MOTEUR
    Aucune dépendance au DOM : tout est testable hors navigateur.
@@ -5874,6 +6158,279 @@ for (const id of Object.keys(_RELIC_COL)) {
   ITEM_ART[id] = () => _relicFrame(id) + `<g transform="translate(16 16.4) scale(.72) translate(-16 -16)">${body}</g>` + _spark(4.6, 6, '#fff', .9) + _spark(27.6, 8.4, c1, .8) + _spark(26.8, 26, '#fff', .7) + _spark(5.4, 25.4, c1, .6);
 }
 /* =====================================================================
+   ICÔNES D'ÉQUIPEMENT v3 — panoplies des sous-zones de la carte
+   Wabbit : fourrure crème + rose + carotte · Blop : gelée, une couleur par pièce
+   Kanniboul : bois, os et plumes · Porcos : mafia rose, galon doré
+   Dragoeuf : coquille, aile dorée et braise · Mansot : fourrure et glace éternelle
+   Complète ITEM_ART (art.js / art2.js) — mêmes helpers (_id, _lg, _rg, _K…).
+   ===================================================================== */
+/* contour ondulé « fourrure » (viewBox 32) */
+const _a3fur = (cx, cy, rx, ry, n = 10, amp = 1.3, rot = 0) => {
+  let d = ''; const N = n * 2;
+  for (let i = 0; i < N; i++) {
+    const a = rot + (i / N) * Math.PI * 2, r = i % 2 ? 1 : 1 + amp / Math.max(rx, ry);
+    const x = cx + Math.cos(a) * rx * r, y = cy + Math.sin(a) * ry * r;
+    if (i === 0) d += `M${x.toFixed(1)} ${y.toFixed(1)}`;
+    else { const am = rot + ((i - .5) / N) * Math.PI * 2, rm = 1 + (i % 2 ? amp * .35 : amp * .2) / Math.max(rx, ry); d += `Q${(cx + Math.cos(am) * rx * rm * 1.04).toFixed(1)} ${(cy + Math.sin(am) * ry * rm * 1.04).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`; }
+  }
+  return d + 'Z';
+};
+/* plume : base en (x,y), orientée selon ang (0 = vers le haut) */
+const _a3fea = (x, y, ang, len, c1, c2) => { const g = _id(); return `<defs>${_lg(g, c1, c2)}</defs><g transform="translate(${x} ${y}) rotate(${ang})"><path d="M0 0C-${len * .24} -${len * .28} -${len * .22} -${len * .8} 0 -${len} ${len * .22} -${len * .8} ${len * .24} -${len * .28} 0 0Z" fill="url(#${g})" ${_K}/><path d="M0 -1V-${len - 1.4}" stroke="#140c06" stroke-opacity=".5" stroke-width=".5"/></g>`; };
+/* blob de gelée : base ronde + pointe */
+const _a3blob = (cx, cy, r, g) => `<path d="M${cx} ${cy - r * 1.18}C${cx + r * .25} ${cy - r * .76} ${cx + r * 1.06} ${cy - r * .56} ${cx + r * 1.06} ${cy + r * .25}C${cx + r * 1.06} ${cy + r * .86} ${cx + r * .56} ${cy + r} ${cx} ${cy + r}C${cx - r * .56} ${cy + r} ${cx - r * 1.06} ${cy + r * .86} ${cx - r * 1.06} ${cy + r * .25}C${cx - r * 1.06} ${cy - r * .56} ${cx - r * .25} ${cy - r * .76} ${cx} ${cy - r * 1.18}Z" fill="url(#${g})" ${_K}/><ellipse cx="${cx - r * .42}" cy="${cy - r * .3}" rx="${r * .3}" ry="${r * .2}" fill="#fff" opacity=".7" transform="rotate(-30 ${cx - r * .42} ${cy - r * .3})"/>`;
+const _a3bone = (x1, y1, x2, y2, w = 1.7) => { const dx = x2 - x1, dy = y2 - y1, l = Math.hypot(dx, dy), nx = -dy / l * w * .55, ny = dx / l * w * .55; return `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="#140c06" stroke-opacity=".85" stroke-width="${w + 1.2}" stroke-linecap="round"/><path d="M${x1} ${y1}L${x2} ${y2}" stroke="#f4ecd4" stroke-width="${w}" stroke-linecap="round"/>` + [[x1, y1], [x2, y2]].map(([x, y]) => `<circle cx="${x + nx}" cy="${y + ny}" r="${w * .62}" fill="#f4ecd4" ${_k}/><circle cx="${x - nx}" cy="${y - ny}" r="${w * .62}" fill="#f4ecd4" ${_k}/>`).join(''); };
+/* chaîne de collier (comme l'aventurier) */
+const _a3chain = (c1 = '#d9b45a', c2 = '#8a6a22') => `${_ln('M7.5 3c0 8.4 3.2 12.2 8.5 13.4 5.3-1.2 8.5-5 8.5-13.4', '#140c06', 2.8, .9)}${_ln('M7.5 3c0 8.4 3.2 12.2 8.5 13.4 5.3-1.2 8.5-5 8.5-13.4', c1, 1.6)}${_ln('M7.5 3c0 8.4 3.2 12.2 8.5 13.4', c2, .5, .8)}`;
+
+Object.assign(ITEM_ART, {
+/* ======================= WABBIT : fourrure crème et rose, carotte dorée ======================= */
+coiffe_wabbit: () => { const a = _id(), b = _id(), c = _id(); return `<defs>${_rg(a, '#ffffff', '#e8cdd8', .4, .3, .9)}${_lg(b, '#ffb8d8', '#e0607f')}${_lg(c, '#ffb04a', '#e0601a', 1, 1)}</defs>${_sh(16, 28.6, 10.5, 1.8)}
+  <path d="M8.6 14C6 7 7 2.4 10.6 2.6c3.4.6 4 6.2 3.2 11.4Z" fill="url(#${a})" ${_K}/><path d="M10.6 5c-.4 2.6 0 5.4.8 7.6" stroke="#ff9ec4" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M17.4 14c-.8-5.6.4-10 3.6-10.6 3-.4 4.6 2.2 2.8 5.8 1.6.2 2.6 1 2.8 2.6-2-.8-3.6-.2-4.6.8.2 1.4.4 2.6.2 3.8Z" fill="url(#${a})" ${_K}/><path d="M20.6 6.2c-.2 2 .2 4.2 1 6" stroke="#ff9ec4" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M5.6 24.4C4.6 16 8.6 11.6 16 11.6S27.4 16 26.4 24.4c-3.2 2.6-6.8 3.4-10.4 3.4s-7.2-.8-10.4-3.4Z" fill="url(#${a})" ${_K}/>
+  <path d="M5.8 22.4c3.2 2.4 6.6 3.4 10.2 3.4s7-1 10.2-3.4l.4 2.4c-3.2 2.8-6.8 3.6-10.6 3.6s-7.4-.8-10.6-3.6Z" fill="url(#${b})" ${_K}/>
+  ${_ln('M9 17c1-1.8 2.6-2.8 4.4-3.2M18 14c2 .2 3.6 1.2 4.6 2.8', '#fff', .8, .75)}${_ln('M8.4 20.4c.8.8 1.6 1 2.4.6M13 21.2c.6.8 1.6 1 2.4.4M18 21.2c.8.6 1.6.6 2.4 0', '#d8b4c4', .7, .8)}
+  <path d="M20.6 20.6c2.4-.4 3.6.8 3.8 2.4l-2.4 4.8-3.2-1.4Z" fill="url(#${c})" ${_K}/>${_ln('M21 21.4l1.6 1.2M20.4 23.2l1.6 1', '#8a3a0a', .5, .6)}<path d="M22.4 20.8c-.2-1.6.6-2.6 1.6-3M22.4 20.8c.6-1.6 1.8-2.2 3-2" stroke="#3f9a2a" stroke-width="1.2" fill="none" stroke-linecap="round"/>`; },
+bottes_wabbit: () => { const a = _id(), b = _id(); return `<defs>${_rg(a, '#ffffff', '#e0c6d2', .4, .3, 1)}${_lg(b, '#ffb8d8', '#d8507a')}</defs>${_sh(16, 28.6, 12, 2)}
+  <path d="M10 4.6h10l.6 13.4c3.4.8 7 2.4 7.6 5.4.4 2-1 3.8-3 3.8H8.8c-1.6 0-2.8-1-2.6-2.6L8 18.4Z" fill="url(#${a})" ${_K}/>
+  <path d="M8.4 5.6c1.6-2.4 4-2.8 6-1.6 2-1.4 4.4-1 5.8 1.6.8 1.4.4 3-.8 3.6-1.6-.8-3.6-.8-5.2 0-1.6-.8-3.6-.8-5.2 0-1.2-.6-1.6-2.2-.6-3.6Z" fill="#fff" ${_K}/>${_ln('M9.6 6.4c.8-1 2-1.4 3-1M15.4 5.6c1-.8 2.4-.6 3.2.4', '#d8b4c4', .6)}
+  <path d="M22 22.6c1.8.2 3.4.8 4.6 1.8l-.2 1.8c-1.6-.8-3.2-1.2-4.6-1.2Z" fill="url(#${b})" ${_k}/>
+  <path d="M6.4 25.4h22.2c0 1.8-1.2 3-3 3H8.8c-1.4 0-2.4-.8-2.4-3Z" fill="url(#${b})" ${_K}/>
+  <circle cx="22.4" cy="24.8" r="1.5" fill="#ff7a9e" ${_k}/><circle cx="25.4" cy="24.2" r="1.3" fill="#ff7a9e" ${_k}/><circle cx="19.6" cy="24.8" r="1.3" fill="#ff7a9e" ${_k}/>
+  ${_ln('M10.4 13.4l9 0M10 16.4l9.4 0', '#d8b4c4', .6, .7)}${_gl('M10.6 10.6l.2 6', .5)}`; },
+anneau_wabbit: () => { const a = _id(), c = _id(); return `<defs>${_lg(a, '#ffe58a', '#b9801a')}${_lg(c, '#ffc060', '#e0601a', 1, 1)}</defs>${_sh(16, 27, 9)}
+  <ellipse cx="16" cy="19.4" rx="8.6" ry="8.8" fill="none" stroke="#140c06" stroke-opacity=".9" stroke-width="5.2"/><ellipse cx="16" cy="19.4" rx="8.6" ry="8.8" fill="none" stroke="url(#${a})" stroke-width="3.6"/>
+  ${_ln('M9 22c1.4 4 4.4 5.6 7 5.6', '#6a4510', 1, .6)}${_ln('M9.6 15c1-2.2 2.8-3.6 4.8-4', '#fff', .9, .55)}
+  <path d="M10.4 10.6 16 6l5.6 4.6-5.6 3.4Z" fill="url(#${a})" ${_K}/>
+  <path d="M16 2.6c2.6.8 3.8 4 3.4 7.4-.4 2.4-1.8 4-3.4 5.4-1.6-1.4-3-3-3.4-5.4-.4-3.4.8-6.6 3.4-7.4Z" fill="url(#${c})" ${_K}/>${_ln('M14.4 6l1.4 1M14.2 8.6l2 1', '#8a3a0a', .5, .6)}${_gl('M14.4 4.4c.6-.6 1.4-.8 2-.4-.8 1-1.4 2.4-1.6 3.6Z', .6)}
+  <path d="M16 2.6c-1-1.8-2.6-2.4-4-1.8 1 .8 2 1.6 2.6 2.8M16 2.6c1-1.8 2.8-2.2 4.2-1.4-1 .6-2 1.4-2.8 2.6" stroke="#2f8a2a" stroke-width="1.1" fill="#58b83a"/>`; },
+cape_wabbit: () => { const a = _id(), b = _id(); return `<defs>${_lg(a, '#ff9ec8', '#c8406a')}${_rg(b, '#ffffff', '#e0c6d2', .4, .3, .9)}</defs>${_sh(16, 28.4, 11, 2)}
+  <path d="M9.6 5.4c2.4 1.6 10.4 1.6 12.8 0l5.4 21.4c-2.8 1.6-6.2.8-8.2 2.2-.6-.6-1.4-.6-2.2 0-1.8-1.4-5.2-.6-8-2.2Z" fill="url(#${a})" ${_K}/>
+  ${_ln('M12 12l-1.4 14M16 11v17M20 12l1.4 14', '#8a1a40', .8, .5)}${_ln('M13 13l-1 10M19.6 13l1 10', '#ffd0e4', .6, .6)}
+  <path d="M8 6.6C8 3.8 11 2.6 16 2.6s8 1.2 8 4c0 2.4-1.6 3.8-3 4.2-1.2-1-3-1.4-5-1.4s-3.8.4-5 1.4C9.6 10.4 8 9 8 6.6Z" fill="url(#${b})" ${_K}/>${_ln('M10 5.4c1.6-1 3.6-1.4 6-1.4M18 4.4c1.6.2 3 .8 4 1.6', '#d8b4c4', .7)}
+  <circle cx="16" cy="10.4" r="2.6" fill="#ffd24a" ${_K}/><path d="M16 8.6l.6 1.2 1.2.2-.9.9.2 1.2-1.1-.6-1.1.6.2-1.2-.9-.9 1.2-.2Z" fill="#ff7a9e"/>
+  <circle cx="16" cy="26" r="2.4" fill="url(#${b})" ${_K}/>${_ln('M14.6 25.4c.8-.8 2-.8 2.8 0', '#d8b4c4', .5)}`; },
+sceptre_wabbit: () => { const g = _id(), c = _id(); return `<defs>${_lg(g, '#ffe58a', '#b9801a')}${_lg(c, '#ffc060', '#e0601a', 0, 1)}</defs>${_rod(6.4, 29.4, 19.6, 13.6, '#ffc3dc', '#c8406a', 2.4)}
+  ${_ln('M8.6 26.6l1.6 1.2M11 23.8l1.6 1.2M13.4 21l1.6 1.2', '#8a1a40', .7, .7)}
+  <path d="M17 17.8l4.2-3.6 2 2.4-3.6 4.2Z" fill="url(#${g})" ${_K}/>
+  <g transform="rotate(45 23.6 9.4)"><path d="M23.6 1.8c2.6 1 3.8 4.4 3.4 8.4-.4 3.2-2 5.6-3.4 7.6-1.4-2-3-4.4-3.4-7.6-.4-4 .8-7.4 3.4-8.4Z" fill="url(#${c})" ${_K}/>${_ln('M21.8 5.4l2 .8M21.4 8.2l2.8 1M22 11l2.2.8', '#8a3a0a', .6, .6)}${_gl('M22 4.6c.8-.8 1.6-1 2.4-.6-1.2.8-2 2-2.4 3.4Z', .65)}
+  <path d="M23.6 1.8c-.8-2-2.6-2.8-4-2.2 1.2.8 2.2 1.6 2.8 2.8M23.6 1.8c.8-2 2.8-2.6 4.2-1.6-1.2.6-2.4 1.4-3 2.6" stroke="#2f8a2a" stroke-width="1.1" fill="#58b83a"/></g>
+  <path d="M18.6 15.4c-1.8-1.2-2.4-3.2-1.6-5 1.4.6 2.2 1.8 2.2 3.4Z" fill="#fff" ${_k}/><path d="M26.8 18.4c1.8-1.4 2.2-3.4 1.2-5-1.4.8-2 2-1.8 3.6Z" fill="#fff" ${_k}/>${_spark(28, 4.6, '#fff', .9)}`; },
+relique_wabbit: () => { const a = _id(), b = _id(); return _halo('#ff9ec8') + `<defs>${_rg(a, '#ffffff', '#e8c6d4', .4, .3, .9)}${_lg(b, '#ffe58a', '#b9801a')}</defs>
+  ${_ln('M16 2.6c-3 0-5 1.6-5 3.8', '#140c06', 2.6, .9)}${_ln('M16 2.6c-3 0-5 1.6-5 3.8', '#d9b45a', 1.4)}${_ln('M16 2.6c3 0 5 1.6 5 3.8', '#140c06', 2.6, .9)}${_ln('M16 2.6c3 0 5 1.6 5 3.8', '#d9b45a', 1.4)}
+  <path d="M9.6 12.4C8.4 8.4 11.4 6.4 16 6.4s7.6 2 6.4 6c-1 3.4 1.2 6.4 1.2 9.6 0 4.6-3.6 6.8-7.6 6.8s-7.6-2.2-7.6-6.8c0-3.2 2.2-6.2 1.2-9.6Z" fill="url(#${a})" ${_K}/>
+  ${_a3furTufts()}
+  <circle cx="16" cy="21.4" r="3.4" fill="#ff8fb8" ${_K}/><circle cx="11.6" cy="16.2" r="2" fill="#ff8fb8" ${_k}/><circle cx="16" cy="14.4" r="2" fill="#ff8fb8" ${_k}/><circle cx="20.4" cy="16.2" r="2" fill="#ff8fb8" ${_k}/>
+  ${_gl('M12 9.8c1.2-.8 2.6-1 4-.8-1.4.6-2.4 1.6-3 3Z', .7)}
+  <path d="M14 3.4l1 1.8M18 3.4l-1 1.8M16 2.6V5" stroke="#3f9a2a" stroke-width="1.4" stroke-linecap="round"/>${_spark(26, 8, '#fff', .9)}${_spark(5.6, 20, '#ffd0e4', .8)}`; },
+
+/* ======================= BLOP : gelée translucide, une couleur par pièce ======================= */
+coiffe_blop: () => { const a = _id(); return `<defs>${_rg(a, '#d9a074', '#6a3e22', .4, .3, .9)}</defs>${_sh(16, 28, 11.5, 1.8)}
+  ${_a3blob(16, 17.4, 10.6, a)}
+  <path d="M5.4 22.2c3 2.6 6.6 3.6 10.6 3.6s7.6-1 10.6-3.6l.2 2.6c-3 2.8-6.8 3.8-10.8 3.8S8.2 27.6 5.2 24.8Z" fill="#4a2810" ${_K}/>${_ln('M7 25c2.8 1.8 5.8 2.6 9 2.6s6.2-.8 9-2.6', '#c8885a', .6, .7)}
+  <ellipse cx="12.6" cy="16.6" rx="2" ry="2.6" fill="#fff" ${_k}/><ellipse cx="19.4" cy="16.6" rx="2" ry="2.6" fill="#fff" ${_k}/><circle cx="13" cy="17.2" r="1.2" fill="#2a1408"/><circle cx="19" cy="17.2" r="1.2" fill="#2a1408"/>
+  ${_ln('M13.4 20.6c1.6 1.2 3.6 1.2 5.2 0', '#2a1408', 1)}`; },
+cape_blop: () => { const a = _id(), b = _id(); return `<defs>${_lg(a, '#ff8a9a', '#b0142e')}${_rg(b, '#fff0a0', '#d9961a')}</defs>${_sh(16, 28.6, 11, 2)}
+  <path d="M10 5.4c2 1.4 10 1.4 12 0l5.8 19.4c-1.4.8-2.6.4-3.6 1.8-.8-1.2-2-1.2-3 .2-.8-1.6-2-1.6-3.2 0-1.2-1.6-2.4-1.6-3.2 0-1-1.4-2.2-1.4-3 -.2-1 -1.4-2.2-1-3.6-1.8Z" fill="url(#${a})" ${_K}/>
+  ${_ln('M12 12l-1.2 12M16 11v14M20 12l1.2 12', '#7a0a1e', .8, .45)}${_gl('M11.4 10c.8 2.6 1 5.6.6 8.4', .35)}${_gl('M20.6 12c.6 2 .8 4.4.4 6.8', .25)}
+  <path d="M10 5.4c2 1.4 10 1.4 12 0l.8 3.8c-4.6 1.8-8.6 1.8-13.6 0Z" fill="#8a0e22" ${_K}/>
+  <circle cx="16" cy="9.6" r="3.4" fill="url(#${b})" ${_K}/>${_a3blobMini(16, 9.6)}`; },
+amulette_blop: () => { const a = _id(); return `<defs>${_rg(a, '#a8b4ff', '#2a2eb0', .4, .3, .9)}</defs>${_a3chain('#bfc8e8', '#6a74a8')}
+  <rect x="13.6" y="14.4" width="4.8" height="3.2" rx="1" fill="#d9b45a" ${_K}/>
+  ${_a3blob(16, 22.4, 6.4, a)}
+  <ellipse cx="13.6" cy="22" rx="1.2" ry="1.6" fill="#fff" ${_k}/><ellipse cx="18.4" cy="22" rx="1.2" ry="1.6" fill="#fff" ${_k}/><circle cx="13.8" cy="22.4" r=".7" fill="#101650"/><circle cx="18.2" cy="22.4" r=".7" fill="#101650"/>${_ln('M14.4 25c.8.6 2.4.6 3.2 0', '#101650', .7)}`; },
+anneau_blop: () => { const a = _id(), g = _id(); return `<defs>${_lg(a, '#ffe58a', '#a8741f')}${_rg(g, '#c8ff9a', '#2a9a1a', .4, .3, .9)}</defs>${_sh(16, 27, 9)}
+  <ellipse cx="16" cy="19.6" rx="8.8" ry="9" fill="none" stroke="#140c06" stroke-opacity=".9" stroke-width="5.2"/><ellipse cx="16" cy="19.6" rx="8.8" ry="9" fill="none" stroke="url(#${a})" stroke-width="3.6"/>
+  ${_ln('M8.8 22c1.4 4 4.4 5.6 7.2 5.6', '#6a4510', 1, .6)}${_ln('M9.4 15c1-2.2 3-3.6 5-4', '#fff', .9, .55)}
+  <path d="M11.6 11.6 16 8.4l4.4 3.2-4.4 2Z" fill="url(#${a})" ${_K}/>
+  ${_a3blob(16, 7.6, 5, g)}<circle cx="14.4" cy="7.8" r=".8" fill="#0c3a08"/><circle cx="17.6" cy="7.8" r=".8" fill="#0c3a08"/>${_ln('M15 9.6c.6.4 1.4.4 2 0', '#0c3a08', .6)}`; },
+masse_blop: () => { const c1 = _id(), c2 = _id(), c3 = _id(), c4 = _id(); return `<defs>${_rg(c1, '#d9a074', '#6a3e22', .4, .3, .9)}${_rg(c2, '#ff8a9a', '#b0142e', .4, .3, .9)}${_rg(c3, '#a8b4ff', '#2a2eb0', .4, .3, .9)}${_rg(c4, '#c8ff9a', '#2a9a1a', .4, .3, .9)}</defs>
+  ${_rod(6.4, 29.6, 18.4, 14.4, '#8a5a2e', '#3e2412', 2.4)}${_ln('M8.4 26.8l1.8 1.4M10.4 24.2l1.8 1.4', '#e4b57a', .7, .7)}
+  <path d="M15.4 18.6l3.4-2.4 1.8 2.2-3 3Z" fill="#8a8a96" ${_K}/>
+  ${_a3blob(16.8, 12.6, 3.8, c1)}${_a3blob(25.2, 13.4, 3.8, c2)}${_a3blob(21.6, 5.6, 4.4, c3)}${_a3blob(21.4, 14.4, 4.4, c4)}
+  ${_spark(29, 4, '#fff', .8)}${_spark(14, 5, '#fff', .6)}`; },
+relique_blop: () => { const h = 'M16 28.4C5 20.6 2.4 14.4 4.6 10 6.8 5.8 13 5.6 16 9.8c3-4.2 9.2-4 11.4.2 2.2 4.4-.4 10.6-11.4 18.4Z'; const cp = _id(), g = _id(); return _halo('#c8a0ff') + `<defs><clipPath id="${cp}"><path d="${h}"/></clipPath>${_rg(g, '#ffffff', '#b8a0ff', .4, .3, .9)}</defs>
+  <path d="${h}" fill="url(#${g})"/>
+  <g clip-path="url(#${cp})"><path d="M2 4 16 9.8 9 18 2 12Z" fill="#8a5a3a" opacity=".55"/><path d="M16 9.8 30 4v8l-7 6Z" fill="#ff4a6a" opacity=".6"/><path d="M9 18 16 9.8 23 18 16 29Z" fill="#6a7aff" opacity=".6"/><path d="M2 12 9 18 16 29 2 24Z" fill="#6ad04a" opacity=".55"/><path d="M23 18 30 12v12L16 29Z" fill="#ffd24a" opacity=".5"/></g>
+  <path d="${h}" fill="none" stroke="#140c06" stroke-opacity=".9" stroke-width=".95" stroke-linejoin="round"/>${_ln('M16 9.8 9 18 16 28.4 23 18Z', '#fff', .6, .7)}${_ln('M16 9.8V28M9 18H23', '#fff', .4, .5)}
+  ${_gl('M6.6 11c.8-2 2.6-3 4.6-2.6-1.8.6-3.2 1.8-4 3.8Z', .8)}${_spark(27, 22, '#fff', .9)}${_spark(5, 25, '#e8d0ff', .7)}`; },
+
+/* ======================= KANNIBOUL : bois sculpté, os, plumes ======================= */
+coiffe_kanniboul: () => { const a = _id(), w = _id(); return `<defs>${_lg(a, '#c8884a', '#5a3216', 1, 0)}${_lg(w, '#e8a05a', '#7a4a22')}</defs>${_sh(16, 29, 8.4, 1.4)}
+  ${_a3fea(11, 12, -50, 11, '#ff6a4a', '#b0142e')}${_a3fea(14, 11.4, -24, 11.6, '#ffd24a', '#c8861a')}${_a3fea(16, 11, 0, 12, '#5ad84a', '#1a7a2a')}${_a3fea(18, 11.4, 24, 11.6, '#ffd24a', '#c8861a')}${_a3fea(21, 12, 50, 11, '#ff6a4a', '#b0142e')}
+  <path d="M8.4 12c1.2-3 4.2-4 7.6-4s6.4 1 7.6 4c1.2 6 .6 11-3 15.4-1.4 1.8-2.8 2.6-4.6 2.6s-3.2-.8-4.6-2.6C7.8 23 7.2 18 8.4 12Z" fill="url(#${w})" ${_K}/>
+  <path d="M9.4 14.4h13.2" stroke="#fff2d8" stroke-width="1.6" opacity=".9"/><path d="M9.6 19.6c3.4 1 9.4 1 12.8 0" stroke="#d8402a" stroke-width="1.4" opacity=".9" fill="none"/>
+  <path d="M10.6 16.2c1.6-1.2 3.6-1.2 5 .2-1.4 1.2-3.4 1.4-5 -.2ZM21.4 16.2c-1.6-1.2-3.6-1.2-5 .2 1.4 1.2 3.4 1.4 5-.2Z" fill="#14240a" ${_k}/><circle cx="13.4" cy="16.4" r="1.2" fill="#7aff8a"/><circle cx="18.6" cy="16.4" r="1.2" fill="#7aff8a"/>
+  <path d="M13.6 21.6h4.8v4.4l-2.4 1.4-2.4-1.4Z" fill="#2a1408" ${_K}/>${_ln('M14.4 21.8v4M16 21.8v4.6M17.6 21.8v4', '#f4ecd4', .8)}${_gl('M10 12.6c.6-1.4 1.8-2.2 3.2-2.4-1 1-1.8 2.2-2 4Z', .45)}`; },
+cape_kanniboul: () => { const cs = ['#ff6a4a', '#ffd24a', '#5ad84a', '#4ab8ff', '#ff6a4a', '#ffd24a', '#5ad84a']; const cs2 = ['#b0142e', '#c8861a', '#1a7a2a', '#1a5aa0', '#b0142e', '#c8861a', '#1a7a2a']; return `${_sh(16, 29, 11, 1.4)}
+  ${[0, 1, 2, 3, 4, 5, 6].map(i => _a3fea(7.2 + i * 2.9, 6.4 + Math.abs(i - 3) * .9, 176 - (i - 3) * -5.6 + (i < 3 ? 0 : 0) - 0, 21 - Math.abs(i - 3) * 1.2, cs[i], cs2[i])).join('')}
+  <path d="M4.6 5.6c3.6 2.4 19.2 2.4 22.8 0l.4 2.8c-3.6 2.6-20 2.6-23.6 0Z" fill="#8a5a2e" ${_K}/>${_ln('M6 6.8c3.4 1.6 16.6 1.6 20 0', '#e4b57a', .6, .7)}
+  <path d="M16 6.6 14.4 9.8h3.2Z" fill="#f4ecd4" ${_k}/><circle cx="9.4" cy="8" r="1" fill="#f4ecd4" ${_k}/><circle cx="22.6" cy="8" r="1" fill="#f4ecd4" ${_k}/><circle cx="16" cy="9.4" r="1.2" fill="#f4ecd4" ${_k}/>`; },
+ceinture_kanniboul: () => { const a = _id(); return `<defs>${_lg(a, '#b88a56', '#5a3a1c')}</defs>${_sh(16, 23.5, 13, 1.6)}
+  <path d="M1.8 11.4c4-1.2 8.4-1.6 14.2-1.6s10.2.4 14.2 1.6l-.4 9c-4 1-8.4 1.4-13.8 1.4s-9.8-.4-13.8-1.4Z" fill="url(#${a})" ${_K}/>
+  ${_ln('M3 13.4c4-.8 8.2-1.2 13-1.2s9 .4 13 1.2', '#e4b57a', .6, .7)}${_ln('M3 18.8c4 .8 8.2 1.2 13 1.2s9-.4 13-1.2', '#3a2410', .7, .6)}
+  ${[5.4, 9.2, 22.8, 26.6].map((x, i) => `<circle cx="${x}" cy="${15.6 + (i % 2 ? .4 : 0)}" r="1.5" fill="#f4ecd4" ${_k}/>`).join('')}
+  ${_a3bone(11, 10, 21, 22, 1.8)}${_a3bone(21, 10, 11, 22, 1.8)}
+  <circle cx="16" cy="16" r="3.4" fill="#f4ecd4" ${_K}/><circle cx="14.6" cy="15" r=".9" fill="#2a1408"/><circle cx="17.4" cy="15" r=".9" fill="#2a1408"/><path d="M15.2 17.8h1.6" stroke="#2a1408" stroke-width=".8"/>`; },
+bottes_kanniboul: () => { const a = _id(), b = _id(); return `<defs>${_lg(a, '#d8a468', '#7a4a22', 1, 0)}${_lg(b, '#6a4121', '#2a180a')}</defs>${_sh(16, 28.6, 12, 2)}
+  <path d="M10 4h9.6l.6 13.8c3.2.6 7.2 2.2 7.8 5 .2 1.6-.8 3.2-2.4 3.2H8.8c-1.2 0-2-.8-2-2.2L8.2 18Z" fill="url(#${a})" ${_K}/>
+  <path d="M6.6 24.8h21.8c0 1.8-1 3-2.8 3H8.8c-1.2 0-2.2-.8-2.2-3Z" fill="url(#${b})" ${_K}/>
+  <path d="M22.4 22.6c.2-1.2 1.4-1.6 2.2-.8.8-.8 2-.2 2 .8" stroke="#140c06" stroke-width=".7" fill="none" opacity=".6"/><path d="M23.4 22.8v1.6M25.6 22.8v1.6" stroke="#140c06" stroke-width=".6" opacity=".5"/>
+  ${_ln('M9.4 6.6 19.6 10M19.6 6.6 9.4 10M9.4 11 19.6 14.4M19.6 11 9.4 14.4M9.8 15.4 19.8 18', '#2a1408', 1.1, .85)}${_ln('M9.4 6.6 19.6 10M19.6 6.6 9.4 10', '#f0d6a6', .4, .6)}
+  <circle cx="14.6" cy="8.2" r="1.3" fill="#f4ecd4" ${_k}/><circle cx="14.6" cy="12.6" r="1.3" fill="#f4ecd4" ${_k}/>
+  ${_a3fea(11.6, 5, -26, 8, '#5ad84a', '#1a7a2a')}${_a3fea(13.4, 4.6, 8, 8.6, '#ff6a4a', '#b0142e')}${_gl('M10.6 8l.2 7', .35)}`; },
+lance_kanniboul: () => { const s = _id(); return `<defs>${_lg(s, '#fffbe8', '#b8a870', 1, 1)}</defs>${_rod(4.6, 30, 21, 11.6, '#9a6a3a', '#3e2412', 2.3)}
+  ${[[7, 27], [9.2, 24.4], [11.4, 21.8]].map(([x, y]) => `<path d="M${x - 1.5} ${y + 1.2}l3-2.4" stroke="#d8402a" stroke-width="1.4" stroke-linecap="round"/>`).join('')}
+  ${_a3fea(18.6, 14.4, 224, 8.6, '#5ad84a', '#1a7a2a')}${_a3fea(17, 16, 196, 7.4, '#ff6a4a', '#b0142e')}
+  <path d="M19 14.4l3.2-3.6 2.2 2-3.4 3.4Z" fill="#8a5a2e" ${_K}/>
+  <path d="M21.6 11.4C22.4 6.6 26 3 30.4 2 29.6 6.4 27 10 23.6 12.4Z" fill="url(#${s})" ${_K}/>${_ln('M23 10.8c1.6-3 3.8-5.6 6.2-7', '#9a8a4a', .6, .7)}${_ln('M24 11.4c.8-1.4 1.4-2.2 2.6-3', '#fff', .5, .7)}${_spark(28, 9, '#fff', .6)}`; },
+relique_kanniboul: () => { const w = _id(), g = _id(); return _halo('#5aff8a') + `<defs>${_lg(w, '#b0743a', '#4a2c14', 1, 0)}${_rg(g, '#ffffff', '#3aff7a')}</defs>
+  <path d="M11.6 3.6h8.8l1 24.8c0 1-.8 1.6-1.6 1.6h-7.6c-.8 0-1.6-.6-1.6-1.6Z" fill="url(#${w})" ${_K}/>
+  <path d="M9.6 4.2c0-1.8 1.2-2.6 2.8-2.2l-.6 2.2M22.4 4.2c0-1.8-1.2-2.6-2.8-2.2l.6 2.2" fill="#f4ecd4" ${_K}/>
+  <path d="M5.6 12.4c3-.6 5.4 0 6.6 1.6v3.6c-2.2-1.4-4.6-1.8-6.6-1.4ZM26.4 12.4c-3-.6-5.4 0-6.6 1.6v3.6c2.2-1.4 4.6-1.8 6.6-1.4Z" fill="#d8402a" ${_K}/>${_ln('M7 13.4c1.6 0 3 .4 4 1.2M25 13.4c-1.6 0-3 .4-4 1.2', '#ffd24a', .7)}
+  <circle cx="14" cy="8" r="1.6" fill="url(#${g})"/><circle cx="18" cy="8" r="1.6" fill="url(#${g})"/><path d="M13.6 11h4.8" stroke="#140c06" stroke-width="1.2"/>${_ln('M13.2 11.8 14.2 13M18.8 11.8 17.8 13', '#f4ecd4', .8)}
+  <path d="M12.2 15.4h7.6M12.2 22.4h7.6" stroke="#2a1408" stroke-width="1.2"/><circle cx="14.2" cy="18.6" r="1.5" fill="url(#${g})"/><circle cx="17.8" cy="18.6" r="1.5" fill="url(#${g})"/><path d="M13.6 20.6h4.8" stroke="#140c06" stroke-width="1.1"/>
+  <path d="M13.2 24.6c1.8 1 3.8 1 5.6 0" stroke="#f4ecd4" stroke-width="1" fill="none" stroke-linecap="round"/>${_ln('M12.6 4.4v22', '#e4b57a', .5, .4)}${_spark(26, 22, '#aaffc0', .9)}${_spark(5.6, 24, '#aaffc0', .7)}`; },
+
+/* ======================= PORCOS : mafia en rose, galon et chaîne dorés ======================= */
+coiffe_porcos: () => { const a = _id(), b = _id(); return `<defs>${_lg(a, '#4a4060', '#14101e')}${_lg(b, '#ff9ec0', '#d8507a')}</defs>${_sh(16, 26.6, 13.6, 1.8)}
+  <path d="M2 21.6c0-2.8 6-4.8 14-4.8s14 2 14 4.8c0 2.8-6 4.8-14 4.8S2 24.4 2 21.6Z" fill="url(#${a})" ${_K}/>${_ln('M4 21c3-1.6 7.4-2.4 12-2.4s9 .8 12 2.4', '#7a6a98', .6, .7)}
+  <path d="M7.4 19.8C7.2 13.4 9 9.6 12.4 8.8c1.4-.3 2.6.4 3.6.9 1-.5 2.2-1.2 3.6-.9 3.4.8 5.2 4.6 5 11-2.2 1-5 1.4-8.6 1.4s-6.4-.4-8.6-1.4Z" fill="url(#${a})" ${_K}/>
+  <path d="M16 9.7c-.4 2.6-.4 5-.2 7.2" stroke="#14101e" stroke-width="1.2" fill="none" opacity=".6" stroke-linecap="round"/>${_gl('M9.4 15.4c.2-3 1.2-5 3-5.8-1 1.8-1.4 3.8-1.2 6Z', .4)}
+  <path d="M8.2 16.4c2.4 1 5 1.4 7.8 1.4s5.4-.4 7.8-1.4l.2 3.2c-2.2 1-5 1.4-8 1.4s-5.8-.4-8-1.4Z" fill="url(#${b})" ${_K}/>
+  <circle cx="21.4" cy="18.8" r="2.2" fill="#ffd24a" ${_K}/><ellipse cx="21.4" cy="19" rx="1.1" ry=".8" fill="#ff9ec0"/><circle cx="20.9" cy="18.9" r=".26" fill="#8a3248"/><circle cx="21.9" cy="18.9" r=".26" fill="#8a3248"/>`; },
+cape_porcos: () => { const a = _id(), l = _id(); return `<defs>${_lg(a, '#8a52ac', '#2a1440')}${_lg(l, '#ffc0d4', '#d8507a')}</defs>${_sh(16, 28.8, 11.5, 2)}
+  <path d="M9.4 5.6c2 1.4 11.2 1.4 13.2 0L28.4 27c-4.4 1.6-8.4.8-12.4 2.2-4-1.4-8-.6-12.4-2.2Z" fill="url(#${a})" ${_K}/>
+  <path d="M16 7 12.6 28.2c1.2.2 2.4.2 3.4.6 1-.4 2.2-.4 3.4-.6Z" fill="url(#${l})" ${_K}/>
+  ${_ln('M11 12l-2.4 14.4M21 12l2.4 14.4', '#c88aff', .6, .6)}${_gl('M10 10c1 3.4 1.2 7.2.6 11', .25)}
+  <path d="M8.6 7.4c1-2.6 4.4-3.8 7.4-3.8s6.4 1.2 7.4 3.8l-3.4 2.4L16 7.6l-4 2.6Z" fill="#3a2054" ${_K}/>${_ln('M9.6 7c2-1.4 4.6-1.8 6.4-1.8S20.4 5.6 22.4 7', '#ffd24a', .8)}
+  ${[11.4, 16.2, 21].map(y => `<circle cx="13.6" cy="${y}" r="1" fill="#ffd24a" ${_k}/><circle cx="18.4" cy="${y}" r="1" fill="#ffd24a" ${_k}/>`).join('')}`; },
+ceinture_porcos: () => { const a = _id(), g = _id(); return `<defs>${_lg(a, '#8a9a4a', '#3e4a1e')}${_lg(g, '#ffe58a', '#b9801a', 1, 1)}</defs>${_sh(16, 23.5, 13, 1.6)}
+  <path d="M1.8 11.4c4-1.2 8.4-1.6 14.2-1.6s10.2.4 14.2 1.6l-.4 9c-4 1-8.4 1.4-13.8 1.4s-9.8-.4-13.8-1.4Z" fill="url(#${a})" ${_K}/>
+  ${_ln('M3 13.6c4-.8 8.2-1.2 13-1.2s9 .4 13 1.2M3 18.6c4 .8 8.2 1.2 13 1.2s9-.4 13-1.2', '#d8e090', .6, .6)}${_ln('M3 14.2c4-.7 8.2-1.1 13-1.1', '#2a3410', .5, .6)}
+  <rect x="9.8" y="7.8" width="12.4" height="14.6" rx="2.6" fill="url(#${g})" ${_K}/><rect x="11.8" y="9.8" width="8.4" height="10.6" rx="1.4" fill="#5a3a12" opacity=".35"/>
+  <path d="M16 10.4l1.4 3 3.2.4-2.4 2.2.6 3.2-2.8-1.6-2.8 1.6.6-3.2-2.4-2.2 3.2-.4Z" fill="url(#${g})" ${_K}/>${_gl('M11 8.8h9', .5)}<circle cx="5.4" cy="15.8" r="1" fill="#ffd24a" ${_k}/><circle cx="26.6" cy="15.8" r="1" fill="#ffd24a" ${_k}/>`; },
+amulette_porcos: () => { const g = _id(), p = _id(); return `<defs>${_lg(g, '#fff3a0', '#b9801a', 1, 1)}${_rg(p, '#ffe0e8', '#e08aa4', .4, .3, .9)}</defs>
+  ${[[7.6, 3.4], [7.9, 6.4], [8.8, 9.2], [10.4, 11.6], [12.6, 13.4]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.4" ry="2" fill="none" stroke="#140c06" stroke-width="2.2" stroke-opacity=".9" transform="rotate(${y * 4} ${x} ${y})"/><ellipse cx="${x}" cy="${y}" rx="1.4" ry="2" fill="none" stroke="#ffd24a" stroke-width="1.2" transform="rotate(${y * 4} ${x} ${y})"/>`).join('')}
+  ${[[24.4, 3.4], [24.1, 6.4], [23.2, 9.2], [21.6, 11.6], [19.4, 13.4]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.4" ry="2" fill="none" stroke="#140c06" stroke-width="2.2" stroke-opacity=".9" transform="rotate(${-y * 4} ${x} ${y})"/><ellipse cx="${x}" cy="${y}" rx="1.4" ry="2" fill="none" stroke="#ffd24a" stroke-width="1.2" transform="rotate(${-y * 4} ${x} ${y})"/>`).join('')}
+  <circle cx="16" cy="21.4" r="8.6" fill="url(#${g})" ${_K}/><circle cx="16" cy="21.4" r="6.8" fill="none" stroke="#8a5a0a" stroke-width=".8"/>
+  <path d="M11.4 16.6 10.4 13l3.4 1.6ZM20.6 16.6l1-3.6-3.4 1.6Z" fill="url(#${p})" ${_K}/><ellipse cx="16" cy="21.4" rx="5.2" ry="4.8" fill="url(#${p})" ${_K}/><ellipse cx="16" cy="23" rx="2.8" ry="2" fill="#f0a0b8" ${_k}/><circle cx="15" cy="23" r=".6" fill="#8a3248"/><circle cx="17" cy="23" r=".6" fill="#8a3248"/>
+  <circle cx="13.6" cy="19.6" r=".8" fill="#2a1408"/><circle cx="18.4" cy="19.6" r=".8" fill="#2a1408"/>${_gl('M10.6 17.4c1.2-2 3.2-3 5.4-3.2-2 .8-3.4 2-4.2 3.8Z', .55)}`; },
+rotissoire_cochon: () => { const r = _id(), f = _id(); return `<defs>${_rg(r, '#f4b46a', '#7a3a12', .4, .3, .9)}${_lg(f, '#ffe27a', '#e0501a', 0, 1)}</defs>
+  ${_rod(3.6, 28.4, 28, 4.4, '#cfd4dc', '#5a6270', 1.6)}
+  <path d="M3.6 28.4l-2.4-.4M3.6 28.4l-.4 2.4" stroke="#140c06" stroke-width="2.4" stroke-linecap="round"/><path d="M5.4 26.6c-2.4-1.4-3.4-.4-3.6 1.2 1-.2 1.8.2 2.4 1" stroke="#8a5a2e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <g transform="rotate(-42 16 16.6)"><ellipse cx="16" cy="16.6" rx="9" ry="5.4" fill="url(#${r})" ${_K}/>
+  <path d="M9 14.6c3.4-2.4 11-2.4 14.4 0" stroke="#ffe0a0" stroke-width="1.2" fill="none" opacity=".7" stroke-linecap="round"/><circle cx="13" cy="18" r=".9" fill="#5a2a0a" opacity=".5"/><circle cx="18.4" cy="19" r=".8" fill="#5a2a0a" opacity=".5"/><circle cx="21" cy="17" r=".7" fill="#5a2a0a" opacity=".5"/>
+  <path d="M10.8 20.6l-.4 3.4 2.4 0 .4-3ZM19.4 21l.4 3 2.4 0-.2-3.4Z" fill="url(#${r})" ${_K}/>
+  <path d="M24.6 13.4 27.4 12l-.2 2.8Z" fill="#e8a05a" ${_K}/><ellipse cx="26.6" cy="16.6" rx="3.4" ry="3.2" fill="url(#${r})" ${_K}/><ellipse cx="29" cy="17" rx="1.6" ry="1.5" fill="#f0a0a8" ${_k}/><circle cx="26.4" cy="15.2" r=".7" fill="#2a1408"/>
+  <path d="M7 15.6 4.4 14.6c-1 1.6.4 3 2.6 3Z" fill="#c8824a" ${_K}/></g>
+  ${_gl('M8.6 14.6c2-3 5-4.4 8-4.2', .35)}
+  <path d="M19 31c-2.6-1-3.6-3.4-2.2-6 .6 1.6 1.6 2 2.2 1.4 0-2.6 1-4.2 2.6-5.2 0 2 1.4 2.6 1.8 3.8 1 .6 1.6.2 2-.8 1.4 2.2.4 5.6-2.4 6.8Z" fill="url(#${f})" ${_K}/><path d="M22.4 30c-1.2-.6-1.6-1.8-1-3 .6.6 1 .6 1.4.2.4.8 1.2 1.2 1.2 2.2Z" fill="#fff3a0"/>`; },
+relique_porcos: () => { const g = _id(), w = _id(); return _halo('#ffd54a') + `<defs>${_rg(g, '#fff3a0', '#c8861a', .4, .3, .9)}${_lg(w, '#ff7a6a', '#a8122a', 1, 1)}</defs>
+  <path d="M10 14C6.6 8 2.6 8 3.6 4c4 0 8.4 2.4 10.4 6.4Z" fill="url(#${w})" ${_K}/><path d="M22 14c3.4-6 7.4-6 6.4-10-4 0-8.4 2.4-10.4 6.4Z" fill="url(#${w})" ${_K}/>${_ln('M5.4 5.6c3 .6 5.6 2.4 7 4.8M26.6 5.6c-3 .6-5.6 2.4-7 4.8', '#ffc0b0', .6, .7)}
+  <path d="M7.6 16.4c0-4 4-6.6 8.6-6.6s8.6 2.6 8.6 6.6c0 2.2-.8 3.8-2 5.2l.2 4.6h-3.8l-.4-2.4c-1.6.6-3.2.8-4.6.8s-3-.2-4.6-.8l-.4 2.4H9.4l.2-4.6c-1.2-1.4-2-3-2-5.2Z" fill="url(#${g})" ${_K}/>
+  <path d="M23.4 14.2c3.2.2 4.4 2 4.2 4.4-2.2.4-4-.4-4.8-2Z" fill="url(#${g})" ${_K}/><ellipse cx="26.4" cy="16.4" rx="2.2" ry="2.8" fill="#ffd8a0" ${_K}/><circle cx="25.8" cy="15.6" r=".5" fill="#8a5a0a"/><circle cx="25.8" cy="17.4" r=".5" fill="#8a5a0a"/>
+  <path d="M7.8 14.4c-2 .2-3.4 1.6-2.8 3.2 1-.2 1.6-.8 1.8-1.6" stroke="#8a5a0a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M19 11.6 21 9 22.6 12.4Z" fill="url(#${g})" ${_K}/><circle cx="21.4" cy="14" r=".9" fill="#2a1408"/>
+  <path d="M11.4 11.4h6" stroke="#5a3a0a" stroke-width="1.6" stroke-linecap="round"/><circle cx="14.4" cy="6" r="2.6" fill="#ffe58a" ${_K}/><path d="M14.4 4.6v2.8" stroke="#a8741f" stroke-width=".8"/>
+  ${_gl('M9.6 14.4c1.2-2 3-3 5.2-3.2-1.8.8-3 2-3.8 3.8Z', .6)}${_spark(27, 26, '#fff', .9)}${_spark(5, 26, '#fff3a0', .8)}`; },
+
+/* ======================= DRAGOEUF : coquille, ailes dorées, braise ======================= */
+coiffe_dragoeuf: () => { const a = _id(); return `<defs>${_rg(a, '#f0f8b0', '#7a9a2e', .4, .3, 1)}</defs>${_sh(16, 28.4, 11, 1.8)}
+  <path d="M5.4 24.4C4 18 4.4 14 5.8 10.6c.4-1 1.6-1.2 2.2-.4l2 3 2-5.6 2.2 4 2-6.4 2.2 6 2.2-4.6 2 5.4 2-2.6c.8-.8 2-.4 2.2.6 1.2 3.6 1.2 8.4-.2 14.4-1.8 1.8-5.8 2.8-10.4 2.8s-8.6-1-10.2-2.8Z" fill="url(#${a})" ${_K}/>
+  <path d="M6 12.4c3-2.6 17-2.6 20 0" stroke="#3a4a14" stroke-width="1" fill="none" opacity=".5"/>
+  ${[[9, 19, 1.6], [14, 23, 1.2], [20, 18, 1.8], [23.6, 23.6, 1.3], [16, 16.6, 1.2], [11, 25.4, 1]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#4a5e1a" opacity=".5"/>`).join('')}
+  ${_gl('M7.6 17c.4-2.4 1.4-4.2 3.2-5.4-.8 1.8-1.2 4-1 6.4Z', .6)}
+  <path d="M6.4 11.6 4.6 5.4 9.4 9.4ZM25.6 11.6l1.8-6.2-4.8 4Z" fill="#fff4d0" ${_K}/><path d="M13 7.4l1.4-3 1.2 3.6Z" fill="#fff4d0" ${_k}/>${_ln('M8 24.6c2.6 1.4 5.6 2 8 2s5.4-.6 8-2', '#4a5e1a', .6, .5)}`; },
+cape_dragoeuf: () => { const w = _id(); const wing = `<path d="M16 5.6C12.4 2.6 6 2.2 1 6.2c2.4.2 3.4 1.4 3.4 3.2 2-.6 3.6.2 4 2 1.6-.6 3 .2 3.4 1.8 1.4-.4 2.4.4 2.6 1.6-.2 3.4-.2 7.6 1.6 10.8 1 1 1.8.4 2-1V5.6Z" fill="url(#${w})" ${_K}/><path d="M15.8 7 3.6 7.6M15.6 9.6 6.6 11.6M15.4 12.4 10 14.6M15.4 16.2 12.6 18.4" stroke="#8a4a08" stroke-width=".8" fill="none" opacity=".75" stroke-linecap="round"/><path d="M15.6 6.6C11 3.6 5.6 3.6 2.6 6" stroke="#fff6c8" stroke-width=".7" fill="none" opacity=".8"/>`; return `<defs>${_lg(w, '#ffe27a', '#d8861a', 1, 1)}</defs>${_sh(16, 29, 11, 1.6)}
+  <g>${wing}</g><g transform="translate(32 0) scale(-1 1)">${wing}</g>
+  <path d="M13.4 3.8h5.2l1.2 20.4c-1.2 1.4-2.4 2-3.8 3.6-1.4-1.6-2.6-2.2-3.8-3.6Z" fill="#b82a1a" ${_K}/><path d="M16 5v21" stroke="#ff9a7a" stroke-width=".6" opacity=".6"/>
+  <circle cx="16" cy="8.4" r="3" fill="#ffd24a" ${_K}/><circle cx="16" cy="8.4" r="1.6" fill="#ff4a2a"/><circle cx="15.5" cy="7.8" r=".5" fill="#fff"/>`; },
+amulette_dragoeuf: () => { const f = _id(), g = _id(); return `<defs>${_lg(f, '#ffe27a', '#e0301a', 0, 1)}${_lg(g, '#fff3a0', '#b9801a', 1, 1)}</defs>${_a3chain('#e8c25a', '#8a6a22')}
+  <path d="M16 14.4c-1.6 1.2-2.2 2.2-2.2 3.6 1-.4 1.6-1 1.8-2l.4-1.6Z" fill="url(#${g})" ${_k}/>
+  <path d="M16 13c4.2 3.6 6.6 6.6 6.6 10.2 0 3.6-2.8 6-6.6 6s-6.6-2.4-6.6-6c0-2.4 1-4.2 2.6-5.8.2 1.8 1 2.6 2 2.8C14 20 15 16.6 16 13Z" fill="url(#${g})" ${_K}/>
+  <path d="M16 16c3 2.6 4.6 4.8 4.6 7.4 0 2.6-2 4.4-4.6 4.4s-4.6-1.8-4.6-4.4c0-1.8.8-3 1.8-4 .2 1.2.8 1.8 1.4 2 .6-1.6 1.2-3.6 1.4-5.4Z" fill="url(#${f})" ${_K}/>
+  <path d="M16 21c1.2 1.2 1.8 2.2 1.8 3.2 0 1.2-.8 1.8-1.8 1.8s-1.8-.6-1.8-1.8c0-.6.4-1.2 1-1.8.2.6.4.8.8.6Z" fill="#fff3a0"/>${_gl('M12.6 20.4c.6-1.4 1.6-2.4 3-3-1 1.2-1.6 2.6-1.8 4.2Z', .6)}${_spark(24.6, 14, '#ffd27a', .8)}`; },
+anneau_dragoeuf: () => { const a = _id(), o = _id(); return `<defs>${_lg(a, '#ffe58a', '#a8741f')}${_rg(o, '#ffffff', '#b8a0ff', .35, .3, .9)}</defs>${_sh(16, 27, 9)}
+  <ellipse cx="16" cy="19.6" rx="8.8" ry="9" fill="none" stroke="#140c06" stroke-opacity=".9" stroke-width="5.2"/><ellipse cx="16" cy="19.6" rx="8.8" ry="9" fill="none" stroke="url(#${a})" stroke-width="3.6"/>
+  ${_ln('M8.8 22c1.4 4 4.4 5.6 7.2 5.6', '#6a4510', 1, .6)}${_ln('M7.4 20.4c.8.6 1.6.6 2.4 0M9 24c.8.6 1.6.6 2.4 0M22.2 24c.8.6 1.6.6 2.4 0M22.4 20.4c.8.6 1.6.6 2.4 0', '#8a5a0a', .7, .7)}
+  <path d="M8.6 11.4 6 6.4l5 2.4ZM23.4 11.4 26 6.4l-5 2.4Z" fill="url(#${a})" ${_K}/><path d="M9 12.6c0-3 3-5.2 7-5.2s7 2.2 7 5.2c-2 1.4-4.4 2-7 2s-5-.6-7-2Z" fill="url(#${a})" ${_K}/>
+  <ellipse cx="16" cy="9.6" rx="3.4" ry="2.8" fill="url(#${o})" ${_K}/><path d="M14 9.2c.8-1.2 2-1.6 3.2-1" stroke="#fff" stroke-width=".8" fill="none"/><path d="M15 11c1.2.6 2.4.4 3.2-.6" stroke="#9a7aff" stroke-width=".6" fill="none"/><circle cx="17.4" cy="10.4" r=".5" fill="#ff9ec4"/>`; },
+croc_crocabulia: () => { const t = _id(), h = _id(), g = _id(); return `<defs>${_lg(t, '#fffbe8', '#c8b87a', 1, 1)}${_lg(h, '#6a9a3a', '#2a4a14')}${_lg(g, '#ffe58a', '#b9801a', 1, 1)}</defs>
+  ${_rod(4, 29.6, 11.6, 20, '#6a9a3a', '#2a4a14', 3)}${_ln('M5.8 27l2.8 1.2M7.4 24.8l2.8 1.2M9 22.6l2.6 1.2', '#d8c46a', .7, .8)}<circle cx="4" cy="29.6" r="1.7" fill="url(#${g})" ${_K}/>
+  <path d="M8.6 20.4 12 16.8l4.2 3.8-3.4 3.8Z" fill="url(#${g})" ${_K}/>
+  <path d="M10.6 18.4C11 10.6 18 4.8 29.6 2.2c-2.6 6.2-3.8 9-6 13C21.4 19.4 18 22.6 13 24.2Z" fill="url(#${t})" ${_K}/>
+  ${_ln('M13.2 17.6c2.6-4.6 7.6-8.4 14.2-11.8', '#a8985a', .6, .7)}${_ln('M12 19.8c.8-.6 1.8-.8 2.6-.4M14.4 17.6c.8-.8 1.8-1 2.8-.6', '#b8a86a', .5, .7)}${_gl('M12.6 15.6c2.2-3.6 6-6.6 11.6-9-3.2 3.4-6 6.8-8.4 10.6Z', .45)}${_spark(5.4, 8.4, '#fff', .7)}`; },
+relique_dragoeuf: () => { const e = _id(), l = _id(); return _halo('#9bff7a') + `<defs>${_rg(e, '#e0f8a0', '#2e6a1e', .4, .3, .95)}${_lg(l, '#fff3a0', '#ff7a1e', 0, 1)}</defs>
+  <path d="M3.6 16c3.6.2 5.6 2.2 6.4 4.8M4.6 21.6c3 0 5 1.4 6 3.6" stroke="#140c06" stroke-width="3.2" stroke-linecap="round" fill="none" stroke-opacity=".85"/>
+  <path d="M2 14c5-1 8 .8 9 5-4.4 1-7.6-.8-9-5ZM3 20.8c4.4-.8 7.6.6 8.4 4.6-4 .6-7-1-8.4-4.6Z" fill="#2ab8a0" ${_K}/>
+  <path d="M16 3.4c6 0 10.8 8.2 10.8 15 0 5.8-4.6 9.8-10.8 9.8S5.2 24.2 5.2 18.4c0-6.8 4.8-15 10.8-15Z" fill="url(#${e})" ${_K}/>
+  ${[[11, 12, 1.5], [20, 11, 1.2], [9.6, 20, 1.3], [22, 19, 1.7], [16, 24, 1.2], [14.6, 8.4, 1]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#2a5a14" opacity=".5"/>`).join('')}
+  <path d="M16 6.2l-1.8 4.4 3.2 2.4-3 3 3.4 2.8-2.4 4.2 2.6 3" stroke="#140c06" stroke-width="2.6" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/><path d="M16 6.2l-1.8 4.4 3.2 2.4-3 3 3.4 2.8-2.4 4.2 2.6 3" stroke="url(#${l})" stroke-width="1.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M12.8 14.6c-2 .2-3.6 1.2-4.4 3" stroke="#ffe27a" stroke-width=".8" fill="none" opacity=".8"/>${_gl('M9.4 11.4c1.2-2.4 3.2-4 5.4-4.6-1.8 1.4-3.2 3.6-3.8 6.2Z', .6)}
+  <path d="M23.4 5.4l2.2-3 .8 3.6ZM26.4 9l3-.8-1.8 2.8Z" fill="#ffc82e" ${_k}/>${_spark(27, 24, '#ffe27a', .9)}`; },
+
+/* ======================= MANSOT : fourrure givrée, cristaux de glace ======================= */
+coiffe_mansot: () => { const f = _id(), d = _id(), c = _id(); return `<defs>${_rg(f, '#ffffff', '#a8c4e4', .4, .3, .95)}${_rg(d, '#4a5a80', '#14203a', .5, .4, .9)}${_lg(c, '#f4fdff', '#3a92d0', 1, 1)}</defs>${_sh(16, 28.6, 10.5, 1.6)}
+  <path d="${_a3fur(16, 16.6, 11.4, 11.4, 10, 1.6)}" fill="url(#${f})" ${_K}/>
+  <path d="M9.6 17.4c-.4-5 2.4-8.4 6.4-8.4s6.8 3.4 6.4 8.4c-.2 4.6-2.6 7.2-6.4 7.2s-6.2-2.6-6.4-7.2Z" fill="url(#${d})" ${_K}/>
+  <path d="M12.4 17.4c1 -.8 2-.8 3 0M16.6 17.4c1-.8 2-.8 3 0" stroke="#7ae0ff" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="13.9" cy="17" r=".8" fill="#fff"/><circle cx="18.1" cy="17" r=".8" fill="#fff"/>
+  ${_ln('M10.6 11c2-2.6 4.6-3.4 7-2.8M21.4 11.6c-.6-1.2-1.4-2.2-2.4-2.8', '#fff', .9, .75)}
+  <path d="M16 1.8 19.6 5.4 16 10.4 12.4 5.4Z" fill="url(#${c})" ${_K}/>${_ln('M16 2.4v7.4M13.2 5.4h5.6', '#fff', .6, .8)}${_spark(26.6, 7, '#bff6ff', .8)}`; },
+cape_mansot: () => { const f = _id(), n = _id(), c = _id(); return `<defs>${_rg(f, '#ffffff', '#9fbede', .4, .3, 1)}${_lg(n, '#4a6a9a', '#14203a')}${_lg(c, '#f4fdff', '#3a92d0', 1, 1)}</defs>${_sh(16, 29, 11.4, 1.8)}
+  <path d="M8.6 6c2.4 1.6 12.4 1.6 14.8 0l6 19.4-3 2.4-2.2-2.6-2 3.6-2.4-3.2-2.2 3.6-2.2-3.2-2.2 3.6-2-3.6-2.4 2.6-2.6-2.4Z" fill="url(#${f})" ${_K}/>
+  <path d="M10 8c1.6 1 10.4 1 12 0l.6 2.4c-3 1.2-10 1.2-13.2 0Z" fill="url(#${n})" opacity="0"/>
+  ${_ln('M11.6 12c.6 4.4.4 8.6-.6 12.4M16 11.4v14.4M20.4 12c-.6 4.4-.4 8.6.6 12.4', '#8aaad0', .8, .55)}${_gl('M11 11.4c.8 3 1 6.4.4 9.6', .5)}
+  <path d="${_a3fur(16, 8, 12.2, 4.4, 10, 1.4)}" fill="url(#${f})" ${_K}/><path d="M9 7.6c2.2 1.4 11.8 1.4 14 0l-.2 2c-3.6 1.4-10 1.4-13.6 0Z" fill="url(#${n})" ${_k}/>
+  <path d="M16 6.8 18.6 9.6 16 13.6 13.4 9.6Z" fill="url(#${c})" ${_K}/>${_ln('M16 7.4v5.4M14 9.6h4', '#fff', .5, .8)}${_spark(27, 16, '#bff6ff', .8)}`; },
+bottes_mansot: () => { const a = _id(), f = _id(); return `<defs>${_lg(a, '#d8f2ff', '#4a8ac8', 1, 0)}${_rg(f, '#ffffff', '#a8c4e4', .4, .3, 1)}</defs>${_sh(16, 28.6, 12, 2)}
+  <path d="M10 5h10l.6 12.8c3.4.8 7.2 2.4 7.8 5.2.4 2-1 3.8-3 3.8H8.8c-1.6 0-2.8-1-2.6-2.6L8 18.4Z" fill="url(#${a})" ${_K}/>
+  <path d="M6.4 25.4h22.2c0 1.8-1.2 3-3 3H8.8c-1.4 0-2.4-.8-2.4-3Z" fill="#2a4a78" ${_K}/>${_ln('M8 26.6h19', '#9ed6ff', .6, .7)}
+  <path d="${_a3fur(15, 6.6, 7.4, 3.4, 7, 1.4)}" fill="url(#${f})" ${_K}/>
+  <path d="M22.6 22.4 25.4 17l1.2 5.6ZM25.6 23.4 29.4 19.6l-.6 4.6Z" fill="#cfeeff" ${_K}/>${_ln('M25.4 18.2l.2 3.4', '#fff', .5, .8)}
+  <path d="M14.4 12.6v6M11.8 14.1l5.2 3M17 14.1l-5.2 3" stroke="#fff" stroke-width=".9" stroke-linecap="round"/>${_gl('M10.6 10.6l.2 6.4', .55)}${_spark(5, 16, '#bff6ff', .7)}`; },
+ceinture_mansot: () => { const a = _id(), c = _id(); return `<defs>${_lg(a, '#5a7ab0', '#1a2a50')}${_lg(c, '#f4fdff', '#2a82c8', 1, 1)}</defs>${_sh(16, 23.5, 13, 1.6)}
+  <path d="M1.8 11.4c4-1.2 8.4-1.6 14.2-1.6s10.2.4 14.2 1.6l-.4 9c-4 1-8.4 1.4-13.8 1.4s-9.8-.4-13.8-1.4Z" fill="url(#${a})" ${_K}/>
+  ${_ln('M3 13.4c4-.8 8.2-1.2 13-1.2s9 .4 13 1.2', '#9ed6ff', .6, .7)}${_ln('M3 18.8c4 .8 8.2 1.2 13 1.2s9-.4 13-1.2', '#0a1430', .7, .6)}
+  ${[[5.4, 15.4], [9.4, 15.8], [22.6, 15.8], [26.6, 15.4]].map(([x, y]) => `<path d="M${x} ${y - 2.4} ${x + 1.6} ${y} ${x} ${y + 2.4} ${x - 1.6} ${y}Z" fill="url(#${c})" ${_k}/>`).join('')}
+  <path d="M16 6.4 21.6 10.6 21.6 20.4 16 24.6 10.4 20.4 10.4 10.6Z" fill="url(#${c})" ${_K}/><path d="M16 9.4 19 11.8 19 19.2 16 21.6 13 19.2 13 11.8Z" fill="#7acaff" opacity=".6"/>${_ln('M16 6.6v17.8M10.6 10.8 21.4 20.2M21.4 10.8 10.6 20.2', '#fff', .5, .7)}${_gl('M11.4 11l4-3', .6)}${_spark(27, 6, '#bff6ff', .8)}`; },
+masse_mansot: () => { const c = _id(), g = _id(); return `<defs>${_lg(c, '#f4fdff', '#2a82c8', 1, 1)}${_lg(g, '#ffe58a', '#b9801a', 1, 1)}</defs>
+  ${_rod(5.6, 29.6, 17.6, 15.4, '#6a8ac8', '#1a2a50', 2.5)}${_ln('M7.6 27l1.8 1.4M9.6 24.4l1.8 1.4M11.6 22l1.8 1.4', '#bfe6ff', .7, .8)}
+  <path d="M14.6 19.4 17.4 15.4 20.2 17.6 17 21.4Z" fill="url(#${g})" ${_K}/>
+  <path d="M17.4 9.4 21.6 4.4 27.6 4.4 30.6 9.4 26.4 14.4 20.4 14.4Z" fill="url(#${c})" ${_K}/>
+  <path d="M21.6 4.4 20.4 14.4M27.6 4.4 26.4 14.4M17.4 9.4H30.6" stroke="#fff" stroke-width=".7" opacity=".8"/><path d="M19 9.4l2.6-4.4h6" fill="#fff" opacity=".35"/>
+  <path d="M15.4 8.4 18.6 9.4 17.6 12.4ZM29.4 4 32 6 29.6 7.6Z" fill="#cfeeff" ${_k}/>
+  <path d="M19.4 4.6 20.6 1.4 22.2 4.4 24.6 .8 26 4.4 28.2 2 28.4 4.6" fill="url(#${g})" ${_K}/>${_spark(30, 15, '#bff6ff', .9)}${_spark(14, 5, '#ffffff', .7)}`; },
+relique_mansot: () => { const h = 'M16 28.6C5 21 2.4 14.6 4.6 10.2 6.8 6 13 5.8 16 10c3-4.2 9.2-4 11.4.2 2.2 4.4-.4 10.8-11.4 18.4Z'; const g = _id(), cp = _id(); return _halo('#8fe0ff') + `<defs><clipPath id="${cp}"><path d="${h}"/></clipPath>${_rg(g, '#ffffff', '#3a9ae0', .4, .25, .95)}</defs>
+  <path d="${h}" fill="url(#${g})" ${_K}/>
+  <g clip-path="url(#${cp})"><path d="M2 4 16 10 9 18 2 12Z" fill="#fff" opacity=".4"/><path d="M16 10 30 4v8l-7 6Z" fill="#9ee0ff" opacity=".5"/><path d="M9 18 16 10 23 18 16 29Z" fill="#2a6ac8" opacity=".35"/></g>
+  <path d="M16 10 9 18 16 28.6 23 18Z" fill="none" stroke="#fff" stroke-width=".6" opacity=".7"/>
+  <g stroke="#fff" stroke-width="1.1" stroke-linecap="round" fill="none"><path d="M16 12.6v10.8M10.8 15.4 21.2 20.6M21.2 15.4 10.8 20.6"/><path d="M14.6 13.6 16 15l1.4-1.4M14.6 22.4 16 21l1.4 1.4M12 16.4l2.2.2-.4-2.2M20 19.6l-2.2-.2.4 2.2M12 19.6l1.8-1.2.4 2.2M20 16.4l-1.8 1.2-.4-2.2"/></g>
+  ${_gl('M6.6 11c.8-2 2.6-3 4.6-2.6-1.8.6-3.2 1.8-4 3.8Z', .85)}${_spark(27.6, 22, '#fff', .9)}${_spark(5, 25, '#bff6ff', .8)}`; },
+});
+
+/* petits helpers utilisés plus haut (définis après coup : appelés seulement à l'affichage) */
+function _a3furTufts() { return [[10.8, 9.6], [21.2, 9.6]].map(([x, y]) => `<path d="M${x - 1.6} ${y + 2.6}c-.4-1.8.4-3.2 1.6-4 .8 1.2 1 2.6.6 4Z" fill="#fff" ${_k}/>`).join(''); }
+function _a3blobMini(x, y) { return `<ellipse cx="${x - .9}" cy="${y - .3}" rx=".5" ry=".7" fill="#7a0a1e"/><ellipse cx="${x + .9}" cy="${y - .3}" rx=".5" ry=".7" fill="#7a0a1e"/>`; }
+
+/* Reliques : même cadre doré rayonnant que les autres (voir art2.js) */
+Object.assign(_RELIC_COL, {
+  relique_wabbit: ['#ffa8d0', '#e0508a'], relique_blop: ['#c8a8ff', '#6a4ae0'], relique_kanniboul: ['#7affa0', '#1a9a4a'],
+  relique_porcos: ['#ffe27a', '#e0a01a'], relique_dragoeuf: ['#b0ff8a', '#4a9a1a'], relique_mansot: ['#a8eaff', '#3a8ee0']
+});
+for (const id of ['relique_wabbit', 'relique_blop', 'relique_kanniboul', 'relique_porcos', 'relique_dragoeuf', 'relique_mansot']) {
+  const raw = ITEM_ART[id];
+  const [c1] = _RELIC_COL[id];
+  ITEM_ART[id] = () => {
+    const body = raw().replace(/<circle cx="16" cy="16" r="14"[^>]*\/><circle cx="16" cy="16" r="10\.5"[^>]*\/>/, '');
+    return _relicFrame(id) + `<g transform="translate(16 16.4) scale(.72) translate(-16 -16)">${body}</g>` + _spark(4.6, 6, '#fff', .9) + _spark(27.6, 8.4, c1, .8) + _spark(26.8, 26, '#fff', .7) + _spark(5.4, 25.4, c1, .6);
+  };
+}
+
+/* Couleur d'identité des nouvelles panoplies */
+Object.assign(SET_COL, { wabbit: '#ffb3e6', blop: '#a98aff', kanniboul: '#34d399', porcos: '#ffd24a', dragoeuf: '#ff4f6e', mansot: '#c9e4ff' });
+/* =====================================================================
    AMAKNA IDLE — SPRITES ANIMÉS DES MONSTRES (dessins originaux)
    MON_ART[id] = SVG du monstre, dessiné tourné vers la DROITE
    (la scène le retourne pour qu'il fasse face au héros).
@@ -7325,6 +7882,455 @@ function monIcon(mid) {
   const art = MON_ART[mid];
   return art ? art.replace('class="ms ', 'class="ms ms-mini ') : MONSTERS[mid].icon;
 }
+/* =====================================================================
+   AMAKNA IDLE — SPRITES ANIMÉS DES SOUS-ZONES (dessins originaux)
+   Même convention que monart.js : 128×128, tournés vers la DROITE, classes animées p-*.
+   Les familles (blops, wabbits, kanniboul, porcos, dragoeufs, mansots) sont générées par de petites
+   fonctions : une silhouette commune, des couleurs et des accessoires propres à chaque monstre.
+   NB : une animation CSS écrase l'attribut transform de son élément → toute mise à l'échelle
+   passe par un <g> parent, jamais sur l'élément animé lui-même.
+   ===================================================================== */
+let _mq = 0; const _q = () => 'mq' + (++_mq);
+const _stops = a => a.map(([o, c, op]) => `<stop offset="${o}" stop-color="${c}"${op != null ? ` stop-opacity="${op}"` : ''}/>`).join('');
+const _qlg = (id, stops, x1 = 0, y1 = 0, x2 = 0, y2 = 1) => `<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${_stops(stops)}</linearGradient>`;
+const _qrg = (id, stops, cx = .4, cy = .3, r = .75) => `<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="${r}">${_stops(stops)}</radialGradient>`;
+const _msvg = (id, defs, body, extra = '') => `<svg class="ms ms-${id}${extra}" viewBox="0 0 128 128" aria-hidden="true"><defs>${defs}</defs>${body}</svg>`;
+const _qsh = (rx = 30, cx = 64) => `<ellipse class="p-shadow" cx="${cx}" cy="119" rx="${rx}" ry="5" fill="#000" opacity=".3"/>`;
+const _qeye = (cx, cy, r = 5, iris = '#3a2a18', look = 1.2, white = '#fff') =>
+  `<g class="p-eye"><ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r * 1.1}" fill="${white}" stroke="#1a1008" stroke-width="1.2"/><circle cx="${cx + look}" cy="${cy + .4}" r="${r * .64}" fill="${iris}"/><circle cx="${cx + look + .3}" cy="${cy + .4}" r="${r * .34}" fill="#0a0604"/><circle cx="${cx + look - r * .22}" cy="${cy - r * .3}" r="${r * .22}" fill="#fff"/></g>`;
+const _vb = 'style="transform-box:view-box"'; // sans ça, `.ms * { transform-box: fill-box }` décale tout transform= (rotate/scale) statique
+const _sc = (s, inner, cx = 64, cy = 114) => s === 1 ? inner : `<g ${_vb} transform="translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})">${inner}</g>`;
+/* contour « fourrure » : ellipse dont le bord est dentelé (n pointes, amplitude amp) */
+const _fur = (cx, cy, rx, ry, n = 14, amp = 3, rot = 0) => {
+  let d = ''; const N = n * 2;
+  for (let i = 0; i < N; i++) {
+    const a = rot + (i / N) * Math.PI * 2, r = i % 2 ? 1 : 1 + amp / Math.max(rx, ry);
+    const x = cx + Math.cos(a) * rx * r, y = cy + Math.sin(a) * ry * r;
+    if (i === 0) d += `M${x.toFixed(1)} ${y.toFixed(1)}`;
+    else { const am = rot + ((i - .5) / N) * Math.PI * 2, rm = 1 + (i % 2 ? amp * .35 : amp * .2) / Math.max(rx, ry); d += `Q${(cx + Math.cos(am) * rx * rm * 1.04).toFixed(1)} ${(cy + Math.sin(am) * ry * rm * 1.04).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`; }
+  }
+  return d + 'Z';
+};
+
+const MON_ART2 = {};
+
+/* =====================================================================
+   BLOPS — gelée à gros yeux, une garniture par couleur
+   ===================================================================== */
+function _blop(id, o) {
+  const g = _q(), sk = _q(), rb = _q(), rs = _q();
+  const [c1, c2, c3, c4] = o.c, s = o.s || 1;
+  const BODY = 'M18 108C10 80 28 46 64 44s54 36 46 64c-2 7-90 7-92 0Z';
+  let defs = _qrg(g, [[0, c1], [.45, c2], [.85, c3], [1, c4]], .36, .3, .85);
+  let paint = `fill="url(#${g})"`;
+  if (o.rainbow) {
+    defs += _qlg(rb, [[0, '#ff5a5a'], [.2, '#ffb02e'], [.4, '#ffe84a'], [.6, '#5adf6a'], [.8, '#4aa8ff'], [1, '#b06aff']], 0, 0, 1, .55) + _qrg(rs, [[0, '#fff', .55], [.45, '#fff', 0], [1, '#14081e', .42]], .36, .28, .9);
+    paint = `fill="url(#${rb})"`;
+  }
+  const top = {
+    coco: `<g class="p-leaves"><path d="M36 56C38 38 90 38 92 56 82 49 46 49 36 56Z" fill="#5a3a1e" stroke="#2a1608" stroke-width="1.6"/><path d="M40 52c4-3 10-4 14-3M60 46c6-1 12-1 18 1M82 48c4 1 7 3 9 6M46 48l-2-5M58 45l-1-6M72 45l1-6M84 48l3-5" stroke="#8a5e34" stroke-width="1.4" fill="none" stroke-linecap="round"/><ellipse cx="64" cy="53.5" rx="23" ry="3" fill="#fffaf0" stroke="#d9c9a6" stroke-width="1"/></g>`,
+    griotte: `<g class="p-leaves"><path d="M56 44C56 34 60 26 66 22M76 42C76 32 72 26 66 22" stroke="#4a7a2a" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M66 22c6-8 14-8 18-4-4 6-12 8-18 4Z" fill="#58b042" stroke="#1f5a1a" stroke-width="1.3"/><circle cx="55" cy="46" r="8.5" fill="#d8202e" stroke="#6a0a14" stroke-width="1.5"/><circle cx="78" cy="44" r="8.5" fill="#e83040" stroke="#6a0a14" stroke-width="1.5"/><circle cx="52" cy="43" r="2.4" fill="#fff" opacity=".8"/><circle cx="75" cy="41" r="2.4" fill="#fff" opacity=".8"/></g>`,
+    indigo: `<g class="p-leaves"><circle cx="48" cy="48" r="7" fill="#3a46b8" stroke="#10145a" stroke-width="1.5"/><circle cx="64" cy="42" r="8" fill="#4a56d0" stroke="#10145a" stroke-width="1.5"/><circle cx="80" cy="48" r="7" fill="#3a46b8" stroke="#10145a" stroke-width="1.5"/><path d="M64 36l-2-2M64 36l2-2M64 36v-3M48 43l-2-2M48 43l2-2M80 43l-2-2M80 43l2-2" stroke="#10145a" stroke-width="1.3" stroke-linecap="round"/><circle cx="61" cy="40" r="2.2" fill="#fff" opacity=".7"/><circle cx="46" cy="46" r="1.8" fill="#fff" opacity=".6"/><circle cx="78" cy="46" r="1.8" fill="#fff" opacity=".6"/></g>`,
+    reinette: `<g class="p-leaves"><path d="M64 48C64 40 65 34 68 28" stroke="#5a3a1c" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M68 30c2-9 12-12 18-8-1 8-10 12-18 8Z" fill="#6ad04a" stroke="#1f6a1a" stroke-width="1.3"/><path d="M68 30c-1-6-8-9-13-7 0 6 7 9 13 7Z" fill="#8aea5a" stroke="#1f6a1a" stroke-width="1.3"/><path d="M70 29c4-2 9-3 13-2" stroke="#d4f5a0" stroke-width="1" fill="none"/></g>`,
+    royal: '',
+  }[o.top] || '';
+  const crown = o.crown ? `<g class="p-glow"><path d="M40 52 36 28 50 38 64 22 78 38 92 28 88 52Z" fill="#ffd84a" stroke="#8a5a0a" stroke-width="2" stroke-linejoin="round"/><path d="M40 52H88V47H40Z" fill="#e8a020" stroke="#8a5a0a" stroke-width="1.6"/><path d="M42 40 38 30 49 38M64 24 61 38M78 38 90 30 86 40" stroke="#fff6b0" stroke-width="1.2" fill="none" opacity=".7"/><circle cx="64" cy="29" r="3.4" fill="#ff4a6a" stroke="#6a0a1a" stroke-width="1"/><circle cx="38" cy="30" r="2.6" fill="#4ab8ff" stroke="#0a3a6a" stroke-width="1"/><circle cx="90" cy="30" r="2.6" fill="#5adf6a" stroke="#0a5a1a" stroke-width="1"/><circle cx="52" cy="49.5" r="1.8" fill="#fff"/><circle cx="64" cy="49.5" r="1.8" fill="#ffe27a"/><circle cx="76" cy="49.5" r="1.8" fill="#fff"/></g>` : '';
+  const eyes = `${_qeye(50, 80, 7.4, o.iris || '#2a3a5a', 1.4)}${_qeye(80, 80, 7.4, o.iris || '#2a3a5a', 1.4)}`;
+  const mouth = o.coco ? `<path d="M54 94Q66 106 78 94Z" fill="#fffaf0" stroke="#3a2008" stroke-width="1.6" stroke-linejoin="round"/>` : `<path d="M55 94Q66 103 77 94" stroke="#1a1020" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  const sparkle = o.rainbow ? [[24, 62], [106, 58], [98, 96], [30, 100]].map(([x, y], i) => `<path class="p-glow" transform="translate(${x} ${y})" d="M0-5 1.4-1.4 5 0 1.4 1.4 0 5-1.4 1.4-5 0-1.4-1.4Z" fill="#fff" style="animation-delay:-${i * 450}ms"/>`).join('') : '';
+  const body = `${_qsh(o.rainbow ? 44 : 38)}${_sc(s, `<g class="p-body"><path d="${BODY}" ${paint} stroke="${c4}" stroke-width="2.4" stroke-linejoin="round"/>${o.rainbow ? `<path d="${BODY}" fill="url(#${rs})"/>` : ''}
+      <ellipse cx="64" cy="110" rx="40" ry="6.5" fill="${c4}" opacity=".42"/>
+      <path d="M34 78C35 65 45 56 58 52 49 58 44 67 42 80Z" fill="#fff" opacity=".5"/><ellipse cx="96" cy="68" rx="3.2" ry="5.4" fill="#fff" opacity=".4" ${_vb} transform="rotate(28 96 68)"/>
+      <circle cx="90" cy="98" r="5" fill="${c1}" opacity=".4"/><circle cx="43" cy="99" r="3" fill="${c1}" opacity=".35"/><circle cx="74" cy="105" r="2.4" fill="${c1}" opacity=".4"/>
+      ${eyes}<ellipse cx="40" cy="92" rx="5" ry="3" fill="#ff8aa0" opacity=".38"/><ellipse cx="90" cy="92" rx="5" ry="3" fill="#ff8aa0" opacity=".38"/>${mouth}${top}${crown}</g>`)}${sparkle}`;
+  return _msvg(id, defs, body, ' ms-gelee');
+}
+Object.assign(MON_ART2, {
+  blop_coco:     _blop('blop_coco', { c: ['#e8c08a', '#b98350', '#7a4a24', '#3e2410'], top: 'coco', coco: true, iris: '#4a2a10' }),
+  blop_griotte:  _blop('blop_griotte', { c: ['#ff9a8a', '#e83a44', '#a8142a', '#58081a'], top: 'griotte', iris: '#5a1020' }),
+  blop_indigo:   _blop('blop_indigo', { c: ['#9aa8ff', '#4a5ae0', '#2a2a9a', '#10104a'], top: 'indigo', iris: '#10145a' }),
+  blop_reinette: _blop('blop_reinette', { c: ['#d4ff9a', '#8ae04a', '#3a9a2a', '#145a14'], top: 'reinette', iris: '#144a14' }),
+  blop_royal:    _blop('blop_royal', { c: ['#ffffff', '#c8c8ff', '#8a7ae0', '#3a2a8a'], rainbow: true, crown: true, s: 1.14, iris: '#6a2ab8' }),
+});
+
+/* =====================================================================
+   WABBITS — lapins à grandes oreilles : Wabbit, Black Wabbit, Wo Wabbit (casque), Wa Wabbit (couronne + cape)
+   ===================================================================== */
+function _wabbit(id, o) {
+  const f = _q(), fb = _q(), ei = _q(), mt = _q();
+  const [c1, c2, c3] = o.fur, line = o.line || c3, s = o.s || 1;
+  const defs = _qrg(f, [[0, c1], [.55, c2], [1, c3]], .4, .28, .9) + _qrg(fb, [[0, '#ffffff'], [1, o.belly || '#f2e4d4']], .4, .3, .9)
+    + _qlg(ei, [[0, o.inner || '#ffc0d0'], [1, o.inner2 || '#e8708c']]) + _qlg(mt, [[0, '#f4f8ff'], [.5, '#a8b4c8'], [1, '#5a6478']], 0, 0, 1, 1);
+  const K = `stroke="${line}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+  const tail = `<g class="p-tail"><path d="${_fur(22, 90, 10, 10, 7, 3)}" fill="${o.tail || '#fff'}" ${K}/>${o.spiky ? '<path d="M14 84 6 78M12 92 3 92M15 99 7 105" stroke="#14141a" stroke-width="2.4" stroke-linecap="round"/>' : ''}</g>`;
+  const cape = o.cape ? `<g><path d="M58 60C34 62 18 82 14 112 34 118 52 116 70 112 66 92 64 76 58 60Z" fill="#7a3ac8" stroke="#2a0e5a" stroke-width="2" stroke-linejoin="round"/><path d="M58 60C46 70 34 90 30 114" stroke="#b07af0" stroke-width="2" fill="none" opacity=".6"/><path d="M14 112C34 118 52 116 70 112" stroke="#ffd84a" stroke-width="3.4" fill="none" stroke-linecap="round"/><g fill="#fff" stroke="#2a0e5a" stroke-width=".8"><circle cx="30" cy="106" r="2.4"/><circle cx="46" cy="109" r="2.4"/><circle cx="58" cy="108" r="2.4"/></g><path d="M52 62l-4 6M64 62l4 6" stroke="#ffd84a" stroke-width="2.6" stroke-linecap="round"/></g>` : '';
+  const ears = `<g class="p-tuft"><path d="M62 40C52 28 46 12 52 2 62 4 70 20 72 38Z" fill="url(#${f})" ${K}/><path d="M61 36C55 26 51 14 54 7 61 10 66 22 68 35Z" fill="url(#${ei})"/>
+      <path d="M78 36C76 22 84 8 94 4 98 14 94 28 88 40Z" fill="url(#${f})" ${K}/><path d="M80 34C79 22 85 12 92 9 94 17 91 27 86 37Z" fill="url(#${ei})"/>${o.notch ? '<path d="M94 4 90 11 98 9Z" fill="#6a8a3a"/><path d="M52 2 56 9 48 8Z" fill="#6a8a3a" opacity="0"/>' : ''}</g>`;
+  const helmet = o.helmet ? `<g><path d="M58 46C58 30 98 30 100 46 88 42 70 42 58 46Z" fill="url(#${mt})" stroke="#3a4254" stroke-width="2" stroke-linejoin="round"/><path d="M58 46 100 46" stroke="#3a4254" stroke-width="2.4"/><path d="M78 31v-8" stroke="#3a4254" stroke-width="3" stroke-linecap="round"/><g class="p-tuft"><path d="M78 24C70 18 66 8 70 2 78 6 84 14 82 24Z" fill="#e0402f" stroke="#7a1410" stroke-width="1.6" stroke-linejoin="round"/></g><path d="M64 38C70 33 80 32 88 35" stroke="#fff" stroke-width="1.6" fill="none" opacity=".7" stroke-linecap="round"/></g>` : '';
+  const crown = o.crown ? `<g class="p-glow"><path d="M62 42 60 24 69 32 78 18 87 32 96 24 94 42Z" fill="#ffd84a" stroke="#8a5a0a" stroke-width="2" stroke-linejoin="round"/><path d="M62 42H94V37H62Z" fill="#e8a020" stroke="#8a5a0a" stroke-width="1.6"/><circle cx="78" cy="25" r="3" fill="#ff4a6a" stroke="#6a0a1a" stroke-width="1"/><circle cx="62" cy="27" r="2.2" fill="#4ab8ff" stroke="#0a3a6a" stroke-width=".9"/><circle cx="94" cy="27" r="2.2" fill="#5adf6a" stroke="#0a5a1a" stroke-width=".9"/><path d="M64 32 61 26M92 32 95 26" stroke="#fff6b0" stroke-width="1" opacity=".7"/></g>` : '';
+  const eyeCol = o.eyeW ? _qeye(88, 47, 5.4, o.iris, 1.4, o.eyeW) : _qeye(88, 47, 5.4, o.iris, 1.4);
+  const glow = o.glow ? `<circle class="p-glow" cx="89" cy="47" r="9" fill="${o.glow}" opacity=".4"/>` : '';
+  const sword = o.sword ? `<g class="p-limb"><path d="M84 96 98 86" stroke="#5a3a1c" stroke-width="3.6" stroke-linecap="round"/><path d="M96 90 102 80" stroke="#d9a441" stroke-width="3" stroke-linecap="round"/><path d="M100 82 118 62 122 66 106 88Z" fill="url(#${mt})" stroke="#3a4254" stroke-width="1.6" stroke-linejoin="round"/><path d="M104 80 118 65" stroke="#fff" stroke-width="1.2" opacity=".8"/><circle cx="84" cy="97" r="5" fill="${c1}" stroke="${line}" stroke-width="1.6"/></g><g><circle cx="60" cy="94" r="14" fill="#8a5a2e" stroke="#3a2008" stroke-width="2"/><circle cx="60" cy="94" r="9.5" fill="none" stroke="#d9a441" stroke-width="1.6"/><circle cx="60" cy="94" r="4" fill="url(#${mt})" stroke="#3a4254" stroke-width="1.3"/></g>` : '';
+  const sceptre = o.sceptre ? `<g class="p-limb"><path d="M84 112 104 56" stroke="#e8a020" stroke-width="3.4" stroke-linecap="round"/><path d="M84 112 104 56" stroke="#fff3b0" stroke-width="1" opacity=".7"/><path d="M104 56c-6-3-8-12-3-18 6 2 10 10 7 17Z" fill="#ff9a2e" stroke="#9a4a10" stroke-width="1.6" stroke-linejoin="round"/><path d="M103 38c-3-6-1-10 3-12M103 38c2-6 7-8 10-6M103 38l-9-3" stroke="#4aa83a" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="84" cy="106" r="5" fill="url(#${f})" stroke="${line}" stroke-width="1.6"/></g>` : '';
+  const fangs = o.fangs ? '<path d="M96 62 94 68 99 63ZM104 61 104 67 107 60Z" fill="#fff" stroke="#14141a" stroke-width=".8"/>' : '<rect x="98" y="62" width="4.6" height="7" rx="1.2" fill="#fff" stroke="#6a5a4a" stroke-width="1"/><path d="M100.3 62v7" stroke="#bdb0a0" stroke-width=".8"/>';
+  const rabbit = `${_qsh(32)}<g class="p-hop">
+    ${cape}${tail}
+    <g class="p-body"><path d="M26 98C22 72 38 56 60 56 80 56 94 70 92 94 90 108 76 114 58 114 40 114 28 108 26 98Z" fill="url(#${f})" ${K}/>
+      <ellipse cx="72" cy="94" rx="15" ry="18" fill="url(#${fb})" opacity=".95"/><path d="M62 82q8 4 16 0M60 92q10 5 20 0" stroke="${c3}" stroke-width="1" fill="none" opacity=".25" stroke-linecap="round"/>
+      <ellipse cx="42" cy="98" rx="16" ry="14" fill="url(#${f})" ${K}/><path d="M32 90c4-6 12-8 18-6" stroke="#fff" stroke-width="1.6" fill="none" opacity=".35" stroke-linecap="round"/>
+      <ellipse cx="53" cy="113" rx="16" ry="6.4" fill="url(#${fb})" ${K}/><path d="M60 112v3M66 112v3M72 111v3" stroke="${c3}" stroke-width="1.2" opacity=".5" stroke-linecap="round"/>
+      <ellipse cx="84" cy="96" rx="6" ry="12" fill="url(#${f})" ${K}/><ellipse cx="86" cy="109" rx="7" ry="4.2" fill="url(#${fb})" ${K}/>
+      ${o.vest || ''}
+      ${ears}
+      <ellipse cx="78" cy="52" rx="21" ry="19" fill="url(#${f})" ${K}/><path d="M60 44c3-8 10-12 18-12" stroke="#fff" stroke-width="2" fill="none" opacity=".4" stroke-linecap="round"/>
+      <ellipse cx="94" cy="57" rx="12" ry="9" fill="url(#${fb})"/><ellipse cx="88" cy="62" rx="9" ry="6.2" fill="url(#${fb})" opacity=".8"/>
+      ${helmet}${crown}${glow}${eyeCol}
+      ${o.brow ? '<path class="p-brow" d="M80 40 96 46" stroke="#14141a" stroke-width="3" stroke-linecap="round"/>' : ''}
+      <path d="M102 50c2-2 6-2 7 0 .6 2-2 4-4 4-3 0-4-2-3-4Z" fill="${o.nose || '#ff7a9a'}" stroke="#7a2a3a" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M105 54v5M105 59Q101 63 96 60" stroke="#5a3a3a" stroke-width="1.5" fill="none" stroke-linecap="round"/>${fangs}
+      <path d="M104 56l11-3M104 58l12 1M103 60l10 6" stroke="#fff" stroke-width="1.1" opacity=".55" stroke-linecap="round"/>
+      ${o.blush === false ? '' : '<ellipse cx="84" cy="60" rx="4.4" ry="2.6" fill="#ff8aa0" opacity=".4"/>'}
+    </g>${sword}${sceptre}</g>`;
+  return _msvg(id, defs, _sc(s, rabbit));
+}
+Object.assign(MON_ART2, {
+  wabbit:       _wabbit('wabbit', { fur: ['#ffffff', '#f1e6dc', '#c9b6a6'], line: '#8a7060', inner: '#ffc2d2', iris: '#c8284a', eyeW: '#fff' }),
+  black_wabbit: _wabbit('black_wabbit', { fur: ['#6a6a7e', '#36364a', '#14141c'], line: '#08080e', belly: '#7a7a90', inner: '#8a3a4a', inner2: '#4a1020', nose: '#c43a5a', iris: '#ff3a2a', eyeW: '#ffd8c8', glow: '#ff2a1a', spiky: true, notch: true, fangs: true, brow: true, tail: '#2a2a38', blush: false }),
+  wo_wabbit:    _wabbit('wo_wabbit', { fur: ['#f0d4a4', '#c9985a', '#7a5028'], line: '#4a2c10', belly: '#f6e6c4', inner: '#ffc2a0', iris: '#5a2a0a', helmet: true, sword: true, tail: '#f6e6c4', brow: true }),
+  wa_wabbit:    _wabbit('wa_wabbit', { fur: ['#ffffff', '#e8dcf8', '#a898c8'], line: '#4a3a7a', belly: '#fff', inner: '#e8a8ff', inner2: '#b868e8', iris: '#e8a020', eyeW: '#fff8e0', crown: true, cape: true, sceptre: true, s: 1.06, tail: '#fff' }),
+});
+
+/* =====================================================================
+   KANNIBOUL — petits démons masqués de l'île de Moon (peaux fantaisistes, grands masques de bois, plumes)
+   Jav : javelot · Ark : arc · Sarbak : sarbacane · Ebil : le chef, masque à cornes et bâton à crâne
+   ===================================================================== */
+function _kanni(id, o) {
+  const sk = _q(), mk = _q(), fe = _q(), sg = _q();
+  const [s1, s2, s3] = o.skin, s = o.s || 1, line = o.line || s3;
+  const [f1, f2, f3] = o.feathers;
+  const defs = _qrg(sk, [[0, s1], [.55, s2], [1, s3]], .4, .3, .9) + _qrg(mk, [[0, '#fff4d8'], [.6, o.mask || '#e8c890'], [1, '#9a7038']], .36, .28, .9)
+    + _qlg(fe, [[0, f1], [1, f2]], 0, 1, 0, 0) + _qlg(sg, [[0, '#d8d8e0'], [.5, '#8a8a98'], [1, '#4a4a58']], 0, 0, 1, 1);
+  const K = `stroke="${line}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+  const feather = (rot, len, w = 7) => `<g ${_vb} transform="rotate(${rot} 64 40)"><path d="M64 40C${64 - w} ${40 - len * .4} ${64 - w * .6} ${40 - len * .9} 64 ${40 - len} ${64 + w * .6} ${40 - len * .9} ${64 + w} ${40 - len * .4} 64 40Z" fill="url(#${fe})" stroke="${f3}" stroke-width="1.6" stroke-linejoin="round"/><path d="M64 38V${42 - len}" stroke="${f3}" stroke-width="1.2" opacity=".6"/><ellipse cx="64" cy="${40 - len * .75}" rx="${w * .35}" ry="${w * .5}" fill="${o.eyeFeather || '#fff'}" opacity=".85"/></g>`;
+  const crest = `<g class="p-tuft">${(o.crest || [[-30, 20], [-12, 27], [7, 30], [25, 23]]).map(([r, l]) => feather(r, l)).join('')}</g>`;
+  const horns = o.horns ? `<g><path d="M52 40C42 34 36 22 42 12 46 22 54 28 60 32Z" fill="#f0e4c8" stroke="#6a5030" stroke-width="2" stroke-linejoin="round"/><path d="M80 40C90 34 96 22 90 12 86 22 78 28 72 32Z" fill="#f0e4c8" stroke="#6a5030" stroke-width="2" stroke-linejoin="round"/><path d="M45 18c3 6 8 10 12 13M87 18c-3 6-8 10-12 13" stroke="#b89a68" stroke-width="1.2" fill="none"/></g>` : '';
+  const skirt = `<g class="p-leaves">${[0, 1, 2, 3, 4, 5, 6].map(i => `<path d="M${42 + i * 7.4} 98l-5 22 7.4-6 3.6 7 3.4-7 7.4 6-4.8-22Z" fill="${i % 2 ? (o.grass2 || '#9ac83a') : (o.grass1 || '#c8e04a')}" stroke="#3a5a14" stroke-width="1.2" stroke-linejoin="round" transform="translate(0 -4)"/>`).join('')}<path d="M40 96Q64 104 90 96" stroke="#5a3a1c" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M40 96Q64 104 90 96" stroke="#d9a441" stroke-width="1.4" fill="none" stroke-dasharray="3 3"/></g>`;
+  const legs = `<path d="M50 104v10h-6c-3 0-3 4 0 4h12v-14Z" fill="url(#${sk})" ${K}/><path d="M72 104v10h-6c-3 0-3 4 0 4h12v-14Z" fill="url(#${sk})" ${K}/>`;
+  const torso = `<path d="M44 72C38 92 46 106 64 106 84 106 92 92 86 72 82 62 50 62 44 72Z" fill="url(#${sk})" ${K}/><path d="M50 80q14 8 28 0M52 88q12 6 24 0" stroke="${o.paint || '#e0402f'}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".85"/><path d="M48 70c6-4 14-6 20-5" stroke="#fff" stroke-width="2" fill="none" opacity=".3" stroke-linecap="round"/>`;
+  const neck = `<g>${[0, 1, 2, 3, 4, 5, 6].map(i => { const t = i / 6, x = 48 + t * 32, y = 70 + Math.sin(t * Math.PI) * 11; return `<rect x="${x - 2}" y="${y - 3.4}" width="4" height="7" rx="2" fill="#fff4dc" stroke="#8a7050" stroke-width="1" ${_vb} transform="rotate(${(t - .5) * 50} ${x} ${y})"/>`; }).join('')}</g>`;
+  const wtype = o.weapon;
+  const backArm = `<path d="M48 72Q38 80 36 94" stroke="#000" stroke-opacity=".18" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M48 72Q38 80 36 94" stroke="url(#${sk})" stroke-width="9.6" fill="none" stroke-linecap="round"/><circle cx="36" cy="95" r="5.2" fill="url(#${sk})" ${K}/>`;
+  const handle = (x, y) => `<circle cx="${x}" cy="${y}" r="5.4" fill="url(#${sk})" ${K}/>`;
+  const arm = (hx, hy) => `<path d="M82 74Q${(82 + hx) / 2 + 6} ${(74 + hy) / 2 - 4} ${hx} ${hy}" stroke="${line}" stroke-opacity=".5" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M82 74Q${(82 + hx) / 2 + 6} ${(74 + hy) / 2 - 4} ${hx} ${hy}" stroke="url(#${sk})" stroke-width="9.6" fill="none" stroke-linecap="round"/>`;
+  const weapon = {
+    jav: `<g class="p-limb"><path d="M84 112 116 34" stroke="#5a3a1c" stroke-width="3.4" stroke-linecap="round"/><path d="M84 112 116 34" stroke="#b88a52" stroke-width="1.2" stroke-linecap="round" opacity=".7"/><path d="M116 34 111 22 120 26Z" fill="url(#${sg})" stroke="#2a2a38" stroke-width="1.4" stroke-linejoin="round"/><path d="M108 52c4-4 8-2 8-2s-2 6-6 8Z" fill="${f1}" stroke="${f3}" stroke-width="1"/>${arm(96, 88)}${handle(96, 88)}</g>`,
+    ark: `<g class="p-limb"><path d="M104 36C124 56 124 86 104 108" stroke="#5a3a1c" stroke-width="4.4" fill="none" stroke-linecap="round"/><path d="M104 36C124 56 124 86 104 108" stroke="#b88a52" stroke-width="1.4" fill="none" opacity=".7"/><path d="M104 36 100 72 104 108" stroke="#f0e4c8" stroke-width="1.2" fill="none"/><path d="M96 72 124 72" stroke="#5a3a1c" stroke-width="2.4" stroke-linecap="round"/><path d="M124 72 118 68 118 76Z" fill="url(#${sg})"/><path d="M96 72 100 69M96 72 100 75" stroke="${f1}" stroke-width="2" stroke-linecap="round"/>${arm(98, 74)}${handle(98, 74)}</g>`,
+    sarbak: `<g class="p-limb"><path d="M72 62 124 40" stroke="#3a2a14" stroke-width="5" stroke-linecap="round"/><path d="M72 62 124 40" stroke="#c8a458" stroke-width="3" stroke-linecap="round"/><path d="M76 60 120 42" stroke="#fff3c0" stroke-width="1" opacity=".7"/><path d="M96 51 98 56M108 46 110 51" stroke="#5a3a1c" stroke-width="2.4" stroke-linecap="round"/><circle cx="124" cy="40" r="2.6" fill="#1a1008"/>${arm(88, 66)}${handle(90, 64)}</g>`,
+    staff: `<g class="p-limb"><path d="M90 118 100 22" stroke="#4a2c14" stroke-width="4" stroke-linecap="round"/><path d="M90 118 100 22" stroke="#a87a42" stroke-width="1.2" opacity=".7"/>
+      <g><path d="M88 22C88 8 112 8 112 22 112 28 108 30 108 36H92C92 30 88 28 88 22Z" fill="#f4ecd8" stroke="#6a5030" stroke-width="2" stroke-linejoin="round"/><circle cx="95" cy="21" r="4" fill="#1a1008"/><circle cx="105" cy="21" r="4" fill="#1a1008"/><circle class="p-glow" cx="95" cy="21" r="2" fill="#ff5a1e"/><circle class="p-glow" cx="105" cy="21" r="2" fill="#ff5a1e"/><path d="M100 26l-2 4h4Z" fill="#1a1008"/><path d="M94 33v3M98 33v3M102 33v3M106 33v3" stroke="#6a5030" stroke-width="1"/>
+      <path d="M88 20C80 16 80 8 84 4M112 20C120 16 120 8 116 4" stroke="#f4ecd8" stroke-width="3.4" fill="none" stroke-linecap="round"/></g><path d="M96 60c-6 4-6 10-1 14M104 70c6 4 6 10 1 14" stroke="${f1}" stroke-width="2.6" fill="none" stroke-linecap="round"/>${arm(94, 82)}${handle(94, 82)}</g>`,
+  }[wtype] || '';
+  const mask = `<g><path d="M66 30C48 30 46 54 52 68 58 76 74 76 80 68 86 54 84 30 66 30Z" fill="url(#${mk})" stroke="#5a3a14" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M52 44q14-6 28 0" stroke="${o.paint || '#e0402f'}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M54 36q12-6 24 0" stroke="#1a1008" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M66 36v28" stroke="#9a7038" stroke-width="1.4" opacity=".6"/>
+      <path d="M52 56l6 3M80 56l-6 3M50 62l7 2M82 62l-7 2" stroke="${o.paint || '#e0402f'}" stroke-width="2.2" stroke-linecap="round"/>
+      <g class="p-eye"><path d="M54 50q5-5 11 0-5 4-11 0Z" fill="${o.eyeCol || '#ffe14a'}" stroke="#1a1008" stroke-width="1.6" stroke-linejoin="round"/><path d="M69 50q5-5 11 0-5 4-11 0Z" fill="${o.eyeCol || '#ffe14a'}" stroke="#1a1008" stroke-width="1.6" stroke-linejoin="round"/><circle cx="61" cy="49.6" r="1.8" fill="#1a1008"/><circle cx="76" cy="49.6" r="1.8" fill="#1a1008"/></g>
+      <path d="M66 53l-3 8h6Z" fill="#c8a458" stroke="#5a3a14" stroke-width="1.2" stroke-linejoin="round"/>
+      <g class="p-jaw"><path d="M56 66Q66 74 76 66Q66 70 56 66Z" fill="#1a1008" stroke="#1a1008" stroke-width="1.5" stroke-linejoin="round"/><path d="M58 66.4l1.4 4M62 68l.8 4M66 68.6v4.4M70 68l-.8 4M74 66.4l-1.4 4" stroke="#fff8e8" stroke-width="2" stroke-linecap="round"/></g></g>`;
+  const fig = `${_qsh(30)}<g class="p-hop"><g class="p-body">${backArm}${legs}${skirt}${torso}${neck}
+    ${o.crestBehind === false ? '' : crest}${horns}${mask}${weapon}</g></g>`;
+  return _msvg(id, defs, _sc(s, fig));
+}
+Object.assign(MON_ART2, {
+  kanniboul_jav:    _kanni('kanniboul_jav', { skin: ['#9af0d0', '#3fb89a', '#1a6a5a'], feathers: ['#ff8a4a', '#e0402f', '#7a1a10'], paint: '#e0402f', weapon: 'jav' }),
+  kanniboul_ark:    _kanni('kanniboul_ark', { skin: ['#ffd09a', '#e8923a', '#8a4a14'], feathers: ['#6ae0ff', '#2a90e0', '#0e3a7a'], paint: '#2a6ad8', weapon: 'ark', mask: '#f0d8a0', eyeFeather: '#fff4a0' }),
+  kanniboul_sarbak: _kanni('kanniboul_sarbak', { skin: ['#d0d4ff', '#8a94e8', '#3a3a9a'], feathers: ['#ffe84a', '#e8a020', '#8a5a0a'], paint: '#2a9a5a', weapon: 'sarbak', mask: '#d8e8c0', eyeCol: '#ff6a4a' }),
+  kanniboul_ebil:   _kanni('kanniboul_ebil', { skin: ['#ff9a8a', '#c43a2a', '#5a0e14'], line: '#2a0408', feathers: ['#ffb02e', '#e8402a', '#6a0e0a'], paint: '#1a1008', weapon: 'staff', horns: true, s: 1.1, mask: '#e8d8b8', eyeCol: '#ff3a1a', eyeFeather: '#ffe27a', grass1: '#d84a2a', grass2: '#a82a1a',
+                      crest: [[-38, 26], [-20, 36], [0, 42], [20, 36], [38, 26]] }),
+});
+
+/* =====================================================================
+   PORCOS — Porsalu (soldat à la fourche), Cochon de Farle (gros cochon boueux),
+   Don Dorgan (parrain en costume rayé) et le Dragon Cochon (ailes, cornes, souffle de braise)
+   ===================================================================== */
+/* tête de cochon de profil, centrée en (0,0), tournée vers la droite — ids de dégradés passés en paramètre */
+const _pigHead = (x, y, k, pk, sn, o = {}) => `<g ${_vb} transform="translate(${x} ${y}) scale(${k})">
+  <path d="M-9-10-4-27 8-12Z" fill="url(#${pk})" stroke="${o.line || '#8a3248'}" stroke-width="1.8" stroke-linejoin="round"/><path d="M-6-13-3-22 4-13Z" fill="#ff7a98" opacity=".7"/>
+  <ellipse cx="0" cy="0" rx="18" ry="16" fill="url(#${pk})" stroke="${o.line || '#8a3248'}" stroke-width="2"/><path d="M-12-8c3-5 8-8 14-8" stroke="#fff" stroke-width="2.2" fill="none" opacity=".45" stroke-linecap="round"/>
+  <ellipse cx="20" cy="4" rx="8.4" ry="9.4" fill="url(#${sn})" stroke="${o.line || '#8a3248'}" stroke-width="2"/><ellipse cx="22" cy="0" rx="2" ry="3.2" fill="#5a1a2c"/><ellipse cx="22" cy="8.4" rx="2" ry="3.2" fill="#5a1a2c"/><ellipse cx="14" cy="-2" rx="3" ry="4" fill="#fff" opacity=".3"/>
+  ${o.eye === false ? '' : _qeye(5, -4, 4.4, o.iris || '#3a1a10', 1)}${o.brow ? '<path class="p-brow" d="M-1-12 12-5" stroke="#5a1a2c" stroke-width="3" stroke-linecap="round"/>' : ''}
+  <path d="M10 15Q19 19 27 13" stroke="#5a1a2c" stroke-width="2" fill="none" stroke-linecap="round"/>${o.tusks ? '<path d="M14 13 12 7 18 12ZM24 12 25 6 28 12Z" fill="#fff8e8" stroke="#6a5a40" stroke-width="1"/>' : ''}
+  <ellipse cx="-4" cy="9" rx="5" ry="3" fill="#ff6a88" opacity=".35"/></g>`;
+const _curlTail = (x, y, c = '#d8607a') => `<g class="p-tail"><path d="M${x} ${y}C${x - 10} ${y - 2} ${x - 12} ${y - 14} ${x - 4} ${y - 14}S${x - 2} ${y - 5} ${x - 8} ${y - 6}" stroke="#8a3248" stroke-width="5.6" fill="none" stroke-linecap="round"/><path d="M${x} ${y}C${x - 10} ${y - 2} ${x - 12} ${y - 14} ${x - 4} ${y - 14}S${x - 2} ${y - 5} ${x - 8} ${y - 6}" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/></g>`;
+function _porcosDefs(pk, sn, col = ['#ffe0e6', '#ffa8bb', '#d8607a']) { return _qrg(pk, [[0, col[0]], [.55, col[1]], [1, col[2]]], .4, .3, .9) + _qrg(sn, [[0, '#ffd0dc'], [1, '#ff8aa4']], .4, .3, .9); }
+const _boot = (x, y, c = '#4a2c14') => `<path d="M${x - 8} ${y}v-8h14v8c4 0 6 2 6 5H${x - 12}c0-3 2-5 6-5Z" fill="${c}" stroke="#1a0c04" stroke-width="1.8" stroke-linejoin="round"/>`;
+
+function _porsalu() {
+  const pk = _q(), sn = _q(), un = _q(), mt = _q();
+  const defs = _porcosDefs(pk, sn) + _qlg(un, [[0, '#8aa05a'], [.6, '#5a7032'], [1, '#34441c']], 0, 0, 1, 1) + _qlg(mt, [[0, '#cfd6c0'], [.5, '#7a8a6a'], [1, '#3a4630']], 0, 0, 1, 1);
+  const fork = `<g class="p-limb"><path d="M26 118 36 36" stroke="#6a4a22" stroke-width="3.6" stroke-linecap="round"/><path d="M26 118 36 36" stroke="#c8a058" stroke-width="1" opacity=".7"/><path d="M28 34 44 34M28 34V20M36 34V16M44 34V20" stroke="#9aa0a8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 34V20M36 34V16M44 34V20" stroke="#e8eef4" stroke-width="1" opacity=".7" stroke-linecap="round"/><path d="M30 92Q38 90 44 88" stroke="url(#${pk})" stroke-width="9.6" fill="none" stroke-linecap="round"/><circle cx="36" cy="90" r="5.2" fill="url(#${pk})" stroke="#8a3248" stroke-width="1.8"/></g>`;
+  const body = `${_qsh(30)}<g class="p-hop"><g class="p-body">${_curlTail(42, 100)}
+    <path d="M52 106v8h-6c-3 0-3 5 0 5h13v-13Z" fill="url(#${pk})" stroke="#8a3248" stroke-width="1.8" stroke-linejoin="round"/>${_boot(52, 112)}<path d="M72 106v8h-6c-3 0-3 5 0 5h13v-13Z" fill="url(#${pk})" stroke="#8a3248" stroke-width="1.8" stroke-linejoin="round"/>${_boot(72, 112)}
+    ${fork}
+    <path d="M44 74C38 92 46 108 64 108 84 108 92 92 86 74 82 64 48 64 44 74Z" fill="url(#${un})" stroke="#1e2a10" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M44 98Q64 106 86 98" stroke="#4a2c14" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="58" y="94" width="11" height="9" rx="1.6" fill="#ffd84a" stroke="#8a5a0a" stroke-width="1.4"/><circle cx="63.5" cy="98.5" r="1.5" fill="#8a5a0a"/>
+    <path d="M60 72V94" stroke="#34441c" stroke-width="1.4"/><circle cx="66" cy="80" r="1.8" fill="#ffd84a"/><circle cx="66" cy="88" r="1.8" fill="#ffd84a"/>
+    <path d="M70 70l2.4 5 5.4.6-4 3.6 1.2 5.4-5-2.8-5 2.8 1.2-5.4-4-3.6 5.4-.6Z" fill="#ffd84a" stroke="#8a5a0a" stroke-width="1" transform="translate(-6 -2) scale(.8)" ${_vb}/>
+    <path d="M48 72c6-4 14-5 22-3" stroke="#fff" stroke-width="2" fill="none" opacity=".25" stroke-linecap="round"/>
+    ${_pigHead(72, 50, 1.1, pk, sn, { tusks: true })}
+    <path d="M52 48C50 28 92 24 94 46 90 44 56 44 52 48Z" fill="url(#${mt})" stroke="#2a3020" stroke-width="2.2" stroke-linejoin="round"/><path d="M52 48h42" stroke="#2a3020" stroke-width="3"/><path d="M58 38C64 32 76 30 86 33" stroke="#fff" stroke-width="1.8" fill="none" opacity=".6" stroke-linecap="round"/><rect x="68" y="30" width="10" height="5" rx="2" fill="#5a7032" stroke="#2a3020" stroke-width="1.2"/>
+    <path d="M62 24 71 14 80 24Z" fill="url(#${pk})" stroke="#8a3248" stroke-width="1.8" stroke-linejoin="round" opacity="0"/>
+    <g class="p-limb"><path d="M82 76Q108 72 88 44" stroke="#1e2a10" stroke-opacity=".5" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M82 76Q108 72 88 44" stroke="url(#${un})" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="87" cy="41" r="5.4" fill="url(#${pk})" stroke="#8a3248" stroke-width="1.8"/></g>
+  </g></g>`;
+  return _msvg('porsalu', defs, body);
+}
+
+function _farle() {
+  const pk = _q(), sn = _q(), md = _q();
+  const defs = _porcosDefs(pk, sn, ['#ffe6ea', '#ffb0c2', '#d8607a']) + _qrg(md, [[0, '#8a6a3a'], [1, '#4a321a']], .5, .5, .6);
+  const leg = (x, o = 1) => `<path d="M${x - 6} 100v12h-3c-3 0-3 5 0 5h12c3 0 3-5 0-5h-3v-12Z" fill="url(#${pk})" stroke="#8a3248" stroke-width="1.8" stroke-linejoin="round" opacity="${o}"/><path d="M${x - 6} 117h12" stroke="#3a1a20" stroke-width="3.2" stroke-linecap="round"/>`;
+  const body = `${_qsh(40)}<g class="p-hop"><g class="p-body">${_curlTail(24, 80)}
+    ${leg(38, .85)}${leg(78, .85)}
+    <path d="M18 88C14 62 38 48 62 48 86 48 100 64 98 88 96 106 80 112 58 112 36 112 20 106 18 88Z" fill="url(#${pk})" stroke="#8a3248" stroke-width="2.2" stroke-linejoin="round"/>
+    <ellipse cx="60" cy="100" rx="28" ry="10" fill="#fff" opacity=".28"/><path d="M26 66C34 56 50 52 66 52" stroke="#fff" stroke-width="2.6" fill="none" opacity=".45" stroke-linecap="round"/>
+    <path d="M24 94c2-8 8-12 14-12M60 54c8-2 16 0 22 4" stroke="#8a3248" stroke-width="1.4" fill="none" opacity=".35" stroke-linecap="round"/>
+    <ellipse cx="42" cy="68" rx="7" ry="4.4" fill="url(#${md})" opacity=".85"/><ellipse cx="72" cy="92" rx="5.4" ry="3.4" fill="url(#${md})" opacity=".8"/><ellipse cx="30" cy="94" rx="4" ry="2.6" fill="url(#${md})" opacity=".8"/><circle cx="50" cy="84" r="2" fill="url(#${md})" opacity=".8"/><circle cx="58" cy="62" r="1.6" fill="url(#${md})" opacity=".8"/>
+    ${leg(54)}${leg(92)}
+    ${_pigHead(94, 76, 1.22, pk, sn, { tusks: true })}
+    <path d="M118 96 108 80" stroke="#e8c24a" stroke-width="2" stroke-linecap="round"/><path d="M118 96c-3-1-5-4-6-6M118 96c3-4 3-7 2-9" stroke="#e8c24a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  </g></g>`;
+  return _msvg('cochon_farle', defs, body);
+}
+
+function _dorgan() {
+  const pk = _q(), sn = _q(), su = _q(), gd = _q();
+  const defs = _porcosDefs(pk, sn) + _qlg(su, [[0, '#56669a'], [.55, '#28325a'], [1, '#0e1226']], 0, 0, 1, 1) + _qlg(gd, [[0, '#fff3a0'], [.5, '#ffd24a'], [1, '#b8801a']], 0, 0, 1, 1);
+  const stripes = [0, 1, 2, 3, 4, 5, 6, 7].map(i => `<path d="M${46 + i * 5.4} 70V106" stroke="#8a9ad0" stroke-width=".8" opacity=".4"/>`).join('');
+  const chain = `<path d="M54 68Q64 94 80 68" stroke="url(#${gd})" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M54 68Q64 94 80 68" stroke="#8a5a0a" stroke-width=".8" fill="none" stroke-dasharray="1.6 2"/><circle cx="67" cy="86" r="7.2" fill="url(#${gd})" stroke="#8a5a0a" stroke-width="1.6"/><circle cx="65" cy="84" r="2.2" fill="#fff" opacity=".8"/><path d="M63 89l4-6 4 6Z" fill="#8a5a0a" opacity=".5"/>`;
+  const smoke = `<g class="p-antenna"><path d="M120 66c4-4-2-8 2-12s0-8 4-10" stroke="#e8e8f0" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/><path d="M118 70c-3-4 2-6 0-10" stroke="#e8e8f0" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/></g>`;
+  const body = `${_qsh(28)}<g class="p-hop"><g class="p-body">${_curlTail(44, 98)}
+    <path d="M52 106v7c-2 0-6 1-6 5h16v-12Z" fill="#14141c" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/><path d="M72 106v7c-2 0-6 1-6 5h16v-12Z" fill="#14141c" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/><path d="M48 117h12M68 117h12" stroke="#e8e8f0" stroke-width="2" stroke-linecap="round"/>
+    <path d="M44 74C38 92 46 108 64 108 84 108 92 92 86 74 82 64 48 64 44 74Z" fill="url(#${su})" stroke="#05070e" stroke-width="2" stroke-linejoin="round"/>${stripes}
+    <path d="M56 68 66 94 76 68Z" fill="#fff" stroke="#c8c8d0" stroke-width="1"/><path d="M63 70h6l-1.6 20-1.4 4-1.4-4Z" fill="#d8202e" stroke="#6a0a14" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M56 68 62 80 52 82ZM76 68 70 80 80 82Z" fill="#14182e" stroke="#05070e" stroke-width="1.4" stroke-linejoin="round"/>${chain}
+    <path d="M50 72c6-4 14-5 22-3" stroke="#fff" stroke-width="2" fill="none" opacity=".18" stroke-linecap="round"/>
+    <g class="p-limb"><path d="M82 76Q100 84 98 98" stroke="#05070e" stroke-opacity=".6" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M82 76Q100 84 98 98" stroke="url(#${su})" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="98" cy="100" r="5.4" fill="url(#${pk})" stroke="#8a3248" stroke-width="1.8"/><path d="M98 100 108 62" stroke="#14141c" stroke-width="3.4" stroke-linecap="round"/><path d="M98 100 108 62" stroke="#6a6a7a" stroke-width="1" opacity=".7"/><circle cx="109" cy="60" r="5" fill="url(#${gd})" stroke="#8a5a0a" stroke-width="1.6"/><circle cx="107.6" cy="58.6" r="1.6" fill="#fff"/></g>
+    ${_pigHead(68, 50, 1.1, pk, sn, { eye: false })}
+    <path d="M56 46Q70 52 88 46" stroke="#05070e" stroke-width="5" fill="none" stroke-linecap="round" opacity="0"/>
+    <g><rect x="66" y="42" width="15" height="9" rx="3.4" fill="#0a0a12" stroke="#000" stroke-width="1.4"/><path d="M68 44.4h4" stroke="#8aa0ff" stroke-width="1.4" stroke-linecap="round"/><path d="M62 46.6 66 46.6" stroke="#0a0a12" stroke-width="2.4"/></g>
+    <path d="M42 36Q68 44 98 34 92 28 68 26 48 26 42 36Z" fill="#14141c" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M52 32C52 16 84 14 86 30 74 26 62 26 52 32Z" fill="#1e1e2a" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M52 31Q70 36 86 29" stroke="#d8202e" stroke-width="4.4" fill="none" stroke-linecap="round"/><path d="M56 22C62 18 72 17 80 20" stroke="#fff" stroke-width="1.4" fill="none" opacity=".35" stroke-linecap="round"/>
+    <path d="M92 66 112 62" stroke="#8a5a2a" stroke-width="4.4" stroke-linecap="round"/><path d="M92 66 112 62" stroke="#c89a62" stroke-width="1.4" stroke-linecap="round"/><circle class="p-glow" cx="113.4" cy="61.8" r="3.2" fill="#ff7a1e"/><circle cx="113.4" cy="61.8" r="1.5" fill="#ffd27a"/>${smoke}
+  </g></g>`;
+  return _msvg('don_dorgan', defs, body);
+}
+
+function _dragonCochon() {
+  const pk = _q(), sn = _q(), wg = _q(), gd = _q(), bl = _q();
+  const defs = _porcosDefs(pk, sn, ['#ffd8ec', '#ff8ab8', '#c8407a']) + _qlg(wg, [[0, '#b86ae0'], [1, '#6a2a98']], 0, 0, 1, 1) + _qlg(gd, [[0, '#fff3a0'], [.5, '#ffd24a'], [1, '#b8801a']], 0, 0, 1, 1) + _qlg(bl, [[0, '#fff0c0'], [1, '#e8b870']]);
+  const spikes = [[36, 66], [46, 58], [58, 53], [70, 52], [82, 56], [90, 64]].map(([x, y], i) => `<path d="M${x - 5} ${y + 4} ${x + 1} ${y - 11 + (i % 2) * 2} ${x + 6} ${y + 4}Z" fill="url(#${gd})" stroke="#8a5a0a" stroke-width="1.6" stroke-linejoin="round"/>`).join('');
+  const claws = x => `<path d="M${x - 8} 104v9c-3 0-5 2-5 5h20c0-3-2-5-5-5v-9Z" fill="url(#${pk})" stroke="#8a3248" stroke-width="2" stroke-linejoin="round"/><path d="M${x - 11} 118l-2 3M${x - 4} 118v4M${x + 3} 118l2 3" stroke="#fff4d0" stroke-width="2.2" stroke-linecap="round"/>`;
+  const wing = `<g class="p-wing"><path d="M52 66C36 50 16 44 6 28 18 32 26 28 30 22 30 30 34 34 40 34 38 40 44 44 48 46 54 50 56 58 56 66Z" fill="url(#${wg})" stroke="#2a0e48" stroke-width="2.2" stroke-linejoin="round"/><path d="M52 66 6 28M52 66 30 22M52 66 40 34" stroke="#2a0e48" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M14 32c8 2 14-1 18-6" stroke="#e8c0ff" stroke-width="1" fill="none" opacity=".5"/></g>`;
+  const tail = `<g class="p-tail"><path d="M28 98C12 100 4 88 12 78 20 70 28 80 22 86" stroke="#8a3248" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M28 98C12 100 4 88 12 78 20 70 28 80 22 86" stroke="#ff8ab8" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M22 86 14 84 18 94Z" fill="url(#${gd})" stroke="#8a5a0a" stroke-width="1.6" stroke-linejoin="round"/></g>`;
+  const fire = `<g class="p-glow"><path d="M118 84c4-8 10-10 10-10s-1 4 1 6c-3 0-3 3-5 4 2 1 2 4-1 5-3-1-4-3-5-5Z" fill="#ff7a1e" stroke="#8a2a08" stroke-width="1.2" stroke-linejoin="round"/><path d="M121 84c2-4 5-5 5-5s0 3 1 4c-2 0-2 2-3 3Z" fill="#ffd27a"/></g>`;
+  const body = `${_qsh(40)}<g class="p-hop"><g class="p-body">${tail}${wing}
+    <path d="M26 100C22 72 42 54 66 54 90 54 102 74 98 98 94 114 78 118 60 118 42 118 30 112 26 100Z" fill="url(#${pk})" stroke="#8a3248" stroke-width="2.2" stroke-linejoin="round"/>
+    ${spikes}
+    <ellipse cx="70" cy="98" rx="18" ry="17" fill="url(#${bl})" stroke="#b8803a" stroke-width="1.6"/><path d="M54 90h32M52 98h36M54 106h32" stroke="#b8803a" stroke-width="1.4" opacity=".7" stroke-linecap="round"/>
+    <path d="M30 76C36 64 48 58 62 58" stroke="#fff" stroke-width="2.6" fill="none" opacity=".45" stroke-linecap="round"/>${claws(46)}${claws(80)}
+    <path d="M92 38C86 24 96 12 108 14 102 18 104 26 108 32" fill="url(#${gd})" stroke="#8a5a0a" stroke-width="2" stroke-linejoin="round" transform="translate(-14 12) scale(.9)" ${_vb} opacity="0"/>
+    ${_pigHead(88, 64, 1.28, pk, sn, { tusks: true, brow: true, iris: '#d89a00' })}
+    <path d="M78 38C70 28 70 16 80 10 80 18 84 24 90 28Z" fill="url(#${gd})" stroke="#8a5a0a" stroke-width="2" stroke-linejoin="round"/><path d="M94 40C98 30 106 24 114 26 110 30 108 36 108 42Z" fill="url(#${gd})" stroke="#8a5a0a" stroke-width="2" stroke-linejoin="round"/>
+    ${fire}
+  </g></g>`;
+  return _msvg('dragon_cochon', defs, _sc(1.1, body));
+}
+Object.assign(MON_ART2, { porsalu: _porsalu(), cochon_farle: _farle(), don_dorgan: _dorgan(), dragon_cochon: _dragonCochon() });
+
+/* =====================================================================
+   DRAGOEUFS — Dragoeuf Guerrier (couvain en armure), Dragoss Doré, Dragueuse (mage de braise),
+   Crocabulia (crocodile-dragon, mâchoire animée)
+   ===================================================================== */
+const _scaleRow = (x0, y0, n, dx, c = '#000', op = .18, r = 3) => Array.from({ length: n }, (_, i) => `<path d="M${x0 + i * dx} ${y0}q${r} ${r} ${r * 2} 0" stroke="${c}" stroke-width="1" fill="none" opacity="${op}" stroke-linecap="round"/>`).join('');
+const _claw = (x, y, c = '#fff4d0') => `<path d="M${x - 7} ${y}l-3 4M${x} ${y}v5M${x + 7} ${y}l3 4" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/>`;
+
+function _dragoeufGuerrier() {
+  const sh = _q(), dr = _q(), mt = _q(), cp = _q();
+  const defs = _qrg(sh, [[0, '#d4e87a'], [.5, '#8aa83a'], [1, '#4a5e1a']], .36, .28, .9) + _qrg(dr, [[0, '#ffb08a'], [.5, '#e8683a'], [1, '#9a2a14']], .4, .3, .9)
+    + _qlg(mt, [[0, '#f4f8ff'], [.5, '#a8b4c8'], [1, '#5a6478']], 0, 0, 1, 1) + _qrg(cp, [[0, '#e0f09a'], [.55, '#9ab048'], [1, '#566a22']], .4, .25, .9);
+  const body = `${_qsh(32)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M30 104C14 106 8 96 14 88" stroke="#7a1e10" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M30 104C14 106 8 96 14 88" stroke="url(#${dr})" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M14 88 8 90 12 82Z" fill="#ffd24a" stroke="#8a5a0a" stroke-width="1.2" stroke-linejoin="round"/></g>
+    <path d="M44 108v7c-4 0-8 1-8 4h20c0-3-2-4-4-4v-7Z" fill="url(#${dr})" stroke="#7a1e10" stroke-width="1.8" stroke-linejoin="round"/>${_claw(46, 118)}
+    <path d="M72 108v7c-4 0-8 1-8 4h20c0-3-2-4-4-4v-7Z" fill="url(#${dr})" stroke="#7a1e10" stroke-width="1.8" stroke-linejoin="round"/>${_claw(76, 118)}
+    <path d="M64 50C88 50 98 76 96 94 94 110 80 116 64 116 48 116 34 110 32 94 30 76 40 50 64 50Z" fill="url(#${sh})" stroke="#2e3c0e" stroke-width="2.4" stroke-linejoin="round"/>
+    <g fill="#566a22" opacity=".55"><circle cx="46" cy="84" r="3.2"/><circle cx="54" cy="100" r="2.4"/><circle cx="80" cy="92" r="3"/><circle cx="72" cy="106" r="2"/><circle cx="86" cy="76" r="2.2"/><circle cx="42" cy="98" r="2"/></g>
+    <path d="M38 64C42 56 50 52 58 52" stroke="#fff" stroke-width="2.6" fill="none" opacity=".5" stroke-linecap="round"/>
+    <path d="M34 96H94" stroke="#5a6478" stroke-width="7" stroke-linecap="round"/><path d="M34 96H94" stroke="url(#${mt})" stroke-width="4" stroke-linecap="round"/><path d="M34 94H94" stroke="#fff" stroke-width="1" opacity=".6"/><circle cx="64" cy="96" r="4.4" fill="#ffd24a" stroke="#8a5a0a" stroke-width="1.4"/>
+    <path d="M50 50l5 8 5-7 5 8 5-8 5 7 5-8" stroke="#2e3c0e" stroke-width="2" fill="none" stroke-linejoin="round" opacity="0"/>
+    <g class="p-jaw" style="transform-origin:30% 50%"><path d="M58 44C60 30 76 24 90 30 98 34 104 42 108 46 100 50 94 52 86 52 72 56 62 54 58 44Z" fill="url(#${dr})" stroke="#7a1e10" stroke-width="2.2" stroke-linejoin="round"/><path d="M96 46l-2 4 4-2.4ZM88 51l-1 4 3-2.4Z" fill="#fff" stroke="#7a1e10" stroke-width=".8"/><path d="M104 45l4-.8" stroke="#7a1e10" stroke-width="2" stroke-linecap="round"/><circle cx="104" cy="41" r="1.4" fill="#4a0e08"/></g>
+    ${_qeye(80, 38, 4.6, '#e8a000', 1.2, '#fff8d0')}<path class="p-brow" d="M72 30 90 36" stroke="#5a0e08" stroke-width="3" stroke-linecap="round"/>
+    <path d="M62 34 56 20 68 28ZM72 28 70 14 80 24Z" fill="#fff0c8" stroke="#7a5a28" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M44 56C42 38 52 22 68 20 84 20 92 30 92 40 88 36 84 38 80 34 76 40 72 34 68 38 64 32 58 40 54 36 52 44 48 46 44 56Z" fill="url(#${cp})" stroke="#2e3c0e" stroke-width="2.2" stroke-linejoin="round" transform="translate(-6 -10)" ${_vb}/>
+    <path d="M46 40c4-8 12-12 20-12" stroke="#fff" stroke-width="2" fill="none" opacity=".5" stroke-linecap="round" transform="translate(-6 -10)" ${_vb}/>
+    <g class="p-limb"><path d="M84 76Q100 80 100 92" stroke="#7a1e10" stroke-opacity=".6" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M84 76Q100 80 100 92" stroke="url(#${dr})" stroke-width="7.4" fill="none" stroke-linecap="round"/><path d="M100 92 112 58" stroke="#6a4a22" stroke-width="3.4" stroke-linecap="round"/><path d="M110 64 114 34 120 64Z" fill="url(#${mt})" stroke="#3a4254" stroke-width="1.6" stroke-linejoin="round"/><path d="M114 40v22" stroke="#fff" stroke-width="1.2" opacity=".8"/><path d="M106 64H124" stroke="#d9a441" stroke-width="3.4" stroke-linecap="round"/></g>
+    <g><circle cx="44" cy="84" r="13" fill="#8a5a2e" stroke="#3a2008" stroke-width="2"/><circle cx="44" cy="84" r="8.6" fill="none" stroke="#d9a441" stroke-width="1.6"/><path d="M44 76v16M36 84h16" stroke="#d9a441" stroke-width="1.4"/><circle cx="44" cy="84" r="3" fill="#e8402a" stroke="#6a0e08" stroke-width="1"/></g>
+  </g></g>`;
+  return _msvg('dragoeuf_guerrier', defs, body);
+}
+
+function _dragossDore() {
+  const gd = _q(), bl = _q(), wg = _q(), es = _q();
+  const defs = _qrg(gd, [[0, '#fff3a0'], [.45, '#ffc82e'], [1, '#a8680a']], .4, .28, .9) + _qlg(bl, [[0, '#fff6d0'], [1, '#e8b84a']]) + _qlg(wg, [[0, '#ffe27a'], [1, '#c8801a']], 0, 0, 1, 1) + _qrg(es, [[0, '#ffffff'], [1, '#e8dcc0']], .4, .3, .9);
+  const body = `${_qsh(32)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M34 100C14 106 6 94 14 80 18 74 26 76 24 84" stroke="#7a4a08" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M34 100C14 106 6 94 14 80 18 74 26 76 24 84" stroke="url(#${gd})" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M24 84 14 80 22 94Z" fill="#fff3a0" stroke="#8a5a0a" stroke-width="1.4" stroke-linejoin="round"/></g>
+    <g class="p-wing"><path d="M54 66C40 48 22 42 10 26 22 30 30 24 34 18 36 28 40 32 46 32 46 40 52 44 56 46 62 52 62 60 58 68Z" fill="url(#${wg})" stroke="#6a3a08" stroke-width="2.2" stroke-linejoin="round"/><path d="M56 68 10 26M56 68 34 18M56 68 46 32" stroke="#6a3a08" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M16 30c8 2 14-1 18-6" stroke="#fff" stroke-width="1" fill="none" opacity=".5"/></g>
+    <path d="M48 102v10c-4 0-8 1-8 5h20c0-3-2-5-4-5v-10Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="1.8" stroke-linejoin="round"/>${_claw(50, 117, '#fff')}
+    <path d="M76 102v10c-4 0-8 1-8 5h20c0-3-2-5-4-5v-10Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="1.8" stroke-linejoin="round"/>${_claw(78, 117, '#fff')}
+    <path d="M36 92C34 66 50 54 68 56 88 58 96 74 92 94 90 106 78 112 64 112 50 112 38 106 36 92Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M62 70C74 72 90 80 90 98 90 108 78 112 66 112 56 112 52 100 52 88 52 80 56 72 62 70Z" fill="url(#${bl})" stroke="#c88a2a" stroke-width="1.6"/><path d="M58 84h30M56 92h32M58 100h28" stroke="#c88a2a" stroke-width="1.3" opacity=".7" stroke-linecap="round"/>
+    ${_scaleRow(44, 66, 4, 7, '#7a4a08', .3)}${_scaleRow(42, 76, 3, 7, '#7a4a08', .25)}
+    <path d="M42 70C46 62 54 58 62 58" stroke="#fff" stroke-width="2.4" fill="none" opacity=".55" stroke-linecap="round"/>
+    <path d="M72 62C74 50 82 42 92 42 100 42 104 50 102 58L88 66Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="2" stroke-linejoin="round"/>
+    <g class="p-jaw"><path d="M86 38C86 28 98 24 108 30 118 36 122 44 120 50 114 54 106 52 98 50 90 50 86 44 86 38Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="2.2" stroke-linejoin="round"/><path d="M116 48l-3 5 5-3ZM108 52l-2 5 4-3.4Z" fill="#fff" stroke="#7a4a08" stroke-width=".9"/><circle cx="116" cy="40" r="1.6" fill="#5a2a08"/><path d="M100 50Q110 54 120 50" stroke="#7a4a08" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
+    ${_qeye(100, 36, 4.4, '#d83a1a', 1.2, '#fff8d8')}<path class="p-brow" d="M92 28 108 33" stroke="#5a2a08" stroke-width="3" stroke-linecap="round"/>
+    <path d="M90 32 84 18 96 26ZM98 26 98 12 106 24Z" fill="#fff6c8" stroke="#8a5a0a" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M78 36C78 26 92 22 98 28 94 30 92 34 88 34 86 38 82 36 78 36Z" fill="url(#${es})" stroke="#9a8a6a" stroke-width="1.8" stroke-linejoin="round" opacity="0"/>
+    <path d="M80 34C82 20 98 14 108 20 104 22 102 26 98 24 96 28 92 24 90 28 86 26 86 32 80 34Z" fill="url(#${es})" stroke="#9a8a6a" stroke-width="1.8" stroke-linejoin="round" transform="translate(-4 -2)" ${_vb}/>
+    <g class="p-glow"><path d="M20 56l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#fff" opacity=".9"/><path d="M104 74l1.4 3.4 3.4 1.4-3.4 1.4-1.4 3.4-1.4-3.4-3.4-1.4 3.4-1.4Z" fill="#fff" opacity=".8"/></g>
+  </g></g>`;
+  return _msvg('dragoss_dore', defs, body);
+}
+
+function _dragueuse() {
+  const rb = _q(), sk = _q(), fl = _q(), gd = _q();
+  const defs = _qlg(rb, [[0, '#ff5a5a'], [.5, '#c8203a'], [1, '#5a0a1e']], 0, 0, 1, 1) + _qrg(sk, [[0, '#ffc0a0'], [.5, '#f08a5a'], [1, '#b8482a']], .4, .3, .9)
+    + _qlg(fl, [[0, '#ffe27a'], [.5, '#ff7a1e'], [1, '#d8281a']], 0, 1, 0, 0) + _qlg(gd, [[0, '#fff3a0'], [.5, '#ffd24a'], [1, '#b8801a']], 0, 0, 1, 1);
+  const mane = `<g class="p-tuft"><path d="M60 40C44 38 30 26 28 8 38 18 44 16 46 8 50 22 56 22 60 18 58 30 64 30 66 28Z" fill="url(#${fl})" stroke="#8a1a08" stroke-width="2" stroke-linejoin="round"/><path d="M58 44C40 46 22 38 14 22 26 30 32 28 36 22 38 34 46 36 52 34Z" fill="url(#${fl})" stroke="#8a1a08" stroke-width="2" stroke-linejoin="round"/><path d="M62 50C46 54 28 52 16 42 28 44 34 42 38 38 40 46 50 48 58 46Z" fill="url(#${fl})" stroke="#8a1a08" stroke-width="2" stroke-linejoin="round"/></g>`;
+  const body = `${_qsh(28)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M44 112C28 112 18 104 20 94 22 88 30 90 28 96" stroke="#7a1a0a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M44 112C28 112 18 104 20 94 22 88 30 90 28 96" stroke="url(#${sk})" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M28 96 20 92 26 102Z" fill="#ffd24a" stroke="#8a5a0a" stroke-width="1.2" stroke-linejoin="round"/></g>
+    ${mane}
+    <path d="M42 70C36 96 34 108 30 118H98C94 108 92 96 86 70 80 62 48 62 42 70Z" fill="url(#${rb})" stroke="#3a0612" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="M52 76C54 92 54 104 52 118M64 74V118M76 76C74 92 74 104 76 118" stroke="#3a0612" stroke-width="1.2" opacity=".4"/>
+    <path d="M32 114Q64 124 96 114" stroke="url(#${gd})" stroke-width="4.4" fill="none" stroke-linecap="round"/><path d="M40 78Q64 90 88 78" stroke="url(#${gd})" stroke-width="3.6" fill="none" stroke-linecap="round"/><circle cx="64" cy="86" r="4.6" fill="#ff7a1e" stroke="#8a5a0a" stroke-width="1.4"/><circle cx="62.6" cy="84.6" r="1.4" fill="#fff"/>
+    <path d="M46 72c6-4 14-6 22-4" stroke="#fff" stroke-width="2" fill="none" opacity=".25" stroke-linecap="round"/>
+    <path d="M58 62 60 72 70 72 72 62Z" fill="url(#${sk})" stroke="#8a2a14" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M56 50C56 36 66 28 76 30 88 32 92 42 90 52 88 62 76 66 66 64 60 62 56 56 56 50Z" fill="url(#${sk})" stroke="#8a2a14" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="M80 56C84 60 90 58 94 54" stroke="#8a2a14" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M66 36q4 3 8 2M64 42q4 3 8 2" stroke="#8a2a14" stroke-width="1" fill="none" opacity=".4" stroke-linecap="round"/>
+    ${_qeye(80, 46, 4.2, '#ff6a1e', 1.2, '#ffe8c8')}<path class="p-brow" d="M72 38 88 42" stroke="#5a0a1e" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M68 34 58 18 74 28ZM80 30 84 12 90 28Z" fill="#fff0c8" stroke="#7a5a28" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M84 58C90 56 94 52 94 48" stroke="#ff4a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <g class="p-limb"><path d="M84 76Q100 78 104 90" stroke="#3a0612" stroke-opacity=".6" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M84 76Q100 78 104 90" stroke="url(#${rb})" stroke-width="8.6" fill="none" stroke-linecap="round"/><circle cx="104" cy="92" r="5" fill="url(#${sk})" stroke="#8a2a14" stroke-width="1.6"/>
+      <path d="M106 118 108 28" stroke="#4a2c14" stroke-width="3.6" stroke-linecap="round"/><path d="M106 118 108 28" stroke="#c89a62" stroke-width="1" opacity=".7"/><path d="M100 28C96 20 104 12 108 18 112 12 120 20 116 28 114 34 102 34 100 28Z" fill="#8a5a22" stroke="#3a2008" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle class="p-glow" cx="108" cy="22" r="8" fill="#ff7a1e" opacity=".5"/><path class="p-glow" d="M108 30c-6-2-7-9-2-14 1 4 4 4 4 8 3-3 3-6 2-8 5 3 5 11-4 14Z" fill="url(#${fl})" stroke="#8a1a08" stroke-width="1.2" stroke-linejoin="round"/></g>
+  </g></g>`;
+  return _msvg('dragueuse', defs, body);
+}
+
+function _crocabulia() {
+  const gr = _q(), bl = _q(), wg = _q(), gd = _q();
+  const defs = _qrg(gr, [[0, '#b8d86a'], [.5, '#5e8e2e'], [1, '#2a4a14']], .4, .25, .95) + _qlg(bl, [[0, '#f4f0c0'], [1, '#c8b46a']]) + _qlg(wg, [[0, '#4ab8a0'], [1, '#1a5a5a']], 0, 0, 1, 1) + _qlg(gd, [[0, '#fff3a0'], [.5, '#ffc82e'], [1, '#a8680a']], 0, 0, 1, 1);
+  const spikes = [28, 38, 48, 58, 68, 78, 88].map((x, i) => `<path d="M${x - 5} ${68 + (i > 4 ? i * 1.5 - 5 : 0)} ${x} ${54 + (i % 2) * 3 + (i > 4 ? i : 0)} ${x + 5} ${68 + (i > 4 ? i * 1.5 - 5 : 0)}Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="1.6" stroke-linejoin="round"/>`).join('');
+  const leg = (x, back) => `<path d="M${x - 8} 96v14c-4 0-7 1-7 5h22c0-4-3-5-6-5V96Z" fill="${back ? '#3e6420' : 'url(#' + gr + ')'}" stroke="#1a3008" stroke-width="2" stroke-linejoin="round"/>${_claw(x, 115, back ? '#d8d0a0' : '#fff4d0')}`;
+  const body = `${_qsh(48)}<g class="p-hop"><g class="p-body">
+    <g class="p-tail"><path d="M24 92C12 94 6 84 4 70 12 76 18 76 24 76 Z" fill="url(#${gr})" stroke="#1a3008" stroke-width="2.2" stroke-linejoin="round"/><path d="M6 72 2 62 10 68Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 74 8 66 16 72Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="1.2" stroke-linejoin="round"/></g>
+    ${leg(34, true)}${leg(82, true)}
+    <g class="p-wing"><path d="M64 68C56 46 40 32 24 32 32 40 34 50 32 60 42 54 54 58 64 68Z" fill="url(#${wg})" stroke="#0a3a3a" stroke-width="2" stroke-linejoin="round"/><path d="M64 68 24 32M64 68 32 60M64 68 40 44" stroke="#0a3a3a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>
+    <path d="M16 90C16 70 38 64 62 66 82 62 100 66 108 78 112 84 112 96 106 102 96 112 44 114 28 108 20 104 16 98 16 90Z" fill="url(#${gr})" stroke="#1a3008" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M30 100C46 108 82 108 102 100 98 108 80 112 62 112 44 112 34 108 30 100Z" fill="url(#${bl})" stroke="#9a8a4a" stroke-width="1.4"/><path d="M42 104v5M54 105v6M66 105v6M78 104v6M90 102v5" stroke="#9a8a4a" stroke-width="1.2" opacity=".7" stroke-linecap="round"/>
+    ${_scaleRow(28, 80, 6, 11, '#1a3008', .35, 4)}${_scaleRow(34, 90, 5, 11, '#1a3008', .3, 4)}
+    <path d="M24 78C34 70 50 68 66 70" stroke="#fff" stroke-width="2.6" fill="none" opacity=".4" stroke-linecap="round"/>
+    ${spikes}${leg(48)}${leg(96)}
+    <g class="p-jaw" style="transform-origin:10% 20%"><path d="M96 88 126 90C124 100 108 104 96 98Z" fill="url(#${gr})" stroke="#1a3008" stroke-width="2.2" stroke-linejoin="round"/><path d="M100 88l2-6 3 6M108 89l2-6 3 6M116 90l2-6 3 6" fill="#fff" stroke="#6a5a3a" stroke-width="1" stroke-linejoin="round"/><path d="M104 96 106 93 108 96M114 95l2-3 2 3" fill="#fff" stroke="#6a5a3a" stroke-width=".8"/></g>
+    <path d="M86 66C96 58 112 62 124 74 128 78 128 84 124 88L94 88C86 84 82 72 86 66Z" fill="url(#${gr})" stroke="#1a3008" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M100 86l2 5 3-5M108 86l2 5 3-5M116 87l2 5 3-5" fill="#fff" stroke="#6a5a3a" stroke-width="1" stroke-linejoin="round"/><circle cx="122" cy="76" r="1.8" fill="#14240a"/><path d="M92 70C102 66 114 70 122 78" stroke="#fff" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>
+    <g class="p-eye"><ellipse cx="98" cy="72" rx="5.6" ry="4.6" fill="#ffd84a" stroke="#14240a" stroke-width="1.6"/><ellipse cx="98.6" cy="72" rx="1.6" ry="4" fill="#14240a"/><circle cx="96.6" cy="70.4" r="1.2" fill="#fff"/></g>
+    <path class="p-brow" d="M90 64C96 62 104 64 108 68" stroke="#14240a" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+    <path d="M86 66 80 50 92 62ZM96 62 94 46 102 60Z" fill="url(#${gd})" stroke="#7a4a08" stroke-width="1.6" stroke-linejoin="round"/>
+    <g class="p-glow"><circle cx="124" cy="68" r="2" fill="#ff9a2e"/><circle cx="127" cy="63" r="1.4" fill="#ffd27a"/></g>
+  </g></g>`;
+  return _msvg('crocabulia', defs, body);
+}
+Object.assign(MON_ART2, { dragoeuf_guerrier: _dragoeufGuerrier(), dragoss_dore: _dragossDore(), dragueuse: _dragueuse(), crocabulia: _crocabulia() });
+
+/* =====================================================================
+   MANSOTS DE FROSTIGOST — Timansot, Mansobèse, Shamansot, Mansot Royal (yétis à fourrure givrée)
+   ===================================================================== */
+function _mansot(id, o = {}) {
+  const fr = _q(), fd = _q(), fc = _q(), ic = _q();
+  const c = o.fur || ['#ffffff', '#cfe6f8', '#7fa6cc'];
+  const defs = _qrg(fr, [[0, c[0]], [.55, c[1]], [1, c[2]]], .4, .28, .95) + _qrg(fc, [[0, '#7a8aa8'], [.6, '#4a5878'], [1, '#2a3450']], .4, .3, .9)
+    + _qlg(ic, [[0, '#f4fdff'], [.5, '#9ee0ff'], [1, '#3a92d0']], 0, 0, 1, 1) + _qlg(fd, [[0, '#ffe27a'], [.5, '#ffc82e'], [1, '#a8680a']], 0, 0, 1, 1);
+  const K = 'stroke="#2a3c5a" stroke-width="2.2" stroke-linejoin="round"';
+  const sc = o.s || 1, w = o.w || 1; // sc = échelle globale, w = largeur du ventre
+  const belly = 40 * w;
+  const arm = (x, y, back) => `<g class="p-limb"><path d="${_fur(x, y, 10 * w, 17, 6, 3, .3)}" fill="${back ? c[2] : 'url(#' + fr + ')'}" ${K}/><ellipse cx="${x + 1}" cy="${y + 15}" rx="8" ry="6.4" fill="url(#${fc})" stroke="#1a2236" stroke-width="1.8"/><path d="M${x - 4} ${y + 19}l-1 4M${x + 1} ${y + 20}v4M${x + 6} ${y + 19}l1 4" stroke="#e8f4ff" stroke-width="2.2" stroke-linecap="round"/></g>`;
+  const foot = x => `<path d="${_fur(x, 110, 13, 8, 6, 2.4)}" fill="url(#${fr})" ${K}/><path d="M${x - 8} 114l-1 4M${x - 2} 116v4M${x + 4} 116v4M${x + 9} 113l2 3" stroke="#e8f4ff" stroke-width="2.2" stroke-linecap="round"/>`;
+  const head = `<g class="p-head" ${_vb}>
+      <path d="${_fur(o.hx || 72, o.hy || 46, 23, 21, 11, 4, .2)}" fill="url(#${fr})" ${K}/>
+      <path d="M${(o.hx || 72) - 6} ${(o.hy || 46) - 4}C${(o.hx || 72) + 4} ${(o.hy || 46) - 8} ${(o.hx || 72) + 22} ${(o.hy || 46) - 2} ${(o.hx || 72) + 22} ${(o.hy || 46) + 10} ${(o.hx || 72) + 22} ${(o.hy || 46) + 22} ${(o.hx || 72) + 6} ${(o.hy || 46) + 22} ${(o.hx || 72)} ${(o.hy || 46) + 18} ${(o.hx || 72) - 8} ${(o.hy || 46) + 10} ${(o.hx || 72) - 8} ${(o.hy || 46) + 2} ${(o.hx || 72) - 6} ${(o.hy || 46) - 4}Z" fill="url(#${fc})" stroke="#1a2236" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M${(o.hx || 72) - 6} ${(o.hy || 46) - 12}c8-6 22-4 28 6" stroke="${o.brow || '#e8f4ff'}" stroke-width="5" fill="none" stroke-linecap="round"/>
+      ${_qeye((o.hx || 72) + 9, (o.hy || 46) + 2, o.er || 4.4, o.eye || '#7ae0ff', 1.2, '#f4fdff')}
+      <path class="p-brow" d="M${(o.hx || 72) + 1} ${(o.hy || 46) - 4} ${(o.hx || 72) + 16} ${(o.hy || 46) - 1}" stroke="#14203a" stroke-width="2.8" stroke-linecap="round"/>
+      <g class="p-jaw"><path d="M${(o.hx || 72) + 2} ${(o.hy || 46) + 14}Q${(o.hx || 72) + 12} ${(o.hy || 46) + 22} ${(o.hx || 72) + 22} ${(o.hy || 46) + 14}" stroke="#14203a" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M${(o.hx || 72) + 6} ${(o.hy || 46) + 15}l1.4 6 2-5.4ZM${(o.hx || 72) + 16} ${(o.hy || 46) + 15}l1.4 6 2-5.4Z" fill="#fff" stroke="#3a4668" stroke-width=".9" stroke-linejoin="round"/></g>
+      <circle cx="${(o.hx || 72) + 17}" cy="${(o.hy || 46) + 8}" r="1.5" fill="#14203a"/>
+      <ellipse cx="${(o.hx || 72) - 12}" cy="${(o.hy || 46) + 2}" rx="4.4" ry="5.6" fill="url(#${fc})" stroke="#1a2236" stroke-width="1.6"/>
+      ${o.headgear || ''}
+    </g>`;
+  const body = `${_qsh(34 * sc * w)}<g class="p-hop">${_sc(sc, `<g class="p-body">
+    ${o.back || ''}
+    <g class="p-tail"><path d="${_fur(24, 96, 9, 9, 6, 3)}" fill="${c[2]}" ${K}/></g>
+    ${arm(40, 80, true)}${foot(46)}${foot(80)}
+    <path d="${_fur(62, 82, belly, 36, 15, 5.6, .1)}" fill="url(#${fr})" ${K}/>
+    <path d="${_fur(70, 90, 20 * w, 20, 9, 3, .4)}" fill="${c[0]}" opacity=".7"/>
+    <path d="M38 62c8-8 18-12 28-12" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>
+    ${o.belly || ''}
+    ${head}
+    ${arm(92, 82)}
+    ${o.hold || ''}
+  </g>`)}</g>`;
+  return _msvg(id, defs, body);
+}
+const _iceShard = (x, y, h = 14, w = 5, r = 0) => `<g ${_vb} transform="translate(${x} ${y}) rotate(${r})"><path d="M0 0 ${-w} ${-h * .35} ${-w * .3} ${-h} ${w * .6} ${-h * .55}Z" fill="#9ee0ff" stroke="#2a6aa0" stroke-width="1.4" stroke-linejoin="round"/><path d="M${-w * .3} ${-h * .8}l-1 ${h * .5}" stroke="#fff" stroke-width="1.2" opacity=".8"/></g>`;
+
+function _timansot() {
+  return _mansot('timansot', { s: .8, w: .86, hx: 70, hy: 50, er: 5.4, eye: '#5ac8ff',
+    hold: `<g class="p-glow"><path d="M108 70l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6Z" fill="#fff" opacity=".9"/></g>`,
+    headgear: `<path d="M64 28c-2-6 2-10 6-8 2-4 8-4 8 2 4-2 8 2 4 6" stroke="#e8f4ff" stroke-width="3" fill="none" stroke-linecap="round"/>` });
+}
+function _mansobese() {
+  const bl = ['#f2f8ff', '#a9c6e8', '#5a82b0'];
+  return _mansot('mansobese', { s: 1.02, w: 1.28, fur: bl, hx: 76, hy: 42, er: 3.8, eye: '#a8f0ff',
+    belly: `<ellipse cx="64" cy="94" rx="22" ry="17" fill="#e4f2ff" opacity=".5"/><path d="M46 92c10 6 26 6 36 0" stroke="#5a82b0" stroke-width="1.6" fill="none" opacity=".6" stroke-linecap="round"/><circle cx="64" cy="94" r="2.4" fill="#5a82b0" opacity=".7"/>`,
+    hold: '' });
+}
+function _shamansot() {
+  const pr = ['#f6f0ff', '#c0b4e8', '#6a5aa8'];
+  const feathers = ['#ff4f6e', '#ffc82e', '#34d399', '#4ab8ff', '#ff4f6e'].map((cl, i) => `<path d="M${52 + i * 9} 30 ${44 + i * 12} ${10 + Math.abs(i - 2) * 5} ${58 + i * 9} 28Z" fill="${cl}" stroke="#2a2040" stroke-width="1.4" stroke-linejoin="round" opacity=".95"/>`).join('');
+  return _mansot('shamansot', { fur: pr, hx: 72, hy: 46, eye: '#d09aff',
+    headgear: `${feathers}<path d="M50 32c8-4 28-4 36 2" stroke="#8a5a22" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M52 33h34" stroke="#ffd24a" stroke-width="1.4" stroke-dasharray="3 3" opacity=".9"/><g ${_vb} transform="translate(86 28)"><circle r="3.4" fill="#9ee0ff" stroke="#2a6aa0" stroke-width="1.2"/></g>`,
+    belly: `<path d="M50 78l6 8-6 8M78 78l-6 8 6 8" stroke="#6a5aa8" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/><circle cx="64" cy="90" r="5.6" fill="#9ee0ff" stroke="#2a6aa0" stroke-width="1.6"/><circle cx="62.6" cy="88.6" r="1.6" fill="#fff"/>`,
+    hold: `<g class="p-limb"><path d="M112 118 108 30" stroke="#6a4a2a" stroke-width="4.4" stroke-linecap="round"/><path d="M112 118 108 30" stroke="#c89a62" stroke-width="1.2" opacity=".6"/><g class="p-glow"><circle cx="108" cy="24" r="12" fill="#9ee0ff" opacity=".4"/></g>${_iceShard(108, 36, 24, 7, 0)}${_iceShard(100, 34, 14, 4, -30)}${_iceShard(116, 34, 14, 4, 30)}</g>` });
+}
+function _mansotRoyal() {
+  const ro = ['#ffffff', '#e0ecff', '#8aa6d8'];
+  const crown = `<g ${_vb} transform="translate(0 7)"><path d="M54 26 56 8 62 18 68 4 74 18 80 6 84 26Z" fill="url(#${'__IC__'})" stroke="#2a6aa0" stroke-width="2" stroke-linejoin="round"/><path d="M58 24h24" stroke="#ffd24a" stroke-width="3.6" stroke-linecap="round"/><circle cx="68" cy="22" r="3" fill="#ff4f6e" stroke="#7a0e1e" stroke-width="1"/><path d="M60 14l2 6M68 10v8M76 14l-2 6" stroke="#fff" stroke-width="1.2" opacity=".8" stroke-linecap="round"/></g>`;
+  const o = { s: 1.08, w: 1.12, fur: ro, hx: 74, hy: 44, eye: '#ffd24a', brow: '#cfe6f8',
+    back: `<g class="p-wing"><path d="M42 52C24 60 18 88 22 116L50 104Z" fill="#6a1aa8" stroke="#2a0a50" stroke-width="2.2" stroke-linejoin="round"/><path d="M42 56C30 66 26 86 30 108" stroke="#c88aff" stroke-width="1.4" fill="none" opacity=".6"/><path d="M22 116 28 110 34 116 40 108 46 114 50 104" stroke="#ffd24a" stroke-width="2" fill="none" stroke-linejoin="round"/></g>`,
+    belly: `<path d="M46 72Q64 84 82 72" stroke="url(#__FD__)" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="64" cy="82" r="5" fill="#9ee0ff" stroke="#2a6aa0" stroke-width="1.6"/><circle cx="62.6" cy="80.6" r="1.6" fill="#fff"/>`,
+    hold: `<g class="p-limb"><path d="M112 118 108 34" stroke="#ffc82e" stroke-width="4.2" stroke-linecap="round"/><path d="M112 118 108 34" stroke="#fff3a0" stroke-width="1.2" opacity=".8"/><g class="p-glow"><circle cx="108" cy="26" r="13" fill="#9ee0ff" opacity=".45"/></g><path d="M108 40 100 28 108 12 116 28Z" fill="#9ee0ff" stroke="#2a6aa0" stroke-width="2" stroke-linejoin="round"/><path d="M108 38V16M102 28h12" stroke="#fff" stroke-width="1.2" opacity=".8"/></g>`,
+    headgear: crown };
+  let svg = _mansot('mansot_royal', o);
+  // les placeholders __IC__ / __FD__ pointent vers les dégradés générés dans _mansot : on les relit dans le svg
+  const ids = [...svg.matchAll(/<linearGradient id="([^"]+)"/g)].map(m => m[1]); // ic, fd (dans l'ordre de _mansot)
+  return svg.replace(/__IC__/g, ids[0]).replace(/__FD__/g, ids[1]);
+}
+Object.assign(MON_ART2, { timansot: _timansot(), mansobese: _mansobese(), shamansot: _shamansot(), mansot_royal: _mansotRoyal() });
+
+//@@FAMILIES-END
+/* =====================================================================
+   Enregistrement (+ archimonstres : même dessin que leur modèle, agrandi et nimbé d'or en CSS)
+   ===================================================================== */
+Object.assign(MON_ART, MON_ART2);
+for (const [mid, m] of Object.entries(MONSTERS)) if (m.archi && MON_ART[m.base] && !MON_ART[mid]) MON_ART[mid] = MON_ART[m.base];
 /* =====================================================================
    AMAKNA IDLE — FORMAT D'AFFICHAGE
    ===================================================================== */
@@ -9760,21 +10766,24 @@ function skBranch(h, b, just) {
    VUE CARTE — carte du monde illustrée et animée + fiches de monstres
    (remplace renderCarte / placeDetail de ui2.js)
    ===================================================================== */
-const WM_W = 1000, WM_H = 360;
-const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150] }, dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62] } };
+const WM_W = 1280, WM_H = 430;
+const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150],
+    wabbits: [268, 338], blops: [590, 322], kanniboul: [872, 338], porcos: [1034, 282], dragoeufs: [1132, 146], frigost: [1216, 304] },
+  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62] } };
 const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania' };
+for (const z of ZONES) if (z.sub) WM_LINK[z.id] = z.parent; // chemin en pointillés vers la zone mère
 const cph = p => `animation-delay:-${Date.now() % p}ms`;
 const _mx = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
 const _rn = s => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-const WM_REG = [['Incarnam', 80], ['Astrub', 236], ['Amakna', 408], ['Cania', 580], ['Koalak', 752], ['Sidimote', 918]];
+const WM_REG = [['Incarnam', 80], ['Astrub', 236], ['Amakna', 408], ['Cania', 580], ['Koalak', 752], ['Sidimote', 918], ['Frigost', 1214]];
 const _wmTh = r => THEME[r] || THEME.idle;
 
 let _wmStatic = null;
 function wmScenery() {
   if (_wmStatic) return _wmStatic;
   const D = '#0e110b', skyC = WM_REG.map(([r]) => _mx(_wmTh(r)[0], D, .5)), grC = WM_REG.map(([r]) => _wmTh(r)[1]);
-  const hgrad = (id, cols, t, k) => `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">${cols.map((c, i) => `<stop offset="${(WM_REG[i][1] / 1000).toFixed(3)}" stop-color="${_mx(c, k || D, t)}"/>`).join('')}</linearGradient>`;
-  const hill = (id, y, amp, seed, grad) => { let d = `M0 ${WM_H} L0 ${y}`; for (let x = 0; x <= 1000; x += 125) { const y1 = y + (_rn(seed + x / 125) - .5) * amp * 2; d += ` S${x + 62} ${y1 - amp * .4} ${x + 125} ${y + (_rn(seed + x / 125 + 1) - .5) * amp * 2}`; } return `<path d="${d} L1000 ${WM_H}Z" fill="url(#${grad})"/>`; };
+  const hgrad = (id, cols, t, k) => `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">${cols.map((c, i) => `<stop offset="${(WM_REG[i][1] / WM_W).toFixed(3)}" stop-color="${_mx(c, k || D, t)}"/>`).join('')}</linearGradient>`;
+  const hill = (id, y, amp, seed, grad) => { let d = `M0 ${WM_H} L0 ${y}`; for (let x = 0; x <= WM_W; x += 125) { const y1 = y + (_rn(seed + x / 125) - .5) * amp * 2; d += ` S${x + 62} ${y1 - amp * .4} ${x + 125} ${y + (_rn(seed + x / 125 + 1) - .5) * amp * 2}`; } return `<path d="${d} L${WM_W} ${WM_H}Z" fill="url(#${grad})"/>`; };
   const bush = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="11" ry="3" fill="#000" opacity=".25"/><circle cx="-5" cy="-3" r="6" fill="${c}"/><circle cx="4" cy="-4" r="7" fill="${_mx(c, '#ffffff', .12)}"/><circle cx="0" cy="-8" r="5.5" fill="${_mx(c, '#ffffff', .22)}"/></g>`;
   const oak = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="12" ry="3" fill="#000" opacity=".25"/><rect x="-2" y="-12" width="4" height="13" fill="#5a3a1c"/><circle cx="-7" cy="-16" r="8" fill="${c}"/><circle cx="7" cy="-17" r="9" fill="${_mx(c, '#ffffff', .1)}"/><circle cx="0" cy="-24" r="8.5" fill="${_mx(c, '#ffffff', .2)}"/></g>`;
   const pine = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="9" ry="2.5" fill="#000" opacity=".3"/><rect x="-1.6" y="-6" width="3.2" height="7" fill="#4a2c14"/><path d="M0-34 9-17H4l8 11H-8l8-11h-5Z" fill="${c}"/><path d="M0-34 9-17H4l8 11H0Z" fill="${_mx(c, D, .35)}" opacity=".5"/></g>`;
@@ -9808,20 +10817,22 @@ function wmScenery() {
     <linearGradient id="wmFog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D}" stop-opacity="0"/><stop offset="1" stop-color="${D}" stop-opacity=".6"/></linearGradient>
     <radialGradient id="wmSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c8" stop-opacity=".95"/><stop offset=".4" stop-color="#ffe9a0" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a0" stop-opacity="0"/></radialGradient>
     <radialGradient id="wmMoon" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e8e0ff" stop-opacity=".9"/><stop offset=".5" stop-color="#b8a8ff" stop-opacity=".25"/><stop offset="1" stop-color="#b8a8ff" stop-opacity="0"/></radialGradient></defs>
-    <rect width="1000" height="${WM_H}" fill="url(#wmSky)"/><rect width="1000" height="${WM_H}" fill="url(#wmFade)"/>
+    <rect width="${WM_W}" height="${WM_H}" fill="url(#wmSky)"/><rect width="${WM_W}" height="${WM_H}" fill="url(#wmFade)"/>
     <circle cx="70" cy="52" r="46" fill="url(#wmSun)"/><circle cx="70" cy="52" r="13" fill="#fff6c8"/>
     <circle cx="936" cy="46" r="40" fill="url(#wmMoon)"/><circle cx="936" cy="46" r="11" fill="#efeaff"/><circle cx="941" cy="43" r="9" fill="#5a4a80" opacity=".5"/>
-    ${Array.from({ length: 26 }, (_, i) => `<circle cx="${760 + _rn(i + 60) * 240}" cy="${8 + _rn(i + 80) * 120}" r="${.6 + _rn(i + 7) * .9}" fill="#fff" opacity="${.35 + _rn(i + 17) * .5}"/>`).join('')}
-    <g transform="translate(0 40)">${hill('wmB', 188, 14, 3, 'wmH1')}${hill('wmM', 214, 12, 11, 'wmH2')}${hill('wmF', 246, 10, 23, 'wmH3')}${deco}</g>`);
+    ${Array.from({ length: 26 }, (_, i) => `<circle cx="${760 + _rn(i + 60) * 480}" cy="${8 + _rn(i + 80) * 120}" r="${.6 + _rn(i + 7) * .9}" fill="#fff" opacity="${.35 + _rn(i + 17) * .5}"/>`).join('')}
+    <g transform="translate(0 40)">${hill('wmB', 188, 14, 3, 'wmH1')}${hill('wmM', 214, 12, 11, 'wmH2')}${hill('wmF', 246, 10, 23, 'wmH3')}${deco}</g>${wmSubScenery()}`);
 }
 function wmRoad() {
-  const zs = ZONES.map(z => WM_POS.zone[z.id]);
+  const zs = ZONES.filter(z => !z.sub).map(z => WM_POS.zone[z.id]);
   let d = `M-20 ${zs[0][1] + 34} C ${zs[0][0] / 2} ${zs[0][1] + 34}, ${zs[0][0] / 2} ${zs[0][1]}, ${zs[0][0]} ${zs[0][1]}`;
   for (let i = 1; i < zs.length; i++) { const [x0, y0] = zs[i - 1], [x1, y1] = zs[i], mx = (x0 + x1) / 2; d += ` C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`; }
-  d += ` C ${(zs[5][0] + 1020) / 2} ${zs[5][1]}, ${(zs[5][0] + 1020) / 2} ${zs[5][1] - 30}, 1020 ${zs[5][1] - 30}`;
-  const br = DUNGEONS.map(dj => { const [x, y] = WM_POS.dungeon[dj.id], [zx, zy] = WM_POS.zone[WM_LINK[dj.id]]; return `M${zx} ${zy} Q ${(x + zx) / 2 + 24} ${(y + zy) / 2} ${x} ${y}`; }).join(' ');
+  const wmPos = id => WM_POS.zone[id] || WM_POS.dungeon[id];
+  const curve = id => { const [x, y] = wmPos(id), [zx, zy] = wmPos(WM_LINK[id]); return `M${zx} ${zy} Q ${(x + zx) / 2 + 24} ${(y + zy) / 2 + (WM_POS.zone[id] ? 14 : 0)} ${x} ${y}`; };
+  const br = DUNGEONS.map(dj => curve(dj.id)).join(' '), bs = ZONES.filter(z => z.sub).map(z => curve(z.id)).join(' ');
   return `<path d="${d}" fill="none" stroke="#1a1208" stroke-width="15" stroke-linecap="round" opacity=".7"/><path d="${d}" fill="none" stroke="#a8844c" stroke-width="10.5" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#d9bc7e" stroke-width="7" stroke-linecap="round" opacity=".55"/><path d="${d}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#fff3c4" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 13"/>
-    <path d="${br}" fill="none" stroke="#1a1208" stroke-width="5.5" stroke-linecap="round" opacity=".6"/><path d="${br}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#ffd68a" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 9"/>`;
+    <path d="${br}" fill="none" stroke="#1a1208" stroke-width="5.5" stroke-linecap="round" opacity=".6"/><path d="${br}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#ffd68a" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 9"/>
+    <path d="${bs}" fill="none" stroke="#0a1418" stroke-width="5" stroke-linecap="round" opacity=".55"/><path d="${bs}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#c4ecff" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1.5 8"/>`;
 }
 function wmClouds() {
   return [[0, 34, 1, 80000], [0, 78, .7, 110000], [0, 20, .85, 95000], [0, 58, .6, 130000]].map(([x, y, s, T], i) => `<g class="wm-cloud" style="${cph(T)};animation-duration:${T}ms;opacity:${i % 2 ? .5 : .75}"><g transform="translate(0 ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="34" ry="9" fill="#fff"/><ellipse cx="-14" cy="-6" rx="16" ry="9" fill="#fff"/><ellipse cx="8" cy="-9" rx="19" ry="11" fill="#fff"/></g></g>`).join('')
@@ -9835,16 +10846,16 @@ function readiness(p) {
 function wmNode(p, type) {
   const [x, y] = WM_POS[type][p.id]; const sel = ui.place.type === type && ui.place.id === p.id;
   const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : mons[0]); const [rd, rl] = readiness(p);
+  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : p.sub ? (mons.find(m => MONSTERS[m].big) || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
   const th = _wmTh(p.region), keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
-  return `<button class="wn ${type}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / 10).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
-    <span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
+  return `<button class="wn ${type}${p.sub ? ' sub' : ''}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / WM_W * 100).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
+    ${p.sub ? `<span class="wn-orbit" style="${cph(18000)}"></span>` : ''}<span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
     ${type === 'dungeon' ? `<span class="wn-key${keyN ? '' : ' none'}" title="Clefs en stock">🗝 ${keyN}</span>` : ''}
     ${here.length ? `<span class="wn-heroes">${here.map((h, i) => `<span class="wn-h" style="${cph(2200 + i * 130)}">${emblem(h.cls, true)}</span>`).join('')}</span>` : ''}
-    <span class="wn-lab"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : ''}niv. ${p.lvl[0]}–${p.lvl[1]}</small></span></button>`;
+    <span class="wn-lab"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : p.sub ? 'Sous-zone · ' : ''}niv. ${p.lvl[0]}–${p.lvl[1]}</small></span></button>`;
 }
 function wmMap() {
-  return `<div class="wm-scroll"><div class="wm"><svg class="wm-svg" viewBox="0 0 ${WM_W} ${WM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${wmScenery()}${wmRoad()}${wmClouds()}<rect width="1000" height="${WM_H}" fill="url(#wmFog)"/></svg>
+  return `<div class="wm-scroll"><div class="wm"><svg class="wm-svg" viewBox="0 0 ${WM_W} ${WM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${wmScenery()}${wmRoad()}${wmSubAnim()}${wmClouds()}<rect width="${WM_W}" height="${WM_H}" fill="url(#wmFog)"/></svg>
     ${ZONES.map(z => wmNode(z, 'zone')).join('')}${DUNGEONS.map(d => wmNode(d, 'dungeon')).join('')}
 </div></div>`;
 }
@@ -9879,10 +10890,10 @@ function monCard(p, type, mid, T) {
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
         <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
     </div></div>` : '';
-  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}" data-act="togglemon" data-k="${key}">
+  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}" data-act="togglemon" data-k="${key}">
     <div class="mc-head" tabindex="0" role="button" aria-expanded="${mo}" title="Voir tous les objets droppables">
       <span class="mc-ico" aria-hidden="true"><span style="${cph(2600 + (key.length % 7) * 150)}">${monIcon(mid)}</span></span>
-      <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
+      <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${d.big ? '<em class="bg">Gros monstre</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
       <span class="chev" aria-hidden="true">▸</span></div>
     <div class="mc-more">${mo ? 'Cliquer pour replier' : `Voir les ${d.drops.length + gd.length + rl.length} objets droppables`}</div>
     <div class="mc-stats"><span class="hp">❤ <b class="num">${fmt(ms.hp * T.hp)}</b> PV</span><span class="dm">⚔ <b class="num">${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)}</b> dégâts</span></div>
@@ -9909,15 +10920,134 @@ function placeDetail(p, type) {
   const hills = `<svg class="pb-hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100V58C60 36 110 66 170 50S290 30 400 56V100Z" fill="${_mx(th[1], '#c8d8e8', .3)}" opacity=".55"/><path d="M0 100V72C70 56 130 84 200 68S320 54 400 74V100Z" fill="${_mx(th[1], '#0e110b', .25)}"/></svg>`;
   const motes = Array.from({ length: 7 }, (_, i) => `<i style="left:${8 + i * 13}%;animation-duration:${7000 + i * 900}ms;${cph(7000 + i * 900)}"></i>`).join('');
   return `<div class="place-banner" style="${themeStyle(th)}">${hills}<span class="pb-motes" aria-hidden="true">${motes}</span>
-      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : ''}${p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
+      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : p.sub ? `Sous-zone de ${ZONES.find(z => z.id === p.parent).name}` : ''}${type === 'dungeon' ? p.region : p.sub ? '' : p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
       <div class="pb-side"><span class="lvl-badge">Niv. ${p.lvl[0]}–${p.lvl[1]}</span><span class="rd ${rd}">${rl}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map((m, i) => `<span style="${cph(2400 + i * 260)}"><span>${monIcon(m)}</span></span>`).join('')}</div></div>
     </div>
+    ${wmLinked(p, type)}
     ${type === 'zone' ? `<div class="tiers">${SUBZONES.map((s, i) => { const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === p.id && (h.act.tier || 0) === i).length;
       return `<button data-act="ztier" data-id="${p.id}" data-t="${i}" aria-pressed="${i === tier}" style="--tc:${['#8fd65a', '#e8d04a', '#f09a3a', '#e8503a'][i]}"><span class="tr-pips">${[0, 1, 2, 3].map(k => `<i${k <= i ? ' class="on"' : ''}></i>`).join('')}</span><b>${p.name} ${i + 1}</b><span>${i ? `PV ×${s.hp} · Dégâts ×${String(s.dmg).replace('.', ',')} · Équip. ×${s.drop}` : 'Difficulté normale'}</span>${n ? `<i class="tr-n">${n} héros</i>` : ''}</button>`; }).join('')}</div>`
       : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp} · une clef par entrée</span>${keyN ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
     <div><div class="label" style="margin-bottom:6px">Envoyer un héros</div><div class="send-list">${sends}</div></div>
     <div><div class="label" style="margin-bottom:8px">Monstres et butin <span class="mc-leg">❤ PV · ⚔ dégâts · ✦ stasifié</span></div><div class="mgrid">${cards}</div></div>
     <p class="hint">Taux par monstre vaincu pour 100 de prospection (ta meilleure : ${best}, soit ×${(best / 100).toFixed(2).replace('.', ',')}). Équipement et stasifié : taux par objet. <span style="color:var(--relic)">En jaune</span> : reliques. Clique sur un monstre pour le détail.</p>`;
+}
+/* =====================================================================
+   CARTE — SOUS-ZONES : décors dessinés autour de chaque lieu, animations légères
+   et liens entre une zone et ses sous-zones.
+   wmSubScenery() : décor fixe (mis en cache avec le reste du décor, dessiné dans le même SVG)
+   wmSubAnim()    : petits éléments animés (recalculés à chaque rendu, avec phase synchronisée)
+   wmLinked()     : bandeau « Sous-zones / Zone mère » dans la fiche d'un lieu
+   ===================================================================== */
+function wmSubScenery() {
+  const carrot = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-3.2 0h6.4L0 10Z" fill="#ff9a2e" stroke="#9a4a10" stroke-width=".6"/><path d="M-1.8 4h3.6M-1 7h2" stroke="#c4601a" stroke-width=".8"/><path d="M0 0V-3M-2 0-4-5M2 0 4-5" stroke="#4aa83a" stroke-width="1.8" stroke-linecap="round"/></g>`;
+  const pine = (x, y, s, c, snow) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="9" ry="2.5" fill="#000" opacity=".25"/><rect x="-1.6" y="-6" width="3.2" height="7" fill="#4a2c14"/><path d="M0-34 9-17H4l8 11H-8l8-11h-5Z" fill="${c}"/><path d="M0-34 9-17H4l8 11H0Z" fill="#000" opacity=".16"/>${snow ? '<path d="M0-34 4.4-25.6 0-27.4-4.4-25.6ZM-3-19l3-2 3 2-3-.8ZM-6-9l6-3.4 6 3.4-6-1.2Z" fill="#f4f9ff"/>' : ''}</g>`;
+  const rock = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="12" ry="3" fill="#000" opacity=".28"/><path d="M-11 0-8-9-2-12 6-10 11-2 9 0Z" fill="${c}"/><path d="M-2-12 6-10 11-2 3-3Z" fill="#fff" opacity=".16"/></g>`;
+  const palm = (x, y, s, lean) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="9" ry="2.4" fill="#000" opacity=".28"/><path d="M0 0C${lean} -10 ${lean * 1.6} -22 ${lean * 1.2} -34" stroke="#6a4a22" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M0 0C${lean} -10 ${lean * 1.6} -22 ${lean * 1.2} -34" stroke="#a87a42" stroke-width="1.2" fill="none" stroke-dasharray="2 3"/>
+    <g transform="translate(${lean * 1.2} -34)" fill="#3fa84a" stroke="#1f6a2a" stroke-width=".7"><path d="M0 0C-8-9-18-8-24-2 -16-4-8-4 0 0Z"/><path d="M0 0C8-9 18-8 24-2 16-4 8-4 0 0Z"/><path d="M0 0C-5-12-12-16-19-14-12-12-6-8 0 0Z"/><path d="M0 0C5-12 12-16 19-14 12-12 6-8 0 0Z"/><path d="M0 0C-1-12 0-18 2-22 4-17 2-8 0 0Z" fill="#58c05a"/></g><circle cx="${lean * 1.2 - 2}" cy="-32" r="2" fill="#6a3a1a"/><circle cx="${lean * 1.2 + 2}" cy="-31" r="2" fill="#7a4a22"/></g>`;
+  const hut = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="14" ry="3" fill="#000" opacity=".28"/><rect x="-9" y="-12" width="18" height="12" fill="#8a5a2c"/><path d="M-9-12h18M-9-8h18M-9-4h18" stroke="#5a3a18" stroke-width=".8"/><path d="M-14-11 0-27 14-11Z" fill="#d9b24a"/><path d="M-14-11 0-27 4-23-8-11Z" fill="#fff" opacity=".2"/><path d="M-9-15 0-24M-3-13 3-24M3-12 8-19" stroke="#a8842a" stroke-width=".9"/><path d="M-3 0v-8a3 4 0 0 1 6 0V0Z" fill="#2a1608"/></g>`;
+  const totem = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="6" ry="2" fill="#000" opacity=".3"/><rect x="-4" y="-34" width="8" height="34" rx="1.6" fill="#7a4a22" stroke="#3a2008" stroke-width=".8"/>
+    <g fill="#e8c24a"><rect x="-4" y="-34" width="8" height="8" rx="1.4"/></g><g fill="#c8402a"><rect x="-4" y="-25" width="8" height="8"/></g><g fill="#3aa88a"><rect x="-4" y="-16" width="8" height="8"/></g>
+    <g fill="#1a0c04"><circle cx="-1.6" cy="-31" r="1"/><circle cx="1.6" cy="-31" r="1"/><circle cx="-1.6" cy="-22" r="1"/><circle cx="1.6" cy="-22" r="1"/><circle cx="-1.6" cy="-13" r="1"/><circle cx="1.6" cy="-13" r="1"/><rect x="-2" y="-29" width="4" height="1.2"/><rect x="-2" y="-20" width="4" height="1.2"/><rect x="-2" y="-11" width="4" height="1.2"/></g>
+    <path d="M-8-30-4-28M8-30 4-28" stroke="#d94a3a" stroke-width="2" stroke-linecap="round"/></g>`;
+  const reed = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})" stroke-linecap="round"><path d="M-3 0V-18M0 0V-24M3 0V-16" stroke="#4a8a3a" stroke-width="1.5" fill="none"/><rect x="-0.9" y="-27" width="1.8" height="7" rx=".9" fill="#7a4a22"/><rect x="-4" y="-20" width="1.6" height="5" rx=".8" fill="#7a4a22"/></g>`;
+  const pad = (x, y, s, fl) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="7" ry="2.7" fill="#4aa84a"/><path d="M0 0 5-2.4 6 0Z" fill="#2a6a8a" opacity=".6"/><ellipse cx="-1.4" cy="-.6" rx="4" ry="1" fill="#fff" opacity=".18"/>${fl ? '<circle cx="1" cy="-2" r="2.1" fill="#ff8ac4"/><circle cx="1" cy="-2" r=".8" fill="#ffe27a"/>' : ''}</g>`;
+  const bale = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="8" ry="2" fill="#000" opacity=".25"/><rect x="-7" y="-9" width="14" height="9" rx="3" fill="#e8c24a" stroke="#9a7a1a" stroke-width=".8"/><path d="M-3.5-9v9M3.5-9v9" stroke="#9a7a1a" stroke-width=".7"/><path d="M-6-6h12M-6-3h12" stroke="#f4dc7a" stroke-width=".6" opacity=".8"/></g>`;
+  let o = '';
+
+  /* ---------- Île des Wabbits : prairie, carottes, château rose ---------- */
+  o += `<ellipse cx="268" cy="364" rx="112" ry="44" fill="#4a8a3a" opacity=".3"/><ellipse cx="268" cy="358" rx="98" ry="38" fill="#86d466" opacity=".42"/><ellipse cx="262" cy="352" rx="70" ry="26" fill="#aae882" opacity=".3"/>`;
+  for (let r = 0; r < 2; r++) for (let i = 0; i < 4; i++) o += carrot(188 + i * 13 + r * 6, 352 + r * 13, .95);
+  for (const [x, y] of [[250, 384], [296, 390], [212, 392]]) o += `<ellipse cx="${x}" cy="${y}" rx="9" ry="3.6" fill="#5a3a1c" opacity=".7"/><ellipse cx="${x}" cy="${y - 1}" rx="6" ry="2.2" fill="#0e0804"/><path d="M${x - 11} ${y + 1}q11-9 22 0" fill="#6aa84a" opacity=".5"/>`;
+  o += `<g transform="translate(346 360)"><ellipse cx="0" cy="2" rx="22" ry="4" fill="#000" opacity=".3"/><rect x="-14" y="-18" width="28" height="19" fill="#e8d4e0" stroke="#8a6a82" stroke-width=".9"/><path d="M-14-14h28M-14-8h28M-14-3h28" stroke="#c8a8bc" stroke-width=".6"/>
+    <rect x="-20" y="-28" width="10" height="29" fill="#f2e2ec" stroke="#8a6a82" stroke-width=".9"/><rect x="10" y="-28" width="10" height="29" fill="#f2e2ec" stroke="#8a6a82" stroke-width=".9"/><path d="M-22-28-15-42-8-28Z" fill="#d8402f" stroke="#7a1a10" stroke-width=".8"/><path d="M8-28 15-42 22-28Z" fill="#d8402f" stroke="#7a1a10" stroke-width=".8"/>
+    <path d="M-15-42v-8" stroke="#6a4a2a" stroke-width="1.2"/><path d="M-15-50l9 3-9 3Z" fill="#ffd54a"/><path d="M-4 1v-9a4 5 0 0 1 8 0V1Z" fill="#4a2a42"/><rect x="-17.5" y="-22" width="3" height="5" rx="1.4" fill="#4a2a42"/><rect x="14.5" y="-22" width="3" height="5" rx="1.4" fill="#4a2a42"/>
+    <path d="M-9-18 0-26 9-18Z" fill="#ffd54a" stroke="#9a7a1a" stroke-width=".7"/></g>`;
+  for (let i = 0; i < 16; i++) o += `<circle cx="${190 + _rn(i + 200) * 150}" cy="${336 + _rn(i + 210) * 58}" r="1.6" fill="${['#ffd6ec', '#fff', '#ffe58a'][i % 3]}" opacity=".9"/>`;
+
+  /* ---------- Lac des Blops : lac, roseaux, nénuphars ---------- */
+  o += `<defs><radialGradient id="wmLake" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#b8f0f0"/><stop offset=".55" stop-color="#4aa8c0"/><stop offset="1" stop-color="#1f6a8a"/></radialGradient></defs>`;
+  o += `<ellipse cx="590" cy="378" rx="124" ry="44" fill="#6a5a38" opacity=".5"/><ellipse cx="590" cy="376" rx="116" ry="39" fill="#8ac46a" opacity=".5"/><ellipse cx="590" cy="378" rx="104" ry="33" fill="url(#wmLake)"/><ellipse cx="590" cy="378" rx="104" ry="33" fill="none" stroke="#e8fbff" stroke-width="1.4" opacity=".4"/>`;
+  o += `<path d="M520 376c10-4 20-4 30 0M640 384c10-4 22-4 32 0M570 398c14-3 26-3 40 0" stroke="#fff" stroke-width="1.2" fill="none" opacity=".4" stroke-linecap="round"/>`;
+  o += pad(556, 386, 1, true) + pad(628, 372, .9, false) + pad(660, 392, 1.1, true) + pad(526, 392, .8, false) + pad(600, 400, .9, false);
+  o += reed(484, 392, 1.1) + reed(494, 376, .9) + reed(692, 392, 1) + reed(704, 378, .85) + reed(640, 410, .8);
+  o += rock(500, 408, .8, '#8a8a7a') + rock(676, 410, .7, '#8a8a7a');
+
+  /* ---------- Village Kanniboul : jungle, huttes, totem ---------- */
+  o += `<ellipse cx="872" cy="372" rx="124" ry="46" fill="#e8d08a" opacity=".22"/><ellipse cx="872" cy="366" rx="106" ry="40" fill="#2f8a4a" opacity=".5"/><ellipse cx="872" cy="360" rx="78" ry="28" fill="#4aa860" opacity=".3"/>`;
+  o += palm(794, 376, 1.05, -5) + palm(950, 366, 1, 6) + palm(970, 392, .85, 4) + palm(812, 400, .8, -4);
+  o += hut(822, 372, 1) + hut(924, 380, 1.05) + totem(902, 364, 1);
+  o += `<g transform="translate(846 410)"><path d="M-8 0 8-2M-7-3 7 1" stroke="#5a3a1c" stroke-width="3" stroke-linecap="round"/></g>`;
+  for (let i = 0; i < 9; i++) o += `<path d="M${800 + _rn(i + 300) * 150} ${396 - _rn(i + 310) * 30}l-2-6M${803 + _rn(i + 300) * 150} ${396 - _rn(i + 310) * 30}l2-7" stroke="#6ad87a" stroke-width="1.3" opacity=".8" stroke-linecap="round"/>`;
+
+  /* ---------- Territoire des Porcos : ferme, grange, balles de foin ---------- */
+  o += `<ellipse cx="1034" cy="318" rx="108" ry="42" fill="#7a5a32" opacity=".4"/><ellipse cx="1034" cy="312" rx="92" ry="34" fill="#c8a45a" opacity=".42"/><ellipse cx="1026" cy="308" rx="60" ry="20" fill="#e8c878" opacity=".25"/>`;
+  o += `<g stroke="#5a3a1c" stroke-width="1.6" stroke-linecap="round" fill="none"><path d="M962 330q40 10 84 4M962 322q40 10 84 4"/>${[962, 978, 994, 1010, 1026, 1046].map((x, i) => `<path d="M${x} ${334 + (i % 2) * -1}v-14"/>`).join('')}</g>`;
+  o += bale(982, 346, 1) + bale(1000, 350, .9) + bale(1100, 344, 1);
+  o += `<g transform="translate(1098 318)"><ellipse cx="0" cy="2" rx="22" ry="4" fill="#000" opacity=".3"/><rect x="-16" y="-20" width="32" height="21" fill="#b8362a" stroke="#5a1410" stroke-width=".9"/><path d="M-19-20 0-34 19-20Z" fill="#7a3a22" stroke="#3a1c10" stroke-width=".9"/><rect x="-6" y="-14" width="12" height="15" fill="#e8d4b0" stroke="#5a1410" stroke-width=".8"/><path d="M-6-14 6 1M6-14-6 1" stroke="#b8362a" stroke-width="1.1"/><circle cx="0" cy="-26" r="2.6" fill="#e8d4b0"/></g>`;
+  for (const [x, y, rx] of [[1058, 344, 12], [978, 322, 9]]) o += `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="3.4" fill="#4a3220" opacity=".8"/><ellipse cx="${x - 3}" cy="${y - 1}" rx="${rx * .5}" ry="1" fill="#fff" opacity=".18"/>`;
+  o += rock(1008, 372, .7, '#9a8a6a');
+
+  /* ---------- Sanctuaire des Dragoeufs : volcan, nid, braise ---------- */
+  o += `<defs><radialGradient id="wmLava" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd27a" stop-opacity=".9"/><stop offset=".45" stop-color="#ff6a1e" stop-opacity=".5"/><stop offset="1" stop-color="#ff3a0e" stop-opacity="0"/></radialGradient></defs>`;
+  o += `<ellipse cx="1132" cy="184" rx="118" ry="44" fill="#2a1814" opacity=".55"/><ellipse cx="1132" cy="180" rx="100" ry="34" fill="#5a3226" opacity=".55"/>`;
+  o += `<g transform="translate(1204 176)"><ellipse cx="0" cy="2" rx="48" ry="7" fill="#000" opacity=".3"/><path d="M-46 0 -14-58H14L46 0Z" fill="#4a2c26"/><path d="M-14-58H14L46 0H8Z" fill="#000" opacity=".22"/><path d="M-14-58 14-58 10-52-10-52Z" fill="#ff7a2e"/><ellipse cx="0" cy="-58" rx="14" ry="3.4" fill="#ffc86a"/>
+    <path d="M-4-52-8-30M4-52 2-34 8-12M-10-30-16-8" stroke="#ff6a1e" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M-4-52-8-30M4-52 2-34" stroke="#ffd27a" stroke-width=".8" fill="none"/></g>`;
+  o += `<g transform="translate(1068 196)"><ellipse cx="0" cy="3" rx="26" ry="6" fill="#000" opacity=".3"/><path d="M-24 0q4-10 12-8l4 4 8-6 8 6 4-4q8-2 12 8l-8 4h-32Z" fill="#6a4a22" stroke="#2a1608" stroke-width=".9"/><path d="M-20-2l8 3M-4-8l-4 8M10-7l5 6M20-1l-8 3" stroke="#9a7238" stroke-width="1.1"/>
+    <g stroke="#2a1608" stroke-width=".8"><ellipse cx="-9" cy="-10" rx="6" ry="8" fill="#8fd65a"/><ellipse cx="3" cy="-12" rx="6.4" ry="9" fill="#f2c230"/><ellipse cx="14" cy="-9" rx="5.6" ry="7.6" fill="#6ab8e8"/></g>
+    <g fill="#fff" opacity=".45"><ellipse cx="-11" cy="-13" rx="1.6" ry="2.6"/><ellipse cx="1" cy="-15" rx="1.6" ry="2.8"/><ellipse cx="12" cy="-12" rx="1.5" ry="2.4"/></g><g fill="#2a1608" opacity=".5"><circle cx="-8" cy="-8" r="1.2"/><circle cx="-11" cy="-4" r=".9"/><circle cx="5" cy="-8" r="1.2"/><circle cx="14" cy="-5" r="1"/></g></g>`;
+  o += rock(1100, 208, 1, '#3a2622') + rock(1250, 200, .9, '#3a2622') + rock(1164, 214, .8, '#4a2c26') + rock(1052, 214, .7, '#3a2622');
+  o += `<path d="M1090 196q16 6 30-2M1150 212q18 4 34-4" stroke="#ff6a1e" stroke-width="1.6" fill="none" opacity=".75" stroke-linecap="round"/>`;
+
+  /* ---------- Frigost : banquise, pins givrés, grotte ---------- */
+  o += `<ellipse cx="1216" cy="342" rx="120" ry="52" fill="#a8c8e4" opacity=".5"/><ellipse cx="1216" cy="334" rx="98" ry="40" fill="#f2f8ff" opacity=".7"/><ellipse cx="1206" cy="326" rx="64" ry="24" fill="#fff" opacity=".5"/>`;
+  o += `<g transform="translate(1176 316)"><ellipse cx="0" cy="2" rx="40" ry="6" fill="#000" opacity=".22"/><path d="M-38 0-6-54 6-54 38 0Z" fill="#c4d8ec"/><path d="M-6-54 6-54 38 0H8Z" fill="#7a96b4" opacity=".6"/><path d="M-6-54 0-60 6-54 14-40-2-44-14-38Z" fill="#fff"/>
+    <path d="M-12 0v-12a12 14 0 0 1 24 0V0Z" fill="#1a2a3e"/><path d="M-9 0v-10a9 11 0 0 1 18 0V0Z" fill="#24496a"/><path d="M-5 0v-8a5 6 0 0 1 10 0V0Z" fill="#6ad4ff" opacity=".55"/><path d="M-10-12q2-5 5-5M10-12q-2-5-5-5" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>`;
+  o += pine(1112, 344, 1.1, '#2f6a5a', true) + pine(1252, 336, 1.2, '#2f6a5a', true) + pine(1272, 366, .9, '#3a7a68', true) + pine(1136, 372, .85, '#3a7a68', true);
+  for (const [x, y, s] of [[1236, 358, 1], [1196, 372, .8], [1262, 322, .7]]) o += `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0-16 5-4 0 0-5-4Z" fill="#9fe8ff" stroke="#3a8ab8" stroke-width=".8"/><path d="M0-16 5-4 0 0Z" fill="#fff" opacity=".35"/><path d="M-7-8-3-2-7 0-10-3Z" fill="#c8f2ff" stroke="#3a8ab8" stroke-width=".7"/></g>`;
+  o += rock(1150, 352, .8, '#b8c8d8') + rock(1226, 376, .7, '#b8c8d8');
+  return o;
+}
+
+function wmSubAnim() {
+  let o = '';
+  const P = (p, i = 0) => `style="animation-delay:-${(Date.now() + i * 937) % p}ms;animation-duration:${p}ms"`;
+  /* aurore boréale au-dessus de Frigost */
+  o += `<defs><linearGradient id="wmAur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6affc0" stop-opacity="0"/><stop offset=".45" stop-color="#6affc0" stop-opacity=".5"/><stop offset=".8" stop-color="#9a8aff" stop-opacity=".25"/><stop offset="1" stop-color="#9a8aff" stop-opacity="0"/></linearGradient></defs>`;
+  o += `<g class="wm-aurora" ${P(9000)}><path d="M1040 14C1100 40 1130 4 1180 28S1250 6 1290 30V112C1250 90 1220 120 1170 96S1090 124 1040 100Z" fill="url(#wmAur)"/></g>`;
+  o += `<g class="wm-aurora" style="animation-delay:-4000ms;animation-duration:12000ms;opacity:.7"><path d="M1090 8C1140 30 1180 0 1230 22S1270 10 1290 18V80C1250 70 1210 96 1170 76S1120 86 1090 70Z" fill="url(#wmAur)"/></g>`;
+  /* flocons */
+  for (let i = 0; i < 16; i++) { const x = 1100 + _rn(i + 400) * 180, T = 5200 + _rn(i + 410) * 3600; o += `<circle class="wm-snow" cx="${x.toFixed(0)}" cy="${(250 + _rn(i + 420) * 20).toFixed(0)}" r="${(1 + _rn(i + 430) * 1.2).toFixed(1)}" fill="#fff" opacity=".9" ${P(T, i)}/>`; }
+  /* braises et fumée du volcan */
+  for (let i = 0; i < 7; i++) { const x = 1196 + _rn(i + 440) * 18 - 6, T = 3000 + _rn(i + 450) * 2200; o += `<circle class="wm-ember" cx="${x.toFixed(0)}" cy="118" r="${(1 + _rn(i + 460)).toFixed(1)}" fill="#ffb04a" ${P(T, i)}/>`; }
+  for (let i = 0; i < 3; i++) o += `<circle class="wm-smoke" cx="${1198 + i * 5}" cy="112" r="${7 + i * 2}" fill="#8a7a78" ${P(7000, i)}/>`;
+  o += `<ellipse class="wm-lavaglow" cx="1204" cy="118" rx="40" ry="22" fill="url(#wmLava)" ${P(2600)}/>`;
+  /* les blops dans le lac */
+  [[522, 380, '#8a5a32', '#c4905a'], [548, 396, '#e0402f', '#ff8a7a'], [634, 394, '#3a5fe0', '#8aa8ff'], [662, 378, '#4ac84a', '#a8f08a']].forEach(([x, y, c, h], i) => {
+    o += `<g class="wm-blopb" ${P(2400 + i * 300, i)}><g transform="translate(${x} ${y})"><path d="M-6 0C-7-7-2-9 0-9s7 2 6 9Z" fill="${c}" stroke="#0a1418" stroke-width=".8"/><ellipse cx="-2" cy="-5.4" rx="1.8" ry="1.2" fill="${h}" opacity=".8"/><circle cx="-2" cy="-3.6" r=".9" fill="#fff"/><circle cx="2" cy="-3.6" r=".9" fill="#fff"/><circle cx="-2" cy="-3.5" r=".45" fill="#000"/><circle cx="2" cy="-3.5" r=".45" fill="#000"/></g></g>`;
+  });
+  [[590, 356], [628, 382], [548, 372]].forEach(([x, y], i) => { o += `<ellipse class="wm-ripple" cx="${x}" cy="${y}" rx="9" ry="3" fill="none" stroke="#fff" stroke-width="1" ${P(3600, i)}/>`; });
+  /* feu de camp du village Kanniboul */
+  o += `<g class="wm-flame" ${P(900)}><g transform="translate(846 407)"><path d="M0 0C-6-2-5-9-1-13 0-9 3-8 3-4 5-6 6-3 4 0Z" fill="#ff7a1e"/><path d="M0 0C-3-1-2-6 0-8 1-5 3-4 2 0Z" fill="#ffd27a"/></g></g>`;
+  /* cochons de la ferme */
+  [[1002, 338, 0], [1070, 350, 1], [1052, 364, 2]].forEach(([x, y, i]) => {
+    o += `<g class="wm-pig" ${P(2800 + i * 400, i)}><g transform="translate(${x} ${y})"><ellipse cx="0" cy="0" rx="6" ry="4" fill="#ffb0c0" stroke="#9a4a5a" stroke-width=".7"/><path d="M-5-3 -4-6-1-3ZM1-3 3-6 5-3Z" fill="#ff90a8" stroke="#9a4a5a" stroke-width=".5"/><ellipse cx="6.4" cy=".6" rx="2.2" ry="1.7" fill="#ff90a8" stroke="#9a4a5a" stroke-width=".5"/><circle cx="3" cy="-1.4" r=".7" fill="#2a1018"/><path d="M-6 -1q-3-1-2-3" stroke="#9a4a5a" stroke-width=".8" fill="none"/><path d="M-3 4v2M3 4v2" stroke="#9a4a5a" stroke-width="1.1"/></g></g>`;
+  });
+  return o;
+}
+
+/* Bandeau « Sous-zones » (zone mère) ou « Zone mère » (sous-zone) */
+function wmLinked(p, type) {
+  if (type !== 'zone') return '';
+  const par = p.sub ? ZONES.find(z => z.id === p.parent) : null;
+  const kids = ZONES.filter(z => z.sub && z.parent === p.id);
+  if (!par && !kids.length) return '';
+  const chip = (z, rel) => {
+    const [rd, rl] = readiness(z), big = z.monsters.find(m => MONSTERS[m].big) || z.monsters[0];
+    const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === z.id).length;
+    return `<button class="lk${z.sub ? ' sub' : ''}" data-act="place" data-type="zone" data-id="${z.id}" style="${themeStyle(_wmTh(z.region))}" title="${rl}">
+      <span class="lk-ic">${monIcon(big)}</span><span class="lk-t"><small>${rel}</small><b>${z.name}</b></span><span class="lk-lv"><em class="rd ${rd}">niv. ${z.lvl[0]}–${z.lvl[1]}</em>${n ? `<i class="lk-n">${n} 🧑</i>` : ''}</span></button>`;
+  };
+  return `<div class="linked"><span class="label">${par ? 'Zone mère' : kids.length > 1 ? 'Sous-zones' : 'Sous-zone'}</span><div class="lk-row">${par ? chip(par, 'Retour à') : ''}${kids.map(k => chip(k, k.lvl[0] > p.lvl[1] ? 'Plus loin' : 'À explorer')).join('')}</div></div>`;
 }
 /* =====================================================================
    AMAKNA IDLE — INTERFACE v2
@@ -9942,6 +11072,9 @@ const STAT_COLOR = { xpPct: 'var(--xp)', dmgPct: 'var(--hp)', dodge: 'var(--air)
 const THEME = {
   Incarnam: ['#8ec5dc', '#86b86c'], Astrub: ['#a9cf8f', '#6d9a45'], Amakna: ['#5f8a4a', '#3d5a2c'],
   Cania: ['#d6be8d', '#a07f4c'], Koalak: ['#79a466', '#466b36'], Sidimote: ['#8a7a9e', '#4a3e58'],
+  /* sous-zones de la carte */
+  Wabbits: ['#a8dcef', '#7ec45e'], Blops: ['#7cc0cc', '#3f8a7a'], Moon: ['#7ec8b0', '#2f7a48'], Porcos: ['#e8c0a8', '#b08a52'],
+  Dragoeufs: ['#d98a5a', '#6a3226'], Frigost: ['#b4d4ee', '#9cbad6'],
   harvest: ['#ecd58e', '#b89140'], idle: ['#7a8a96', '#4f5a44'],
 };
 
@@ -10205,7 +11338,7 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
@@ -11134,7 +12267,7 @@ function defaultPlace() {
   const h = selHero();
   if (h && h.act && h.act.type !== 'harvest') return { type: h.act.type, id: h.act.id };
   const lv = h ? h.lvl : 1;
-  const z = [...ZONES].reverse().find(x => lv >= x.lvl[0]) || ZONES[0];
+  const z = [...ZONES].reverse().find(x => !x.sub && lv >= x.lvl[0]) || ZONES[0];
   return { type: 'zone', id: z.id };
 }
 function placeMons(p, type) { return type === 'dungeon' ? [...new Set([...p.rooms.flat(), ...p.boss])] : p.monsters; }

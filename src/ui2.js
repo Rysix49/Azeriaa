@@ -21,6 +21,9 @@ const STAT_COLOR = { xpPct: 'var(--xp)', dmgPct: 'var(--hp)', dodge: 'var(--air)
 const THEME = {
   Incarnam: ['#8ec5dc', '#86b86c'], Astrub: ['#a9cf8f', '#6d9a45'], Amakna: ['#5f8a4a', '#3d5a2c'],
   Cania: ['#d6be8d', '#a07f4c'], Koalak: ['#79a466', '#466b36'], Sidimote: ['#8a7a9e', '#4a3e58'],
+  /* sous-zones de la carte */
+  Wabbits: ['#a8dcef', '#7ec45e'], Blops: ['#7cc0cc', '#3f8a7a'], Moon: ['#7ec8b0', '#2f7a48'], Porcos: ['#e8c0a8', '#b08a52'],
+  Dragoeufs: ['#d98a5a', '#6a3226'], Frigost: ['#b4d4ee', '#9cbad6'],
   harvest: ['#ecd58e', '#b89140'], idle: ['#7a8a96', '#4f5a44'],
 };
 
@@ -284,7 +287,7 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
@@ -1213,7 +1216,7 @@ function defaultPlace() {
   const h = selHero();
   if (h && h.act && h.act.type !== 'harvest') return { type: h.act.type, id: h.act.id };
   const lv = h ? h.lvl : 1;
-  const z = [...ZONES].reverse().find(x => lv >= x.lvl[0]) || ZONES[0];
+  const z = [...ZONES].reverse().find(x => !x.sub && lv >= x.lvl[0]) || ZONES[0];
   return { type: 'zone', id: z.id };
 }
 function placeMons(p, type) { return type === 'dungeon' ? [...new Set([...p.rooms.flat(), ...p.boss])] : p.monsters; }

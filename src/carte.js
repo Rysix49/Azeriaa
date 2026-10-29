@@ -2,21 +2,24 @@
    VUE CARTE — carte du monde illustrée et animée + fiches de monstres
    (remplace renderCarte / placeDetail de ui2.js)
    ===================================================================== */
-const WM_W = 1000, WM_H = 360;
-const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150] }, dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62] } };
+const WM_W = 1280, WM_H = 430;
+const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150],
+    wabbits: [268, 338], blops: [590, 322], kanniboul: [872, 338], porcos: [1034, 282], dragoeufs: [1132, 146], frigost: [1216, 304] },
+  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62] } };
 const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania' };
+for (const z of ZONES) if (z.sub) WM_LINK[z.id] = z.parent; // chemin en pointillés vers la zone mère
 const cph = p => `animation-delay:-${Date.now() % p}ms`;
 const _mx = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
 const _rn = s => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-const WM_REG = [['Incarnam', 80], ['Astrub', 236], ['Amakna', 408], ['Cania', 580], ['Koalak', 752], ['Sidimote', 918]];
+const WM_REG = [['Incarnam', 80], ['Astrub', 236], ['Amakna', 408], ['Cania', 580], ['Koalak', 752], ['Sidimote', 918], ['Frigost', 1214]];
 const _wmTh = r => THEME[r] || THEME.idle;
 
 let _wmStatic = null;
 function wmScenery() {
   if (_wmStatic) return _wmStatic;
   const D = '#0e110b', skyC = WM_REG.map(([r]) => _mx(_wmTh(r)[0], D, .5)), grC = WM_REG.map(([r]) => _wmTh(r)[1]);
-  const hgrad = (id, cols, t, k) => `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">${cols.map((c, i) => `<stop offset="${(WM_REG[i][1] / 1000).toFixed(3)}" stop-color="${_mx(c, k || D, t)}"/>`).join('')}</linearGradient>`;
-  const hill = (id, y, amp, seed, grad) => { let d = `M0 ${WM_H} L0 ${y}`; for (let x = 0; x <= 1000; x += 125) { const y1 = y + (_rn(seed + x / 125) - .5) * amp * 2; d += ` S${x + 62} ${y1 - amp * .4} ${x + 125} ${y + (_rn(seed + x / 125 + 1) - .5) * amp * 2}`; } return `<path d="${d} L1000 ${WM_H}Z" fill="url(#${grad})"/>`; };
+  const hgrad = (id, cols, t, k) => `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0">${cols.map((c, i) => `<stop offset="${(WM_REG[i][1] / WM_W).toFixed(3)}" stop-color="${_mx(c, k || D, t)}"/>`).join('')}</linearGradient>`;
+  const hill = (id, y, amp, seed, grad) => { let d = `M0 ${WM_H} L0 ${y}`; for (let x = 0; x <= WM_W; x += 125) { const y1 = y + (_rn(seed + x / 125) - .5) * amp * 2; d += ` S${x + 62} ${y1 - amp * .4} ${x + 125} ${y + (_rn(seed + x / 125 + 1) - .5) * amp * 2}`; } return `<path d="${d} L${WM_W} ${WM_H}Z" fill="url(#${grad})"/>`; };
   const bush = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="11" ry="3" fill="#000" opacity=".25"/><circle cx="-5" cy="-3" r="6" fill="${c}"/><circle cx="4" cy="-4" r="7" fill="${_mx(c, '#ffffff', .12)}"/><circle cx="0" cy="-8" r="5.5" fill="${_mx(c, '#ffffff', .22)}"/></g>`;
   const oak = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="12" ry="3" fill="#000" opacity=".25"/><rect x="-2" y="-12" width="4" height="13" fill="#5a3a1c"/><circle cx="-7" cy="-16" r="8" fill="${c}"/><circle cx="7" cy="-17" r="9" fill="${_mx(c, '#ffffff', .1)}"/><circle cx="0" cy="-24" r="8.5" fill="${_mx(c, '#ffffff', .2)}"/></g>`;
   const pine = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="1" rx="9" ry="2.5" fill="#000" opacity=".3"/><rect x="-1.6" y="-6" width="3.2" height="7" fill="#4a2c14"/><path d="M0-34 9-17H4l8 11H-8l8-11h-5Z" fill="${c}"/><path d="M0-34 9-17H4l8 11H0Z" fill="${_mx(c, D, .35)}" opacity=".5"/></g>`;
@@ -50,20 +53,22 @@ function wmScenery() {
     <linearGradient id="wmFog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D}" stop-opacity="0"/><stop offset="1" stop-color="${D}" stop-opacity=".6"/></linearGradient>
     <radialGradient id="wmSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c8" stop-opacity=".95"/><stop offset=".4" stop-color="#ffe9a0" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a0" stop-opacity="0"/></radialGradient>
     <radialGradient id="wmMoon" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e8e0ff" stop-opacity=".9"/><stop offset=".5" stop-color="#b8a8ff" stop-opacity=".25"/><stop offset="1" stop-color="#b8a8ff" stop-opacity="0"/></radialGradient></defs>
-    <rect width="1000" height="${WM_H}" fill="url(#wmSky)"/><rect width="1000" height="${WM_H}" fill="url(#wmFade)"/>
+    <rect width="${WM_W}" height="${WM_H}" fill="url(#wmSky)"/><rect width="${WM_W}" height="${WM_H}" fill="url(#wmFade)"/>
     <circle cx="70" cy="52" r="46" fill="url(#wmSun)"/><circle cx="70" cy="52" r="13" fill="#fff6c8"/>
     <circle cx="936" cy="46" r="40" fill="url(#wmMoon)"/><circle cx="936" cy="46" r="11" fill="#efeaff"/><circle cx="941" cy="43" r="9" fill="#5a4a80" opacity=".5"/>
-    ${Array.from({ length: 26 }, (_, i) => `<circle cx="${760 + _rn(i + 60) * 240}" cy="${8 + _rn(i + 80) * 120}" r="${.6 + _rn(i + 7) * .9}" fill="#fff" opacity="${.35 + _rn(i + 17) * .5}"/>`).join('')}
-    <g transform="translate(0 40)">${hill('wmB', 188, 14, 3, 'wmH1')}${hill('wmM', 214, 12, 11, 'wmH2')}${hill('wmF', 246, 10, 23, 'wmH3')}${deco}</g>`);
+    ${Array.from({ length: 26 }, (_, i) => `<circle cx="${760 + _rn(i + 60) * 480}" cy="${8 + _rn(i + 80) * 120}" r="${.6 + _rn(i + 7) * .9}" fill="#fff" opacity="${.35 + _rn(i + 17) * .5}"/>`).join('')}
+    <g transform="translate(0 40)">${hill('wmB', 188, 14, 3, 'wmH1')}${hill('wmM', 214, 12, 11, 'wmH2')}${hill('wmF', 246, 10, 23, 'wmH3')}${deco}</g>${wmSubScenery()}`);
 }
 function wmRoad() {
-  const zs = ZONES.map(z => WM_POS.zone[z.id]);
+  const zs = ZONES.filter(z => !z.sub).map(z => WM_POS.zone[z.id]);
   let d = `M-20 ${zs[0][1] + 34} C ${zs[0][0] / 2} ${zs[0][1] + 34}, ${zs[0][0] / 2} ${zs[0][1]}, ${zs[0][0]} ${zs[0][1]}`;
   for (let i = 1; i < zs.length; i++) { const [x0, y0] = zs[i - 1], [x1, y1] = zs[i], mx = (x0 + x1) / 2; d += ` C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`; }
-  d += ` C ${(zs[5][0] + 1020) / 2} ${zs[5][1]}, ${(zs[5][0] + 1020) / 2} ${zs[5][1] - 30}, 1020 ${zs[5][1] - 30}`;
-  const br = DUNGEONS.map(dj => { const [x, y] = WM_POS.dungeon[dj.id], [zx, zy] = WM_POS.zone[WM_LINK[dj.id]]; return `M${zx} ${zy} Q ${(x + zx) / 2 + 24} ${(y + zy) / 2} ${x} ${y}`; }).join(' ');
+  const wmPos = id => WM_POS.zone[id] || WM_POS.dungeon[id];
+  const curve = id => { const [x, y] = wmPos(id), [zx, zy] = wmPos(WM_LINK[id]); return `M${zx} ${zy} Q ${(x + zx) / 2 + 24} ${(y + zy) / 2 + (WM_POS.zone[id] ? 14 : 0)} ${x} ${y}`; };
+  const br = DUNGEONS.map(dj => curve(dj.id)).join(' '), bs = ZONES.filter(z => z.sub).map(z => curve(z.id)).join(' ');
   return `<path d="${d}" fill="none" stroke="#1a1208" stroke-width="15" stroke-linecap="round" opacity=".7"/><path d="${d}" fill="none" stroke="#a8844c" stroke-width="10.5" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#d9bc7e" stroke-width="7" stroke-linecap="round" opacity=".55"/><path d="${d}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#fff3c4" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 13"/>
-    <path d="${br}" fill="none" stroke="#1a1208" stroke-width="5.5" stroke-linecap="round" opacity=".6"/><path d="${br}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#ffd68a" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 9"/>`;
+    <path d="${br}" fill="none" stroke="#1a1208" stroke-width="5.5" stroke-linecap="round" opacity=".6"/><path d="${br}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#ffd68a" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 9"/>
+    <path d="${bs}" fill="none" stroke="#0a1418" stroke-width="5" stroke-linecap="round" opacity=".55"/><path d="${bs}" class="wm-march" style="${cph(1400)}" fill="none" stroke="#c4ecff" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1.5 8"/>`;
 }
 function wmClouds() {
   return [[0, 34, 1, 80000], [0, 78, .7, 110000], [0, 20, .85, 95000], [0, 58, .6, 130000]].map(([x, y, s, T], i) => `<g class="wm-cloud" style="${cph(T)};animation-duration:${T}ms;opacity:${i % 2 ? .5 : .75}"><g transform="translate(0 ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="34" ry="9" fill="#fff"/><ellipse cx="-14" cy="-6" rx="16" ry="9" fill="#fff"/><ellipse cx="8" cy="-9" rx="19" ry="11" fill="#fff"/></g></g>`).join('')
@@ -77,16 +82,16 @@ function readiness(p) {
 function wmNode(p, type) {
   const [x, y] = WM_POS[type][p.id]; const sel = ui.place.type === type && ui.place.id === p.id;
   const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : mons[0]); const [rd, rl] = readiness(p);
+  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : p.sub ? (mons.find(m => MONSTERS[m].big) || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
   const th = _wmTh(p.region), keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
-  return `<button class="wn ${type}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / 10).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
-    <span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
+  return `<button class="wn ${type}${p.sub ? ' sub' : ''}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / WM_W * 100).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
+    ${p.sub ? `<span class="wn-orbit" style="${cph(18000)}"></span>` : ''}<span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
     ${type === 'dungeon' ? `<span class="wn-key${keyN ? '' : ' none'}" title="Clefs en stock">🗝 ${keyN}</span>` : ''}
     ${here.length ? `<span class="wn-heroes">${here.map((h, i) => `<span class="wn-h" style="${cph(2200 + i * 130)}">${emblem(h.cls, true)}</span>`).join('')}</span>` : ''}
-    <span class="wn-lab"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : ''}niv. ${p.lvl[0]}–${p.lvl[1]}</small></span></button>`;
+    <span class="wn-lab"><b>${p.name}</b><small>${type === 'dungeon' ? 'Donjon · ' : p.sub ? 'Sous-zone · ' : ''}niv. ${p.lvl[0]}–${p.lvl[1]}</small></span></button>`;
 }
 function wmMap() {
-  return `<div class="wm-scroll"><div class="wm"><svg class="wm-svg" viewBox="0 0 ${WM_W} ${WM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${wmScenery()}${wmRoad()}${wmClouds()}<rect width="1000" height="${WM_H}" fill="url(#wmFog)"/></svg>
+  return `<div class="wm-scroll"><div class="wm"><svg class="wm-svg" viewBox="0 0 ${WM_W} ${WM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${wmScenery()}${wmRoad()}${wmSubAnim()}${wmClouds()}<rect width="${WM_W}" height="${WM_H}" fill="url(#wmFog)"/></svg>
     ${ZONES.map(z => wmNode(z, 'zone')).join('')}${DUNGEONS.map(d => wmNode(d, 'dungeon')).join('')}
 </div></div>`;
 }
@@ -121,10 +126,10 @@ function monCard(p, type, mid, T) {
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
         <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
     </div></div>` : '';
-  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}" data-act="togglemon" data-k="${key}">
+  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}" data-act="togglemon" data-k="${key}">
     <div class="mc-head" tabindex="0" role="button" aria-expanded="${mo}" title="Voir tous les objets droppables">
       <span class="mc-ico" aria-hidden="true"><span style="${cph(2600 + (key.length % 7) * 150)}">${monIcon(mid)}</span></span>
-      <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
+      <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${d.big ? '<em class="bg">Gros monstre</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
       <span class="chev" aria-hidden="true">▸</span></div>
     <div class="mc-more">${mo ? 'Cliquer pour replier' : `Voir les ${d.drops.length + gd.length + rl.length} objets droppables`}</div>
     <div class="mc-stats"><span class="hp">❤ <b class="num">${fmt(ms.hp * T.hp)}</b> PV</span><span class="dm">⚔ <b class="num">${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)}</b> dégâts</span></div>
@@ -151,9 +156,10 @@ function placeDetail(p, type) {
   const hills = `<svg class="pb-hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100V58C60 36 110 66 170 50S290 30 400 56V100Z" fill="${_mx(th[1], '#c8d8e8', .3)}" opacity=".55"/><path d="M0 100V72C70 56 130 84 200 68S320 54 400 74V100Z" fill="${_mx(th[1], '#0e110b', .25)}"/></svg>`;
   const motes = Array.from({ length: 7 }, (_, i) => `<i style="left:${8 + i * 13}%;animation-duration:${7000 + i * 900}ms;${cph(7000 + i * 900)}"></i>`).join('');
   return `<div class="place-banner" style="${themeStyle(th)}">${hills}<span class="pb-motes" aria-hidden="true">${motes}</span>
-      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : ''}${p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
+      <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : p.sub ? `Sous-zone de ${ZONES.find(z => z.id === p.parent).name}` : ''}${type === 'dungeon' ? p.region : p.sub ? '' : p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
       <div class="pb-side"><span class="lvl-badge">Niv. ${p.lvl[0]}–${p.lvl[1]}</span><span class="rd ${rd}">${rl}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map((m, i) => `<span style="${cph(2400 + i * 260)}"><span>${monIcon(m)}</span></span>`).join('')}</div></div>
     </div>
+    ${wmLinked(p, type)}
     ${type === 'zone' ? `<div class="tiers">${SUBZONES.map((s, i) => { const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === p.id && (h.act.tier || 0) === i).length;
       return `<button data-act="ztier" data-id="${p.id}" data-t="${i}" aria-pressed="${i === tier}" style="--tc:${['#8fd65a', '#e8d04a', '#f09a3a', '#e8503a'][i]}"><span class="tr-pips">${[0, 1, 2, 3].map(k => `<i${k <= i ? ' class="on"' : ''}></i>`).join('')}</span><b>${p.name} ${i + 1}</b><span>${i ? `PV ×${s.hp} · Dégâts ×${String(s.dmg).replace('.', ',')} · Équip. ×${s.drop}` : 'Difficulté normale'}</span>${n ? `<i class="tr-n">${n} héros</i>` : ''}</button>`; }).join('')}</div>`
       : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp} · une clef par entrée</span>${keyN ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
