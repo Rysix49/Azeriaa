@@ -2,16 +2,16 @@
    VUE CARTE — carte du monde illustrée et animée + fiches de monstres
    (remplace renderCarte / placeDetail de ui2.js)
    ===================================================================== */
-const WM_W = 1400, WM_H = 430;
+const WM_W = 1640, WM_H = 470;
 const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150],
-    wabbits: [268, 338], blops: [590, 322], kanniboul: [872, 338], porcos: [1034, 282], dragoeufs: [1132, 146], frigost: [1216, 304] },
-  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62], dj_dragon_cochon: [982, 44], dj_crocabulia: [1176, 38], dj_mansot: [1312, 86] } };
+    wabbits: [268, 338], blops: [590, 322], kanniboul: [872, 338], porcos: [1110, 280], dragoeufs: [1300, 150], frigost: [1490, 280] },
+  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62], dj_dragon_cochon: [1080, 52], dj_crocabulia: [1300, 46], dj_mansot: [1520, 140] } };
 const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania', dj_dragon_cochon: 'porcos', dj_crocabulia: 'dragoeufs', dj_mansot: 'frigost' };
 for (const z of ZONES) if (z.sub) WM_LINK[z.id] = z.parent; // chemin en pointillés vers la zone mère
 const cph = p => `animation-delay:-${Date.now() % p}ms`;
 const _mx = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
 const _rn = s => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-const WM_REG = [['Incarnam', 80], ['Astrub', 236], ['Amakna', 408], ['Cania', 580], ['Koalak', 752], ['Sidimote', 918], ['Frigost', 1214]];
+const WM_REG = [['Incarnam', 80], ['Astrub', 236], ['Amakna', 408], ['Cania', 580], ['Koalak', 752], ['Sidimote', 918], ['Porcos', 1110], ['Dragoeufs', 1300], ['Frigost', 1490]];
 const _wmTh = r => THEME[r] || THEME.idle;
 
 let _wmStatic = null;
@@ -56,7 +56,7 @@ function wmScenery() {
     <rect width="${WM_W}" height="${WM_H}" fill="url(#wmSky)"/><rect width="${WM_W}" height="${WM_H}" fill="url(#wmFade)"/>
     <circle cx="70" cy="52" r="46" fill="url(#wmSun)"/><circle cx="70" cy="52" r="13" fill="#fff6c8"/>
     <circle cx="936" cy="46" r="40" fill="url(#wmMoon)"/><circle cx="936" cy="46" r="11" fill="#efeaff"/><circle cx="941" cy="43" r="9" fill="#5a4a80" opacity=".5"/>
-    ${Array.from({ length: 26 }, (_, i) => `<circle cx="${760 + _rn(i + 60) * 480}" cy="${8 + _rn(i + 80) * 120}" r="${.6 + _rn(i + 7) * .9}" fill="#fff" opacity="${.35 + _rn(i + 17) * .5}"/>`).join('')}
+    ${Array.from({ length: 44 }, (_, i) => `<circle cx="${760 + _rn(i + 60) * 860}" cy="${8 + _rn(i + 80) * 120}" r="${.6 + _rn(i + 7) * .9}" fill="#fff" opacity="${.35 + _rn(i + 17) * .5}"/>`).join('')}
     <g transform="translate(0 40)">${hill('wmB', 188, 14, 3, 'wmH1')}${hill('wmM', 214, 12, 11, 'wmH2')}${hill('wmF', 246, 10, 23, 'wmH3')}${deco}</g>${wmSubScenery()}`);
 }
 function wmRoad() {

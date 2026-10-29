@@ -3336,9 +3336,9 @@ label.btn { cursor: pointer; }
 /* =====================================================================
    SOUS-ZONES DE LA CARTE (Île des Wabbits, Lac des Blops, Kanniboul, Porcos, Dragoeufs, Frigost)
    ===================================================================== */
-.wm { aspect-ratio: 1400 / 430; min-width: 1180px; }
-@media (max-width: 700px) { .wm { min-width: 1130px; } }
-@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1580px); } }
+.wm { aspect-ratio: 1640 / 470; min-width: 1400px; }
+@media (max-width: 700px) { .wm { min-width: 1340px; } }
+@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1860px); } }
 .wm-svg g, .wm-svg ellipse, .wm-svg circle { transform-box: fill-box; }
 .wn.sub { width: 46px; height: 46px; }
 .wn.sub .wn-art { border-width: 2.5px; font-size: 25px; padding-bottom: 4px; border-color: color-mix(in srgb, var(--ground) 30%, #fff);
