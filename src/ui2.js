@@ -43,9 +43,9 @@ let st;
 const ui = {
   view: 'combat', hero: null, job: 'tailleur', invFilter: 'all', sel: null, slot: null, hslot: null, eqTab: 'combat',
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
-  recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '',
+  recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '', fcFold: {}, jrOpen: false,
 };
-const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
+const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'fcFold', 'jrOpen'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -70,9 +70,10 @@ function loadGame(snapshot) {
 /* ---------------------------- Notifications ---------------------------- */
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
+  turretNew(h, s) { toast(`⚙️ ${h.name} déploie sa ${STM_NAMES[s].toLowerCase()} !`, 'quest'); },
   levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
-    for (const g of gear) toast(ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic ? 'relic' : g.stasis ? 'stasis' : 'rare');
+    for (const g of gear) toast(ITEMS[g.id].dofus ? `DOFUS ! ${h.name} a trouvé le ${ITEMS[g.id].name} !` : ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic || ITEMS[g.id].dofus ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
   },
   dungeonDone(h, p) { toast(`${h.name} a vaincu ${p.name} !`, 'quest'); },
@@ -99,14 +100,15 @@ const CLASS_GLYPH = {
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
   ecaflip: '<path d="M4.2 3.8 9 7.9c1.9-.6 4.1-.6 6 0l4.8-4.1.5 8.7c0 4.6-3.6 7.7-8.3 7.7S3.7 17.1 3.7 12.5Z" fill="currentColor"/><path d="M7.6 12.2c.9-1.1 2.1-1.1 2.8 0M13.6 12.2c.9-1.1 2.1-1.1 2.8 0" stroke="var(--c)" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M12 14.1l-1.3 1.3h2.6Z" fill="var(--c)"/><path d="M12 15.4v1.1M9.9 16.7c.8.5 1.5.5 2.1 0 .6.5 1.3.5 2.1 0" stroke="var(--c)" stroke-width=".9" stroke-linecap="round" fill="none"/><path d="M1.4 12.6l3.6.8M1.7 16l3.4-.9M22.6 12.6l-3.6.8M22.3 16l-3.4-.9" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/>',
   xelor: '<path d="M6.5 3h11M6.5 21h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5c0 4.6 3.6 5.8 3.6 8.5S8 15.9 8 20.5h8c0-4.6-3.6-5.8-3.6-8.5S16 7.1 16 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 19.6c.6-1.9 1.5-2.6 2.4-2.6s1.8.7 2.4 2.6ZM10 6.2h4c-.5 1.4-1.2 2.1-2 2.6-.8-.5-1.5-1.2-2-2.6Z" fill="currentColor"/><circle cx="12" cy="13.4" r=".7" fill="currentColor"/>',
+  steamer: '<circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="3.2" stroke-dasharray="3.3 3.3"/><circle cx="12" cy="12" r="6.6" fill="currentColor"/><circle cx="12" cy="12" r="3.1" fill="var(--c)"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><path d="M12 12h8.6" stroke="var(--c)" stroke-width="4.6" stroke-linecap="round"/><path d="M12 12h8.6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
   sram: '<path d="M14.5 3.2A8.8 8.8 0 1 0 20.8 16 7 7 0 1 1 14.5 3.2Z" fill="currentColor"/><path d="M17.5 5.5 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19.2 3.8l1-1M16.3 4.3l3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
 };
 function emblem(cls, size) {
   const c = CLASSES[cls];
   return `<span class="emblem${size ? ' ' + (size === true ? 'sm' : size) : ''}" style="--c:${c.color}" title="${c.name}" aria-hidden="true"><svg viewBox="0 0 24 24">${CLASS_GLYPH[cls] || ''}</svg></span>`;
 }
-function bar(kind, val, max) { const p = max > 0 ? clamp(val / max * 100, 0, 100) : 0; return `<div class="bar ${kind}"><i style="width:${p.toFixed(1)}%"></i></div>`; }
-function setBar(el, val, max) { const i = el && el.querySelector('.bar > i'); if (i) i.style.width = (max > 0 ? clamp(val / max * 100, 0, 100) : 0).toFixed(1) + '%'; }
+function bar(kind, val, max) { const p = (max > 0 ? clamp(val / max * 100, 0, 100) : 0).toFixed(1); return `<div class="bar ${kind}" style="--w:${p}%"><i style="width:${p}%"></i></div>`; }
+function setBar(el, val, max) { const i = el && el.querySelector('.bar > i'); if (!i) return; const p = (max > 0 ? clamp(val / max * 100, 0, 100) : 0).toFixed(1) + '%'; i.style.width = p; i.parentNode.style.setProperty('--w', p); } // --w : traînée « fantôme » des barres de PV
 const coin = '<span class="kama" aria-hidden="true"></span>';
 function kamasHtml(n) { return `<span class="kamas">${coin}<b class="num">${fmt(n)}</b></span>`; }
 function itemIcon(id) { return itemArt(id); }
@@ -118,11 +120,13 @@ function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RES
 function themeStyle(th) { return `--sky:${th[0]};--ground:${th[1]}`; }
 function qClass(g) {
   if (ITEMS[g.id].relic) return 'q-relic';
+  if (ITEMS[g.id].dofus) return 'q-dofus';
   if (g.stasis) return 'q-stasis';
   const q = itemQuality(g); return q > 0.8 ? 'q-high' : q > 0.4 ? 'q-mid' : 'q-low';
 }
 function qualityTag(g) {
   if (ITEMS[g.id].relic) return '<span class="qtag q-relic">Relique</span>';
+  if (ITEMS[g.id].dofus) return '<span class="qtag q-dofus">Dofus</span>';
   if (g.stasis) return '<span class="qtag q-stasis">Stasifié ×2</span>';
   return `<span class="qtag ${qClass(g)}">Jet ${Math.round(itemQuality(g) * 100)} %</span>`;
 }
@@ -226,7 +230,7 @@ function renderCombat() {
   if (!st.heroes.length) return renderRecruit(true);
   const more = st.heroes.length < RECRUIT_COST.length;
   const cost = RECRUIT_COST[st.heroes.length];
-  return `<div class="fights">${st.heroes.map(fightCard).join('')}</div>
+  return `${cbOverview()}<div class="fights">${st.heroes.map(fightCard).join('')}</div>
     ${more ? `<div class="hint-band"><span>Ton groupe peut accueillir un héros de plus${st.kamas >= cost ? '.' : ` (${fmt(cost)} kamas).`}</span><button class="btn sm ${st.kamas >= cost ? 'gold' : ''}" data-act="recruitnav">Recruter un héros</button></div>` : ''}`;
 }
 function passiveHtml(c) {
@@ -289,34 +293,41 @@ function fightCard(h) {
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
       return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
-        <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
+        <i class="act-mark" aria-hidden="true">▼</i><div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>${h.cls === 'steamer' ? `<div class="mst" data-k="mst">${stmMonChips(m)}</div>` : ''}
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}${h.cls === 'steamer' ? yardHtml(h) : ''}</div><div class="foes">${foes}</div>`;
   }
-  return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
+  const folded = !!(ui.fcFold && ui.fcFold[h.id]);
+  return `<article class="fc${folded ? ' fold' : ''}${harvest ? ' is-harvest' : ''}" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
       ${emblem(h.cls)}
       <div class="fc-who"><b class="fc-name">${esc(h.name)}</b><span class="fc-sub">${CLASSES[h.cls].name} · <span class="lvl">Niv. ${h.lvl}</span>${h.capital ? ` · <button class="link" data-act="gohero" data-hero="${h.id}">${h.capital} pts à répartir</button>` : ''}</span></div>
       <div class="fc-where">${place ? `<span class="tag">${actLabel(h)}</span><b>${esc(subName(place, h.act))}</b>${room}` : '<span class="sub">Aucune activité</span>'}</div>
       <span class="buff" data-k="buff"${h.food ? '' : ' hidden'}>${foodChip(h)}</span>
+      <span class="fc-mini" data-k="fcmini" title="Points de vie">${bar('hp thin', hp, t.maxHp)}</span>
       <span class="status ${sc}" data-k="status">${stxt}</span>
+      <button class="btn sm ghost fc-fold" data-act="fcfold" data-hero="${h.id}" aria-label="Réduire ou déplier la carte" title="Réduire / déplier">${folded ? '▾' : '▴'}</button>
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur') && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${!harvest && h.act ? ' has-tl' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur' || h.cls === 'steamer') && !harvest ? ' has-fury' : ''}${h.cls === 'steamer' && !harvest ? ' has-yard' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+        ${cbRibbon(h)}
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}"${h.cls === 'zobal' ? ` data-mask="${zobMask(h)}"` : ''}>
-          <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
+          <i class="act-mark" aria-hidden="true">▼</i><div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
           ${h.cls === 'sacrieur' ? bloodGauge(h) : ''}
           ${h.cls === 'sacrieur' ? `<button class="fury-btn blood-btn" data-act="sacolosse" data-hero="${h.id}" data-k="bloodbtn" title="Déclencher le Colosse de Sang !" aria-label="Déclencher le Colosse de Sang"${bloodReady(h) && h.fight ? '' : ' hidden'}>${COLOSSE_ICON}</button>` : ''}
+          ${h.cls === 'steamer' ? steamGauge(h) : ''}
+          ${h.cls === 'steamer' ? `<button class="fury-btn steam-btn" data-act="steamsurge" data-hero="${h.id}" data-k="steambtn" title="Déclencher la Surcharge Stasis !" aria-label="Déclencher la Surcharge Stasis"${steamReady(h) && h.fight ? '' : ' hidden'}>${SURGE_ICON}</button>` : ''}
           ${h.cls === 'xelor' ? chronoBtn(h) : ''}
-          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
+          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}"${h.cls === 'steamer' ? ` style="--pr:${clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1).toFixed(3)}"` : ''}>${heroSprite(h.cls)}</div></div>
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
-      <div class="fc-log" data-k="log">${logHtml(h)}</div>
     </div>
+    ${cbSpellbar(h)}
+    ${cbJournal(h)}
     <footer class="fc-foot">
       <div class="xpline"><span class="lbl">XP</span><div class="grow" data-k="xpb">${bar('xp thin', h.xp, xpToNext(h.lvl))}</div><span class="num" data-k="xpt">${h.lvl >= MAX_LEVEL ? 'Max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))}`}</span></div>
       <div class="rates" data-k="rates">${fightRates(h)}</div>
@@ -828,7 +839,7 @@ function playColosse(card, h, k) {
   at(T.end - 450, () => { an(q('.cc-dark'), [{ opacity: 1 }, { opacity: 0 }], { duration: 450 }); qa('.cc-seal').forEach(e => an(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 450 })); });
   setTimeout(() => { ov.remove(); scene.classList.remove('cc-on', 'cc-rumble'); fu.classList.remove('sac-cast'); k.done(); }, T.end);
 }
-function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
+function logHtml(h) { return cbLogHtml(h); }
 function floatNum(el, txt, cls) {
   const f = document.createElement('span'); f.className = 'fnum ' + cls; f.textContent = txt;
   el.appendChild(f); setTimeout(() => f.remove(), 950);
@@ -935,9 +946,12 @@ function patchCombat() {
       el.classList.toggle('dead', mhp <= 0); if (mhp > 0) el.classList.remove('still');
       if (m.frozen && mhp > 0 && !el.classList.contains('frozen')) iceBurst(el);
       el.classList.toggle('frozen', !!m.frozen && mhp > 0);
+      if (h.cls === 'steamer' && !held) stmMonPatch(el, m, mhp);
       setBar(el, mhp, m.max);
       el.querySelector('[data-k="mhp"]').textContent = fmt(mhp);
     });
+    cbPatch(h, card, scene);
+    setBar(q('fcmini'), hp, t.maxHp);
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk && !held) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
@@ -977,6 +991,7 @@ function patchCombat() {
         cb.classList.toggle('full', c >= CHRONO_MAX);
       }
     }
+    if (h.cls === 'steamer') stmPatch(card, h, scene);
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
     const bl = q('blood'); if (bl) { const p = clamp((h.blood || 0) / SAC_BLOOD_MAX, 0, 1); bl.firstElementChild.style.setProperty('--p', p.toFixed(3)); bl.classList.toggle('full', p >= 1); const lb = bl.lastElementChild, tx = p >= 1 ? 'COLOSSE !' : 'Sang ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
@@ -1002,6 +1017,7 @@ function patchCombat() {
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
     if (h.act && h.act.type === 'harvest') harvestPatch(q, card, h, scene);
   }
+  cbOvPatch();
   updateArchiBtn();
 }
 
@@ -1013,7 +1029,7 @@ function renderRecruit(first) {
   return `<section class="panel recruit">
     <div><h2 class="display big-title">${first ? 'Bienvenue dans le Monde des Douze' : 'Recruter un héros'}</h2>
       <p class="sub" style="margin:4px 0 0">${first ? 'Choisis la classe de ton premier héros. Il combattra seul dans les zones que tu choisis, tant que le jeu est ouvert.' : `Héros ${st.heroes.length + 1} sur ${RECRUIT_COST.length}. Chaque héros a sa propre activité et son propre équipement.`}</p></div>
-    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">Élément ${STAT_ELEM[k.elem] || '—'}</span></button>`).join('')}</div>
+    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">${k.elemTxt ? 'Éléments ' + k.elemTxt : 'Élément ' + (STAT_ELEM[k.elem] || '—')}</span></button>`).join('')}</div>
     <div class="recruit-detail" style="--c:${c.color}">
       ${emblem(ui.recruitCls, 'xl')}
       <div class="rd-main"><h3 class="display">${c.name} <small>${c.role}</small></h3><p>${c.desc}</p>
@@ -1040,12 +1056,12 @@ function heroTabs(h) {
 function renderHeros() {
   const h = selHero(); if (!h) return renderRecruit(true);
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
-  const tab = ['combat', 'recolte', 'relique'].includes(ui.eqTab) ? ui.eqTab : 'combat';
-  const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
+  const tab = ['combat', 'recolte', 'relique', 'dofus'].includes(ui.eqTab) ? ui.eqTab : 'combat';
+  const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique'], ['dofus', 'Dofus']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
   const fp = skillFree(h);
   const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
   return `${heroTabs(h)}${skb}<div class="hero-grid">
-    <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : combatGear(h)}</section>
+    <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : tab === 'dofus' ? dofusPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
 function slotTile(h, slot) {
@@ -1074,6 +1090,7 @@ function combatGear(h) {
   if (!SLOTS.includes(ui.slot)) ui.slot = null;
   const t = heroTotals(st, h); const hp = displayHp(st, h); const c = CLASSES[h.cls];
   const rel = h.relic && gearById(st, h.relic);
+  const nDofus = DOFUS_SLOTS.filter(s => h.dofus && h.dofus[s] && gearById(st, h.dofus[s])).length;
   const doll = `<div class="doll" style="--hc:${c.color}">
     <div class="doll-col">${['coiffe', 'cape', 'amulette', 'ceinture'].map(s => slotTile(h, s)).join('')}</div>
     <div class="doll-mid">
@@ -1082,6 +1099,7 @@ function combatGear(h) {
       <div class="mini-bars"><div>${bar('hp', hp, t.maxHp)}<small class="num">${fmt(hp)} / ${fmt(t.maxHp)} PV</small></div>
         <div>${bar('xp thin', h.xp, xpToNext(h.lvl))}<small class="num">${h.lvl >= MAX_LEVEL ? 'Niveau max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))} XP`}</small></div></div>
       <button class="relic-mini${rel ? ' on' : ''}" data-act="eqtab" data-v="relique" title="Relique">${rel ? itemIcon(rel.id) : '<span class="ph">🔮</span>'}<small>${rel ? esc(ITEMS[rel.id].name) : 'Aucune relique'}</small></button>
+      <button class="dofus-mini${nDofus ? ' on' : ''}" data-act="eqtab" data-v="dofus" title="Dofus">${nDofus ? dofusRow(h, true) : '<span class="ph">🥚</span>'}<small>${nDofus ? `${nDofus} Dofus équipé${nDofus > 1 ? 's' : ''}` : 'Aucun Dofus'}</small></button>
       <div class="activity">${h.act ? `<span><span class="tag">${actLabel(h)}</span> <b>${esc(placeName(h.act))}</b></span>` : '<span class="sub">Inactif</span>'}
         <div class="row-btns">${h.act ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : ''}<button class="btn sm" data-act="gomap" data-hero="${h.id}">Carte</button></div></div>
     </div>
@@ -1101,7 +1119,7 @@ function combatGear(h) {
         ${d.set ? setBlock(d.set, h) : ''}</div>`;
   }
   const typeOf = s => (s && s.startsWith('anneau') ? 'anneau' : s);
-  const free = st.gear.filter(g => !ITEMS[g.id].harvest && !ITEMS[g.id].relic).filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); });
+  const free = st.gear.filter(g => !ITEMS[g.id].harvest && !ITEMS[g.id].relic && !ITEMS[g.id].dofus).filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); });
   let body;
   if (!ui.slot) {
     // Vue d'ensemble : un bouton par type d'objet, avec le nombre et le meilleur gain possible
@@ -1152,7 +1170,7 @@ function statsPanel(h) {
     const p = sp.type === 'buff' ? null : spellPower(h, t, null, sp);
     const eff = sp.type === 'buff' ? Object.entries(sp.buff).map(([k, v]) => `+${v} ${STAT_LABEL[k]}`).join(', ') + ` pendant ${sp.turns} tours`
       : `${sp.type === 'heal' ? 'Soigne' : 'Inflige'} ~${fmt(p.avg)}${sp.type === 'aoe' ? ' à tous les ennemis' : sp.type === 'poison' ? ` par tour pendant ${sp.turns} tours` : sp.type === 'drain' ? ' et vole la moitié en PV' : ''}`;
-    const lim = [sp.freeze ? `+${sp.freeze} % de chance de figer` : '', sp.grains ? `+${sp.grains} grains` : '', sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
+    const lim = [sp.freeze ? `+${sp.freeze} % de chance de figer` : '', sp.grains ? `+${sp.grains} grains` : '', sp.note || '', sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
     const locked = h.lvl < sp.lvl;
     return `<div class="spell${locked ? ' locked' : ''}"><span class="pa" title="Points d'action">${sp.pa}</span>
       <div><b>${sp.name}</b>${sp.stat && STAT_ELEM[sp.stat] ? ` <span class="elem" style="--c:${STAT_COLOR[sp.stat]}">${STAT_ELEM[sp.stat]}</span>` : ''}<div class="desc">${eff}${lim ? ' · ' + lim : ''}</div></div>
@@ -1192,6 +1210,37 @@ function harvestGear(h) {
         <button class="btn sm gold" data-act="equip" data-uid="${g.uid}" ${ok ? '' : 'disabled'}>${ok ? 'Équiper' : `Paysan ${d.lvl}`}</button></div>`; }).join('')}</div>`
     : `<div class="empty sm">Aucun outil de récolte. Le Forgeron fabrique les faux, le Tailleur les gants et les sacs, à partir de céréales. <button class="btn sm" data-act="view" data-v="ateliers">Aller aux Ateliers</button></div>`}`;
 }
+/* Rangée des Dofus équipés (mini œufs) */
+function dofusRow(h, mini) {
+  return `<span class="dofus-row">${DOFUS_SLOTS.map(s => { const g = h.dofus && h.dofus[s] && gearById(st, h.dofus[s]); return g ? `<span class="dofus-ic">${itemIcon(g.id)}</span>` : (mini ? '' : '<span class="dofus-ic empty">🥚</span>'); }).join('')}</span>`;
+}
+function dofusPanel(h) {
+  h.dofus = h.dofus || {};
+  if (!DOFUS_SLOTS.includes(ui.dslot)) ui.dslot = null;
+  const slots = DOFUS_SLOTS.map((s, i) => { const g = h.dofus[s] && gearById(st, h.dofus[s]); const sel = ui.dslot === s;
+    return `<div class="hslot"><button class="slot-t dofus-slot ${g ? 'q-dofus' : 'empty'}${sel ? ' sel' : ''}" data-act="dofusslot" data-slot="${s}" aria-pressed="${sel}" title="${g ? esc(ITEMS[g.id].name) : 'Emplacement Dofus ' + (i + 1) + ' : vide'}">${g ? itemIcon(g.id) : '<span class="ph">🥚</span>'}<span class="st-l">Dofus ${i + 1}</span></button>
+      <small>${g ? esc(ITEMS[g.id].name) : 'Vide'}</small></div>`; }).join('');
+  const cur = ui.dslot && h.dofus[ui.dslot] && gearById(st, h.dofus[ui.dslot]);
+  const owned = st.gear.filter(g => ITEMS[g.id].dofus).filter(g => { const by = equippedBy(st, g.uid); return !(by && by.id === h.id); }).sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl);
+  const ownedIds = new Set(st.gear.filter(g => ITEMS[g.id].dofus).map(g => g.id));
+  const ids = Object.keys(ITEMS).filter(id => ITEMS[id].dofus);
+  const t = heroTotals(st, h);
+  const dofusStat = (k, v) => `<span class="sd" style="--c:${STAT_COLOR[k] || 'var(--dofus)'}">+${v} ${STAT_SHORT[k]}</span>`;
+  return `<p class="hint">Les Dofus sont des œufs magiques : ${DOFUS_SLOTS.length} emplacements par héros, un seul exemplaire de chaque Dofus. Ils ne se fabriquent pas : ils tombent très rarement sur les boss de donjon.</p>
+    <div class="hslots dofus-slots">${slots}</div>
+    <div class="cstats"><div class="cs"><small>Critique</small><b>${t.critPct.toFixed(1).replace('.', ',')} %</b></div><div class="cs"><small>Bonus dégâts critiques</small><b>+${t.critDmg || 0} %</b></div></div>
+    <div class="list-h"><span class="label">${ui.dslot ? 'Dofus disponibles' : 'Dofus du sac · choisis un emplacement ou équipe directement'}</span>
+      ${cur ? `<button class="btn sm danger" data-act="undofus" data-slot="${ui.dslot}">Retirer ${esc(ITEMS[cur.id].name)}</button>` : ''}</div>
+    ${owned.length ? `<div class="bag-list">${owned.map(g => { const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const ok = h.lvl >= d.lvl;
+      return `<div class="bag-r q-dofus"><div class="tile sm q-dofus">${itemIcon(g.id)}</div><div class="br-main"><div class="br-top"><b>${esc(d.name)}</b><small class="sub">niv. ${d.lvl}</small>${qualityTag(g)}${by ? `<small class="eqby">porté par ${esc(by.name)}</small>` : ''}</div>
+        <div class="sd-list">${Object.entries(g.stats).map(([k, v]) => dofusStat(k, v)).join('')}</div></div>
+        <button class="btn sm gold" data-act="equip" data-uid="${g.uid}" ${ui.dslot ? `data-slot="${ui.dslot}"` : ''} ${ok ? '' : 'disabled'}>${ok ? 'Équiper' : `Niv. ${d.lvl}`}</button></div>`; }).join('')}</div>`
+      : '<div class="empty sm">Aucun Dofus dans le sac. Le Dofus Turquoise peut tomber sur le Dragon Cochon, au fond de son repaire.</div>'}
+    <div class="list-h"><span class="label">Codex des Dofus · ${ownedIds.size}/${ids.length}</span></div>
+    <div class="relic-codex">${ids.map(id => { const d = ITEMS[id]; const has = ownedIds.has(id);
+      return `<div class="relic-entry dofus-entry${has ? ' has' : ''}"><div class="relic-mini-ic">${itemIcon(id)}</div><div class="re-main"><b>${has ? esc(d.name) : '???'}</b> <small class="sub">niv. ${d.lvl}</small>
+        <div class="sub">${Object.entries(d.stats).map(([k, [a, b]]) => `${a === b ? a : a + '–' + b} ${STAT_SHORT[k]}`).join(' · ')}</div><div class="re-src">${relicSources(id)}</div></div></div>`; }).join('')}</div>`;
+}
 function relicSources(id) { return Object.entries(RELIC_DROPS).filter(([, l]) => l.some(([r]) => r === id)).map(([m, l]) => `${monIcon(m)} ${MONSTERS[m].name} (${pct(l.find(([r]) => r === id)[1])})`).join(', '); }
 function relicPanel(h) {
   const cur = h.relic && gearById(st, h.relic);
@@ -1221,12 +1270,12 @@ function defaultPlace() {
 }
 function placeMons(p, type) { return type === 'dungeon' ? [...new Set([...p.rooms.flat(), ...p.boss])] : p.monsters; }
 /* ---------------------------- Vue : Inventaire ---------------------------- */
-const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['res', 'Ressources', '🧺']];
+const INV_FILTERS = [['all', 'Tout', '🎒'], ['gear', 'Équipements', '⚔️'], ['harvest', 'Outils', '🪓'], ['relic', 'Reliques', '✨'], ['dofus', 'Dofus', '🥚'], ['res', 'Ressources', '🧺']];
 const INV_SORTS = [['lvl', 'Niveau'], ['q', 'Qualité'], ['val', 'Valeur'], ['name', 'Nom']];
 const INV_RCATS = [['all', 'Toutes'], ['loot', 'Butin'], ['crop', 'Récoltes'], ['food', 'Repas'], ['rune', 'Runes'], ['rare', 'Rares'], ['key', 'Clefs']];
 const INV_RCAT_LABEL = { loot: 'Butin de monstres', crop: 'Récoltes', food: 'Repas', rune: 'Runes', rare: 'Ressources rares', key: 'Clefs de donjon' };
 const resCat = id => { const r = RESOURCES[id]; return r.key ? 'key' : r.food ? 'food' : r.rune ? 'rune' : r.crop ? 'crop' : r.rare ? 'rare' : 'loot'; };
-const gearKind = g => (ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
+const gearKind = g => (ITEMS[g.id].dofus ? 'dofus' : ITEMS[g.id].relic ? 'relic' : ITEMS[g.id].harvest ? 'harvest' : 'gear');
 const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 const gearStatChips = g => Object.entries(g.stats).map(([k, v]) => `<i style="color:${STAT_COLOR[k] || 'var(--fg)'}">+${v} ${STAT_LABEL[k]}</i>`).join('');
 const relicPh = () => `--ph:-${Date.now() % 6000}ms;`;
@@ -1241,7 +1290,7 @@ function resTile(id) {
 }
 function gearRow(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid); const sel = ui.sel && ui.sel.k === 'gear' && ui.sel.uid === g.uid;
-  const type = d.relic ? 'Relique' : d.harvest ? HARVEST_SLOT_LABEL[d.slot] : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
+  const type = d.dofus ? 'Dofus' : d.relic ? 'Relique' : d.harvest ? HARVEST_SLOT_LABEL[d.slot] : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
   return `<button class="iv-row ${qClass(g)}${sel ? ' sel' : ''}" data-act="pick" data-kind="gear" data-uid="${g.uid}"><span class="tile sm ${qClass(g)}" style="${d.relic ? relicPh() : ''}">${itemIcon(g.id)}</span>
     <span class="iv-n"><b>${esc(d.name)}</b><small>${type} · niv. ${d.lvl}${d.set ? ` · <u class="setn" style="--sc:${SET_COL[d.set]}">${esc(SETS[d.set].name.replace('Panoplie ', '').replace('de l’', '').replace('du ', '').replace("de l'", ''))}</u>` : ''}</small></span><span class="iv-st">${gearStatChips(g)}</span>
     <span class="iv-r">${qualityTag(g)}${by ? `<span class="iv-by" style="--c:${CLASSES[by.cls].color}">${emblem(by.cls, true)}${esc(by.name)}</span>` : `<small class="iv-v">${fmt(itemValue(g))} K</small>`}</span></button>`;
@@ -1261,9 +1310,9 @@ function renderInventaire() {
   const q = norm(ui.invQ || ''), rcat = INV_RCATS.some(x => x[0] === ui.invRcat) ? ui.invRcat : 'all';
   const slot = ui.invSlot || 'all', freeOnly = !!ui.invFree;
   const allRes = Object.keys(st.res).filter(id => st.res[id] > 0);
-  const counts = { all: 0, res: allRes.length, gear: 0, harvest: 0, relic: 0 };
+  const counts = { all: 0, res: allRes.length, gear: 0, harvest: 0, relic: 0, dofus: 0 };
   for (const g of st.gear) counts[gearKind(g)]++;
-  counts.all = counts.res + counts.gear + counts.harvest + counts.relic;
+  counts.all = counts.res + counts.gear + counts.harvest + counts.relic + counts.dofus;
   const worn = st.gear.filter(g => equippedBy(st, g.uid)).length;
   const stock = allRes.reduce((s, id) => s + st.res[id] * RESOURCES[id].value, 0), units = allRes.reduce((s, id) => s + st.res[id], 0);
   const matchG = g => { const d = ITEMS[g.id]; if (q && !norm(d.name).includes(q)) return false; if (freeOnly && equippedBy(st, g.uid)) return false; return true; };
@@ -1273,10 +1322,11 @@ function renderInventaire() {
   const resList = allRes.filter(id => (!q || norm(RESOURCES[id].name).includes(q)) && (rcat === 'all' || resCat(id) === rcat)).sort(rcmp);
   const isList = view === 'list', gT = isList ? gearRow : gearTile, rT = isList ? resRow : resTile;
   const secs = [];
-  const gs = f === 'all' || f === 'gear' ? gearOf('gear') : [], hs = f === 'all' || f === 'harvest' ? gearOf('harvest') : [], rl = f === 'all' || f === 'relic' ? gearOf('relic') : [];
+  const gs = f === 'all' || f === 'gear' ? gearOf('gear') : [], hs = f === 'all' || f === 'harvest' ? gearOf('harvest') : [], rl = f === 'all' || f === 'relic' ? gearOf('relic') : [], dfs = f === 'all' || f === 'dofus' ? gearOf('dofus') : [];
   if (gs.length) secs.push(invSection('Équipements', '⚔️', gs.length, gs.map(gT).join(''), isList));
   if (hs.length) secs.push(invSection('Outils de récolte', '🪓', hs.length, hs.map(gT).join(''), isList));
   if (rl.length) secs.push(invSection('Reliques', '✨', rl.length, rl.map(gT).join(''), isList));
+  if (dfs.length) secs.push(invSection('Dofus', '🥚', dfs.length, dfs.map(gT).join(''), isList));
   if ((f === 'all' || f === 'res') && resList.length) {
     if (rcat === 'all' && f === 'res') for (const [c, l] of INV_RCATS.slice(1)) { const ids = resList.filter(id => resCat(id) === c); if (ids.length) secs.push(invSection(INV_RCAT_LABEL[c], { loot: '🦴', crop: '🌾', food: '🍞', rune: '🔮', rare: '💎', key: '🗝️' }[c], ids.length, ids.map(rT).join(''), isList)); }
     else secs.push(invSection('Ressources', '🧺', resList.length, resList.map(rT).join(''), isList));
@@ -1286,7 +1336,7 @@ function renderInventaire() {
   const sell = `<button class="btn sm" data-act="sellallres" ${allRes.length ? '' : 'disabled'} title="Vend toutes les ressources sauf les rares et les clefs">Vendre les ressources communes</button>`;
   return `<div class="inv-layout"><section class="panel iv-panel">
     <div class="iv-stats">
-      <div class="iv-stat"><span>⚔️</span><div><small>Objets</small><b class="num">${counts.gear + counts.harvest + counts.relic}</b><em>${worn} porté${worn > 1 ? 's' : ''}</em></div></div>
+      <div class="iv-stat"><span>⚔️</span><div><small>Objets</small><b class="num">${counts.gear + counts.harvest + counts.relic + counts.dofus}</b><em>${worn} porté${worn > 1 ? 's' : ''}</em></div></div>
       <div class="iv-stat"><span>🧺</span><div><small>Ressources</small><b class="num">${allRes.length}</b><em>${short(units)} unités</em></div></div>
       <div class="iv-stat gold"><span>💰</span><div><small>Stock</small><b class="num">${fmt(stock)}</b><em>kamas</em></div></div>
     </div>
@@ -1299,7 +1349,7 @@ function renderInventaire() {
     <div class="iv-tools"><div class="iv-sort"><span class="sub">Trier</span>${INV_SORTS.map(([v, l]) => `<button class="fchip sm" data-act="invsort" data-v="${v}" aria-pressed="${sort === v}">${l}</button>`).join('')}</div>
       <div class="iv-sort">${f !== 'res' ? `<button class="fchip sm" data-act="invfree" aria-pressed="${freeOnly}" title="Masquer les objets portés">Non portés</button>` : ''}${sell}</div></div>
     ${secs.length ? secs.join('') : `<div class="empty">${q ? `Aucun résultat pour « ${esc(ui.invQ)} ».` : 'Rien ici pour l’instant. Les ressources tombent des monstres, les équipements se fabriquent dans les Ateliers.'}</div>`}
-    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
+    <p class="hint">Bordure grise, blanche ou dorée : qualité du jet. Violet : stasifié. Jaune : relique. Turquoise : Dofus. Le badge en haut à droite (classe + initiale) et le liseré de couleur indiquent quel héros porte l’objet ; sans badge, il est libre.</p>
   </section><aside class="panel inspector">${inspector()}</aside></div>`;
 }
 function inspector() {
@@ -1309,7 +1359,7 @@ function inspector() {
   return `<div class="insp-empty">${ICONS.inventaire}<b>Sélectionne un objet</b><p class="sub">Clique sur une case pour voir ses détails, le comparer à ce que portent tes héros, l’équiper ou le vendre.</p></div>`;
 }
 function gearCurrent(d, h) {
-  if (d.relic) return h.relic; if (d.harvest) return (h.hequip || {})[d.slot];
+  if (d.relic) return h.relic; if (d.dofus) { const h2 = h.dofus || {}; return h2[DOFUS_SLOTS.find(s => !h2[s]) || DOFUS_SLOTS[0]]; } if (d.harvest) return (h.hequip || {})[d.slot];
   const ss = slotsFor(d.slot); return h.equip[ss.find(s => !h.equip[s]) || ss[0]];
 }
 function gearDiff(g, cur) {
@@ -1318,7 +1368,7 @@ function gearDiff(g, cur) {
 }
 function gearInspector(g) {
   const d = ITEMS[g.id]; const by = equippedBy(st, g.uid);
-  const type = d.relic ? 'Relique' : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]}` : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
+  const type = d.dofus ? 'Dofus' : d.relic ? 'Relique' : d.harvest ? `Outil de récolte · ${HARVEST_SLOT_LABEL[d.slot]}` : SLOT_LABEL[d.slot === 'anneau' ? 'anneau1' : d.slot];
   const req = d.harvest ? `Paysan ${d.lvl}` : `Niveau ${d.lvl}`;
   const canFor = h => (d.harvest ? st.jobs.paysan.lvl >= d.lvl : h.lvl >= d.lvl);
   const stat = ([k, v]) => { const [a, b] = d.stats[k], pc = b === a ? 100 : Math.round((v - a) / (b - a) * 100);
@@ -1462,6 +1512,21 @@ const ACTIONS = {
     });
     return 'keep';
   },
+  steamsurge(d) {
+    const h = heroById(d.hero); if (!h || !steamReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
+    const btn = card.querySelector('[data-k="steambtn"]'); if (btn) btn.hidden = true;
+    PF_HOLD[h.id] = {}; card.querySelectorAll('.unit.mon').forEach(el => { PF_HOLD[h.id][+el.dataset.mon] = +el.dataset.hp; }); // les PV des ennemis baissent salve après salve
+    const sync = () => card.querySelectorAll('.unit.mon').forEach(el => { const m = h.fight && h.fight.mons[+el.dataset.mon], v = PF_HOLD[h.id] ? PF_HOLD[h.id][+el.dataset.mon] : (m && m.hp); if (v != null) el.dataset.hp = v; }); // évite les chiffres génériques : la cinématique a les siens
+    playSurge(card, h, {
+      pay: () => { const r = unleashSurge(st, h, liveEv); patchCombat(); return r; },
+      hold: held => { PF_HOLD[h.id] = held; sync(); patchCombat(); },
+      release: () => { delete PF_HOLD[h.id]; sync(); patchCombat(); },
+      done: () => { delete PF_HOLD[h.id]; delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 700); patchCombat(); saveGame(); },
+    });
+    return 'keep';
+  },
   xelchrono(d) {
     const h = heroById(d.hero); if (!h || h.cls !== 'xelor' || FURY_ANIM[h.id]) return 'keep';
     if ((h.chrono || 0) < CHRONO_MAX) { toast(`Le sablier se remplit à chaque Rembobinage (${h.chrono || 0}/${CHRONO_MAX}).`, 'warn'); return 'keep'; }
@@ -1490,6 +1555,12 @@ const ACTIONS = {
   unequipuid(d) { const by = equippedBy(st, d.uid); if (by) unequipUid(by, d.uid); },
   toggledetail() { ui.detailHidden = !ui.detailHidden; },
   unrelic() { selHero().relic = null; },
+  jrtoggle() { ui.jrOpen = !ui.jrOpen; document.querySelectorAll('.jr').forEach(e => e.classList.toggle('open', ui.jrOpen)); saveGame(); return 'keep'; },
+  fcfold(d) { const f = ui.fcFold || (ui.fcFold = {}); f[d.hero] = !f[d.hero]; const c = document.querySelector(`[data-hero-card="${d.hero}"]`); if (c) { c.classList.toggle('fold', !!f[d.hero]); const b = c.querySelector('.fc-fold'); if (b) b.textContent = f[d.hero] ? '▾' : '▴'; } saveGame(); return 'keep'; },
+  fcfoldall(d) { const f = ui.fcFold || (ui.fcFold = {}); for (const h of st.heroes) f[h.id] = d.v === 'on'; document.querySelectorAll('[data-hero-card]').forEach(c => { c.classList.toggle('fold', d.v === 'on'); const b = c.querySelector('.fc-fold'); if (b) b.textContent = d.v === 'on' ? '▾' : '▴'; }); saveGame(); return 'keep'; },
+  ovgo(d) { const f = ui.fcFold || (ui.fcFold = {}); f[d.hero] = false; const c = document.querySelector(`[data-hero-card="${d.hero}"]`); if (c) { c.classList.remove('fold'); const b = c.querySelector('.fc-fold'); if (b) b.textContent = '▴'; c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } saveGame(); return 'keep'; },
+  undofus(d) { const h = selHero(); if (h.dofus) delete h.dofus[d.slot]; },
+  dofusslot(d) { ui.dslot = ui.dslot === d.slot ? null : d.slot; },
   eqtab(d) { ui.eqTab = d.v; },
   hslot(d) { ui.hslot = ui.hslot === d.slot ? null : d.slot; },
   hunequip(d) { const h = selHero(); if (h.hequip) delete h.hequip[d.slot]; },

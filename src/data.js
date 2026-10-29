@@ -158,6 +158,27 @@ const CLASSES = {
       { id: 'rayon_obscur', name: 'Rayon Obscur', lvl: 40, pa: 5, min: 30, max: 40, stat: 'int', type: 'dmg', cd: 2 },
     ],
   },
+  steamer: {
+    name: 'Steamer', role: 'Ingénieur des tourelles', main: 'deg', elem: 'int', elemTxt: 'Feu · Terre · Eau', hpMult: 0.9, color: '#d9822b',
+    desc: 'Ingénieur des abysses de Sufokia : il ne se bat jamais seul. Chacun de ses sorts réveille ses tourelles, qui tirent avec le même élément. Feu et Eau réagissent en Vapeur, et la chaudière de Stasis n’attend qu’un ordre pour tout surcharger.',
+    passive: { name: 'Arsenal de Stasis', points: [
+      ['⚙️','Atelier de tourelles','Il déploie jusqu’à 3 tourelles, gardées d’un combat à l’autre : l’Offensive (niv. 1), la Défensive (niv. 12) et la Tactique (niv. 24). Elles ne tirent jamais seules.'],
+      ['🔥','Activation','Chaque sort d’attaque réveille ses tourelles, qui tirent avec l’élément du sort. Offensive : 1 canon par niveau, chacun tire 10 % du sort. Défensive : soigne (1,2 à 2,2 % des PV max, +50 % avec l’Eau) et répare les autres tourelles. Tactique : 13 à 25 % de chances de magnétiser un ennemi, qui perd son prochain tour (moitié moins contre un boss). Feu 🔥 = Brûlure (22 % du coup, sur 2 tours). Terre ⛰️ = Fissure (+15 % de dégâts reçus). Eau 💧 = Trempé (−15 % de dégâts infligés).'],
+      ['♨️','Vapeur','Un tir de Feu sur une cible Trempée, ou d’Eau sur une cible en Brûlure, déclenche la Vapeur : une explosion brûlante touche tous les ennemis. Le Steamer varie donc ses éléments d’un sort à l’autre.'],
+      ['🔧','Évolution','Chaque activation fait progresser la tourelle : niveau II à 80 activations, niveau III à 400 (gardés à vie). Le sort Évolution la monte d’un niveau pendant 3 tours.'],
+      ['🛡️','Tourelles leurres','Un coup ennemi sur 7 vise une tourelle plutôt que le Steamer. Détruite, elle est hors service jusqu’à la fin du combat, puis remontée. Scaphandre : +5 % de résistance, et +15 Prospection (ferraille).'],
+      ['💥','Surcharge Stasis','Chaque activation remplit la Pression (gardée d’un combat à l’autre). Pleine, clique pour surcharger : toutes les tourelles tirent une salve Eau, Feu puis Terre sur tous les ennemis (résistances ignorées), la Vapeur explose, la Défensive soigne, la Tactique magnétise tout le monde.']
+    ], desc: 'Jusqu’à 3 tourelles activées par ses sorts (Feu, Terre, Eau), Vapeur quand Feu et Eau se croisent, évolution des tourelles et Surcharge Stasis.', stats: { res: 5, pp: 15 } },
+    spells: [
+      { id: 'flibuste', name: 'Flibuste', lvl: 1, pa: 3, min: 6, max: 10, stat: 'int', type: 'dmg', max_: 2 },
+      { id: 'ancrage', name: 'Ancrage', lvl: 3, pa: 3, min: 6, max: 10, stat: 'for', type: 'dmg', max_: 2 },
+      { id: 'ressac', name: 'Ressac', lvl: 6, pa: 2, min: 4, max: 7, stat: 'cha', type: 'dmg', max_: 2 },
+      { id: 'ecume', name: 'Écume', lvl: 10, pa: 3, min: 5, max: 8, stat: 'cha', type: 'aoe', max_: 1 },
+      { id: 'evolution', name: 'Évolution', lvl: 14, pa: 2, type: 'buff', buff: { deg: 12 }, turns: 3, cd: 5, note: 'Les tourelles gagnent 1 niveau' },
+      { id: 'vapor', name: 'Vapor', lvl: 28, pa: 4, min: 10, max: 14, stat: 'int', type: 'aoe', max_: 1 },
+      { id: 'foene', name: 'Foène', lvl: 36, pa: 5, min: 32, max: 42, stat: 'for', type: 'dmg', cd: 2 },
+    ],
+  },
 };
 
 /* --------------------------------------------------------------------
@@ -291,7 +312,9 @@ const DUNGEONS = [
    -------------------------------------------------------------------- */
 const SLOTS = ['coiffe', 'cape', 'amulette', 'anneau1', 'anneau2', 'ceinture', 'bottes', 'arme'];
 const SLOT_LABEL = { coiffe: 'Coiffe', cape: 'Cape', amulette: 'Amulette', anneau1: 'Anneau', anneau2: 'Anneau', ceinture: 'Ceinture', bottes: 'Bottes', arme: 'Arme' };
-const SLOT_ICON = { relique: '🔮', outil: '🪓', gants: '🧤', sac: '👝', coiffe: '🎩', cape: '🧥', amulette: '📿', anneau: '💍', ceinture: '🎗️', bottes: '👢', arme: '🗡️' };
+/* Dofus : œufs magiques, 6 emplacements par héros (séparés de l'équipement, de la récolte et de la relique) */
+const DOFUS_SLOTS = ['dofus1', 'dofus2', 'dofus3', 'dofus4', 'dofus5', 'dofus6'];
+const SLOT_ICON = { dofus: '🥚', relique: '🔮', outil: '🪓', gants: '🧤', sac: '👝', coiffe: '🎩', cape: '🧥', amulette: '📿', anneau: '💍', ceinture: '🎗️', bottes: '👢', arme: '🗡️' };
 
 const SETS = {
   aventurier: { name: "Panoplie de l'Aventurier", bonus: { 2: { vit: 10 }, 4: { vit: 20, sag: 20 }, 6: { deg: 20, vit: 30, sag: 30 } } },
@@ -314,6 +337,8 @@ Object.assign(STAT_SHORT, { rxp: '% XP récolte', rqty: '% Qté', rspd: '% Vites
    RELIQUES — un seul emplacement par héros, effets uniques et puissants.
    Elles ne se fabriquent pas : drop extrêmement rare (voir RELIC_DROPS).
    -------------------------------------------------------------------- */
+Object.assign(STAT_LABEL, { critDmg: '% Dégâts critiques' });
+Object.assign(STAT_SHORT, { critDmg: '% Dég. crit.' });
 Object.assign(STAT_LABEL, { kamas: '% Kamas gagnés', xpPct: '% XP gagnée', dmgPct: '% Dégâts finaux', dodge: '% Esquive', regen: '% PV régénérés / tour', speed: '% Vitesse de combat' });
 Object.assign(STAT_SHORT, { kamas: '% Kamas', xpPct: '% XP', dmgPct: '% Dégâts', dodge: '% Esquive', regen: '% Régén.', speed: '% Vitesse combat' });
 

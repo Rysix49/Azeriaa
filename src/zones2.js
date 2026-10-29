@@ -178,6 +178,8 @@ Object.assign(ITEMS, {
   ceinture_porcos: { icon: '🎗️', name: 'Ceinture du Porsalu', slot: 'ceinture', lvl: 80, set: 'porcos', stats: { deg: [32, 50], vit: [52, 72] } },
   amulette_porcos: { icon: '📿', name: 'Médaillon du Porcos', slot: 'amulette', lvl: 82, set: 'porcos', stats: { vit: [90, 130], res: [4, 6], pp: [28, 46] } },
   rotissoire_cochon:{ icon: '🍖', name: 'Rôtissoire du Dragon Cochon', slot: 'arme', lvl: 88, set: 'porcos', stats: { deg: [78, 112], vit: [20, 35] } },
+  /* Dofus : objet à part (emplacements Dofus du héros), pas de jet : les stats sont fixes */
+  dofus_turquoise: { name: 'Dofus Turquoise', slot: 'dofus', lvl: 80, dofus: true, stats: { crit: [20, 20], critDmg: [50, 50] } },
   relique_porcos:  { name: 'Tirelire du Dragon Cochon', slot: 'relique', lvl: 80, relic: true, stats: { kamas: [50, 80], vit: [80, 130] } },
 
   /* Panoplie du Dragoeuf — coquille, ailes et braise */
@@ -264,5 +266,5 @@ Object.assign(GEAR_DROPS, {
 });
 Object.assign(RELIC_DROPS, {
   wa_wabbit: [['relique_wabbit', 0.0005]], blop_royal: [['relique_blop', 0.0005]], kanniboul_ebil: [['relique_kanniboul', 0.0005]],
-  dragon_cochon: [['relique_porcos', 0.02]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
+  dragon_cochon: [['relique_porcos', 0.02], ['dofus_turquoise', 0.002]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
 });
