@@ -222,13 +222,15 @@ function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
   unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
   let variant = '';
-  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : unit.querySelector('.hs-xelor') ? 'xel' : unit.querySelector('.hs-sacrieur') ? 'sac' : unit.querySelector('.hs-zobal') ? 'zob' : '') : '';
+  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : unit.querySelector('.hs-xelor') ? 'xel' : unit.querySelector('.hs-sacrieur') ? 'sac' : unit.querySelector('.hs-zobal') ? 'zob' : unit.querySelector('.hs-steamer') ? 'stm' : '') : '';
   if (art === 'zob') { // une gestuelle par masque : rire (a), larmes (b), farce (c)
     variant = { rire: 'atk-a', larme: 'atk-b', farce: 'atk-c' }[unit.dataset.mask] || 'atk-a'; unit.classList.add(variant);
   } else if (art) { // le Iop (coup d'en haut, tourbillon, plongeon) et le Sram (fente, pas d'ombre, rafale) varient leurs coups
-    const v = (unit._combo = ((unit._combo == null ? -1 : unit._combo) + 1 + (Math.random() < .5 ? 1 : 0)) % 3); /* jamais deux fois le même coup d'affilée */ variant = ['atk-a', 'atk-b', 'atk-c'][v];
-    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : art === 'xel' ? xelFlourish : art === 'sac' ? sacFlourish : ecaFlourish)(unit, v);
+    const forced = art === 'stm' && unit._stmV != null ? unit._stmV : null; if (art === 'stm') unit._stmV = null; // le Steamer : le geste dépend du sort (canon, manette, double détente)
+    const v = forced != null ? forced : (unit._combo = ((unit._combo == null ? -1 : unit._combo) + 1 + (Math.random() < .5 ? 1 : 0)) % 3); /* jamais deux fois le même coup d'affilée */ variant = ['atk-a', 'atk-b', 'atk-c'][v];
+    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : art === 'xel' ? xelFlourish : art === 'sac' ? sacFlourish : art === 'stm' ? stmFlourish : ecaFlourish)(unit, v);
   }
+  if (k === 'cheer' && unit.querySelector('.hs-steamer')) stmCheer(unit);
   setTimeout(() => {
     unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
     const n = unit._gNext; unit._gNext = null;
@@ -552,20 +554,25 @@ function playSpellFx(card, cast) {
   const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
   const support = ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]);
-  let lead = 0, isCra = false;
+  let lead = 0, isCra = false, isStm = false;
   if (heroUnit) {
     if (!support && heroUnit.querySelector('.hs-cra')) { isCra = true; lead = Math.max(0, craShoot(heroUnit, cast.id)); } // l'archère bande son arc : la flèche part au lâcher
-    else heroGesture(heroUnit, support ? 'cheer' : 'atk');
+    else {
+      if (heroUnit.querySelector('.hs-steamer')) { isStm = true; const sv = STM_VARIANT[cast.id]; if (!support) { heroUnit._stmV = sv == null ? null : sv; lead = STM_REL[sv == null ? 0 : sv]; } } // le Steamer : le projectile part quand le canon tire
+      heroGesture(heroUnit, support ? 'cheer' : 'atk');
+    }
   }
   const go = () => {
     if (!scene.isConnected) return;
     const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
     const from = fxPos(scene, heroSprite); if (!from) return;
     if (isCra) { from.x += heroSprite.offsetWidth * .39; from.y += heroSprite.offsetHeight * .06; } // la flèche part de la corde, pas du centre du sprite
+    if (isStm) { from.x += heroSprite.offsetWidth * .47; from.y += heroSprite.offsetHeight * .05; } // le tir part de la bouche du canon
     const tos = cast.t.map(i => fxPos(scene, card.querySelector(`[data-mon="${i}"] .sprite`))).filter(Boolean);
     const kind = FX_KIND[fx[0]] || FX_KIND.proj;
     if (!tos.length && !support) return;
     kind(scene, from, tos, fx, heroSprite);
+    if (isStm && cast.tur) stmTurretShots(card, scene, cast); // puis les tourelles ouvrent le feu, soignent ou magnétisent
   };
   if (lead > 0) setTimeout(go, lead); else go();
 }

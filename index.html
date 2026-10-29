@@ -3388,6 +3388,348 @@ label.btn { cursor: pointer; }
 .mc.big { background: radial-gradient(ellipse at 0 0, #a06ae81c, transparent 60%), linear-gradient(180deg, #1e1a26, #141018); border-color: #a06ae844; }
 .mc.big.archi { background: radial-gradient(ellipse at 0 0, #e8aa2e24, transparent 60%), linear-gradient(180deg, #221e18, #15120c); border-color: #e8aa2e66; }
 .unit.mon.big .sprite.has-art .ms { width: 74px; height: 74px; }
+/* =====================================================================
+   STEAMER — personnage, tourelles, jauge de Pression, cinématique de Surcharge
+   (l'ordre compte : ce fichier est collé après style2.css)
+   ===================================================================== */
+
+/* ---------- Repos : la chaudière respire, la vapeur monte, le manomètre suit la Pression ---------- */
+.hs-steamer .p-chim { transform-box: view-box; transform-origin: 32px 54px; animation: stm-chim 2.1s ease-in-out infinite; }
+@keyframes stm-chim { 0%, 100% { transform: rotate(-.5deg); } 50% { transform: rotate(.7deg); } }
+.hs-steamer .pf { transform-origin: 50% 50%; opacity: 0; animation: stm-puff 2.7s ease-out infinite; }
+.hs-steamer .pf2 { animation-delay: -.9s; } .hs-steamer .pf3 { animation-delay: -1.8s; }
+.hs-steamer .pf4 { animation-delay: -.4s; animation-duration: 2.3s; } .hs-steamer .pf5 { animation-delay: -1.55s; animation-duration: 2.3s; } .hs-steamer .pf6 { animation-delay: -2.1s; animation-duration: 2.3s; }
+.hs-steamer .pf1, .hs-steamer .pf2, .hs-steamer .pf3 { --dx: -5px; } .hs-steamer .pf4, .hs-steamer .pf5, .hs-steamer .pf6 { --dx: 3px; }
+@keyframes stm-puff { 0% { opacity: 0; transform: translate(0, 0) scale(.35); } 14% { opacity: .95; } 100% { opacity: 0; transform: translate(var(--dx, 0), -30px) scale(1.9); } }
+.hs-steamer .p-core { transform-origin: 50% 50%; }
+.hs-steamer .p-coreglow { transform-origin: 50% 50%; opacity: calc(.28 + var(--pr, 0) * .72); animation: stm-glow 2.2s ease-in-out infinite; }
+@keyframes stm-glow { 0%, 100% { transform: scale(.86); } 50% { transform: scale(1.14); } }
+.hs-steamer .p-swirl { transform-box: view-box; transform-origin: 32px 72px; animation: stm-spin 3.6s linear infinite; }
+@keyframes stm-spin { to { transform: rotate(360deg); } }
+.hs-steamer .p-needle { transform-box: view-box; transform-origin: 66px 76px; transform: rotate(calc(-64deg + var(--pr, 0) * 128deg)); transition: transform .9s cubic-bezier(.3, 1.5, .5, 1); animation: stm-needle 1.7s ease-in-out infinite; }
+@keyframes stm-needle { 0%, 100% { rotate: -1.2deg; } 50% { rotate: 1.6deg; } }
+.hs-steamer .p-bulb { transform-origin: 50% 50%; animation: stm-bulb 1.8s ease-in-out infinite; }
+.hs-steamer .p-bulbglow { transform-origin: 50% 50%; opacity: .55; animation: stm-bulbglow 1.8s ease-in-out infinite; }
+@keyframes stm-bulb { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+@keyframes stm-bulbglow { 0%, 100% { transform: scale(.8); opacity: .35; } 50% { transform: scale(1.2); opacity: .8; } }
+.hs-steamer .p-ring { transform-origin: 50% 50%; }
+.hs-steamer .p-lamp { transform-origin: 50% 50%; animation: stm-lamp 3.2s ease-in-out infinite; }
+@keyframes stm-lamp { 0%, 100% { opacity: .85; } 40% { opacity: 1; } 46% { opacity: .55; } 52% { opacity: 1; } }
+.hs-steamer .p-led { opacity: .35; animation: stm-led 2.4s steps(1) infinite; }
+.hs-steamer .l2 { animation-delay: -.8s; } .hs-steamer .l3 { animation-delay: -1.6s; }
+@keyframes stm-led { 0% { opacity: 1; } 33% { opacity: .3; } 100% { opacity: .3; } }
+.hs-steamer .p-stache { transform-origin: 50% 0%; animation: stm-stache 3.8s ease-in-out infinite; }
+@keyframes stm-stache { 0%, 82%, 100% { transform: none; } 88% { transform: scaleY(1.12) translateY(.4px); } 94% { transform: scaleY(.94); } }
+.hs-steamer .p-vent { transform-origin: 50% 50%; opacity: 0; animation: stm-vent 4.4s ease-out infinite; }
+@keyframes stm-vent { 0%, 60% { opacity: 0; transform: translate(0, 0) scale(.3); } 70% { opacity: .9; } 100% { opacity: 0; transform: translate(-8px, -12px) scale(1.7); } }
+.hs-steamer .p-arm { transform-box: view-box; transform-origin: 82px 61px; animation: stm-armsway 3.6s ease-in-out infinite; }
+@keyframes stm-armsway { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-1.4deg); } }
+.hs-steamer .p-armB { transform-origin: 50% 0%; animation: stm-armB 3.1s ease-in-out infinite; }
+@keyframes stm-armB { 0%, 100% { transform: none; } 50% { transform: translateY(.9px); } }
+.hs-steamer .p-lever { transform-box: view-box; transform-origin: 44px 82px; }
+.hs-steamer .p-flash { opacity: 0; transform-origin: 50% 50%; }
+.hs-steamer .p-muz { transform-origin: 50% 50%; opacity: 0; animation: stm-muz 3.4s ease-out infinite; }
+@keyframes stm-muz { 0%, 70% { opacity: 0; transform: translate(0, 0) scale(.3); } 78% { opacity: .8; } 100% { opacity: 0; transform: translate(5px, -9px) scale(1.7); } }
+.hs-steamer .p-cannon { transform-box: view-box; transform-origin: 98px 70px; }
+
+/* ---------- Les coups : 3 gestes différents ---------- */
+/* a : tir de canon, recul */
+.hero.atk-a .hs-steamer .p-torso { animation: stm-a-body .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-a .hs-steamer .p-arm { animation: stm-a-arm .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-a .hs-steamer .p-cannon { animation: stm-a-cannon .64s cubic-bezier(.3, 0, .2, 1); }
+.hero.atk-a .hs-steamer .p-flash { animation: stm-flash .64s ease-out; }
+.hero.atk-a .hs-steamer .p-muz { animation: stm-muzburst .64s ease-out; }
+@keyframes stm-a-body { 0% { transform: none; } 25% { transform: translateX(-2px) rotate(-2deg); } 38% { transform: translateX(-5px) rotate(-5deg) scale(1.01, .99); } 70% { transform: translateX(-1px) rotate(-1deg); } 100% { transform: none; } }
+@keyframes stm-a-arm { 0% { transform: rotate(0); } 24% { transform: rotate(-9deg); } 38% { transform: rotate(-15deg); } 62% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes stm-a-cannon { 0% { transform: none; } 30% { transform: translateX(1px); } 38% { transform: translateX(-9px) rotate(-3deg); } 62% { transform: translateX(-2px); } 100% { transform: none; } }
+@keyframes stm-flash { 0%, 30% { opacity: 0; transform: scale(.3); } 38% { opacity: 1; transform: scale(1.5); } 60% { opacity: .5; transform: scale(1.15); } 100% { opacity: 0; transform: scale(.9); } }
+@keyframes stm-muzburst { 0%, 34% { opacity: 0; transform: translate(0, 0) scale(.4); } 42% { opacity: .95; } 100% { opacity: 0; transform: translate(10px, -16px) scale(2.8); } }
+/* b : coup de manette, l'ordre part par l'antenne */
+.hero.atk-b .hs-steamer .p-torso { animation: stm-b-body .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-b .hs-steamer .p-lever { animation: stm-b-lever .64s cubic-bezier(.5, 0, .2, 1); }
+.hero.atk-b .hs-steamer .p-armB { animation: stm-b-armB .64s cubic-bezier(.5, 0, .2, 1); }
+.hero.atk-b .hs-steamer .p-led { animation: stm-b-led .64s steps(1); opacity: 1; }
+.hero.atk-b .hs-steamer .l2 { animation-delay: .06s; } .hero.atk-b .hs-steamer .l3 { animation-delay: .12s; }
+.hero.atk-b .hs-steamer .p-ring.r1 { animation: stm-ring .64s ease-out .2s; } .hero.atk-b .hs-steamer .p-ring.r2 { animation: stm-ring .64s ease-out .34s; }
+.hero.atk-b .hs-steamer .p-bulb { animation: stm-bulbflash .64s ease-out; }
+.hero.atk-b .hs-steamer .p-arm { animation: stm-b-arm .64s ease-in-out; }
+.hero.atk-b .hs-steamer .p-flash { animation: stm-flash2 .64s ease-out; }
+@keyframes stm-b-body { 0% { transform: none; } 22% { transform: translate(-1px, 1.5px) scale(1.02, .97); } 42% { transform: translate(2px, -2px); } 100% { transform: none; } }
+@keyframes stm-b-lever { 0% { transform: rotate(0); } 24% { transform: rotate(-14deg); } 40% { transform: rotate(46deg); } 70% { transform: rotate(40deg); } 100% { transform: rotate(0); } }
+@keyframes stm-b-armB { 0% { transform: none; } 24% { transform: translate(-1px, -1.5px); } 40% { transform: translate(2px, 5px); } 70% { transform: translate(2px, 4px); } 100% { transform: none; } }
+@keyframes stm-b-led { 0% { filter: brightness(2.2); } 60% { filter: brightness(1.6); } 100% { filter: none; } }
+@keyframes stm-ring { 0% { opacity: .95; transform: scale(.6); } 100% { opacity: 0; transform: scale(5.2); } }
+@keyframes stm-bulbflash { 0% { filter: brightness(1); } 30% { filter: brightness(2.6) drop-shadow(0 0 4px #e6c8ff); } 100% { filter: brightness(1); } }
+@keyframes stm-b-arm { 0% { transform: rotate(0); } 50% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
+@keyframes stm-flash2 { 0%, 60% { opacity: 0; transform: scale(.3); } 68% { opacity: .8; transform: scale(1.1); } 100% { opacity: 0; transform: scale(.8); } }
+/* c : double détente */
+.hero.atk-c .hs-steamer .p-torso { animation: stm-c-body .64s cubic-bezier(.4, 0, .25, 1); }
+.hero.atk-c .hs-steamer .p-arm { animation: stm-c-arm .64s ease-in-out; }
+.hero.atk-c .hs-steamer .p-cannon { animation: stm-c-cannon .64s ease-out; }
+.hero.atk-c .hs-steamer .p-flash { animation: stm-flash3 .64s ease-out; }
+.hero.atk-c .hs-steamer .p-muz { animation: stm-muzburst .64s ease-out .12s; }
+.hero.atk-c .hs-steamer .p-lever { animation: stm-c-lever .64s ease-in-out; }
+@keyframes stm-c-body { 0% { transform: none; } 18% { transform: translateX(-3px) rotate(-3deg); } 30% { transform: translateX(1px) rotate(1deg); } 48% { transform: translateX(-4px) rotate(-4deg); } 100% { transform: none; } }
+@keyframes stm-c-arm { 0% { transform: rotate(0); } 16% { transform: rotate(-11deg); } 28% { transform: rotate(-4deg); } 46% { transform: rotate(-14deg); } 100% { transform: rotate(0); } }
+@keyframes stm-c-cannon { 0% { transform: none; } 14% { transform: translateX(-7px); } 26% { transform: translateX(0); } 44% { transform: translateX(-8px); } 100% { transform: none; } }
+@keyframes stm-flash3 { 0%, 10% { opacity: 0; transform: scale(.3); } 16% { opacity: 1; transform: scale(1.3); } 28% { opacity: .1; } 44% { opacity: 1; transform: scale(1.6); } 100% { opacity: 0; transform: scale(.9); } }
+@keyframes stm-c-lever { 0% { transform: rotate(0); } 20% { transform: rotate(22deg); } 50% { transform: rotate(30deg); } 100% { transform: rotate(0); } }
+/* soutien : il tire la grande manette, toutes les soupapes sifflent */
+.hero.cheer .hs-steamer .p-lever { animation: stm-cheer-lever .7s cubic-bezier(.5, 0, .2, 1); }
+.hero.cheer .hs-steamer .p-armB { animation: stm-b-armB .7s ease-in-out; }
+.hero.cheer .hs-steamer .p-ring.r1 { animation: stm-ring .7s ease-out .1s; } .hero.cheer .hs-steamer .p-ring.r2 { animation: stm-ring .7s ease-out .26s; }
+.hero.cheer .hs-steamer .p-bulb { animation: stm-bulbflash .7s ease-out; }
+.hero.cheer .hs-steamer .p-vent { animation: stm-vent-now .7s ease-out; }
+.hero.cheer .hs-steamer .p-coreglow { animation: stm-glow-now .7s ease-out; }
+@keyframes stm-cheer-lever { 0% { transform: rotate(0); } 35% { transform: rotate(52deg); } 70% { transform: rotate(48deg); } 100% { transform: rotate(0); } }
+@keyframes stm-vent-now { 0% { opacity: 0; transform: scale(.3); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-12px, -18px) scale(2.4); } }
+@keyframes stm-glow-now { 0% { transform: scale(.9); filter: brightness(1); } 40% { transform: scale(1.7); filter: brightness(1.7); } 100% { transform: scale(1); filter: brightness(1); } }
+
+/* ---------- Pression pleine : la chaudière rugit ---------- */
+.unit.hero.stm-ready .sprite { filter: drop-shadow(0 0 7px #b56bff) drop-shadow(0 0 14px #7a3cff66); animation: stm-readyglow 1.1s ease-in-out infinite; }
+@keyframes stm-readyglow { 0%, 100% { filter: drop-shadow(0 0 5px #b56bff) drop-shadow(0 0 10px #7a3cff55); } 50% { filter: drop-shadow(0 0 10px #d9a8ff) drop-shadow(0 0 20px #9b5cff88); } }
+.unit.hero.stm-ready .hs-steamer .pf { animation-duration: 1.2s; }
+.unit.hero.stm-ready .hs-steamer .pf4, .unit.hero.stm-ready .hs-steamer .pf5, .unit.hero.stm-ready .hs-steamer .pf6 { animation-duration: 1.05s; }
+.unit.hero.stm-ready .hs-steamer .p-swirl { animation-duration: .9s; }
+.unit.hero.stm-ready .hs-steamer .p-coreglow { animation-duration: .7s; opacity: 1; }
+.unit.hero.stm-ready .hs-steamer .p-chim { animation-duration: .35s; }
+.unit.hero.stm-ready .hs-steamer .p-bulb { animation-duration: .5s; }
+.unit.hero.stm-ready .hs-steamer .p-led { animation-duration: .6s; }
+.unit.hero.stm-ready .hs-steamer .p-needle { animation-duration: .18s; }
+.unit.hero.stm-ready .hs-steamer .p-ring.r1 { animation: stm-ring 1.6s ease-out infinite; } .unit.hero.stm-ready .hs-steamer .p-ring.r2 { animation: stm-ring 1.6s ease-out .8s infinite; }
+@media (prefers-reduced-motion: reduce) { .hs-steamer *, .hero .hs-steamer * { animation: none !important; } }
+
+/* =====================================================================
+   TOURELLES — niveaux (data-lv), repos, tir
+   ===================================================================== */
+.tur .from2, .tur .from3 { display: none; }
+.tur[data-lv="2"] .from2, .tur[data-lv="3"] .from2, .tur[data-lv="3"] .from3 { display: inline; }
+.tur-svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 2px 2px #0008); }
+.tur-svg * { transform-box: fill-box; }
+.tur-svg .tu-body { transform-origin: 50% 80%; }
+/* repos */
+.tur-svg .tu-bulb { transform-origin: 50% 50%; animation: stm-bulb 1.8s ease-in-out infinite; }
+.tur-svg .tu-bulbglow { transform-origin: 50% 50%; opacity: .5; animation: stm-bulbglow 1.8s ease-in-out infinite; }
+.tur-svg .tu-ring { transform-origin: 50% 50%; }
+.tur-svg .tu-core { transform-origin: 50% 50%; animation: stm-bulb 1.4s ease-in-out infinite; }
+.tur-svg .tu-coreglow { transform-origin: 50% 50%; opacity: .55; animation: stm-glow 2.2s ease-in-out infinite; }
+.tur-svg .tu-puff { transform-origin: 50% 50%; opacity: 0; animation: stm-puff 2.4s ease-out infinite; --dx: -3px; }
+.tur-svg .tu-puff.p2 { animation-delay: -1.2s; }
+.tur-svg .tu-flash { opacity: 0; transform-origin: 50% 50%; }
+.tur-svg .tu-muz { opacity: 0; transform-origin: 50% 50%; animation: stm-muz 3.6s ease-out infinite; }
+.tur-svg .tu-needle { transform-box: fill-box; transform-origin: 0% 100%; animation: stm-needle 1.6s ease-in-out infinite; }
+.tur-svg .tu-crystal { transform-origin: 50% 80%; animation: stm-crystal 2.6s ease-in-out infinite; }
+@keyframes stm-crystal { 0%, 100% { transform: translateY(0); filter: brightness(1); } 50% { transform: translateY(-1.6px); filter: brightness(1.35); } }
+.tur-svg .tu-spin { animation: stm-dash .5s linear infinite; }
+@keyframes stm-dash { to { stroke-dashoffset: -4.4; } }
+.tur-svg .tu-liq { animation: stm-liq 2.8s ease-in-out infinite; }
+@keyframes stm-liq { 0%, 100% { transform: translate(-1.2px, 0); } 50% { transform: translate(1.2px, -.8px); } }
+.tur-svg .tu-cross { animation: stm-bulb 2s ease-in-out infinite; }
+.tur-svg .tu-wheel { transform-origin: 50% 50%; animation: stm-spin 6s linear infinite; }
+.tur-svg .tu-shield { transform-origin: 50% 50%; opacity: .55; animation: stm-shield 3.4s ease-in-out infinite; }
+@keyframes stm-shield { 0%, 100% { opacity: .35; transform: scale(.97); } 50% { opacity: .7; transform: scale(1.02); } }
+.tur-svg .tu-rotor .tu-arms { transform-origin: 50% 50%; animation: stm-rotor 1.9s linear infinite; }
+@keyframes stm-rotor { 0% { transform: scaleX(1); } 25% { transform: scaleX(.35); } 50% { transform: scaleX(-1); } 75% { transform: scaleX(-.35); } 100% { transform: scaleX(1); } }
+.tur-svg .tu-arc { stroke-dasharray: 3 2.4; animation: stm-arc .32s linear infinite; opacity: .9; }
+.tur-svg .tu-arc.a2 { animation-duration: .45s; animation-direction: reverse; }
+@keyframes stm-arc { to { stroke-dashoffset: -11; } }
+.tur-svg .tu-orbit { transform-origin: 50% 50%; animation: stm-spin 5s linear infinite; }
+.tur-svg .tu-dish { transform-origin: 50% 100%; animation: stm-dish 5.2s ease-in-out infinite; }
+@keyframes stm-dish { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
+.tur-svg .tu-coil rect { animation: stm-coilglow 1.6s ease-in-out infinite; }
+@keyframes stm-coilglow { 0%, 100% { filter: none; } 50% { filter: brightness(1.18); } }
+
+/* =====================================================================
+   LE PARC DE TOURELLES — placement, états, coups reçus, évolutions
+   ===================================================================== */
+.scene.has-yard .vs { align-self: end; }
+.yard { --tw: 66px; position: relative; width: calc(var(--tw) * 2.1); height: calc(var(--tw) * 1.62); margin-top: 3px; transition: opacity .4s, filter .4s, transform .4s; transform-origin: 50% 100%; }
+.yard.fold { opacity: .55; filter: saturate(.55) brightness(.85); transform: scale(.94); }
+.tur { position: absolute; width: var(--tw); aspect-ratio: 1; cursor: help; }
+.tur-off { left: 50%; margin-left: calc(var(--tw) * -.5); bottom: calc(var(--tw) * .06); z-index: 3; }
+.tur-def { left: 0; bottom: calc(var(--tw) * .26); width: calc(var(--tw) * .86); z-index: 1; }
+.tur-tac { right: 0; bottom: calc(var(--tw) * .26); width: calc(var(--tw) * .86); z-index: 1; }
+.tur-art { position: absolute; inset: 0; }
+.tur-bar { position: absolute; bottom: -4px; height: 4px; width: 56%; border-radius: 3px; background: #0009; border: 1px solid #000a; overflow: hidden; z-index: 6; }
+.tur-off .tur-bar { left: 22%; } .tur-def .tur-bar { left: 4%; } .tur-tac .tur-bar { right: 4%; }
+.tur-bar i { display: block; height: 100%; background: linear-gradient(90deg, #2fae7c, #9af0cc); transition: width .35s; }
+.tur-bar i[style*="width:0%"] { background: #c0392b; }
+.tur-lv { position: absolute; top: -1px; right: -1px; z-index: 6; min-width: 13px; height: 13px; padding: 0 2px; display: grid; place-items: center; border-radius: 7px; font-size: 8px; font-weight: 900; line-height: 1; letter-spacing: -.02em; color: #2a1606; background: linear-gradient(#ffe9a0, #d9a53a); border: 1px solid #5a3a08; box-shadow: 0 1px 2px #000a; pointer-events: none; }
+.yard[data-boost="1"] .tur-lv { color: #fff; background: linear-gradient(#d9a8ff, #7a3cff); border-color: #2a0a5a; box-shadow: 0 0 6px #b56bff; }
+/* emplacement verrouillé */
+.tur-pad { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; }
+.tur-pad::before { content: ""; position: absolute; left: 4%; right: 4%; bottom: 8%; height: 26%; border-radius: 50%; border: 1.5px dashed #ffffff40; background: radial-gradient(ellipse, #0006, transparent 72%); }
+.tur-pad span { position: absolute; left: 50%; top: 24%; translate: -50% 0; z-index: 2; padding: 1px 5px; border-radius: 8px; font-size: 8px; font-weight: 800; white-space: nowrap; color: #ffffffd0; background: #0009; border: 1px solid #ffffff30; text-shadow: 0 1px 2px #000; letter-spacing: .02em; }
+.tur[data-st="lock"] { cursor: default; }
+.tur[data-st="lock"] .tur-pad { display: block; }
+.tur[data-st="lock"] .tur-art, .tur[data-st="lock"] .tur-bar, .tur[data-st="lock"] .tur-lv { display: none; }
+/* en panne */
+.tur[data-st="down"] .tur-art { filter: grayscale(.9) brightness(.5) contrast(1.1); }
+.tur[data-st="down"] .tur-svg * { animation-play-state: paused !important; }
+.tur[data-st="down"] .tur-svg .tu-bulbglow, .tur[data-st="down"] .tur-svg .tu-coreglow, .tur[data-st="down"] .tur-svg .tu-shield { opacity: 0; }
+.tur[data-st="down"]::after { content: "🔧"; position: absolute; left: 50%; top: 26%; z-index: 7; font-size: 14px; translate: -50% 0; filter: drop-shadow(0 1px 1px #000); animation: stm-wrench 1.2s ease-in-out infinite; pointer-events: none; }
+@keyframes stm-wrench { 0%, 100% { rotate: -18deg; } 50% { rotate: 22deg; } }
+.stm-smoke { position: absolute; left: 50%; top: 40%; z-index: 7; width: var(--s); height: var(--s); margin: -5px 0 0 -5px; border-radius: 50%; background: radial-gradient(circle, #3a3a3ecc, #1a1a1c88 60%, transparent 72%); opacity: 0; pointer-events: none; animation: stm-smoke 1.4s ease-out forwards; }
+@keyframes stm-smoke { 0% { opacity: 0; transform: translate(0, 0) scale(.4); } 20% { opacity: .85; } 100% { opacity: 0; transform: translate(var(--dx), -48px) scale(1.9); } }
+/* déploiement : la tourelle tombe du ciel et rebondit sur sa plaque */
+.tur.deploy .tur-art { animation: stm-deploy 1.1s cubic-bezier(.3, 1.2, .5, 1) both; }
+@keyframes stm-deploy { 0% { transform: translateY(-90px) scale(.7, 1.25); opacity: 0; } 42% { opacity: 1; transform: translateY(0) scale(1.14, .84); } 62% { transform: translateY(-6px) scale(.97, 1.05); } 82% { transform: translateY(0) scale(1.02, .98); } 100% { transform: none; } }
+.tur.deploy::before { content: ""; position: absolute; left: 10%; right: 10%; bottom: 8%; height: 22%; border-radius: 50%; background: radial-gradient(ellipse, #fff8, transparent 70%); animation: stm-land 1.1s ease-out both; pointer-events: none; z-index: 5; }
+@keyframes stm-land { 0%, 40% { opacity: 0; transform: scale(.3); } 48% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(2.2); } }
+/* un ennemi frappe la tourelle */
+.tur.struck .tur-art { animation: stm-struck .45s ease-out; }
+@keyframes stm-struck { 0% { transform: translateX(-5px) scale(.94); filter: brightness(2.2) drop-shadow(0 0 7px #ff3a2a); } 35% { transform: translateX(4px) rotate(2deg); } 70% { transform: translateX(-2px); } 100% { transform: none; filter: none; } }
+/* mise hors service */
+.tur.broke .tur-art { animation: stm-broke 1.1s ease-out forwards; }
+@keyframes stm-broke { 0% { filter: brightness(2.6) drop-shadow(0 0 10px #ff6a2a); transform: none; } 10% { transform: translate(-4px, -2px) rotate(-5deg); } 22% { transform: translate(4px, 0) rotate(5deg); filter: brightness(1.8) drop-shadow(0 0 6px #ff3a2a); } 36% { transform: translate(-2px, 1px) rotate(-2deg); } 100% { transform: none; filter: grayscale(.9) brightness(.5) contrast(1.1); } }
+/* remise en marche */
+.tur.repair .tur-art { animation: stm-repair 1s ease-out; }
+@keyframes stm-repair { 0% { filter: grayscale(.9) brightness(.5); transform: scale(.94); } 30% { filter: brightness(2.2) drop-shadow(0 0 10px #9af0cc); transform: scale(1.12); } 60% { filter: brightness(1.4) drop-shadow(0 0 6px #9af0cc); transform: scale(.98); } 100% { filter: none; transform: none; } }
+.tur.repair::after { content: "✦"; position: absolute; left: 50%; top: 20%; z-index: 7; translate: -50% 0; font-size: 16px; color: #bfffe6; text-shadow: 0 0 8px #2fae7c; animation: stm-repair-star 1s ease-out forwards; pointer-events: none; }
+@keyframes stm-repair-star { 0% { opacity: 0; transform: scale(.3) rotate(0); } 30% { opacity: 1; transform: scale(1.4) rotate(90deg); } 100% { opacity: 0; transform: scale(.8) translateY(-14px) rotate(200deg); } }
+/* niveau supérieur */
+.tur.tier .tur-art, .tur.evo .tur-art { animation: stm-tier 1.2s ease-out; }
+@keyframes stm-tier { 0% { transform: none; filter: none; } 18% { transform: scale(1.26) translateY(-3px); filter: brightness(2.6) drop-shadow(0 0 12px #d9a8ff); } 40% { transform: scale(.94); filter: brightness(1.6) drop-shadow(0 0 8px #b56bff); } 62% { transform: scale(1.06); } 100% { transform: none; filter: none; } }
+.tur.tier::before, .tur.evo::before { content: ""; position: absolute; left: -22%; top: -22%; width: 144%; height: 144%; z-index: 5; border-radius: 50%; border: 3px solid #d9a8ff; box-shadow: 0 0 14px #b56bff, inset 0 0 12px #b56bff88; pointer-events: none; animation: stm-tierring 1s ease-out forwards; }
+@keyframes stm-tierring { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(1.1); } }
+/* tir : recul de la tourelle offensive, pulsation des deux autres */
+.tur.fire .tu-off .tu-body { animation: stm-trecoil .42s ease-out; }
+@keyframes stm-trecoil { 0% { transform: none; } 16% { transform: translateX(-3.4px) scale(1.02, .98); } 100% { transform: none; } }
+.tur.fire .tu-def .tu-body, .tur.fire .tu-tac .tu-body { animation: stm-tpulse .7s ease-out; }
+@keyframes stm-tpulse { 0% { transform: none; } 20% { transform: scale(1.08); } 100% { transform: none; } }
+.tur.fire .tu-flash { animation: stm-tflash .42s ease-out; }
+.tur.fire .tu-def .tu-flash, .tur.fire .tu-tac .tu-flash { animation-duration: .7s; }
+@keyframes stm-tflash { 0% { opacity: 0; transform: scale(.4); } 22% { opacity: 1; transform: scale(1.25); } 100% { opacity: 0; transform: scale(1); } }
+.tur[data-el="eau"] .tu-off .tu-flash { filter: hue-rotate(185deg) saturate(1.3); }
+.tur[data-el="terre"] .tu-off .tu-flash { filter: hue-rotate(-12deg) saturate(.55) brightness(.9); }
+.tur.fire .tu-off .tu-muz { animation: stm-muzburst .42s ease-out; }
+/* Surcharge : les tourelles se chargent */
+.tur.charged .tur-art { animation: stm-charged .22s linear infinite; filter: drop-shadow(0 0 7px #d9a8ff) drop-shadow(0 0 14px #7a3cff) brightness(1.25); }
+@keyframes stm-charged { 25% { translate: -1px 0; } 50% { translate: 1px -1px; } 75% { translate: 0 1px; } }
+.unit.hero.stm-mend .sprite { animation: stm-mend .75s ease-out; }
+@keyframes stm-mend { 0% { filter: brightness(1.8) drop-shadow(0 0 10px #6fe8c0); } 100% { filter: none; } }
+
+/* ---------- Jauge de Pression et bouton Surcharge ---------- */
+.fury.steam { background: #0c0618cc; border-color: #2a1050aa; }
+.fury.steam .fury-fill { background: linear-gradient(90deg, #2a1060, #6a2fd0 55%, #b56bff 85%, #f0d6ff); }
+.fury.steam.full { border-color: #e6c8ff; animation: steamfull 1s ease-in-out infinite; }
+.fury.steam.full .fury-fill { background: linear-gradient(90deg, #7a3cff, #d9a8ff, #ffffff, #d9a8ff, #7a3cff); background-size: 200% 100%; animation: furyshine 1.1s linear infinite; }
+@keyframes steamfull { 50% { box-shadow: 0 0 10px #b56bff, 0 0 2px #fff inset; } }
+.fury-btn.steam-btn { border-color: #e6c8ff; background: radial-gradient(circle at 50% 35%, #b56bff, #5a1fb0 60%, #1a0a3a); box-shadow: 0 0 0 3px #00000070, 0 0 18px #b56bff, 0 0 36px #7a3cff88; padding: 4px; }
+.fury-btn.steam-btn::before, .fury-btn.steam-btn::after { border-color: #d9a8ff; }
+.fury-btn.steam-btn svg { filter: drop-shadow(0 1px 1px #000) drop-shadow(0 0 4px #7a3cff); animation: stm-gear 6s linear infinite; }
+@keyframes stm-gear { to { rotate: 360deg; } }
+
+/* ---------- États des ennemis : puces, teintes, particules ---------- */
+.mst { display: flex; justify-content: center; align-items: center; gap: 2px; height: 13px; line-height: 1; }
+.mst i { font-style: normal; font-size: 10px; padding: 0 2px; border-radius: 6px; background: #0008; border: 1px solid #fff2; box-shadow: 0 1px 2px #000a; animation: stm-chip .35s cubic-bezier(.3, 1.6, .5, 1); cursor: help; }
+@keyframes stm-chip { from { transform: scale(0); } }
+.mst .c-b { border-color: #ff8a2a99; } .mst .c-w { border-color: #4fc3ff99; } .mst .c-c { border-color: #c99a5299; } .mst .c-m { border-color: #c58aff; box-shadow: 0 0 6px #9b5cff; }
+.mon.st-c .sprite { filter: drop-shadow(0 3px 2px #0009) drop-shadow(0 0 4px #b98a4a) contrast(1.12) sepia(.25); }
+.mon.st-w .sprite { filter: drop-shadow(0 3px 2px #0009) drop-shadow(0 0 5px #4fc3ff) saturate(1.15) brightness(.95) hue-rotate(-10deg); }
+.mon.st-b .sprite { filter: drop-shadow(0 3px 2px #0009) drop-shadow(0 0 6px #ff6a2a) sepia(.3) saturate(1.5); animation: stm-burn 1.1s ease-in-out infinite; }
+@keyframes stm-burn { 50% { filter: drop-shadow(0 3px 2px #0009) drop-shadow(0 0 10px #ffb02e) sepia(.4) saturate(1.8) brightness(1.1); } }
+.mon.st-m .sprite { filter: drop-shadow(0 3px 2px #0009) drop-shadow(0 0 8px #9b5cff) brightness(.9); animation: stm-mag .28s linear infinite; }
+@keyframes stm-mag { 25% { translate: -1.5px 1px; } 50% { translate: 1.5px -1px; } 75% { translate: 1px 1.5px; } }
+.mon.st-m::after { content: "⚡"; position: absolute; left: 50%; bottom: 34px; font-size: 13px; translate: -50% 0; color: #e6c8ff; text-shadow: 0 0 8px #9b5cff; animation: stm-bulb .5s ease-in-out infinite; pointer-events: none; }
+.stp { position: absolute; left: 50%; bottom: 26px; z-index: 4; font-size: 12px; opacity: 0; pointer-events: none; filter: drop-shadow(0 1px 1px #000); animation: stp 1.1s ease-out forwards; }
+@keyframes stp { 0% { opacity: 0; transform: translate(-50%, 0) scale(.4); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), var(--dy)) scale(1.1); } }
+
+/* ---------- Textes flottants ---------- */
+.fnum.stm { color: #f2e6ff; -webkit-text-stroke: 1px #1a0a3a; text-shadow: 0 2px 0 #1a0a3a, 0 0 12px #9b5cff; font-weight: 900; letter-spacing: .05em; font-size: 14px; }
+.fnum.stm-f { font-size: 14px; letter-spacing: .02em; }
+.fnum.stm-f.feu { color: #ffd0a0; text-shadow: 0 2px 0 #4a1a02, 0 0 8px #ff6a2a; } .fnum.stm-f.eau { color: #cfefff; text-shadow: 0 2px 0 #06304a, 0 0 8px #4fc3ff; } .fnum.stm-f.terre { color: #f0d8a8; text-shadow: 0 2px 0 #3a2406, 0 0 8px #c99a52; }
+.fnum.stm-f.vap { color: #fff; font-size: 17px; text-shadow: 0 2px 0 #3a4a5a, 0 0 12px #bfeaff; }
+.fnum.stm-f.mag { color: #f2e6ff; text-shadow: 0 2px 0 #1a0a3a, 0 0 10px #9b5cff; font-weight: 900; }
+.fnum.stm-f.resist { color: #cfd6df; font-style: italic; font-size: 12px; }
+.fnum.evo { color: #f2e6ff; font-weight: 900; font-size: 13px; text-shadow: 0 2px 0 #2a0a5a, 0 0 10px #b56bff; }
+
+/* ---------- Particules autour du héros (vapeur, étincelles, signal) ---------- */
+.stm-fp { position: absolute; z-index: 4; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius: 50%; background: radial-gradient(circle, #fffffff0, #e4eef6a0 55%, transparent 72%); opacity: 0; pointer-events: none; animation: stm-fp 1s cubic-bezier(.2, .6, .4, 1) var(--d, 0ms) forwards; }
+@keyframes stm-fp { 0% { opacity: 0; transform: translate(0, 0) scale(.3); } 18% { opacity: .95; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(2.1); } }
+.stm-fs { position: absolute; z-index: 4; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: #fff3b0; box-shadow: 0 0 6px #ffb02e, 0 0 2px #fff; opacity: 0; pointer-events: none; animation: stm-fs .6s ease-out var(--d, 0ms) forwards; }
+@keyframes stm-fs { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.2); } }
+.stm-dust { position: absolute; z-index: 1; left: 14%; right: 22%; bottom: 3%; height: 9%; border-radius: 50%; background: radial-gradient(ellipse, #e4dccaaa, transparent 70%); opacity: 0; pointer-events: none; animation: stm-dust .75s ease-out var(--d, 0ms) forwards; }
+@keyframes stm-dust { 0% { opacity: 0; transform: scale(.4); } 25% { opacity: .9; } 100% { opacity: 0; transform: scale(1.8); } }
+.stm-sig { position: absolute; z-index: 4; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; border: 2px solid #d9a8ff; box-shadow: 0 0 8px #b56bff; opacity: 0; pointer-events: none; animation: stm-sig .75s ease-out var(--d, 0ms) forwards; }
+@keyframes stm-sig { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(4.4); } }
+
+/* ---------- Effets de sorts (posés dans la scène) ---------- */
+.scene .sfx-stm-bolt { width: var(--s); height: var(--s); border-radius: 50%; z-index: 7; background: radial-gradient(circle at 38% 34%, #fff, var(--c) 58%, color-mix(in srgb, var(--c) 40%, #000) 100%); box-shadow: 0 0 10px var(--c), 0 0 4px #fff; }
+.scene .sfx-stm-bolt.fire { background: radial-gradient(circle at 40% 40%, #fff7c0, #ffb02e 40%, #ff4a1a 75%, #b01a0a); box-shadow: 0 0 14px #ff6a2a, 0 0 28px #ff4a1a88; }
+.scene .sfx-stm-bolt.steam { background: radial-gradient(circle, #fff, #e4eef6 55%, #c0d2e2aa 80%); box-shadow: 0 0 14px #dcecf8; }
+.scene .sfx-stm-bolt.heal { display: grid; place-items: center; width: calc(var(--s) * 2); height: calc(var(--s) * 2); font-size: calc(var(--s) * 1.5); line-height: 1; font-weight: 900; color: #06241e; background: radial-gradient(circle, #e8fff6, #6fe8c0 70%); box-shadow: 0 0 10px #6fe8c0; }
+.scene .sfx-stm-trail { width: var(--s); height: var(--s); border-radius: 50%; z-index: 6; background: radial-gradient(circle, #fffc, var(--c) 60%, transparent 75%); }
+.scene .sfx-stm-muz { width: 18px; height: 18px; border-radius: 50%; z-index: 8; background: radial-gradient(circle, #fff, var(--c) 45%, transparent 72%); }
+.scene .sfx-stm-flame { width: 44px; height: 54px; z-index: 7; border-radius: 50% 50% 46% 46% / 66% 66% 34% 34%; background: radial-gradient(ellipse at 50% 70%, #fff6b0, #ffb02e 38%, #ff4a1a 68%, transparent 78%); filter: blur(.4px); }
+.scene .sfx-stm-ripple { width: 46px; height: 16px; border-radius: 50%; border: 2.5px solid var(--c); box-shadow: 0 0 8px #4fc3ff; }
+.scene .sfx-stm-drop { width: var(--s); height: calc(var(--s) * 1.35); border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 35% 30%, #fff, var(--c) 55%, #1a78c0); }
+.scene .sfx-stm-shard { width: var(--s); height: calc(var(--s) * .9); background: linear-gradient(135deg, #d8b878, var(--c) 55%, #5a3a14); clip-path: polygon(10% 100%, 0 40%, 45% 0, 100% 30%, 85% 100%); filter: drop-shadow(0 1px 0 #2a1806); }
+.scene .sfx-stm-dust { width: 64px; height: 22px; border-radius: 50%; background: radial-gradient(ellipse, #d8c7a3cc, #b79b6a66 55%, transparent 74%); }
+.scene .sfx-stm-bubble { width: var(--s); height: var(--s); border-radius: 50%; border: 1.5px solid #e8faff; background: radial-gradient(circle at 32% 28%, #fff 0 12%, #cfefff66 35%, #8fdcff22 70%); box-shadow: inset 0 0 4px #fff8, 0 0 5px #bfeaff; }
+.scene .sfx-stm-heat { width: 56px; height: 56px; border-radius: 50%; border: 3px solid #fff; background: radial-gradient(circle, #ffffff80, transparent 68%); box-shadow: 0 0 18px #dcecf8, inset 0 0 12px #fff8; }
+.scene .sfx-stm-cloud { width: var(--s); height: var(--s); border-radius: 50%; z-index: 8; background: radial-gradient(circle at 40% 36%, #fff, #e4eef6f0 50%, #c0d2e2aa 72%, transparent 78%); filter: blur(.6px); }
+.scene .sfx-stm-anchor { z-index: 7; filter: drop-shadow(0 3px 2px #0009); }
+.scene .sfx-stm-surf { z-index: 7; width: var(--w); height: 38px; margin-left: calc(var(--w) * -.1); pointer-events: none; }
+.scene .sfx-stm-surf i { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; border-radius: 60% 40% 50% 50% / 100% 100% 0 0; background: linear-gradient(0deg, #1a78c0cc, #4fc3ffdd 55%, #e8faffee 92%); }
+.scene .sfx-stm-surf i:nth-child(2) { left: 10%; right: 6%; height: 74%; background: linear-gradient(0deg, #4fc3ffcc, #bfeaffee 80%, #fff); opacity: .9; }
+.scene .sfx-stm-surf i:nth-child(3) { left: 4%; right: 14%; height: 40%; background: radial-gradient(ellipse at 50% 0, #fff, #e8faffcc 60%, transparent 75%); }
+.scene .sfx-stm-chain { z-index: 6; width: var(--len); height: 5px; transform-origin: 0 50%; background: repeating-linear-gradient(90deg, #dfe8f2 0 5px, #2a323c 5px 7px, #8a96a6 7px 10px, #2a323c 10px 12px); border-radius: 3px; filter: drop-shadow(0 1px 1px #000); }
+.scene .sfx-stm-harpoon { z-index: 8; filter: drop-shadow(0 2px 2px #000a) drop-shadow(0 0 5px #dfe8f2); transform-origin: 50% 50%; }
+.scene .sfx-stm-lightning { z-index: 7; filter: drop-shadow(0 0 6px #9b5cff); }
+.scene .sfx-stm-lightning svg { display: block; overflow: visible; }
+.scene .sfx-stm-magnet { z-index: 9; font-size: 30px; line-height: 1; filter: drop-shadow(0 0 8px #9b5cff) drop-shadow(0 2px 1px #000a); }
+.scene.sg-on .sfx { z-index: 24; }
+
+/* =====================================================================
+   SURCHARGE STASIS — cinématique
+   ===================================================================== */
+.scene.sg-on .unit.hero, .scene.sg-on .yard { z-index: 21; }
+.surge { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
+.sg-dark { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 40% 62%, #1a0a3a33 14%, #0a0418e8 100%), #160a3055; }
+.sg-flash { position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen; }
+.sg-seal { position: absolute; opacity: 0; filter: drop-shadow(0 0 5px #b56bff) drop-shadow(0 0 14px #7a3cff); }
+.sg-seal svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.sg-seal .sp { transform-box: view-box; transform-origin: 100px 100px; animation: ccspin 7s linear infinite; }
+.sg-seal.f .sp { animation-direction: reverse; animation-duration: 9s; }
+.sg-pipes { position: absolute; inset: 0; overflow: visible; }
+.sg-pipes path { fill: none; stroke-linecap: round; }
+.sg-pipes .o { stroke: #1a0a06; stroke-width: 10; } .sg-pipes .c { stroke: #b4651f; stroke-width: 6; filter: drop-shadow(0 0 3px #ffb02e66); }
+.sg-pipes .e { stroke: #e6c8ff; stroke-width: 2.4; filter: drop-shadow(0 0 5px #b56bff) drop-shadow(0 0 10px #7a3cff); animation: sgflow .5s linear infinite; opacity: 0; }
+@keyframes sgflow { to { stroke-dashoffset: -16; } }
+.sg-title { position: absolute; left: 50%; top: 7%; opacity: 0; transform: translate(-50%, 0); text-align: center; white-space: nowrap; line-height: .95; font-weight: 900; font-family: Georgia, 'Times New Roman', serif; z-index: 9; }
+.sg-title span { display: block; font-size: var(--fs); letter-spacing: .05em; color: #fff3d0; -webkit-text-stroke: 2px #2a0a5a; paint-order: stroke fill; text-shadow: 0 3px 0 #5a2a08, 0 6px 0 #2a0a5a, 0 0 22px #b56bff, 0 0 44px #7a3cff; }
+.sg-title b { display: block; font-size: calc(var(--fs) * .46); letter-spacing: .55em; margin-top: 4px; color: #e6c8ff; text-shadow: 0 2px 0 #2a0a5a, 0 0 14px #b56bff; }
+.sg-spike { position: absolute; transform-origin: 50% 100%; transform: scaleY(0); background: linear-gradient(0deg, #3a2410, #8a5a28 40%, #c99a52 82%, #f0dcb0); clip-path: polygon(0 100%, 12% 50%, 30% 22%, 50% 0, 70% 22%, 88% 50%, 100% 100%); }
+.sg-wave { position: absolute; width: var(--w); height: calc(var(--w) * .3); margin: calc(var(--w) * -.15) 0 0 calc(var(--w) * -.5); border-radius: 50%; border: 4px solid #c99a52; box-shadow: 0 0 14px #c99a5288; opacity: 0; animation: ccwave 1s cubic-bezier(.1, .7, .3, 1) forwards; }
+.sg-magnet { position: absolute; font-size: 32px; line-height: 1; filter: drop-shadow(0 0 8px #9b5cff) drop-shadow(0 2px 1px #000a); }
+.sg-ring { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 3px solid #c58aff; box-shadow: 0 0 10px #9b5cff, inset 0 0 8px #9b5cff88; opacity: 0; animation: sgring .7s ease-out forwards; }
+@keyframes sgring { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(3); } }
+.stm-fp.sg-vent { z-index: 3; }
+.cl-num.sg-num.eau { color: #e8f8ff; text-shadow: 0 3px 0 #06304a, 0 0 14px #4fc3ff; }
+.cl-num.sg-num.feu { color: #fff0d0; text-shadow: 0 3px 0 #4a1a02, 0 0 14px #ff6a2a; }
+.cl-num.sg-num.terre { color: #fbeccb; text-shadow: 0 3px 0 #3a2406, 0 0 14px #c99a52; }
+.cl-num.sg-num.vap { color: #fff; font-size: 26px; text-shadow: 0 3px 0 #3a4a5a, 0 0 16px #dcecf8; }
+.stm-smoke.white { background: radial-gradient(circle, #fffffff0, #e4eef6a0 58%, transparent 72%); }
+/* la chaudière s'emballe */
+.unit.hero.stm-surge .sprite { animation: stm-surge-shake .16s linear infinite; filter: drop-shadow(0 0 10px #d9a8ff) drop-shadow(0 0 22px #7a3cff) brightness(1.2); scale: 1.1; transition: scale .4s; }
+@keyframes stm-surge-shake { 25% { translate: -1px 1px; } 50% { translate: 1px -1px; } 75% { translate: 1px 1px; } }
+.unit.hero.stm-surge .hs-steamer .pf { animation-duration: .7s; }
+.unit.hero.stm-surge .hs-steamer .p-chim { animation-duration: .2s; }
+.unit.hero.stm-surge .hs-steamer .p-coreglow { animation-duration: .35s; opacity: 1; }
+.unit.hero.stm-surge .hs-steamer .p-needle { animation-duration: .12s; }
+@media (prefers-reduced-motion: reduce) { .yard *, .tur, .tur *, .mon.st-b .sprite, .mon.st-m .sprite, .fury-btn.steam-btn svg { animation: none !important; } }
+/* petit écran : le parc est réduit pour laisser de la place aux ennemis */
+@media (max-width: 560px) {
+  .yard { --tw: 44px; }
+  .tur-lv { min-width: 11px; height: 11px; font-size: 7px; }
+  .tur-pad span { font-size: 6.5px; padding: 0 3px; }
+  .mst i { font-size: 9px; }
+}
+.surge-fg { position: absolute; inset: 0; z-index: 23; pointer-events: none; overflow: hidden; }
+.surge-fg > i { font-style: normal; }
+.scene.sg-on .unit.mon { z-index: 21; }
+.cl-num.sg-num { top: auto; }
 /* Format téléphone forcé (généré depuis les règles mobiles) */
 :root[data-layout="mobile"] #app { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="mobile"] .side { display: none; }
@@ -3500,6 +3842,10 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .pb-mons { font-size: 36px; }
 :root[data-layout="mobile"] .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 :root[data-layout="mobile"] .wm { min-width: 1340px; }
+:root[data-layout="mobile"] .yard { --tw: 44px; }
+:root[data-layout="mobile"] .tur-lv { min-width: 11px; height: 11px; font-size: 7px; }
+:root[data-layout="mobile"] .tur-pad span { font-size: 6.5px; padding: 0 3px; }
+:root[data-layout="mobile"] .mst i { font-size: 9px; }
 :root[data-layout="mobile"] #app, :root[data-layout="mobile"] .bottom-nav { max-width: 460px; margin-inline: auto; }
 :root[data-layout="mobile"] body { background: #090b07; }
 :root[data-layout="mobile"] #app { background: var(--bg); box-shadow: 0 0 0 1px var(--line), 0 0 60px #000; }
@@ -3508,7 +3854,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793235718';
+const BUILD_ID = '1793238922';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -3667,6 +4013,27 @@ const CLASSES = {
       { id: 'momification', name: 'Momification', lvl: 18, pa: 2, type: 'buff', buff: { res: 20, deg: 15 }, turns: 2, cd: 5 },
       { id: 'horloge', name: 'Horloge', lvl: 26, pa: 4, min: 18, max: 24, stat: 'int', type: 'dmg', grains: 3, max_: 1 },
       { id: 'rayon_obscur', name: 'Rayon Obscur', lvl: 40, pa: 5, min: 30, max: 40, stat: 'int', type: 'dmg', cd: 2 },
+    ],
+  },
+  steamer: {
+    name: 'Steamer', role: 'Ingénieur des tourelles', main: 'deg', elem: 'int', elemTxt: 'Feu · Terre · Eau', hpMult: 0.9, color: '#d9822b',
+    desc: 'Ingénieur des abysses de Sufokia : il ne se bat jamais seul. Chacun de ses sorts réveille ses tourelles, qui tirent avec le même élément. Feu et Eau réagissent en Vapeur, et la chaudière de Stasis n’attend qu’un ordre pour tout surcharger.',
+    passive: { name: 'Arsenal de Stasis', points: [
+      ['⚙️','Atelier de tourelles','Il déploie jusqu’à 3 tourelles, gardées d’un combat à l’autre : l’Offensive (niv. 1), la Défensive (niv. 12) et la Tactique (niv. 24). Elles ne tirent jamais seules.'],
+      ['🔥','Activation','Chaque sort d’attaque réveille ses tourelles, qui tirent avec l’élément du sort. Offensive : 1 canon par niveau, chacun tire 10 % du sort. Défensive : soigne (1,2 à 2,2 % des PV max, +50 % avec l’Eau) et répare les autres tourelles. Tactique : 13 à 25 % de chances de magnétiser un ennemi, qui perd son prochain tour (moitié moins contre un boss). Feu 🔥 = Brûlure (22 % du coup, sur 2 tours). Terre ⛰️ = Fissure (+15 % de dégâts reçus). Eau 💧 = Trempé (−15 % de dégâts infligés).'],
+      ['♨️','Vapeur','Un tir de Feu sur une cible Trempée, ou d’Eau sur une cible en Brûlure, déclenche la Vapeur : une explosion brûlante touche tous les ennemis. Le Steamer varie donc ses éléments d’un sort à l’autre.'],
+      ['🔧','Évolution','Chaque activation fait progresser la tourelle : niveau II à 80 activations, niveau III à 400 (gardés à vie). Le sort Évolution la monte d’un niveau pendant 3 tours.'],
+      ['🛡️','Tourelles leurres','Un coup ennemi sur 7 vise une tourelle plutôt que le Steamer. Détruite, elle est hors service jusqu’à la fin du combat, puis remontée. Scaphandre : +5 % de résistance, et +15 Prospection (ferraille).'],
+      ['💥','Surcharge Stasis','Chaque activation remplit la Pression (gardée d’un combat à l’autre). Pleine, clique pour surcharger : toutes les tourelles tirent une salve Eau, Feu puis Terre sur tous les ennemis (résistances ignorées), la Vapeur explose, la Défensive soigne, la Tactique magnétise tout le monde.']
+    ], desc: 'Jusqu’à 3 tourelles activées par ses sorts (Feu, Terre, Eau), Vapeur quand Feu et Eau se croisent, évolution des tourelles et Surcharge Stasis.', stats: { res: 5, pp: 15 } },
+    spells: [
+      { id: 'flibuste', name: 'Flibuste', lvl: 1, pa: 3, min: 6, max: 10, stat: 'int', type: 'dmg', max_: 2 },
+      { id: 'ancrage', name: 'Ancrage', lvl: 3, pa: 3, min: 6, max: 10, stat: 'for', type: 'dmg', max_: 2 },
+      { id: 'ressac', name: 'Ressac', lvl: 6, pa: 2, min: 4, max: 7, stat: 'cha', type: 'dmg', max_: 2 },
+      { id: 'ecume', name: 'Écume', lvl: 10, pa: 3, min: 5, max: 8, stat: 'cha', type: 'aoe', max_: 1 },
+      { id: 'evolution', name: 'Évolution', lvl: 14, pa: 2, type: 'buff', buff: { deg: 12 }, turns: 3, cd: 5, note: 'Les tourelles gagnent 1 niveau' },
+      { id: 'vapor', name: 'Vapor', lvl: 28, pa: 4, min: 10, max: 14, stat: 'int', type: 'aoe', max_: 1 },
+      { id: 'foene', name: 'Foène', lvl: 36, pa: 5, min: 32, max: 42, stat: 'for', type: 'dmg', cd: 2 },
     ],
   },
 };
@@ -4714,6 +5081,7 @@ function startFight(st, h, ev) {
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   if (h.cls === 'zobal') { h.mask = h.mask || 'rire'; h.ferv = Math.max(1, h.ferv || 1); }
+  if (h.cls === 'steamer') stmInit(h, heroTotals(st, h), h.fight);
   const names = group.map(m => MONSTERS[m].name);
   if (group.length === 1 && MONSTERS[group[0]].archi) { h.fight.archi = true; ev.log(h, `👹 ARCHIMONSTRE ! ${h.name} affronte ${names[0]}.`, 'boss'); }
   else ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
@@ -4756,6 +5124,7 @@ function heroTurn(st, h, t, ev) {
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'zobal') pre += zobTurnStart(h, t, f, ev);
+  if (h.cls === 'steamer') f.elems = [];
   if (h.cls === 'sacrieur') { // Pacte de sang : il se saigne volontairement (jamais sous 40 % de PV) et gagne un Stigmate
     f.stig = f.stig || 0;
     if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
@@ -4793,6 +5162,7 @@ function heroTurn(st, h, t, ev) {
         const totalHp = alive.reduce((s, m) => s + m.hp, 0);
         val = already ? 0 : totalHp > t.pa * 8 ? 9999 : 0;
       }
+      if (h.cls === 'steamer' && val > 0) val *= stmSpellBonus(h, f, sp, alive);
       if (h.cls === 'cra' && sp.type === 'dmg' && (h.focus || 0) >= CRA_FOCUS_MAX) val = Math.max(val, 1) * 6; // garde le Tir Parfait pour la proie
       val = val / sp.pa;
       if (val > bestVal) { bestVal = val; best = sp; }
@@ -4805,6 +5175,8 @@ function heroTurn(st, h, t, ev) {
     const pf0 = f.perfectSeq || 0;
     const line = castSpell(st, h, t, best, target, alive);
     actions.push(line);
+    let stm = null;
+    if (h.cls === 'steamer' && best.type !== 'buff' && best.type !== 'heal') { stm = stmActivate(h, t, f, best, target); if (stm && stm.text) actions.push(stm.text); }
     if (h.cls === 'ecaflip' && f.double && (best.type === 'dmg' || best.type === 'aoe')) { // Quitte ou Double gagné : le sort frappe deux fois
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
@@ -4817,7 +5189,7 @@ function heroTurn(st, h, t, ev) {
     enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
-    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts, pf: (f.perfectSeq || 0) > pf0 ? 1 : 0 }); // pf : ce tir est le Tir Parfait (la cinématique le joue à la place)
+    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts, pf: (f.perfectSeq || 0) > pf0 ? 1 : 0, tur: stm ? stm.shots : null }); // pf : ce tir est le Tir Parfait (la cinématique le joue à la place)
     if (f.fx.length > 16) f.fx.shift();
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
@@ -4869,12 +5241,13 @@ function castSpell(st, h, t, sp, target, alive) {
     return '';
   };
   if (sp.type === 'aoe') {
-    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
+    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); if (m.crack) r.v = Math.round(r.v * STM_CRACK); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
     if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
     return `${sp.name} → ${parts.join('/')}`;
   }
   if (h.cls === 'cra' && sp.type === 'dmg' && f.mons.indexOf(target) === f.mark && (h.focus || 0) >= CRA_FOCUS_MAX) return perfectShot(h, t, f, sp, target);
   const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
+  if (target.crack) r.v = Math.round(r.v * STM_CRACK);
   if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
   if (sp.type === 'poison') {
     target.poison = { dmg: r.v, turns: sp.turns };
@@ -4897,7 +5270,15 @@ function monsterTurn(st, h, t, m, ev) {
     if (--m.poison.turns <= 0) m.poison = null;
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
+  if (m.burn) { // Brûlure du Steamer
+    m.hp = Math.max(0, m.hp - m.burn.dmg);
+    line += `${def.name} brûle : −${m.burn.dmg}. `;
+    if (--m.burn.turns <= 0) m.burn = null;
+    if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.`, 'mon'); return; }
+  }
+  const wet = m.wet > 0; if (wet) m.wet--; // Trempé : −20 % de dégâts infligés
   if (m.bribed) { m.bribed = false; ev.log(h, line + `${def.name} se jette sur les pièces d’or et oublie d’attaquer.`, 'mon'); return; }
+  if (m.mag) { m.mag = false; f.magSeq = (f.magSeq || 0) + 1; ev.log(h, line + `${def.name} est collé à la tourelle tactique et ne peut pas agir.`, 'hero'); return; }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
   f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
@@ -4914,7 +5295,7 @@ function monsterTurn(st, h, t, m, ev) {
   let special = false;
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
-  dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
+  dmg = Math.max(1, Math.round(dmg * (1 - res / 100) * (wet ? STM_WET : 1)));
   if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100))); // Masque Pleureur
   if (h.cls === 'ecaflip') {
     if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
@@ -4924,6 +5305,7 @@ function monsterTurn(st, h, t, m, ev) {
       return;
     }
   }
+  if (h.cls === 'steamer' && stmDecoy(h, f, def, line, dmg, special, ev)) return; // une tourelle encaisse le coup à sa place
   const hpBefore = h.hp;
   h.hp = Math.max(0, h.hp - dmg);
   gainBlood(h, hpBefore - h.hp, t.maxHp); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
@@ -5176,6 +5558,164 @@ function unleashFury(st, h, ev) {
   return hits;
 }
 
+/* ---------------------- Steamer : tourelles, Vapeur et Surcharge Stasis ----------------------
+   Trois tourelles (Offensive, Défensive, Tactique) dont la progression est gardée à vie (h.turXp : activations cumulées).
+   Elles ne tirent jamais seules : chaque sort d'attaque les ACTIVE, et elles tirent avec l'élément du sort (Feu, Terre ou Eau).
+   Chaque élément laisse un état sur l'ennemi touché : Feu = Brûlure, Terre = Fissure, Eau = Trempé.
+   Feu sur un ennemi Trempé, ou Eau sur un ennemi en Brûlure : VAPEUR (explosion sur tous les ennemis).
+   Chaque activation remplit la Pression (h.steam, gardée d'un combat à l'autre) ; pleine, le joueur déclenche la Surcharge Stasis.
+   Un ennemi sur 4 s'en prend à une tourelle plutôt qu'au Steamer (f.tur : PV des tourelles pour ce combat). */
+const STM_SLOTS = ['off', 'def', 'tac'];
+const STM_UNLOCK = { off: 1, def: 12, tac: 24 };
+const STM_NAMES = { off: 'Tourelle offensive', def: 'Tourelle défensive', tac: 'Tourelle tactique' };
+const STM_ROMAN = ['', 'I', 'II', 'III'];
+const STM_EVO = [80, 400];                // activations pour passer niveau II puis III
+const STM_ELEM = { int: 'feu', for: 'terre', cha: 'eau' };
+const STM_ELEM_ICON = { feu: '🔥', terre: '⛰️', eau: '💧' };
+const STM_BARREL = 0.10;                  // part d'un sort par canon de l'Offensive (1 canon par niveau)
+const STM_HEAL = [0, 0.012, 0.017, 0.022]; // part des PV max rendue par la Défensive (×1,5 avec l'Eau)
+const STM_MAG = [0, 0.13, 0.19, 0.25];    // chances de magnétiser un ennemi par activation de la Tactique
+const STM_BURN = 0.22, STM_BURN_TURNS = 2, STM_CRACK = 1.15, STM_WET = 0.85, STM_WET_TURNS = 2;
+const STM_VAPOR_SPELL = { id: 'vapeur', name: 'Vapeur', min: 7, max: 10, type: 'aoe' };
+const STM_STEAM_MAX = 320, STM_STEAM_ACT = 3, STM_STEAM_VAPOR = 10;
+const STM_DECOY = 0.14, STM_TUR_HP = 0.2, STM_TUR_HPMULT = [0, 1, 1.35, 1.8];
+const STM_SURGE = { id: 'surcharge', name: 'Surcharge Stasis', min: 40, max: 54, type: 'aoe' };
+const STM_SURGE_HEAL = 0.3;
+function stmXp(h) { return h.turXp || (h.turXp = { off: 0, def: 0, tac: 0 }); }
+function stmBaseLvl(h, s) { const x = stmXp(h)[s] || 0; return x >= STM_EVO[1] ? 3 : x >= STM_EVO[0] ? 2 : 1; }
+function stmBoost(f) { return !!(f && f.buffs && f.buffs.some(b => b.id === 'evolution')); }
+function stmLvl(h, f, s) { return Math.min(3, stmBaseLvl(h, s) + (stmBoost(f) ? 1 : 0)); }
+function stmHas(h, s) { return h.lvl >= STM_UNLOCK[s]; }
+function stmAlive(f, s) { const T = f && f.tur && f.tur[s]; return !!T && T.hp > 0; }
+function steamReady(h) { return h.cls === 'steamer' && (h.steam || 0) >= STM_STEAM_MAX; }
+/* Début de combat : les tourelles sont déployées, réparées à neuf */
+function stmInit(h, t, f) {
+  f.tur = {}; f.elems = [];
+  for (const s of STM_SLOTS) if (stmHas(h, s)) { const max = Math.max(1, Math.round(t.maxHp * STM_TUR_HP * STM_TUR_HPMULT[stmBaseLvl(h, s)])); f.tur[s] = { hp: max, max }; }
+}
+/* Le Steamer préfère les sorts qui changent d'élément, et surtout ceux qui déclenchent la Vapeur */
+function stmSpellBonus(h, f, sp, alive) {
+  const el = STM_ELEM[sp.stat]; if (!el) return 1;
+  let b = (f.elems || []).includes(el) ? 1 : 1.2;
+  if (stmAlive(f, 'off') && alive.some(m => (el === 'feu' && m.wet > 0) || (el === 'eau' && m.burn))) b *= 1.5;
+  return b;
+}
+function stmVapor(h, t, f, m, out) {
+  m.burn = null; m.wet = 0;
+  const hits = [];
+  for (const o of f.mons) if (o.hp > 0) {
+    const r = rollSpell(h, t, f, STM_VAPOR_SPELL, monsterStats(o.mid).res);
+    const v = Math.max(1, Math.round(r.v * (o.crack ? STM_CRACK : 1)));
+    o.hp = Math.max(0, o.hp - v); hits.push({ i: f.mons.indexOf(o), v });
+  }
+  h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_VAPOR);
+  f.vapSeq = (f.vapSeq || 0) + 1;
+  out.push({ i: f.mons.indexOf(m), hits });
+}
+/* Effet d'élément d'un tir de tourelle sur un ennemi encore debout */
+function stmElemHit(h, t, f, m, el, rv, vapors) {
+  if (m.hp <= 0) return;
+  if (el === 'feu') { if (m.wet > 0) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.burn = { dmg: Math.max(1, Math.round(rv * STM_BURN)), turns: STM_BURN_TURNS }; }
+  else if (el === 'eau') { if (m.burn) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.wet = STM_WET_TURNS; }
+  else m.crack = true;
+}
+/* Active les tourelles après un sort d'attaque. Retourne { text, shots } (shots sert aux animations) */
+function stmActivate(h, t, f, sp, target) {
+  const el = STM_ELEM[sp.stat]; if (!el || !f.tur) return null;
+  (f.elems = f.elems || []).push(el);
+  const shots = [], txt = [], vapors = [];
+  for (const s of STM_SLOTS) {
+    if (!stmHas(h, s) || !stmAlive(f, s)) continue;
+    const alive = f.mons.filter(m => m.hp > 0);
+    if (!alive.length) break;
+    const L = stmLvl(h, f, s), shot = { s, el, lvl: L, t: [], v: [] };
+    if (s === 'off') {
+      const order = [target && target.hp > 0 ? target : null, ...alive.slice().sort((a, b) => a.hp - b.hp)].filter((m, i, a) => m && a.indexOf(m) === i), parts = [];
+      for (let b = 0; b < L; b++) {
+        let m = order[b % order.length]; if (!m || m.hp <= 0) m = f.mons.find(x => x.hp > 0); if (!m) break;
+        const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res);
+        const v = Math.max(1, Math.round(r.v * STM_BARREL * (m.crack ? STM_CRACK : 1)));
+        m.hp = Math.max(0, m.hp - v); shot.t.push(f.mons.indexOf(m)); shot.v.push(v); parts.push(v + (r.crit ? ' CC' : ''));
+        stmElemHit(h, t, f, m, el, r.v, vapors);
+      }
+      txt.push(`${STM_ELEM_ICON[el]} Offensive ${parts.join('+')}`);
+    } else if (s === 'def') {
+      let heal = 0, rep = 0;
+      if (h.hp < t.maxHp) { heal = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * STM_HEAL[L] * (el === 'eau' ? 1.5 : 1)))); h.hp += heal; }
+      for (const o of STM_SLOTS) {
+        const T = o !== 'def' && f.tur[o]; if (!T) continue;
+        if (T.hp > 0 && T.hp < T.max) { const r = Math.min(T.max - T.hp, Math.round(T.max * 0.15 * L)); T.hp += r; rep += r; }
+        else if (T.hp <= 0 && L >= 3) { T.hp = Math.round(T.max * 0.25); rep += T.hp; (shot.revive = shot.revive || []).push(o); }
+      }
+      shot.heal = heal; shot.rep = rep; shot.t = [];
+      txt.push(`Défensive${heal ? ' +' + heal + ' PV' : ''}${rep ? ' 🔧' : ''}`);
+    } else {
+      const foe = alive.filter(m => !m.mag).sort((a, b) => b.hp - a.hp)[0];
+      if (foe) {
+        const d = MONSTERS[foe.mid], chance = STM_MAG[L] * (d.boss || d.archi ? 0.5 : 1);
+        shot.t.push(f.mons.indexOf(foe));
+        if (Math.random() < chance) { foe.mag = true; shot.mag = true; txt.push(`🧲 Tactique : ${d.name} magnétisé`); }
+      }
+    }
+    h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_ACT);
+    const before = stmBaseLvl(h, s); stmXp(h)[s]++; const after = stmBaseLvl(h, s);
+    if (after > before) { f.evoSeq = (f.evoSeq || 0) + 1; f.evoFx = { n: f.evoSeq, s, lvl: after }; shot.evo = after; txt.push(`🔧 ${STM_NAMES[s]} niveau ${STM_ROMAN[after]} !`); }
+    shots.push(shot);
+  }
+  if (vapors.length) txt.push(`♨️ VAPEUR ${vapors[0].hits.map(x => x.v).join('/')}`);
+  return { text: txt.join(' · '), shots: Object.assign(shots, { vapor: vapors[0] || null }) };
+}
+/* Un ennemi s'en prend à une tourelle plutôt qu'au Steamer. Retourne true si le coup est encaissé par une tourelle */
+function stmDecoy(h, f, def, line, dmg, special, ev) {
+  if (!f.tur || Math.random() >= STM_DECOY) return false;
+  const live = STM_SLOTS.filter(s => stmHas(h, s) && stmAlive(f, s)); if (!live.length) return false;
+  const s = live[irnd(0, live.length - 1)], T = f.tur[s], real = Math.min(T.hp, dmg);
+  T.hp = Math.max(0, T.hp - dmg);
+  f.decoySeq = (f.decoySeq || 0) + 1; f.decoyFx = { n: f.decoySeq, s, v: real, broke: T.hp <= 0 };
+  ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} la ${STM_NAMES[s].toLowerCase()} : −${real}${T.hp <= 0 ? ' · 💥 hors service !' : ''}`, 'mon');
+  return true;
+}
+/* Surcharge Stasis : toutes les tourelles tirent une salve Eau, Feu puis Terre sur tous les ennemis */
+function unleashSurge(st, h, ev) {
+  const f = h.fight;
+  if (!steamReady(h) || !f || !f.mons.some(m => m.hp > 0)) return null;
+  const t = heroTotals(st, h);
+  for (const s of STM_SLOTS) if (f.tur && f.tur[s]) f.tur[s].hp = f.tur[s].max; // la surcharge remet tout en état
+  const { scale } = spellPower(h, t, f, STM_SURGE), mult = 1 + 0.2 * (stmLvl(h, f, 'off') - 1);
+  const res = { volleys: [], vapor: null, heal: 0, mag: [] };
+  const vapors = [];
+  for (const el of ['eau', 'feu', 'terre']) {
+    const hits = f.mons.map((m, i) => {
+      if (m.hp <= 0) return null;
+      const crit = Math.random() * 100 < t.critPct + 20;
+      let v = (rnd(STM_SURGE.min, STM_SURGE.max) * scale + t.dmg) * mult;
+      if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
+      if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+      if (m.crack) v *= STM_CRACK;
+      v = Math.max(1, Math.round(v)); // ignore les résistances
+      m.hp = Math.max(0, m.hp - v);
+      if (m.hp > 0) { if (el === 'eau') m.wet = STM_WET_TURNS; else if (el === 'terre') m.crack = true; else if (!m.wet) m.burn = { dmg: Math.max(1, Math.round(v * STM_BURN)), turns: STM_BURN_TURNS }; }
+      return { i, v, crit };
+    });
+    res.volleys.push({ el, hits });
+    if (el === 'feu' && f.mons.some(m => m.hp > 0 && m.wet > 0)) { // le feu sur des ennemis trempés : la Vapeur explose
+      const v = { i: -1, hits: [] };
+      for (const o of f.mons) if (o.hp > 0 && o.wet > 0) {
+        const r = rollSpell(h, t, f, STM_VAPOR_SPELL, 0); const d = Math.max(1, Math.round(r.v * 1.6 * (o.crack ? STM_CRACK : 1)));
+        o.hp = Math.max(0, o.hp - d); o.wet = 0; o.burn = null; v.hits.push({ i: f.mons.indexOf(o), v: d });
+      }
+      f.vapSeq = (f.vapSeq || 0) + 1; res.vapor = v; vapors.push(v);
+    }
+  }
+  if (stmHas(h, 'def')) { const heal = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * STM_SURGE_HEAL)); if (heal > 0) { h.hp += heal; res.heal = heal; } }
+  if (stmHas(h, 'tac')) f.mons.forEach((m, i) => { if (m.hp > 0) { m.mag = true; res.mag.push(i); } });
+  for (const s of STM_SLOTS) if (stmHas(h, s)) { stmXp(h)[s] += 4; }
+  h.steam = 0; h.surgeCount = (h.surgeCount || 0) + 1; f.ult = (f.ult || 0) + 1; f.surge = (f.surge || 0) + 1;
+  const part = v => v.hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join('/');
+  ev.log(h, `💥 SURCHARGE STASIS ! 💧 ${part(res.volleys[0])} · 🔥 ${part(res.volleys[1])} · ⛰️ ${part(res.volleys[2])}${res.vapor ? ` · ♨️ VAPEUR ${res.vapor.hits.map(x => x.v).join('/')}` : ''}${res.heal ? ` · +${res.heal} PV` : ''}${res.mag.length ? ' · 🧲' : ''}`, 'boss');
+  return res;
+}
+
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
 function fightStep(st, h, ev) {
   const f = h.fight, t = heroTotals(st, h);
@@ -5221,6 +5761,7 @@ function gainXp(st, h, xp, ev) {
     h.capital += CAPITAL_PER_LEVEL;
     if (h.auto) autoAllocate(h);
     const newSpells = spellsOf(h).filter(sp => sp.lvl === h.lvl);
+    if (h.cls === 'steamer') for (const s of STM_SLOTS) if (STM_UNLOCK[s] === h.lvl && h.lvl > 1) { ev.log(h, `⚙️ Nouvelle tourelle : ${STM_NAMES[s]} !`, 'win'); ev.turretNew && ev.turretNew(h, s); }
     ev.levelup && ev.levelup(h, newSpells);
   }
 }
@@ -8733,13 +9274,15 @@ function heroGesture(unit, k) {
   if (unit._gBusy) { unit._gNext = k; return; }
   unit._gBusy = true; unit.classList.remove('atk', 'cheer', 'atk-a', 'atk-b', 'atk-c'); void unit.offsetWidth; unit.classList.add(k);
   let variant = '';
-  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : unit.querySelector('.hs-xelor') ? 'xel' : unit.querySelector('.hs-sacrieur') ? 'sac' : unit.querySelector('.hs-zobal') ? 'zob' : '') : '';
+  const art = k === 'atk' ? (unit.querySelector('.hs-iop') ? 'iop' : unit.querySelector('.hs-sram') ? 'sram' : unit.querySelector('.hs-ecaflip') ? 'eca' : unit.querySelector('.hs-xelor') ? 'xel' : unit.querySelector('.hs-sacrieur') ? 'sac' : unit.querySelector('.hs-zobal') ? 'zob' : unit.querySelector('.hs-steamer') ? 'stm' : '') : '';
   if (art === 'zob') { // une gestuelle par masque : rire (a), larmes (b), farce (c)
     variant = { rire: 'atk-a', larme: 'atk-b', farce: 'atk-c' }[unit.dataset.mask] || 'atk-a'; unit.classList.add(variant);
   } else if (art) { // le Iop (coup d'en haut, tourbillon, plongeon) et le Sram (fente, pas d'ombre, rafale) varient leurs coups
-    const v = (unit._combo = ((unit._combo == null ? -1 : unit._combo) + 1 + (Math.random() < .5 ? 1 : 0)) % 3); /* jamais deux fois le même coup d'affilée */ variant = ['atk-a', 'atk-b', 'atk-c'][v];
-    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : art === 'xel' ? xelFlourish : art === 'sac' ? sacFlourish : ecaFlourish)(unit, v);
+    const forced = art === 'stm' && unit._stmV != null ? unit._stmV : null; if (art === 'stm') unit._stmV = null; // le Steamer : le geste dépend du sort (canon, manette, double détente)
+    const v = forced != null ? forced : (unit._combo = ((unit._combo == null ? -1 : unit._combo) + 1 + (Math.random() < .5 ? 1 : 0)) % 3); /* jamais deux fois le même coup d'affilée */ variant = ['atk-a', 'atk-b', 'atk-c'][v];
+    unit.classList.add(variant); (art === 'iop' ? iopFlourish : art === 'sram' ? sramFlourish : art === 'xel' ? xelFlourish : art === 'sac' ? sacFlourish : art === 'stm' ? stmFlourish : ecaFlourish)(unit, v);
   }
+  if (k === 'cheer' && unit.querySelector('.hs-steamer')) stmCheer(unit);
   setTimeout(() => {
     unit.classList.remove(k); if (variant) unit.classList.remove(variant); unit._gBusy = false;
     const n = unit._gNext; unit._gNext = null;
@@ -9063,22 +9606,254 @@ function playSpellFx(card, cast) {
   const heroUnit = card.querySelector('[data-k="fighter"]'); // le personnage dessiné joue son geste (coup de pelle, ou geste de soutien)
   const fx = SPELL_FX[cast.id] || ['proj', '#ffffff', '●'];
   const support = ['buff', 'heal'].includes((SPELL_FX[cast.id] || [])[0]);
-  let lead = 0, isCra = false;
+  let lead = 0, isCra = false, isStm = false;
   if (heroUnit) {
     if (!support && heroUnit.querySelector('.hs-cra')) { isCra = true; lead = Math.max(0, craShoot(heroUnit, cast.id)); } // l'archère bande son arc : la flèche part au lâcher
-    else heroGesture(heroUnit, support ? 'cheer' : 'atk');
+    else {
+      if (heroUnit.querySelector('.hs-steamer')) { isStm = true; const sv = STM_VARIANT[cast.id]; if (!support) { heroUnit._stmV = sv == null ? null : sv; lead = STM_REL[sv == null ? 0 : sv]; } } // le Steamer : le projectile part quand le canon tire
+      heroGesture(heroUnit, support ? 'cheer' : 'atk');
+    }
   }
   const go = () => {
     if (!scene.isConnected) return;
     const heroSprite = card.querySelector('[data-k="fighter"] .sprite');
     const from = fxPos(scene, heroSprite); if (!from) return;
     if (isCra) { from.x += heroSprite.offsetWidth * .39; from.y += heroSprite.offsetHeight * .06; } // la flèche part de la corde, pas du centre du sprite
+    if (isStm) { from.x += heroSprite.offsetWidth * .47; from.y += heroSprite.offsetHeight * .05; } // le tir part de la bouche du canon
     const tos = cast.t.map(i => fxPos(scene, card.querySelector(`[data-mon="${i}"] .sprite`))).filter(Boolean);
     const kind = FX_KIND[fx[0]] || FX_KIND.proj;
     if (!tos.length && !support) return;
     kind(scene, from, tos, fx, heroSprite);
+    if (isStm && cast.tur) stmTurretShots(card, scene, cast); // puis les tourelles ouvrent le feu, soignent ou magnétisent
   };
   if (lead > 0) setTimeout(go, lead); else go();
+}
+/* =====================================================================
+   AMAKNA IDLE — STEAMER : effets des sorts, tirs des tourelles, gestes du héros
+   Chargé après spellfx.js (qui définit SPELL_FX, FX_KIND, fxEl, fxAnim, fxPos, fxImpact).
+   ===================================================================== */
+Object.assign(SPELL_FX, {
+  flibuste:  ['stm', '#ff8a2a', '', 'fire'],     // Feu : boule de feu du canon
+  ancrage:   ['stm', '#d8b26a', '', 'anchor'],   // Terre : l'ancre tombe du ciel
+  ressac:    ['stm', '#4fc3ff', '', 'water'],    // Eau : double jet
+  ecume:     ['stm', '#cfefff', '', 'foam'],     // Eau : vague d'écume sur tous les ennemis
+  evolution: ['buff', '#d9a8ff', '⚙️'],           // les tourelles montent d'un niveau
+  vapor:     ['stm', '#eef6fb', '', 'steam'],    // Feu : la vapeur envahit le champ de bataille
+  foene:     ['stm', '#b9c4d4', '', 'harpoon'],  // Terre : harpon et chaîne
+});
+/* geste du héros par sort (a : coup de canon, b : coup de manette, c : double détente) et instant du tir en ms */
+const STM_VARIANT = { flibuste: 0, ancrage: 1, ressac: 2, ecume: 1, vapor: 0, foene: 2 };
+const STM_REL = [240, 300, 130];
+const STM_COL = { feu: '#ff8a2a', eau: '#4fc3ff', terre: '#c99a52' };
+const STM_MUZ = [[41.4], [41.4, 47.6], [35.2, 41.4, 47.6]]; // hauteur (sur 72) des bouches de la tourelle offensive selon son niveau
+const stmR = (a, b) => a + Math.random() * (b - a);
+
+/* centre et taille d'un élément, dans les pixels de la scène */
+function stmBox(scene, el) {
+  const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect(), k = s.width && scene.offsetWidth ? scene.offsetWidth / s.width : 1;
+  return { x: (r.left - s.left + r.width / 2) * k, y: (r.top - s.top + r.height / 2) * k, w: r.width * k, h: r.height * k };
+}
+/* courbe de Bézier a → b soulevée de `lift` */
+function stmCurve(a, b, lift, n = 9) {
+  const c = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - lift * 2 }, out = [];
+  for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; out.push({ x: u * u * a.x + 2 * u * t * c.x + t * t * b.x, y: u * u * a.y + 2 * u * t * c.y + t * t * b.y, o: t }); }
+  return out;
+}
+/* un projectile qui suit une courbe, avec sa traînée ; rend la durée du vol */
+function stmBolt(scene, a, b, o = {}) {
+  const dur = o.dur || 300, pts = stmCurve(a, b, o.lift == null ? 22 : o.lift), n = pts.length - 1;
+  const g = fxEl(scene, 'sfx-stm-bolt' + (o.cls ? ' ' + o.cls : ''), a.x, a.y, o.html || '', `--c:${o.c};--s:${o.size || 12}px`);
+  fxAnim(g, pts.map(p => ({ transform: `translate(calc(-50% + ${(p.x - a.x).toFixed(1)}px), calc(-50% + ${(p.y - a.y).toFixed(1)}px)) scale(${(o.grow ? .55 + p.o * o.grow : 1).toFixed(2)}) rotate(${((o.spin || 0) * p.o).toFixed(0)}deg)`, offset: p.o })), { duration: dur, easing: 'cubic-bezier(.4,0,.9,.7)' });
+  if (o.trail !== false) for (let i = 1; i <= 5; i++) {
+    const tau = i / 6, at = pts[Math.round(n * tau * tau)];
+    setTimeout(() => { if (!scene.isConnected) return; const tr = fxEl(scene, 'sfx-stm-trail', at.x, at.y, '', `--c:${o.c};--s:${((o.size || 12) * (.9 - i * .08)).toFixed(1)}px`); fxAnim(tr, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: .8 }, { transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }], { duration: 300 }); }, tau * dur);
+  }
+  return dur;
+}
+/* gerbe d'éléments qui retombent (gouttes, éclats de roche) */
+function stmLob(scene, p, cls, n, o = {}) {
+  for (let i = 0; i < n; i++) {
+    const e = fxEl(scene, cls, p.x, p.y, '', `--c:${o.c || '#fff'};--s:${stmR(o.s0 || 5, o.s1 || 8).toFixed(1)}px`);
+    const dx = stmR(-(o.spread || 34), o.spread || 34), up = stmR(o.up0 || 22, o.up1 || 46), fall = stmR(-4, 12), r = stmR(-300, 300);
+    fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(1) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx * .55}px), calc(-50% - ${up}px)) scale(1) rotate(${r * .5}deg)`, opacity: 1, offset: .45 }, { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${fall}px)) scale(.7) rotate(${r}deg)`, opacity: 0 }], { duration: stmR(520, 760), easing: 'ease-out' });
+  }
+}
+/* impact propre à chaque élément */
+function stmHit(scene, p, el, big = 1) {
+  if (!scene.isConnected) return;
+  if (el === 'feu') {
+    fxImpact(scene, p, '#ff8a2a', big);
+    const f = fxEl(scene, 'sfx-stm-flame', p.x, p.y);
+    fxAnim(f, [{ transform: `translate(-50%,-50%) scale(.3)`, opacity: 1 }, { transform: `translate(-50%,-58%) scale(${1.5 * big})`, opacity: .9, offset: .4 }, { transform: `translate(-50%,-75%) scale(${1.9 * big})`, opacity: 0 }], { duration: 520 });
+    for (let i = 0; i < 7; i++) { const e = fxEl(scene, 'sfx-spark', p.x + stmR(-12, 12), p.y + stmR(-4, 10), '', `--c:${i % 2 ? '#ffd56a' : '#ff6a2a'}`); fxAnim(e, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(calc(-50% + ${stmR(-14, 14)}px), calc(-50% - ${stmR(26, 58)}px)) scale(.3)`, opacity: 0 }], { duration: stmR(520, 900) }); }
+  } else if (el === 'eau') {
+    fxImpact(scene, p, '#4fc3ff', .8 * big);
+    const r = fxEl(scene, 'sfx-stm-ripple', p.x, p.y + 12, '', '--c:#bfeaff');
+    fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 1 }, { transform: `translate(-50%,-50%) scale(${2.4 * big})`, opacity: 0 }], { duration: 560 });
+    stmLob(scene, p, 'sfx-stm-drop', 8, { c: '#8fdcff', s0: 4, s1: 7, spread: 30 * big });
+  } else if (el === 'terre') {
+    fxImpact(scene, p, '#c99a52', big);
+    const d = fxEl(scene, 'sfx-stm-dust', p.x, p.y + 14);
+    fxAnim(d, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: .85 }, { transform: `translate(-50%,-70%) scale(${2.2 * big})`, opacity: 0 }], { duration: 700 });
+    stmLob(scene, p, 'sfx-stm-shard', 7, { c: '#a8793a', s0: 5, s1: 10, spread: 38 * big, up0: 26, up1: 56 });
+  } else if (el === 'foam') {
+    for (let i = 0; i < 9; i++) {
+      const b = fxEl(scene, 'sfx-stm-bubble', p.x + stmR(-20, 20), p.y + stmR(-2, 18), '', `--s:${stmR(7, 15).toFixed(0)}px`);
+      fxAnim(b, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 }, { transform: `translate(calc(-50% + ${stmR(-8, 8)}px), calc(-50% - ${stmR(10, 24)}px)) scale(1)`, opacity: 1, offset: .35 }, { transform: `translate(calc(-50% + ${stmR(-10, 10)}px), calc(-50% - ${stmR(30, 56)}px)) scale(1.35)`, opacity: 0 }], { duration: stmR(620, 980), delay: i * 45 });
+    }
+    fxImpact(scene, p, '#cfefff', .7 * big);
+  } else if (el === 'steam') {
+    const r = fxEl(scene, 'sfx-stm-heat', p.x, p.y, '');
+    fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: .9 }, { transform: `translate(-50%,-50%) scale(${2.4 * big})`, opacity: 0 }], { duration: 560 });
+    for (let i = 0; i < 6; i++) {
+      const c = fxEl(scene, 'sfx-stm-cloud', p.x + stmR(-18, 18), p.y + stmR(-4, 16), '', `--s:${stmR(26, 44).toFixed(0)}px`);
+      fxAnim(c, [{ transform: 'translate(-50%,-50%) scale(.35)', opacity: 0 }, { transform: `translate(calc(-50% + ${stmR(-6, 6)}px), calc(-50% - ${stmR(10, 22)}px)) scale(1)`, opacity: .92, offset: .3 }, { transform: `translate(calc(-50% + ${stmR(-14, 14)}px), calc(-50% - ${stmR(36, 66)}px)) scale(1.7)`, opacity: 0 }], { duration: stmR(780, 1150), delay: i * 50 });
+    }
+  }
+}
+/* chiffre flottant sur un ennemi ou un allié */
+function stmFloat(el, txt, cls) {
+  if (!el) return;
+  const f = document.createElement('span'); f.className = 'fnum stm-f ' + cls; f.textContent = txt; f.style.marginLeft = stmR(-18, 18).toFixed(0) + 'px';
+  el.appendChild(f); setTimeout(() => f.remove(), 1000);
+}
+
+const STM_ANCHOR = `<svg viewBox="0 0 40 64" width="34" height="54" aria-hidden="true"><path d="M20 -30 V8" stroke="#8a7a5a" stroke-width="3" stroke-dasharray="3 2.4"/><circle cx="20" cy="9" r="4.6" fill="none" stroke="#2a323c" stroke-width="4"/><circle cx="20" cy="9" r="4.6" fill="none" stroke="#c4cfdc" stroke-width="2"/><path d="M12 20 H28" stroke="#2a323c" stroke-width="6" stroke-linecap="round"/><path d="M12 20 H28" stroke="#c4cfdc" stroke-width="3.4" stroke-linecap="round"/><path d="M20 12 V54" stroke="#2a323c" stroke-width="7" stroke-linecap="round"/><path d="M20 12 V54" stroke="#aebbc9" stroke-width="4" stroke-linecap="round"/><path d="M3 38 Q4 54 20 56 Q36 54 37 38" fill="none" stroke="#2a323c" stroke-width="7" stroke-linecap="round"/><path d="M3 38 Q4 54 20 56 Q36 54 37 38" fill="none" stroke="#c4cfdc" stroke-width="3.8" stroke-linecap="round"/><path d="M-2 42 L3 33 L9 42Z M42 42 L37 33 L31 42Z" fill="#c4cfdc" stroke="#2a323c" stroke-width="2" stroke-linejoin="round"/><path d="M17.4 14 V50" stroke="#fff" stroke-opacity=".6" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+const STM_HARPOON = `<svg viewBox="0 0 46 16" width="46" height="16" aria-hidden="true"><path d="M0 8 H30" stroke="#2a323c" stroke-width="5" stroke-linecap="round"/><path d="M0 8 H30" stroke="#a9b6c6" stroke-width="2.6" stroke-linecap="round"/><path d="M28 1.4 L46 8 L28 14.6 L33 8Z" fill="#e6edf5" stroke="#2a323c" stroke-width="1.6" stroke-linejoin="round"/><path d="M19 3 L27 8 L19 13" fill="none" stroke="#6a7686" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 5.4 L40 8" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+
+FX_KIND.stm = function (scene, from, tos, fx, hero, cast) {
+  const mod = fx[3], c = fx[1];
+  const shake = (px = 3, ms = 240) => scene.animate && scene.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${-px}px,${px * .6}px)` }, { transform: `translate(${px}px,${-px * .5}px)` }, { transform: 'translate(0,0)' }], { duration: ms });
+  if (mod === 'fire') {
+    for (const p of tos) { const d = stmBolt(scene, from, p, { c, size: 15, dur: 330, lift: 22, grow: .7, cls: 'fire' }); setTimeout(() => stmHit(scene, p, 'feu', 1.15), d); }
+  } else if (mod === 'water') {
+    for (const p of tos) for (let k = 0; k < 2; k++) setTimeout(() => {
+      if (!scene.isConnected) return;
+      const d = stmBolt(scene, { x: from.x, y: from.y + k * 4 }, { x: p.x + (k ? 8 : -6), y: p.y + (k ? 6 : 0) }, { c, size: 10, dur: 270, lift: 12 + k * 14, cls: 'water' });
+      setTimeout(() => stmHit(scene, p, 'eau', .8), d);
+    }, k * 140);
+  } else if (mod === 'anchor') {
+    for (const p of tos) {
+      const a = fxEl(scene, 'sfx-stm-anchor', p.x, p.y - 24, STM_ANCHOR);
+      fxAnim(a, [{ transform: 'translate(-50%,-300%) rotate(-14deg)', opacity: 0 }, { transform: 'translate(-50%,-190%) rotate(-8deg)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1, offset: .74 }, { transform: 'translate(-50%,-44%) rotate(3deg)', opacity: 1, offset: .82 }, { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1, offset: .9 }, { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 0 }], { duration: 760, easing: 'cubic-bezier(.5,0,.9,.5)' });
+      setTimeout(() => { stmHit(scene, p, 'terre', 1.3); shake(4, 260); }, 560);
+    }
+  } else if (mod === 'foam') {
+    const gx = tos.reduce((s, p) => s + p.x, 0) / tos.length, gy = Math.max(...tos.map(p => p.y)) + 14, w = Math.max(60, Math.abs(gx - from.x));
+    const sf = fxEl(scene, 'sfx-stm-surf', from.x, gy, '<i></i><i></i><i></i>', `--w:${Math.round(Math.min(w * 1.1, 220))}px`);
+    fxAnim(sf, [{ transform: 'translate(-20%,-50%) scale(.4,.5)', opacity: 0 }, { transform: 'translate(0%,-50%) scale(.8,.9)', opacity: 1, offset: .2 }, { transform: `translate(${(gx - from.x) * .96}px,-60%) scale(1.15,1.1)`, opacity: 1, offset: .82 }, { transform: `translate(${(gx - from.x) * 1.02}px,-70%) scale(1.3,1.2)`, opacity: 0 }], { duration: 640, easing: 'ease-in' });
+    for (const p of tos) setTimeout(() => stmHit(scene, p, 'foam', 1), 420);
+  } else if (mod === 'steam') {
+    for (const p of tos) { const d = stmBolt(scene, from, p, { c: '#ffffff', size: 18, dur: 360, lift: 30, grow: .9, cls: 'steam', trail: false }); setTimeout(() => stmHit(scene, p, 'steam', 1.2), d); }
+    const dx = tos.length ? tos.reduce((s, p) => s + p.x, 0) / tos.length : from.x + 90;
+    setTimeout(() => shake(2, 360), 380);
+  } else if (mod === 'harpoon') {
+    for (const p of tos) {
+      const ang = Math.atan2(p.y - from.y, p.x - from.x), len = Math.hypot(p.x - from.x, p.y - from.y), deg = ang * 180 / Math.PI;
+      const ch = fxEl(scene, 'sfx-stm-chain', from.x, from.y, '', `--len:${len.toFixed(0)}px`);
+      ch.style.transform = `translate(0,-50%) rotate(${deg}deg)`;
+      fxAnim(ch, [{ transform: `translate(0,-50%) rotate(${deg}deg) scaleX(0)`, opacity: 1 }, { transform: `translate(0,-50%) rotate(${deg}deg) scaleX(1)`, opacity: 1, offset: .3 }, { transform: `translate(0,-50%) rotate(${deg}deg) scaleX(1)`, opacity: 1, offset: .62 }, { transform: `translate(0,-50%) rotate(${deg}deg) scaleX(.02)`, opacity: .8 }], { duration: 880, easing: 'linear' });
+      const hp = fxEl(scene, 'sfx-stm-harpoon', from.x, from.y, STM_HARPOON);
+      fxAnim(hp, [{ transform: `translate(-30%,-50%) rotate(${deg}deg) scale(.8)`, opacity: 1 }, { transform: `translate(${p.x - from.x - 10}px, ${p.y - from.y}px) translate(-50%,-50%) rotate(${deg}deg) scale(1.15)`, opacity: 1, offset: .3 }, { transform: `translate(${p.x - from.x - 10}px, ${p.y - from.y}px) translate(-50%,-50%) rotate(${deg}deg) scale(1.15)`, opacity: 1, offset: .62 }, { transform: `translate(0px, 0px) translate(-50%,-50%) rotate(${deg}deg) scale(.8)`, opacity: 0 }], { duration: 880, easing: 'linear' });
+      setTimeout(() => { stmHit(scene, p, 'terre', 1.6); fxImpact(scene, p, '#ffffff', 1.3); shake(5, 300); }, 270);
+    }
+  }
+};
+
+/* ---------------- Tourelles : tirs, soins, magnétisme ---------------- */
+function stmShotOff(card, scene, s) {
+  const tur = card.querySelector('.tur[data-s="off"]'); if (!tur) return;
+  const art = tur.querySelector('.tur-art'), bx = stmBox(scene, art);
+  const ys = STM_MUZ[Math.min(3, Math.max(1, s.lvl)) - 1], el = s.el;
+  s.t.forEach((mi, b) => setTimeout(() => {
+    if (!scene.isConnected) return;
+    const pos = fxPos(scene, card.querySelector(`[data-mon="${mi}"] .sprite`)); if (!pos) return;
+    tur.dataset.el = el; ecaState(tur, 'fire', 420);
+    const mz = { x: bx.x + (68 / 72 - .5) * bx.w, y: bx.y + ((ys[b % ys.length] || 41.4) / 72 - .5) * bx.h };
+    const m = fxEl(scene, 'sfx-stm-muz', mz.x, mz.y, '', `--c:${STM_COL[el]}`); fxAnim(m, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 1 }, { transform: 'translate(-30%,-50%) scale(1.6)', opacity: 0 }], { duration: 260 });
+    const d = stmBolt(scene, mz, pos, { c: STM_COL[el], size: 8, dur: 250, lift: 10 + b * 4, cls: el });
+    setTimeout(() => stmHit(scene, pos, el, .7), d);
+  }, b * 105));
+}
+function stmShotDef(card, scene, s) {
+  const tur = card.querySelector('.tur[data-s="def"]'); if (!tur) return;
+  const bx = stmBox(scene, tur.querySelector('.tur-art')), heroEl = card.querySelector('[data-k="fighter"]');
+  ecaState(tur, 'fire', 700); fxImpact(scene, { x: bx.x, y: bx.y - 4 }, '#6fe8c0', .9);
+  if (s.heal > 0 && heroEl) {
+    const hp = fxPos(scene, heroEl.querySelector('.sprite'));
+    if (hp) for (let i = 0; i < 4; i++) setTimeout(() => {
+      if (!scene.isConnected) return;
+      const d = stmBolt(scene, { x: bx.x, y: bx.y - 10 }, { x: hp.x, y: hp.y }, { c: '#6fe8c0', size: 8, dur: 360, lift: 30 + i * 8, cls: 'heal', html: '+', trail: false });
+      if (i === 3) setTimeout(() => { fxImpact(scene, hp, '#6fe8c0', 1); stmFloat(heroEl, '+' + fmt(s.heal), 'heal'); ecaState(heroEl, 'stm-mend', 700); }, d);
+    }, i * 90);
+  }
+  if (s.rep > 0) for (const o of ['off', 'tac']) {
+    const ot = card.querySelector(`.tur[data-s="${o}"]`); if (!ot || ot.dataset.st === 'lock') continue;
+    const ob = stmBox(scene, ot.querySelector('.tur-art'));
+    setTimeout(() => {
+      if (!scene.isConnected) return;
+      const d = stmBolt(scene, { x: bx.x, y: bx.y - 14 }, { x: ob.x, y: ob.y - 10 }, { c: '#bfffe6', size: 6, dur: 300, lift: 18, cls: 'heal', html: '🔧', trail: false });
+      setTimeout(() => { ecaState(ot, 'repair', 900); fxImpact(scene, { x: ob.x, y: ob.y - 6 }, '#bfffe6', .6); }, d);
+    }, 160);
+  }
+}
+function stmShotTac(card, scene, s) {
+  const tur = card.querySelector('.tur[data-s="tac"]'); if (!tur) return;
+  const bx = stmBox(scene, tur.querySelector('.tur-art')), mi = s.t[0], mel = card.querySelector(`[data-mon="${mi}"]`), pos = mel && fxPos(scene, mel.querySelector('.sprite'));
+  ecaState(tur, 'fire', 700); if (!pos) return;
+  const a = { x: bx.x + bx.w * .15, y: bx.y - 2 }, dist = Math.hypot(pos.x - a.x, pos.y - a.y), deg = Math.atan2(pos.y - a.y, pos.x - a.x) * 180 / Math.PI;
+  let d1 = 'M0 20', d2 = 'M0 20'; const n = Math.max(6, Math.round(dist / 14));
+  for (let i = 1; i <= n; i++) { const x = (dist * i / n).toFixed(1); d1 += ` L${x} ${(i === n ? 20 : 20 + stmR(-9, 9)).toFixed(1)}`; d2 += ` L${x} ${(i === n ? 20 : 20 + stmR(-6, 6)).toFixed(1)}`; }
+  const bolt = fxEl(scene, 'sfx-stm-lightning', a.x, a.y, `<svg width="${dist.toFixed(0)}" height="40" viewBox="0 0 ${dist.toFixed(0)} 40" aria-hidden="true"><path d="${d1}" fill="none" stroke="#9b5cff" stroke-width="5" stroke-linejoin="round" opacity=".7"/><path d="${d2}" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>`);
+  bolt.style.transformOrigin = '0 50%';
+  fxAnim(bolt, [{ transform: `translate(0,-50%) rotate(${deg}deg)`, opacity: 0 }, { transform: `translate(0,-50%) rotate(${deg}deg)`, opacity: 1, offset: .12 }, { transform: `translate(0,-50%) rotate(${deg}deg)`, opacity: .4, offset: .3 }, { transform: `translate(0,-50%) rotate(${deg}deg)`, opacity: 1, offset: .45 }, { transform: `translate(0,-50%) rotate(${deg}deg)`, opacity: 0 }], { duration: 520, easing: 'linear' });
+  fxImpact(scene, pos, '#c58aff', 1);
+  if (s.mag) {
+    const m = fxEl(scene, 'sfx-stm-magnet', pos.x, pos.y - 30, '🧲');
+    fxAnim(m, [{ transform: 'translate(-50%,-260%) scale(.6) rotate(-20deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.3) rotate(8deg)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-90%) scale(1) rotate(0deg)', opacity: 0 }], { duration: 1000 });
+    for (let i = 0; i < 2; i++) { const r = fxEl(scene, 'sfx-ring thick', pos.x, pos.y, '', '--c:#c58aff'); fxAnim(r, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(2.6)', opacity: 0 }], { duration: 640, delay: 200 + i * 160 }); }
+    stmFloat(mel, 'MAGNÉTISÉ !', 'mag');
+  } else stmFloat(mel, 'résiste', 'resist');
+}
+function stmVaporFx(card, scene, vap) {
+  ecaText(card, '♨️ VAPEUR !', '', 'stm');
+  for (const h of vap.hits) {
+    const mel = card.querySelector(`[data-mon="${h.i}"]`), pos = mel && fxPos(scene, mel.querySelector('.sprite')); if (!pos) continue;
+    stmHit(scene, pos, 'steam', 1.4);
+  }
+}
+/* orchestre les tourelles après le sort du héros */
+function stmTurretShots(card, scene, cast, delay = 380) {
+  const shots = cast.tur; if (!shots || !shots.length) return;
+  shots.forEach((s, k) => setTimeout(() => {
+    if (!scene.isConnected) return;
+    (s.s === 'off' ? stmShotOff : s.s === 'def' ? stmShotDef : stmShotTac)(card, scene, s);
+  }, delay + k * 200));
+  if (shots.vapor) setTimeout(() => { if (scene.isConnected) stmVaporFx(card, scene, shots.vapor); }, delay + shots.length * 200 + 280);
+}
+
+/* ---------------- Le héros : volutes de vapeur, étincelles, signal d'antenne ---------------- */
+function stmFlourish(unit, v) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'); if (!sp) return;
+  const add = (cls, style, ms) => { const e = document.createElement('i'); e.className = cls; e.style.cssText = style; sp.appendChild(e); setTimeout(() => e.remove(), ms); return e; };
+  const puff = (x, y, dx, dy, s, d, life = 1100) => add('stm-fp', `left:${x}%;top:${y}%;--dx:${dx}px;--dy:${dy}px;--s:${s}px;--d:${d}ms`, life + d);
+  const spark = (x, y, n, d) => { for (let i = 0; i < n; i++) add('stm-fs', `left:${x}%;top:${y}%;--dx:${stmR(14, 46).toFixed(0)}px;--dy:${stmR(-26, 20).toFixed(0)}px;--d:${(d + stmR(0, 60)).toFixed(0)}ms`, 700 + d); };
+  const chimneys = (d, k = 1) => { for (let i = 0; i < k; i++) { puff(19.5, 17, stmR(-16, -4), stmR(-34, -18), stmR(14, 20), d + i * 70); puff(30, 24, stmR(-14, -2), stmR(-30, -14), stmR(12, 17), d + 40 + i * 70); } };
+  const muzzle = (d, s = 1) => { puff(97, 55, stmR(20, 40), stmR(-18, -4), 18 * s, d, 900); puff(97, 55, stmR(36, 62), stmR(-4, 8), 13 * s, d + 30, 900); spark(97, 55, 5 * s | 0 || 4, d); };
+  if (v === 0) { chimneys(120, 2); muzzle(232); add('stm-dust', '--d:150ms', 800); }
+  if (v === 1) {
+    chimneys(80, 2);
+    [0, 160].forEach(d => add('stm-sig', `left:38%;top:3.5%;--d:${200 + d}ms`, 900 + d));
+    spark(38, 3.5, 6, 220);
+  }
+  if (v === 2) { chimneys(60, 3); muzzle(120, .9); muzzle(420, 1.15); add('stm-dust', '--d:100ms', 800); add('stm-dust', '--d:380ms', 800); }
+}
+/* soutien : la grande manette, toutes les soupapes sifflent */
+function stmCheer(unit) {
+  if (!FX_OK()) return;
+  const sp = unit.querySelector('.sprite'); if (!sp) return;
+  for (let i = 0; i < 7; i++) { const e = document.createElement('i'); e.className = 'stm-fp'; e.style.cssText = `left:${[19.5, 30, 38, 19.5, 30, 24, 34][i]}%;top:${[17, 24, 3.5, 17, 24, 20, 22][i]}%;--dx:${stmR(-26, 8).toFixed(0)}px;--dy:${stmR(-52, -22).toFixed(0)}px;--s:${stmR(14, 22).toFixed(0)}px;--d:${i * 70}ms`; sp.appendChild(e); setTimeout(() => e.remove(), 1500); }
 }
 /* =====================================================================
    AMAKNA IDLE — SPRITES DES PERSONNAGES EN COMBAT (dessins originaux)
@@ -10261,6 +11036,332 @@ function hasHeroArt(cls) { return !!HERO_ART[cls]; }
 /* Sprite de combat : dessin si la classe en a un, sinon emblème rond */
 function heroSprite(cls) { return HERO_ART[cls] || emblem(cls, 'big'); }
 /* =====================================================================
+   AMAKNA IDLE — STEAMER : le personnage et ses trois tourelles (dessins originaux)
+   HERO_ART.steamer : ingénieur des abysses dans son scaphandre de laiton, chaudière de Stasis dans le dos,
+   manomètre sur la poitrine, antenne qui commande les tourelles, canon à vapeur.
+   STM_TURRET[slot] : tourelles Offensive / Défensive / Tactique en 3 niveaux (I, II, III visibles en CSS via data-lv).
+   Les parties animées portent des classes p-* (voir style3.css).
+   ===================================================================== */
+HERO_ART.steamer = `<svg class="hs hs-steamer" viewBox="0 0 128 128" aria-hidden="true">
+  <defs>
+    <linearGradient id="smBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".38" stop-color="#e2b04a"/><stop offset=".78" stop-color="#a8701c"/><stop offset="1" stop-color="#6a4208"/></linearGradient>
+    <linearGradient id="smBrassH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a4c0e"/><stop offset=".25" stop-color="#f4cf74"/><stop offset=".5" stop-color="#fff2c0"/><stop offset=".75" stop-color="#d9a238"/><stop offset="1" stop-color="#7a4c0e"/></linearGradient>
+    <linearGradient id="smCopper" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a3012"/><stop offset=".22" stop-color="#e98f55"/><stop offset=".45" stop-color="#ffcf9a"/><stop offset=".7" stop-color="#c4642e"/><stop offset="1" stop-color="#5e260c"/></linearGradient>
+    <linearGradient id="smSteel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfd9e3"/><stop offset=".5" stop-color="#7d8b99"/><stop offset="1" stop-color="#363f4a"/></linearGradient>
+    <linearGradient id="smSuit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58bfc2"/><stop offset=".45" stop-color="#2a8089"/><stop offset="1" stop-color="#103f4a"/></linearGradient>
+    <linearGradient id="smSuitD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f8f97"/><stop offset=".6" stop-color="#17565f"/><stop offset="1" stop-color="#0a2a33"/></linearGradient>
+    <linearGradient id="smLeather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8703a"/><stop offset="1" stop-color="#4a2a12"/></linearGradient>
+    <radialGradient id="smSkin" cx="40%" cy="34%" r="78%"><stop offset="0" stop-color="#ffe2c0"/><stop offset=".7" stop-color="#f0b080"/><stop offset="1" stop-color="#c47c4c"/></radialGradient>
+    <linearGradient id="smStache" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb870"/><stop offset=".55" stop-color="#e0702a"/><stop offset="1" stop-color="#8a3408"/></linearGradient>
+    <radialGradient id="smGlass" cx="35%" cy="28%" r="85%"><stop offset="0" stop-color="#f4fcff" stop-opacity=".62"/><stop offset=".45" stop-color="#9fe0ff" stop-opacity=".16"/><stop offset="1" stop-color="#2a7ab8" stop-opacity=".34"/></radialGradient>
+    <radialGradient id="smCore" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="#fff0ff"/><stop offset=".3" stop-color="#d9a8ff"/><stop offset=".7" stop-color="#8a3df0"/><stop offset="1" stop-color="#3a0f8a"/></radialGradient>
+    <radialGradient id="smGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#d9a8ff" stop-opacity=".95"/><stop offset=".5" stop-color="#9b5cff" stop-opacity=".45"/><stop offset="1" stop-color="#7a3cff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="smCream" cx="40%" cy="32%" r="80%"><stop offset="0" stop-color="#fffdf0"/><stop offset=".7" stop-color="#efe3bf"/><stop offset="1" stop-color="#b9a572"/></radialGradient>
+    <radialGradient id="smLamp" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffffff"/><stop offset=".4" stop-color="#ffe27a"/><stop offset="1" stop-color="#ff9a1a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="smFlash" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#ffe9a0"/><stop offset=".65" stop-color="#ff9a2e" stop-opacity=".85"/><stop offset="1" stop-color="#ff5a1a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="smSteam" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset=".6" stop-color="#e4eef6" stop-opacity=".6"/><stop offset="1" stop-color="#cfdce8" stop-opacity="0"/></radialGradient>
+    <clipPath id="smWin"><ellipse cx="73" cy="35" rx="10.4" ry="11.6"/></clipPath>
+    <clipPath id="smCoreClip"><circle cx="32" cy="72" r="6.6"/></clipPath>
+  </defs>
+  <ellipse class="p-shadow" cx="62" cy="119" rx="38" ry="5" fill="#000" opacity=".32"/>
+
+  <g class="p-hop">
+
+  <!-- chaudière de Stasis dans le dos : cheminées, tuyaux, hublot violet -->
+  <g class="p-tank" stroke="#2a1006" stroke-width="2" stroke-linejoin="round">
+    <g class="p-chim">
+      <path d="M21.5 52 V30 H28.5 V52Z" fill="url(#smCopper)"/>
+      <path d="M19.5 31 Q19 25 20.5 24 H29.5 Q31 25 30.5 31Z" fill="url(#smBrass)"/>
+      <path d="M35.5 54 V37 H41.5 V54Z" fill="url(#smCopper)"/>
+      <path d="M33.8 38 Q33.4 33 34.8 32 H42.2 Q43.6 33 43.2 38Z" fill="url(#smBrass)"/>
+      <path d="M23 31 V47 M37 38 V50" stroke="#fff" stroke-opacity=".4" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    </g>
+    <path d="M18 62 Q18 50 32 50 Q46 50 46 62 V88 Q46 98 32 98 Q18 98 18 88Z" fill="url(#smCopper)"/>
+    <path d="M18 60 H46 M18 90 H46" stroke="#8a5a14" stroke-width="3.4" fill="none"/>
+    <path d="M18 60 H46 M18 90 H46" stroke="url(#smBrassH)" stroke-width="2" fill="none"/>
+    <path d="M18 75 H46" stroke="#5e260c" stroke-width="1.2" opacity=".55" fill="none"/>
+    <g fill="#ffe9a0" stroke="#6a4208" stroke-width=".8"><circle cx="21" cy="60" r="1.5"/><circle cx="43" cy="60" r="1.5"/><circle cx="21" cy="90" r="1.5"/><circle cx="43" cy="90" r="1.5"/></g>
+    <circle cx="32" cy="72" r="9.2" fill="url(#smBrass)"/>
+    <circle cx="32" cy="72" r="7" fill="#1a0a3a" stroke="#4a2a08" stroke-width="1.2"/>
+    <circle class="p-coreglow" cx="32" cy="72" r="13" fill="url(#smGlow)" stroke="none"/>
+    <g clip-path="url(#smCoreClip)" stroke="none">
+      <circle class="p-core" cx="32" cy="72" r="6.6" fill="url(#smCore)"/>
+      <g class="p-swirl" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.1" stroke-linecap="round"><path d="M32 72 Q36 66 31 64"/><path d="M32 72 Q26 70 28 66"/><path d="M32 72 Q34 78 39 75"/></g>
+    </g>
+    <path d="M27.4 67.6 Q29 66 31 65.6" stroke="#fff" stroke-opacity=".7" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <g stroke="#2a1006" stroke-width="1" opacity=".7"><path d="M25 94 H39 M25 96.4 H39"/></g>
+    <path class="p-vale" d="M46 66 h4 v6 h-4Z" fill="url(#smBrass)"/>
+  </g>
+  <g class="p-puffs" fill="url(#smSteam)" stroke="none">
+    <circle class="pf pf1" cx="25" cy="24" r="4.6"/><circle class="pf pf2" cx="25" cy="24" r="4.6"/><circle class="pf pf3" cx="25" cy="24" r="4.6"/>
+    <circle class="pf pf4" cx="38.5" cy="31" r="4"/><circle class="pf pf5" cx="38.5" cy="31" r="4"/><circle class="pf pf6" cx="38.5" cy="31" r="4"/>
+  </g>
+
+  <!-- tuyau souple de la chaudière au casque -->
+  <path d="M48 40 Q38 38 40 54" fill="none" stroke="#2a1006" stroke-width="5.6" stroke-linecap="round"/>
+  <path d="M48 40 Q38 38 40 54" fill="none" stroke="#7d8b99" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M48 40 Q38 38 40 54" fill="none" stroke="#2a3038" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="1.2 2.2"/>
+
+  <!-- jambes et lourdes bottes de scaphandrier -->
+  <g stroke="#0a2a33" stroke-width="2" stroke-linejoin="round">
+    <path d="M47 92 H60 L59 106 H48Z" fill="url(#smSuitD)"/>
+    <path d="M70 92 H83 L82 106 H71Z" fill="url(#smSuit)"/>
+    <rect x="45.4" y="104" width="16" height="5" rx="2" fill="url(#smBrassH)" stroke="#5a3a08"/>
+    <rect x="68.4" y="104" width="16" height="5" rx="2" fill="url(#smBrassH)" stroke="#5a3a08"/>
+    <path d="M42 108 H62 V112 Q74 112 74 117.4 Q74 120.4 70 120.4 H45 Q41 120.4 41 116 Q41 110 42 108Z" fill="url(#smSteel)"/>
+    <path d="M66 108 H86 V112 Q99 112 99 117.4 Q99 120.4 95 120.4 H68 Q64 120.4 64 116 Q64 110 66 108Z" fill="url(#smSteel)"/>
+    <path d="M89 113 Q99 112.6 99 117.4 Q99 120.4 95 120.4 H89Z" fill="url(#smBrass)"/>
+    <path d="M66 113 Q76 112.6 76 117.4 Q76 120.4 72 120.4 H66Z" fill="url(#smBrass)" opacity="0"/>
+    <path d="M42 118 H72 M64 118 H97" stroke="#1a1f26" stroke-width="2" fill="none"/>
+    <g fill="#e8eef4" stroke="#363f4a" stroke-width=".8"><circle cx="48" cy="112" r="1.1"/><circle cx="55" cy="112" r="1.1"/><circle cx="72" cy="112" r="1.1"/><circle cx="79" cy="112" r="1.1"/></g>
+  </g>
+
+  <g class="p-torso">
+
+  <!-- torse : combinaison étanche, sangles de cuir, manomètre de pression -->
+  <path d="M45 58 Q64 49 84 58 L87 80 Q87 94 81 99 H47 Q41 94 41 80Z" fill="url(#smSuit)" stroke="#0a2a33" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M47 60 Q56 54 68 54 Q58 60 52 76 Q49 86 50 96 Q44 92 44 80Z" fill="#9ef0ee" opacity=".22"/>
+  <path d="M43 90 H85 V99 Q64 103 43 99Z" fill="url(#smLeather)" stroke="#2a1606" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M44 94 H84" stroke="#e6b86a" stroke-opacity=".5" stroke-width="1" stroke-dasharray="2 2.4" fill="none"/>
+  <g>
+    <path d="M53 55 L61 72 L67 72 L60 54Z" fill="url(#smLeather)" stroke="#2a1606" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M77 55 L71 71 L66 70 L70 54Z" fill="url(#smLeather)" stroke="#2a1606" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M55 58 L61 71 M74 57 L70 69" stroke="#e6b86a" stroke-opacity=".6" stroke-width=".9" stroke-dasharray="1.6 2" fill="none"/>
+  </g>
+  <g class="p-gauge">
+    <circle cx="66" cy="76" r="11" fill="url(#smBrass)" stroke="#4a2a08" stroke-width="1.8"/>
+    <circle cx="66" cy="76" r="8.6" fill="url(#smCream)" stroke="#5a3a08" stroke-width="1"/>
+    <path d="M59.4 81.4 A8.4 8.4 0 0 1 59.4 70.6" fill="none" stroke="#3a8a4a" stroke-width="2.2" opacity=".8" transform="rotate(0 66 76)"/>
+    <path d="M70.2 69 A8.4 8.4 0 0 1 74 76" fill="none" stroke="#ffb02e" stroke-width="2.2" opacity=".9"/>
+    <path d="M74 76 A8.4 8.4 0 0 1 71 82.6" fill="none" stroke="#e03a2a" stroke-width="2.2" opacity=".95"/>
+    <g stroke="#3a2a14" stroke-width=".9" stroke-linecap="round"><path d="M66 68.2 v1.6"/><path d="M72 70 l-1 1.2"/><path d="M60 70 l1 1.2"/><path d="M74.6 76 h-1.6"/><path d="M57.4 76 h1.6"/><path d="M72.6 82 l-1.1 -1"/><path d="M59.4 82 l1.1 -1"/></g>
+    <g class="p-needle"><path d="M66 76 L66 69.2" stroke="#b01a14" stroke-width="1.5" stroke-linecap="round"/><path d="M66 76 L66 80" stroke="#3a2a14" stroke-width="1.3" stroke-linecap="round"/></g>
+    <circle cx="66" cy="76" r="2" fill="url(#smBrass)" stroke="#4a2a08" stroke-width=".8"/>
+    <path d="M59.4 70.4 Q62 67.4 66 67" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.3" stroke-linecap="round"/>
+    <g fill="#ffe9a0" stroke="#6a4208" stroke-width=".6"><circle cx="66" cy="65.2" r="1"/><circle cx="76.8" cy="76" r="1"/><circle cx="66" cy="86.8" r="1"/><circle cx="55.2" cy="76" r="1"/></g>
+  </g>
+  <rect x="62" y="91" width="9" height="8" rx="1.8" fill="url(#smBrass)" stroke="#4a2a08" stroke-width="1.4"/><rect x="64.5" y="93.2" width="4" height="3.6" rx=".8" fill="#2a1606"/>
+  <path d="M46 94 q-4 4 -2 11 h7 q1 -6 -1 -11Z" fill="#8a5a32" stroke="#2a1606" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M76 94 q4 -1 7 1 l-.6 7 q-3.6 1.8 -6.6 0Z" fill="url(#smLeather)" stroke="#2a1606" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M77.4 99 H81.6" stroke="#e6b86a" stroke-opacity=".6" stroke-width=".9" stroke-linecap="round"/>
+
+  <!-- collerette de laiton -->
+  <path d="M50 54 Q64 49 78 54 L79 59 Q64 64 49 59Z" fill="url(#smBrassH)" stroke="#4a2a08" stroke-width="1.6" stroke-linejoin="round"/>
+  <g fill="#fff2c0" stroke="#6a4208" stroke-width=".6"><circle cx="54" cy="57.6" r="1"/><circle cx="60" cy="59" r="1"/><circle cx="66" cy="59.4" r="1"/><circle cx="72" cy="58.6" r="1"/></g>
+
+  <!-- épaulières -->
+  <g stroke="#4a2a08" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M40 62 Q41 53 49 54 Q54 58 52 66 Q44 68 40 62Z" fill="url(#smBrass)"/>
+    <path d="M78 55 Q86 52 90 59 Q91 66 84 68 Q78 64 78 55Z" fill="url(#smBrass)"/>
+    <g fill="#fff2c0" stroke="#6a4208" stroke-width=".6"><circle cx="45" cy="58" r="1.1"/><circle cx="85" cy="59" r="1.1"/></g>
+  </g>
+
+  <!-- bras arrière : la main sur le levier du boîtier de commande -->
+  <g class="p-armB">
+    <rect x="34" y="82" width="19" height="14" rx="2.4" fill="url(#smSteel)" stroke="#1a1f26" stroke-width="1.8"/>
+    <rect x="36" y="84" width="15" height="4" rx="1" fill="#10161c"/>
+    <circle class="p-led l1" cx="39" cy="86" r="1.5" fill="#ff4a3a"/><circle class="p-led l2" cx="43.5" cy="86" r="1.5" fill="#ffc83a"/><circle class="p-led l3" cx="48" cy="86" r="1.5" fill="#46f0d0"/>
+    <path d="M36 91 H51 M36 93.6 H51" stroke="#1a1f26" stroke-width="1" opacity=".7"/>
+    <g class="p-lever">
+      <path d="M44 82 L50 68" stroke="#1a1f26" stroke-width="4.6" stroke-linecap="round"/>
+      <path d="M44 82 L50 68" stroke="url(#smSteel)" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="50.4" cy="67" r="3.8" fill="#d8301e" stroke="#4a0a06" stroke-width="1.4"/><circle cx="49.2" cy="65.8" r="1.2" fill="#ffb0a0"/>
+    </g>
+    <path d="M47 61 Q41 70 47 72" fill="none" stroke="#0a2a33" stroke-width="9" stroke-linecap="round"/>
+    <path d="M47 61 Q41 70 47 72" fill="none" stroke="url(#smSuitD)" stroke-width="6.4" stroke-linecap="round"/>
+    <path d="M47.6 70.6 Q50.6 70 51.2 67.4 Q51 64.2 48.2 64.6 Q45.6 66 46.4 69Z" fill="url(#smLeather)" stroke="#2a1606" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
+
+  <!-- tête : casque de laiton, hublot, moustache rousse -->
+  <g class="p-face">
+    <path d="M45 33 Q45 12 65 12 Q85 12 85 33 Q85 54 66 54 Q45 54 45 33Z" fill="url(#smBrass)" stroke="#4a2a08" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="M48 28 Q50 17 62 15" fill="none" stroke="#fff6c8" stroke-opacity=".75" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M47 42 Q50 51 64 52" fill="none" stroke="#5a3408" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/>
+    <path d="M49 25 Q65 18 82 26" fill="none" stroke="#6a4208" stroke-opacity=".55" stroke-width="1.2"/>
+    <ellipse cx="73" cy="35" rx="12.4" ry="13.6" fill="url(#smBrassH)" stroke="#4a2a08" stroke-width="1.8"/>
+    <ellipse cx="73" cy="35" rx="10.4" ry="11.6" fill="#7a4a1a"/>
+    <g clip-path="url(#smWin)">
+      <rect x="62" y="22" width="24" height="26" fill="url(#smSkin)"/>
+      <path d="M62 22 H86 V30 Q74 25 62 30Z" fill="#8a3a0a" opacity=".16"/>
+      <g class="p-eye"><ellipse cx="69.6" cy="33.4" rx="3" ry="3.5" fill="#fff" stroke="#3a1a08" stroke-width="1"/><circle cx="70.6" cy="33.8" r="1.9" fill="#2a8aa0"/><circle cx="70.9" cy="33.9" r=".95" fill="#0a1a20"/><circle cx="71.4" cy="32.9" r=".6" fill="#fff"/></g>
+      <g class="p-eye"><ellipse cx="78" cy="33.4" rx="2.5" ry="3.2" fill="#fff" stroke="#3a1a08" stroke-width="1"/><circle cx="78.8" cy="33.8" r="1.7" fill="#2a8aa0"/><circle cx="79" cy="33.9" r=".85" fill="#0a1a20"/><circle cx="79.4" cy="32.9" r=".55" fill="#fff"/></g>
+      <path class="p-brow" d="M65.4 28.4 Q69.6 26 73.4 28.2 M75 28.2 Q78.4 26.2 82 28.6" fill="none" stroke="#c4561a" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M74 35 Q76.4 38.4 79.4 38.2" fill="none" stroke="#b86a40" stroke-width="1.2" stroke-linecap="round"/>
+      <path class="p-stache" d="M66.4 41 Q71 38.2 76.4 40.6 Q81.6 38.4 86 42 Q85 45.6 79.4 44.6 Q76.4 43.4 75.6 41.8 Q71 45 66.4 41Z" fill="url(#smStache)" stroke="#6a2a06" stroke-width="1.1" stroke-linejoin="round"/>
+      <path d="M69.6 47 Q74 49.4 79 47.4" fill="none" stroke="#8a3a1e" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <ellipse cx="73" cy="35" rx="10.4" ry="11.6" fill="url(#smGlass)"/>
+    <path d="M65 28 Q66.4 23.4 72 22.6" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
+    <path d="M80.6 44 Q83 40 83.4 36" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.4" stroke-linecap="round"/>
+    <g fill="#fff2c0" stroke="#6a4208" stroke-width=".6"><circle cx="73" cy="21.2" r="1.1"/><circle cx="82" cy="25" r="1.1"/><circle cx="85" cy="35" r="1.1"/><circle cx="82" cy="45" r="1.1"/><circle cx="73" cy="49" r="1.1"/><circle cx="63.6" cy="45" r="1.1"/><circle cx="61" cy="35" r="1.1"/><circle cx="63.6" cy="25" r="1.1"/></g>
+    <!-- lampe de casque -->
+    <g class="p-lampg">
+      <path d="M60 14 Q64 6 70 8 L72 14Z" fill="url(#smBrass)" stroke="#4a2a08" stroke-width="1.6" stroke-linejoin="round"/>
+      <ellipse class="p-lamp" cx="71.4" cy="11" rx="2.6" ry="3.4" fill="url(#smLamp)"/>
+    </g>
+    <!-- antenne de commande des tourelles -->
+    <g class="p-ant">
+      <path d="M52 17 L49 5" stroke="#2a1006" stroke-width="3.4" stroke-linecap="round"/><path d="M52 17 L49 5" stroke="url(#smSteel)" stroke-width="1.8" stroke-linecap="round"/>
+      <circle class="p-bulbglow" cx="48.6" cy="4.4" r="6" fill="url(#smGlow)"/>
+      <circle class="p-bulb" cx="48.6" cy="4.4" r="2.8" fill="url(#smCore)" stroke="#4a1a8a" stroke-width="1"/>
+      <circle class="p-ring r1" cx="48.6" cy="4.4" r="3" fill="none" stroke="#d9a8ff" stroke-width="1.3" opacity="0"/><circle class="p-ring r2" cx="48.6" cy="4.4" r="3" fill="none" stroke="#fff" stroke-width="1" opacity="0"/>
+    </g>
+    <!-- soupape arrière -->
+    <g>
+      <path d="M45 30 H39 V36 H45" fill="url(#smBrass)" stroke="#4a2a08" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle class="p-vent" cx="38" cy="33" r="2.2" fill="url(#smSteam)"/>
+    </g>
+  </g>
+
+  <!-- bras avant : canon à vapeur -->
+  <g class="p-arm">
+    <g class="p-cannon">
+      <path d="M96 66 H116 Q123 66 123 70.4 Q123 74.8 116 74.8 H96Z" fill="url(#smBrassH)" stroke="#4a2a08" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M100 66 V74.8 M106 66 V74.8 M112 66 V74.8" stroke="#8a5a14" stroke-width="1.6" fill="none"/>
+      <path d="M108.6 65 H111 V76 H108.6Z" fill="url(#smCopper)" stroke="#4a2a08" stroke-width="1.2"/>
+      <path d="M98 67.8 H118" stroke="#fff6c8" stroke-opacity=".8" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="121.8" cy="70.4" rx="2.8" ry="4.6" fill="#2a1606" stroke="#4a2a08" stroke-width="1.2"/>
+      <ellipse cx="121.2" cy="70.4" rx="1.4" ry="2.9" fill="#0a0604"/>
+      <path d="M102 65 V60.6 H108 V65" fill="url(#smBrass)" stroke="#4a2a08" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M94 74.8 H112 Q113 82 105 82.4 H98 Q94 82 94 76Z" fill="url(#smCopper)" stroke="#4a2a08" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M96 77 H110" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="100" cy="79" r="1.4" fill="#ffe9a0" stroke="#6a4208" stroke-width=".6"/>
+      <path d="M92 76 q-2 6 3 8" fill="none" stroke="#2a1606" stroke-width="2" stroke-linecap="round"/>
+      <g class="p-flash"><circle cx="124" cy="70.4" r="9" fill="url(#smFlash)"/><path d="M124 62.6 L125.8 68.4 L132.6 70.4 L125.8 72.4 L124 78.2 L122.2 72.4 L115.4 70.4 L122.2 68.4Z" fill="#fff6c8" opacity=".95"/></g>
+      <circle class="p-muz" cx="124" cy="70.4" r="3.6" fill="url(#smSteam)"/>
+    </g>
+    <path d="M82 61 Q92 70 98 69" fill="none" stroke="#0a2a33" stroke-width="10" stroke-linecap="round"/>
+    <path d="M82 61 Q92 70 98 69" fill="none" stroke="url(#smSuit)" stroke-width="7.4" stroke-linecap="round"/>
+    <path d="M84 59 Q92 66 96 66.6" fill="none" stroke="#bff6f2" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>
+    <rect x="89.6" y="63.4" width="7" height="12.4" rx="2.6" fill="url(#smBrassH)" stroke="#4a2a08" stroke-width="1.4" style="transform-box:view-box" transform="rotate(14 93 69)"/>
+    <path d="M97 66.6 Q103 64.4 104 70.4 Q104 75.6 98 75.6 Q94 72.6 97 66.6Z" fill="url(#smLeather)" stroke="#2a1606" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M99.6 67.8 Q102 70 99.6 73.4" fill="none" stroke="#e6b86a" stroke-opacity=".6" stroke-width=".9" stroke-linecap="round"/>
+  </g>
+
+  </g><!-- /p-torso -->
+
+  </g><!-- /p-hop -->
+</svg>`;
+
+/* ---------------------------------------------------------------------
+   Les trois tourelles. Chaque dessin contient les 3 niveaux : les parties .from2 / .from3 n'apparaissent
+   qu'à partir du niveau II / III (le CSS lit data-lv sur le .tur parent). Dessinées tournées vers la droite.
+   --------------------------------------------------------------------- */
+const STM_TU_DEFS = `<defs>
+  <linearGradient id="tuBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".4" stop-color="#e2b04a"/><stop offset=".8" stop-color="#a8701c"/><stop offset="1" stop-color="#6a4208"/></linearGradient>
+  <linearGradient id="tuBrassH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a4c0e"/><stop offset=".28" stop-color="#f4cf74"/><stop offset=".52" stop-color="#fff2c0"/><stop offset=".78" stop-color="#d9a238"/><stop offset="1" stop-color="#7a4c0e"/></linearGradient>
+  <linearGradient id="tuBrassV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a4c0e"/><stop offset=".3" stop-color="#f4cf74"/><stop offset=".55" stop-color="#fff2c0"/><stop offset=".8" stop-color="#c8902c"/><stop offset="1" stop-color="#6a4208"/></linearGradient>
+  <linearGradient id="tuCopper" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a3012"/><stop offset=".22" stop-color="#e98f55"/><stop offset=".46" stop-color="#ffcf9a"/><stop offset=".72" stop-color="#c4642e"/><stop offset="1" stop-color="#5e260c"/></linearGradient>
+  <linearGradient id="tuCopperV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf9a"/><stop offset=".35" stop-color="#e98f55"/><stop offset=".75" stop-color="#b4562a"/><stop offset="1" stop-color="#5e260c"/></linearGradient>
+  <linearGradient id="tuSteel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e2ec"/><stop offset=".5" stop-color="#8190a0"/><stop offset="1" stop-color="#3a4450"/></linearGradient>
+  <linearGradient id="tuSteelV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6eef6"/><stop offset=".45" stop-color="#8d9bab"/><stop offset="1" stop-color="#3a4450"/></linearGradient>
+  <linearGradient id="tuSteelD" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a323c"/><stop offset=".4" stop-color="#7a8898"/><stop offset="1" stop-color="#242b34"/></linearGradient>
+  <radialGradient id="tuPlate" cx="45%" cy="35%" r="75%"><stop offset="0" stop-color="#9aa8b8"/><stop offset=".6" stop-color="#5a6674"/><stop offset="1" stop-color="#2a323c"/></radialGradient>
+  <radialGradient id="tuCore" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="#fff0ff"/><stop offset=".3" stop-color="#d9a8ff"/><stop offset=".7" stop-color="#8a3df0"/><stop offset="1" stop-color="#3a0f8a"/></radialGradient>
+  <radialGradient id="tuGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#d9a8ff" stop-opacity=".95"/><stop offset=".5" stop-color="#9b5cff" stop-opacity=".45"/><stop offset="1" stop-color="#7a3cff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="tuTeal" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="#f0fff8"/><stop offset=".3" stop-color="#9af0cc"/><stop offset=".7" stop-color="#1fb88a"/><stop offset="1" stop-color="#0a5a48"/></radialGradient>
+  <radialGradient id="tuTealGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#9af0cc" stop-opacity=".95"/><stop offset=".5" stop-color="#2fe0a8" stop-opacity=".45"/><stop offset="1" stop-color="#1fb88a" stop-opacity="0"/></radialGradient>
+  <linearGradient id="tuLiquid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8ffe4"/><stop offset=".5" stop-color="#2fe0a8"/><stop offset="1" stop-color="#0a8a68"/></linearGradient>
+  <radialGradient id="tuFlash" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#ffe9a0"/><stop offset=".65" stop-color="#ff9a2e" stop-opacity=".85"/><stop offset="1" stop-color="#ff5a1a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="tuSteam" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".6" stop-color="#e4eef6" stop-opacity=".6"/><stop offset="1" stop-color="#cfdce8" stop-opacity="0"/></radialGradient>
+  <radialGradient id="tuShield" cx="50%" cy="50%" r="50%"><stop offset=".55" stop-color="#9af0cc" stop-opacity="0"/><stop offset=".9" stop-color="#9af0cc" stop-opacity=".3"/><stop offset="1" stop-color="#d8fff0" stop-opacity=".7"/></radialGradient>
+  <linearGradient id="tuMagR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a7a"/><stop offset=".6" stop-color="#d8301e"/><stop offset="1" stop-color="#6a0a06"/></linearGradient>
+  <linearGradient id="tuMagB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8ac8ff"/><stop offset=".6" stop-color="#2a6ad8"/><stop offset="1" stop-color="#0a1a6a"/></linearGradient>
+</defs>`;
+const STM_TU_GROUND = `<ellipse cx="36" cy="64.5" rx="30" ry="6" fill="#000" opacity=".3"/>
+  <ellipse cx="36" cy="62" rx="27" ry="6.2" fill="url(#tuPlate)" stroke="#1a1f26" stroke-width="1.8"/>
+  <ellipse cx="36" cy="60.6" rx="22" ry="4.4" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="1"/>
+  <g fill="#e8eef4" stroke="#363f4a" stroke-width=".7"><circle cx="14" cy="62" r="1.5"/><circle cx="58" cy="62" r="1.5"/><circle cx="25" cy="66" r="1.4"/><circle cx="47" cy="66" r="1.4"/></g>`;
+const STM_TURRET = {
+/* ---- Offensive : canon à vapeur (I : un canon · II : deux canons, blindage, cheminée · III : trois canons, noyau de Stasis, cristal) ---- */
+off: `<svg class="tur-svg tu-off" viewBox="0 0 72 72" aria-hidden="true">${STM_TU_DEFS}
+  ${STM_TU_GROUND}
+  <path d="M25 61 L30 49 H42 L47 61Z" fill="url(#tuSteelD)" stroke="#1a1f26" stroke-width="1.7" stroke-linejoin="round"/>
+  <ellipse cx="36" cy="49" rx="10" ry="3.2" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1.5"/>
+  <g class="tu-body">
+    <g class="from2 tu-chim"><path d="M19 31 V20 H25 V31Z" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.6" stroke-linejoin="round"/><path d="M17.6 21 Q17.2 17 18.6 16.4 H25.4 Q26.8 17 26.4 21Z" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1.3"/><circle class="tu-puff" cx="22" cy="15" r="3.4" fill="url(#tuSteam)"/><circle class="tu-puff p2" cx="22" cy="15" r="3.4" fill="url(#tuSteam)"/></g>
+    <path d="M14 39 Q14 31 22 31 H42 Q50 31 50 39 V43 Q50 51 42 51 H22 Q14 51 14 43Z" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.9" stroke-linejoin="round"/>
+    <path d="M20 31 V51 M44 31 V51" stroke="#8a5a14" stroke-width="3.4" fill="none"/><path d="M20 31 V51 M44 31 V51" stroke="url(#tuBrassH)" stroke-width="2" fill="none"/>
+    <path d="M16 36 Q22 33 30 33" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>
+    <g fill="#ffe9a0" stroke="#6a4208" stroke-width=".6"><circle cx="20" cy="35" r="1.1"/><circle cx="44" cy="35" r="1.1"/><circle cx="20" cy="47" r="1.1"/><circle cx="44" cy="47" r="1.1"/></g>
+    <circle cx="31" cy="29.6" r="4.6" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1.3"/><circle cx="31" cy="29.6" r="3.3" fill="#f6ecc8" stroke="#6a4208" stroke-width=".6"/><path class="tu-needle" d="M31 29.6 L33.2 27.6" stroke="#c01a14" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M13 36 q-3 -4 -1.5 -8" fill="none" stroke="#2a1006" stroke-width="2.4" stroke-linecap="round"/><path d="M13 36 q-3 -4 -1.5 -8" fill="none" stroke="#7d8b99" stroke-width="1.2" stroke-linecap="round"/>
+    <circle class="tu-bulbglow" cx="11.4" cy="26.6" r="5" fill="url(#tuGlow)"/><circle class="tu-bulb" cx="11.4" cy="26.6" r="2.4" fill="url(#tuCore)" stroke="#4a1a8a" stroke-width=".9"/>
+    <circle class="tu-ring r1" cx="11.4" cy="26.6" r="2.6" fill="none" stroke="#d9a8ff" stroke-width="1.1" opacity="0"/>
+    <g class="from3"><circle class="tu-coreglow" cx="32" cy="42" r="9" fill="url(#tuGlow)"/><circle cx="32" cy="42" r="5.6" fill="#1a0a3a" stroke="url(#tuBrass)" stroke-width="1.8"/><circle class="tu-core" cx="32" cy="42" r="4" fill="url(#tuCore)"/><path d="M29.6 40 Q31 38.8 33 39" stroke="#fff" stroke-opacity=".8" stroke-width="1" fill="none" stroke-linecap="round"/></g>
+    <g class="from3 tu-crystal"><path d="M40.6 21 L44 26.6 L40.6 33 L37.2 26.6Z" fill="url(#tuCore)" stroke="#4a1a8a" stroke-width="1.1" stroke-linejoin="round"/><path d="M40.6 21 L40.6 33 M37.2 26.6 H44" stroke="#fff" stroke-opacity=".5" stroke-width=".6"/><circle cx="40.6" cy="26.6" r="7" fill="url(#tuGlow)" opacity=".6"/></g>
+    <g class="tu-barrels">
+      <g class="from3"><path d="M49 32.4 H65 V38 H49Z" fill="url(#tuBrassV)" stroke="#4a2a08" stroke-width="1.4" stroke-linejoin="round"/><path d="M65 31.4 H68 V39 H65Z" fill="url(#tuSteelV)" stroke="#1a1f26" stroke-width="1.2"/></g>
+      <path d="M49 38.6 H65 V44.2 H49Z" fill="url(#tuBrassV)" stroke="#4a2a08" stroke-width="1.4" stroke-linejoin="round"/><path d="M65 37.6 H68 V45.2 H65Z" fill="url(#tuSteelV)" stroke="#1a1f26" stroke-width="1.2"/>
+      <g class="from2"><path d="M49 44.8 H65 V50.4 H49Z" fill="url(#tuBrassV)" stroke="#4a2a08" stroke-width="1.4" stroke-linejoin="round"/><path d="M65 43.8 H68 V51.4 H65Z" fill="url(#tuSteelV)" stroke="#1a1f26" stroke-width="1.2"/></g>
+      <g class="tu-band"><path d="M55 38 V44.8" stroke="#1a1f26" stroke-width="3.6" stroke-linecap="round"/><path d="M55 38 V44.8" stroke="url(#tuSteelV)" stroke-width="2" stroke-linecap="round"/>
+      <g class="from2"><path d="M55 44.2 V50.8" stroke="#1a1f26" stroke-width="3.6" stroke-linecap="round"/><path d="M55 44.2 V50.8" stroke="url(#tuSteelV)" stroke-width="2" stroke-linecap="round"/></g>
+      <g class="from3"><path d="M55 32 V38.6" stroke="#1a1f26" stroke-width="3.6" stroke-linecap="round"/><path d="M55 32 V38.6" stroke="url(#tuSteelV)" stroke-width="2" stroke-linecap="round"/></g></g>
+      <path class="from3 tu-spin" d="M59.6 32.6 V50.2" stroke="#1a1f26" stroke-width="2.4" stroke-dasharray="2.4 2" stroke-linecap="butt"/>
+      <path d="M50 40 H64" stroke="#fff" stroke-opacity=".7" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <g class="from2"><path d="M48 28 L53 30.4 V52 L48 53Z" fill="url(#tuSteel)" stroke="#1a1f26" stroke-width="1.5" stroke-linejoin="round"/><g fill="#e8eef4" stroke="#363f4a" stroke-width=".6"><circle cx="50.6" cy="33" r="1"/><circle cx="50.6" cy="48" r="1"/></g></g>
+    <g class="tu-flash"><circle cx="68.4" cy="41.4" r="10" fill="url(#tuFlash)"/><path d="M68.4 31 L70 38.6 L78.4 41.4 L70 44.2 L68.4 51.8 L66.8 44.2 L58.4 41.4 L66.8 38.6Z" fill="#fff6c8" opacity=".95"/></g>
+    <circle class="tu-muz" cx="68" cy="41.4" r="3.4" fill="url(#tuSteam)"/>
+  </g>
+</svg>`,
+/* ---- Défensive : pylône de secours (I : cuve et dôme · II : bouclier et tuyaux · III : rotor de réparation et cristal) ---- */
+def: `<svg class="tur-svg tu-def" viewBox="0 0 72 72" aria-hidden="true">${STM_TU_DEFS}
+  ${STM_TU_GROUND}
+  <ellipse class="from2 tu-shield" cx="36" cy="40" rx="31" ry="31" fill="url(#tuShield)" stroke="#bffbe4" stroke-opacity=".5" stroke-width="1"/>
+  <path d="M24 61 L27 54 H45 L48 61Z" fill="url(#tuSteelD)" stroke="#1a1f26" stroke-width="1.7" stroke-linejoin="round"/>
+  <g class="from2"><path d="M24 44 Q12 44 13 54" fill="none" stroke="#1a1f26" stroke-width="5.4" stroke-linecap="round"/><path d="M24 44 Q12 44 13 54" fill="none" stroke="#7d8b99" stroke-width="3.4" stroke-linecap="round"/><path d="M24 44 Q12 44 13 54" fill="none" stroke="#2a3038" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="1.2 2.2"/><rect x="9" y="52" width="9" height="8" rx="2" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.4"/>
+    <path d="M48 44 Q60 44 59 54" fill="none" stroke="#1a1f26" stroke-width="5.4" stroke-linecap="round"/><path d="M48 44 Q60 44 59 54" fill="none" stroke="#7d8b99" stroke-width="3.4" stroke-linecap="round"/><path d="M48 44 Q60 44 59 54" fill="none" stroke="#2a3038" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="1.2 2.2"/><rect x="54" y="52" width="9" height="8" rx="2" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.4"/></g>
+  <g class="tu-body">
+    <path d="M24 28 Q24 20 36 20 Q48 20 48 28 V55 H24Z" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.9" stroke-linejoin="round"/>
+    <path d="M24 26 H48 M24 52 H48" stroke="#8a5a14" stroke-width="3.6" fill="none"/><path d="M24 26 H48 M24 52 H48" stroke="url(#tuBrassH)" stroke-width="2.1" fill="none"/>
+    <g fill="#ffe9a0" stroke="#6a4208" stroke-width=".6"><circle cx="27" cy="26" r="1.1"/><circle cx="45" cy="26" r="1.1"/><circle cx="27" cy="52" r="1.1"/><circle cx="45" cy="52" r="1.1"/></g>
+    <rect x="29" y="29" width="14" height="21" rx="6.4" fill="#06241e" stroke="url(#tuBrass)" stroke-width="2.2"/>
+    <circle class="tu-coreglow" cx="36" cy="39.5" r="13" fill="url(#tuTealGlow)"/>
+    <clipPath id="tuLiqClip"><rect x="30.4" y="30.4" width="11.2" height="18.2" rx="5.2"/></clipPath>
+    <g clip-path="url(#tuLiqClip)"><g class="tu-liq"><path d="M28 40 Q32 37.6 36 40 T44 40 V52 H28Z" fill="url(#tuLiquid)"/><path d="M28 40 Q32 37.6 36 40 T44 40" fill="none" stroke="#e8fff6" stroke-width="1.2" opacity=".8"/></g></g>
+    <path class="tu-cross" d="M36 34 V45 M30.8 39.5 H41.2" stroke="#fff" stroke-width="2.8" stroke-linecap="round" opacity=".92"/>
+    <path d="M31.4 33.4 Q32 31.6 34 31" stroke="#fff" stroke-opacity=".8" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <path d="M26.4 34 Q27 30 30 28" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M26 21 Q26 14 36 14 Q46 14 46 21Z" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M30 18 Q33 15.4 37 15.6" fill="none" stroke="#fff6c8" stroke-opacity=".85" stroke-width="1.4" stroke-linecap="round"/>
+    <g class="tu-wheel"><circle cx="36" cy="12" r="4.2" fill="none" stroke="#4a2a08" stroke-width="3"/><circle cx="36" cy="12" r="4.2" fill="none" stroke="url(#tuBrass)" stroke-width="1.6"/><path d="M36 7.8 V16.2 M31.8 12 H40.2" stroke="#4a2a08" stroke-width="1.6" stroke-linecap="round"/></g>
+    <circle class="tu-bulbglow" cx="49.4" cy="31" r="5" fill="url(#tuTealGlow)"/><circle class="tu-bulb" cx="49.4" cy="31" r="2.2" fill="url(#tuTeal)" stroke="#0a5a48" stroke-width=".9"/><path d="M48 33 L48.2 40" stroke="#7d8b99" stroke-width="1.6" stroke-linecap="round"/>
+    <g class="from3 tu-rotor"><path d="M36 11 V6" stroke="#4a2a08" stroke-width="3" stroke-linecap="round"/><path d="M36 11 V6" stroke="url(#tuBrass)" stroke-width="1.6" stroke-linecap="round"/>
+      <g class="tu-arms"><path d="M36 6 H16" stroke="#1a1f26" stroke-width="3.6" stroke-linecap="round"/><path d="M36 6 H16" stroke="url(#tuSteelV)" stroke-width="2" stroke-linecap="round"/><path d="M36 6 H56" stroke="#1a1f26" stroke-width="3.6" stroke-linecap="round"/><path d="M36 6 H56" stroke="url(#tuSteelV)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M13 2.4 q-4 3.6 0 7 l3 -1.4 q-1.4 -2.2 0 -4.2Z" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1"/><path d="M59 2.4 q4 3.6 0 7 l-3 -1.4 q1.4 -2.2 0 -4.2Z" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1"/></g>
+      <circle cx="36" cy="6" r="2.4" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1"/></g>
+    <g class="from3 tu-crystal"><path d="M36 -2 L39.2 3 L36 9 L32.8 3Z" fill="url(#tuTeal)" stroke="#0a5a48" stroke-width="1" stroke-linejoin="round"/></g>
+    <g class="tu-flash"><circle cx="36" cy="38" r="20" fill="url(#tuTealGlow)"/></g>
+  </g>
+</svg>`,
+/* ---- Tactique : Magnétor (I : fer à cheval · II : bobines et parabole · III : anneaux en orbite et tiges de Tesla) ---- */
+tac: `<svg class="tur-svg tu-tac" viewBox="0 0 72 72" aria-hidden="true">${STM_TU_DEFS}
+  ${STM_TU_GROUND}
+  <g class="from3 tu-tesla"><path d="M20 56 V30" stroke="#1a1f26" stroke-width="3.6" stroke-linecap="round"/><path d="M20 56 V30" stroke="url(#tuSteelV)" stroke-width="2" stroke-linecap="round"/><circle class="tu-bulbglow" cx="20" cy="27" r="6" fill="url(#tuGlow)"/><circle class="tu-bulb" cx="20" cy="27" r="3" fill="url(#tuCore)" stroke="#4a1a8a" stroke-width=".9"/>
+    <path d="M58 56 V26" stroke="#1a1f26" stroke-width="3.6" stroke-linecap="round"/><path d="M58 56 V26" stroke="url(#tuSteelV)" stroke-width="2" stroke-linecap="round"/><circle class="tu-bulbglow" cx="58" cy="23" r="6" fill="url(#tuGlow)"/><circle class="tu-bulb" cx="58" cy="23" r="3" fill="url(#tuCore)" stroke="#4a1a8a" stroke-width=".9"/></g>
+  <path d="M28 61 L31 50 H41 L44 61Z" fill="url(#tuSteelD)" stroke="#1a1f26" stroke-width="1.7" stroke-linejoin="round"/>
+  <path d="M33 50 V44 H39 V50" fill="url(#tuSteel)" stroke="#1a1f26" stroke-width="1.6" stroke-linejoin="round"/>
+  <ellipse cx="36" cy="50" rx="9.4" ry="3" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width="1.4"/>
+  <g class="tu-body">
+    <g class="from3 tu-orbit"><ellipse cx="34" cy="36" rx="25" ry="8" fill="none" stroke="#c58aff" stroke-opacity=".8" stroke-width="1.6" stroke-dasharray="5 4"/><ellipse cx="34" cy="36" rx="25" ry="8" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width=".7" style="transform-box:view-box" transform="rotate(60 34 36)"/></g>
+    <path d="M46 25 H31 Q20 25 20 36 Q20 47 31 47 H46" fill="none" stroke="#1a1f26" stroke-width="11" stroke-linecap="butt" stroke-linejoin="round"/>
+    <path d="M46 25 H31 Q20 25 20 36 Q20 47 31 47 H46" fill="none" stroke="url(#tuSteelV)" stroke-width="8" stroke-linecap="butt" stroke-linejoin="round"/>
+    <path d="M30 22.6 Q21 23 18 33" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.5" stroke-linecap="round" transform="translate(1 1)"/>
+    <g class="tu-coil"><rect x="33" y="20.6" width="11" height="9.8" rx="2" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.4"/><path d="M36 20.6 V30.4 M39.4 20.6 V30.4 M42.6 20.6 V30.4" stroke="#5e260c" stroke-width="1" opacity=".7"/>
+      <rect x="33" y="41.6" width="11" height="9.8" rx="2" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.4"/><path d="M36 41.6 V51.4 M39.4 41.6 V51.4 M42.6 41.6 V51.4" stroke="#5e260c" stroke-width="1" opacity=".7"/></g>
+    <g class="from2 tu-coil2"><rect x="15.6" y="31" width="9.6" height="10" rx="2" fill="url(#tuCopper)" stroke="#2a1006" stroke-width="1.4"/><path d="M18.6 31 V41 M21.4 31 V41" stroke="#5e260c" stroke-width="1" opacity=".7"/></g>
+    <path d="M44.6 21.4 H51 V29.8 H44.6Z" fill="url(#tuMagR)" stroke="#3a0604" stroke-width="1.5" stroke-linejoin="round"/><path d="M50.2 21.4 V29.8" stroke="#fff" stroke-opacity=".7" stroke-width="1.6"/>
+    <path d="M44.6 42.2 H51 V50.6 H44.6Z" fill="url(#tuMagB)" stroke="#06103a" stroke-width="1.5" stroke-linejoin="round"/><path d="M50.2 42.2 V50.6" stroke="#fff" stroke-opacity=".7" stroke-width="1.6"/>
+    <circle class="tu-bulbglow" cx="52" cy="35.6" r="9" fill="url(#tuGlow)"/>
+    <path class="tu-arc" d="M52 30 L55.4 33.4 L51 35.4 L56 38 L52 42" fill="none" stroke="#e6c8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="tu-arc a2" d="M52 30 L48.6 33 L53.6 36 L49 38.6 L52 42" fill="none" stroke="#9b5cff" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <g class="from2 tu-dish"><path d="M30 18 Q36 8 44 12 L41 18Z" fill="url(#tuSteel)" stroke="#1a1f26" stroke-width="1.4" stroke-linejoin="round"/><path d="M36 17.6 V21" stroke="#1a1f26" stroke-width="2" stroke-linecap="round"/><circle cx="43" cy="9.6" r="1.8" fill="url(#tuBrass)" stroke="#4a2a08" stroke-width=".8"/></g>
+    <g class="tu-flash"><circle cx="52" cy="35.6" r="18" fill="url(#tuGlow)"/></g>
+  </g>
+</svg>`
+};
+/* =====================================================================
    ATELIERS — fabrication à la forge, Maîtrise des recettes, Forgemagie
    (placé avant ui2.js dans la compilation : tout est lu à l'appel)
    ===================================================================== */
@@ -11159,6 +12260,244 @@ function wmLinked(p, type) {
   return `<div class="linked"><span class="label">${lab}</span><div class="lk-row">${par ? chip(par, 'Retour à') : ''}${kids.map(k => chip(k, k.lvl[0] > p.lvl[1] ? 'Plus loin' : 'À explorer')).join('')}${djs.map(d => chip(d, 'Donjon', 'dungeon')).join('')}</div></div>`;
 }
 /* =====================================================================
+   AMAKNA IDLE — STEAMER : interface de combat
+   Parc de tourelles (3 emplacements, 3 niveaux chacune), jauge de Pression, états des ennemis
+   (Brûlure, Trempé, Fissure, Magnétisé), coups reçus par les tourelles, évolutions, Surcharge Stasis.
+   Chargé avant ui2.js : seules des fonctions et des constantes sans dépendance y sont définies.
+   ===================================================================== */
+const SURGE_ICON = `<svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18.6" fill="none" stroke="#e2b04a" stroke-width="3.6" stroke-dasharray="6 3.6"/><circle cx="22" cy="22" r="14.6" fill="#241044" stroke="#6a3a08" stroke-width="1.6"/><path d="M25 7 L12.6 24.4 H20.6 L17.6 37.6 L31.6 18.6 H23.4 Z" fill="#fff2a8" stroke="#7a3a08" stroke-width="1.8" stroke-linejoin="round"/><path d="M22.6 11 L16.4 21" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".8"/></svg>`;
+const STM_TIPS = {
+  off: 'Tourelle offensive : chaque sort d’attaque la réveille. Elle tire avec l’élément du sort, un canon par niveau.',
+  def: 'Tourelle défensive : soigne le Steamer (+50 % avec l’Eau) et répare les autres tourelles.',
+  tac: 'Tourelle tactique : peut magnétiser un ennemi, qui perd son prochain tour.',
+};
+const STM_SEEN = new Set(), STM_PREV = {};
+function steamGauge(h) {
+  const p = clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1);
+  return `<div class="fury steam${p >= 1 ? ' full' : ''}" data-k="steam" title="Pression : ${Math.floor(h.steam || 0)} / ${STM_STEAM_MAX}. Chaque activation de tourelle (et chaque Vapeur) la remplit. Pleine, déclenche la Surcharge Stasis !"><span class="fury-fill" style="--p:${p.toFixed(3)}"></span><span class="fury-lbl">${p >= 1 ? 'SURCHARGE !' : 'Pression ' + Math.floor(p * 100) + ' %'}</span></div>`;
+}
+/* Puces d'états posées sous la barre de vie d'un ennemi */
+function stmMonChips(m) {
+  return `${m.burn ? '<i class="c-b" title="Brûlure : dégâts sur la durée">🔥</i>' : ''}${m.wet > 0 ? '<i class="c-w" title="Trempé : −15 % de dégâts infligés. Le Feu le fait réagir en Vapeur.">💧</i>' : ''}${m.crack ? '<i class="c-c" title="Fissure : +15 % de dégâts reçus">⛰️</i>' : ''}${m.mag ? '<i class="c-m" title="Magnétisé : perd son prochain tour">🧲</i>' : ''}`;
+}
+function turretHtml(h, f, s) {
+  const has = stmHas(h, s), T = f && f.tur && f.tur[s];
+  const lv = stmLvl(h, f, s), stt = !has ? 'lock' : T && T.hp <= 0 ? 'down' : 'idle';
+  const key = h.id + ':' + s, prev = STM_PREV[key];
+  const cls = [];
+  if (has && !STM_SEEN.has(key)) { STM_SEEN.add(key); cls.push('deploy'); }
+  if (has && prev === 'down' && stt !== 'down') cls.push('repair');
+  STM_PREV[key] = stt;
+  const pct = T ? clamp(T.hp / T.max * 100, 0, 100) : 100;
+  return `<div class="tur tur-${s} ${cls.join(' ')}" data-s="${s}" data-lv="${lv}" data-st="${stt}" title="${has ? esc(STM_NAMES[s]) + ' · niveau ' + STM_ROMAN[lv] + ' — ' + STM_TIPS[s] : esc(STM_NAMES[s]) + ' : disponible au niveau ' + STM_UNLOCK[s]}">
+    <div class="tur-art">${has ? STM_TURRET[s] : ''}</div>
+    <div class="tur-pad" aria-hidden="true"><span>🔒 niv. ${STM_UNLOCK[s]}</span></div>
+    <div class="tur-bar"><i style="width:${pct.toFixed(0)}%"></i></div><b class="tur-lv">${STM_ROMAN[lv]}</b></div>`;
+}
+function yardHtml(h) {
+  return `<div class="yard${h.act ? '' : ' fold'}" data-k="yard" data-boost="${stmBoost(h.fight) ? 1 : 0}">${['def', 'tac', 'off'].map(s => turretHtml(h, h.fight, s)).join('')}</div>`;
+}
+function stmTurAnim(el, cls, ms) { ecaState(el, cls, ms); }
+/* Fumée noire d'une tourelle en panne */
+function stmSmoke(el) {
+  if (!FX_OK()) return;
+  for (let i = 0; i < 6; i++) { const s = document.createElement('i'); s.className = 'stm-smoke'; s.style.cssText = `--dx:${(Math.random() * 30 - 15).toFixed(0)}px;--s:${(10 + Math.random() * 10).toFixed(0)}px;animation-delay:${i * 90}ms`; el.appendChild(s); setTimeout(() => s.remove(), 1600); }
+}
+/* Particules d'un état gagné par un ennemi */
+function stmStatusBurst(el, kind) {
+  if (!el || !FX_OK()) return;
+  const sym = { b: '🔥', w: '💧', c: '🪨', m: '⚡' }[kind];
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('i'); s.className = 'stp stp-' + kind; s.textContent = sym;
+    s.style.cssText = `--dx:${(Math.random() * 44 - 22).toFixed(0)}px;--dy:${kind === 'w' ? (10 + Math.random() * 26).toFixed(0) : (-14 - Math.random() * 30).toFixed(0)}px;animation-delay:${(i * 60).toFixed(0)}ms`;
+    el.appendChild(s); setTimeout(() => s.remove(), 1400);
+  }
+}
+/* Mise à jour des états d'un ennemi (puces, teinte, particules des états nouvellement gagnés) */
+function stmMonPatch(el, m, mhp) {
+  const alive = mhp > 0, k = (alive && m.burn ? 'b' : '') + (alive && m.wet > 0 ? 'w' : '') + (alive && m.crack ? 'c' : '') + (alive && m.mag ? 'm' : '');
+  if (el._stm === k) return;
+  const old = el._stm || '';
+  el._stm = k;
+  const box = el.querySelector('[data-k="mst"]'); if (box) box.innerHTML = alive ? stmMonChips(m) : '';
+  for (const c of 'bwcm') { el.classList.toggle('st-' + c, k.includes(c)); if (k.includes(c) && !old.includes(c)) stmStatusBurst(el, c); }
+}
+function stmDecoyFx(card, fx) {
+  const el = card.querySelector(`.tur[data-s="${fx.s}"]`); if (!el) return;
+  floatNum(el, '−' + fmt(fx.v), 'dmg');
+  ecaState(el, 'struck', 450);
+  if (fx.broke) { ecaState(el, 'broke', 1100); stmSmoke(el); ecaText(card, '🔧 TOURELLE HORS SERVICE', '', 'stm'); }
+}
+function stmEvoFx(card, fx) {
+  const el = card.querySelector(`.tur[data-s="${fx.s}"]`); if (!el) return;
+  ecaState(el, 'evo', 1300); floatNum(el, `NIVEAU ${STM_ROMAN[fx.lvl]} !`, 'evo');
+  coinBurst(el, 9, '⚙️');
+}
+/* Mise à jour de tout ce qui est propre au Steamer dans la carte de combat */
+function stmPatch(card, h, scene) {
+  const fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite'), f = h.fight;
+  const pr = clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1);
+  if (sp) { const v = pr.toFixed(3); if (sp.style.getPropertyValue('--pr') !== v) sp.style.setProperty('--pr', v); }
+  const alive = !!f && f.mons.some(m => m.hp > 0);
+  if (fu) fu.classList.toggle('stm-ready', steamReady(h) && !!f);
+  const g = card.querySelector('[data-k="steam"]');
+  if (g) { g.firstElementChild.style.setProperty('--p', pr.toFixed(3)); g.classList.toggle('full', pr >= 1); const lb = g.lastElementChild, tx = pr >= 1 ? 'SURCHARGE !' : 'Pression ' + Math.floor(pr * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
+  const btn = card.querySelector('[data-k="steambtn"]');
+  if (btn) { const show = steamReady(h) && alive && !FURY_ANIM[h.id]; if (btn.hidden === show) btn.hidden = !show; }
+  const yard = card.querySelector('[data-k="yard"]');
+  if (yard) {
+    yard.classList.toggle('fold', !h.act); yard.dataset.boost = stmBoost(f) ? 1 : 0;
+    for (const s of STM_SLOTS) {
+      const el = yard.querySelector(`.tur[data-s="${s}"]`); if (!el) continue;
+      const has = stmHas(h, s), T = f && f.tur && f.tur[s], lv = stmLvl(h, f, s), stt = !has ? 'lock' : T && T.hp <= 0 ? 'down' : 'idle';
+      if (has && !el.querySelector('.tur-svg')) { el.querySelector('.tur-art').innerHTML = STM_TURRET[s]; stmTurAnim(el, 'deploy', 1200); STM_SEEN.add(h.id + ':' + s); }
+      for (const c of ['deploy', 'repair']) if (el.classList.contains(c) && !el['_x' + c]) { el['_x' + c] = 1; setTimeout(() => { el.classList.remove(c); el['_x' + c] = 0; }, 1300); } // l'animation ne doit pas se rejouer quand une autre classe la remplace
+      if (+el.dataset.lv !== lv && !(el._hold > Date.now())) { const up = lv > +el.dataset.lv; el.dataset.lv = lv; if (up) stmTurAnim(el, 'tier', 1100); } // (le niveau gagné par l'expérience attend l'animation d'évolution)
+      if (el.dataset.st !== stt) { const was = el.dataset.st; el.dataset.st = stt; if (was === 'down' && stt === 'idle') stmTurAnim(el, 'repair', 1100); STM_PREV[h.id + ':' + s] = stt; }
+      const bar = el.querySelector('.tur-bar > i'); if (bar) { const w = (T ? clamp(T.hp / T.max * 100, 0, 100) : 100).toFixed(0) + '%'; if (bar.style.width !== w) bar.style.width = w; }
+      const lb = el.querySelector('.tur-lv'); if (lb) { const tx = STM_ROMAN[lv] + (stmBoost(f) && stmBaseLvl(h, s) < 3 ? '▲' : ''); if (lb.textContent !== tx) lb.textContent = tx; }
+    }
+  }
+  if (f && scene) {
+    const dc = f.decoySeq || 0; if (dc > +(scene.dataset.dc || 0) && f.decoyFx) stmDecoyFx(card, f.decoyFx); scene.dataset.dc = dc;
+    const eo = f.evoSeq || 0;
+    if (eo > +(scene.dataset.eo || 0) && f.evoFx) { const fx = f.evoFx, el = card.querySelector(`.tur[data-s="${fx.s}"]`); if (el) el._hold = Date.now() + 620; setTimeout(() => { stmEvoFx(card, fx); if (el) el._hold = 0; patchCombat(); }, 560); } // après les tirs du tour
+    scene.dataset.eo = eo;
+  } else if (scene) { scene.dataset.dc = 0; scene.dataset.eo = 0; }
+}
+
+/* =====================================================================
+   SURCHARGE STASIS — la cinématique
+   La chaudière du Steamer est à bloc : des conduits de Stasis relient son cœur aux trois tourelles, qui crachent ensemble trois salves
+   (Eau → Feu → Terre). Si le Feu frappe des ennemis trempés, la Vapeur explose. La Défensive soigne, la Tactique magnétise.
+   ===================================================================== */
+const SG_GEAR = (() => {
+  const teeth = Array.from({ length: 18 }, (_, i) => `<rect x="94" y="1" width="12" height="15" rx="2.4" transform="rotate(${i * 20} 100 100)"/>`).join('');
+  return `<svg viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true"><g class="sp"><g fill="#6a2fd0" stroke="#e6c8ff" stroke-width="1.6">${teeth}</g><circle cx="100" cy="100" r="86" fill="none" stroke="#e6c8ff" stroke-width="3.4"/><circle cx="100" cy="100" r="70" fill="none" stroke="#b56bff" stroke-width="2.4" stroke-dasharray="3 7"/><circle cx="100" cy="100" r="54" fill="none" stroke="#e6c8ff" stroke-width="2"/></g><circle cx="100" cy="100" r="30" fill="#b56bff33" stroke="#e6c8ff" stroke-width="2"/></svg>`;
+})();
+function playSurge(card, h, k) {
+  const scene = card.querySelector('.scene'), fu = card.querySelector('[data-k="fighter"]'), sp = fu && fu.querySelector('.sprite');
+  const mons = [...card.querySelectorAll('.unit.mon:not(.dead)')];
+  let res = null;
+  if (!scene || !sp || !FX_OK() || !mons.length) { // mouvement réduit : pas de cinématique, juste les effets de jeu
+    setTimeout(() => { res = k.pay(); }, 150); setTimeout(() => k.release(), 500); setTimeout(k.done, 900);
+    return;
+  }
+  const held = {}; mons.forEach(m => { held[+m.dataset.mon] = +m.dataset.hp; });
+  const apply = hits => { (hits || []).forEach(x => { if (x) held[x.i] = Math.max(0, (held[x.i] != null ? held[x.i] : 0) - x.v); }); k.hold(held); };
+  const T = { pay: 1300, v1: 1300, v2: 1950, end: 5200 };
+  const hp = relPos(sp, scene), sw = sp.offsetWidth, sh = sp.offsetHeight, W = hp.w, H = hp.h;
+  const foes = mons.map(m => { const s = m.querySelector('.sprite') || m, p = relPos(s, scene); return { x: p.x, y: p.y, g: p.y + s.offsetHeight * .42, el: m, i: +m.dataset.mon }; });
+  const byI = {}; foes.forEach(p => { byI[p.i] = p; });
+  const fx = foes.reduce((a, p) => a + p.x, 0) / foes.length, gy = Math.max(...foes.map(p => p.g));
+  const turs = STM_SLOTS.filter(s => stmHas(h, s)).map(s => { const el = card.querySelector(`.tur[data-s="${s}"]`); if (!el) return null; const p = relPos(el.querySelector('.tur-art') || el, scene); return { s, el, x: p.x, y: p.y }; }).filter(Boolean);
+  const core = { x: hp.x - sw * .25, y: hp.y + sh * .06 }, muz = { x: hp.x + sw * .47, y: hp.y + sh * .05 };
+  const ov = document.createElement('div'); ov.className = 'surge';
+  const paths = turs.map(t => `M${core.x.toFixed(0)} ${core.y.toFixed(0)}C${(core.x - 20).toFixed(0)} ${(core.y - H * .42).toFixed(0)} ${(t.x - 10).toFixed(0)} ${(t.y - H * .5).toFixed(0)} ${t.x.toFixed(0)} ${(t.y - 6).toFixed(0)}`);
+  const sealBox = (cx, cy, w) => `left:${(cx - w / 2).toFixed(0)}px;top:${(cy - w * .17).toFixed(0)}px;width:${w.toFixed(0)}px;height:${(w * .34).toFixed(0)}px`;
+  const spread = foes.length > 1 ? Math.max(...foes.map(p => p.x)) - Math.min(...foes.map(p => p.x)) : 0;
+  ov.innerHTML = `<div class="sg-dark"></div><div class="sg-flash"></div>
+    <div class="sg-seal h" style="${sealBox(hp.x, hp.y + sh * .42, sw * 2.2)}">${SG_GEAR}</div>
+    ${foes.map(p => `<div class="sg-seal f" style="${sealBox(p.x, p.g, sw * 2.3)}">${SG_GEAR}</div>`).join('')}
+    <svg class="sg-pipes" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${paths.map(d => `<path class="o" pathLength="100" d="${d}"/><path class="c" pathLength="100" d="${d}"/><path class="e" pathLength="100" d="${d}"/>`).join('')}</svg>
+    <div class="sg-title" style="--fs:${Math.round(Math.min(H * .19, W * .095))}px"><span>SURCHARGE</span><b>STASIS</b></div>`;
+  const fg = document.createElement('div'); fg.className = 'surge-fg'; // effets au-dessus des ennemis (qui restent bien visibles sous le voile sombre)
+  scene.appendChild(ov); scene.appendChild(fg); scene.classList.add('sg-on');
+  const live = () => ov.isConnected, at = (ms, fn) => setTimeout(() => { if (live()) fn(); }, ms);
+  const an = (el, kf, o) => el.animate(kf, Object.assign({ duration: 400, fill: 'forwards', easing: 'ease-out' }, o));
+  const q = s => ov.querySelector(s), qa = s => [...ov.querySelectorAll(s)];
+  const add = (cls, css, ms, html) => { const e = document.createElement('i'); e.className = cls; e.style.cssText = css; if (html) e.innerHTML = html; fg.appendChild(e); if (ms) setTimeout(() => e.remove(), ms); return e; };
+  const shake = () => { scene.classList.remove('cl-shake'); void scene.offsetWidth; scene.classList.add('cl-shake'); setTimeout(() => scene.classList.remove('cl-shake'), 560); };
+  const flash = (c, a, ms) => { const f = q('.sg-flash'); f.style.background = c; an(f, [{ opacity: a }, { opacity: 0 }], { duration: ms }); };
+  const nums = (hits, cls) => (hits || []).forEach(x => { if (!x) return; const p = byI[x.i]; if (!p) return;
+    const dy = { eau: 46, feu: 70, vap: 58, terre: 84 }[cls] || 50, n = add('cl-num sg-num ' + cls + (x.crit ? ' crit' : ''), `left:${p.x.toFixed(0)}px;top:${(p.y - dy).toFixed(0)}px`, 1700); n.textContent = '−' + fmt(x.v);
+    p.el.classList.add('cl-hit'); setTimeout(() => p.el.classList.remove('cl-hit'), 900); });
+  const sources = () => [{ x: muz.x, y: muz.y, el: null }, ...turs];
+  const volley = (el, hits) => { // chaque source (le canon du héros et les trois tourelles) tire sur chaque ennemi touché
+    const live2 = hits.filter(Boolean); let n = 0;
+    sources().forEach((src, j) => live2.forEach((x, m) => {
+      const p = byI[x.i]; if (!p) return;
+      setTimeout(() => {
+        if (!live()) return;
+        if (src.el) ecaState(src.el, 'fire', 420);
+        else heroGesture(fu, 'atk');
+        const d = stmBolt(scene, { x: src.x, y: src.y }, { x: p.x + stmR(-10, 10), y: p.y + stmR(-8, 8) }, { c: STM_COL[el], size: src.el ? 9 : 13, dur: 290, lift: 14 + j * 7, cls: el === 'feu' ? 'fire' : el });
+        setTimeout(() => stmHit(scene, { x: p.x + stmR(-8, 8), y: p.y }, el, .8), d);
+      }, j * 80 + m * 45 + (n++ % 2) * 20);
+    }));
+  };
+  // ---- 0 : la chaudière s'emballe, les conduits s'allument ----
+  ecaState(fu, 'stm-surge', T.end - 700);
+  an(q('.sg-dark'), [{ opacity: 0 }, { opacity: 1 }], { duration: 600 });
+  at(80, () => { const e = q('.sg-seal.h'); e.classList.add('on'); an(e, [{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 700 }); });
+  qa('.sg-seal.f').forEach((e, i) => at(450 + i * 160, () => { e.classList.add('on'); an(e, [{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 700 }); }));
+  qa('.sg-pipes path').forEach((p, i) => { const g = Math.floor(i / 3); p.style.strokeDasharray = i % 3 === 2 ? '3 5' : '100'; if (i % 3 !== 2) an(p, [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { duration: 600, delay: 300 + g * 190, easing: 'cubic-bezier(.3,.7,.3,1)' }); else an(p, [{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 700 + g * 190 }); });
+  turs.forEach((t, g) => at(750 + g * 190, () => { t.el.classList.add('charged'); coinBurst(t.el, 5, '⚙️'); stmSmokeUp(t.el); }));
+  for (let i = 0; i < 9; i++) at(100 + i * 110, () => { const e = add('stm-fp sg-vent', `left:${(core.x + stmR(-24, 24)).toFixed(0)}px;top:${(core.y - stmR(10, 40)).toFixed(0)}px;--dx:${stmR(-24, 24).toFixed(0)}px;--dy:${stmR(-70, -34).toFixed(0)}px;--s:${stmR(18, 30).toFixed(0)}px;--d:0ms`, 1200); });
+  at(380, () => an(q('.sg-title'), [{ opacity: 0, transform: 'translate(-50%,0) scale(3.2)', filter: 'blur(10px)' }, { opacity: 1, transform: 'translate(-50%,0) scale(1)', filter: 'blur(0)', offset: .55 }, { opacity: 1, transform: 'translate(-50%,0) scale(1.06)', filter: 'blur(0)', offset: .8 }, { opacity: 1, transform: 'translate(-50%,0) scale(1)' }], { duration: 900, easing: 'cubic-bezier(.2,.9,.3,1)' }));
+  at(T.pay - 90, () => an(q('.sg-title'), [{ opacity: 1 }, { opacity: 0, transform: 'translate(-50%,-18px) scale(1.3)' }], { duration: 300 }));
+  // ---- 1 : le paiement, puis trois salves (la suite dépend du résultat : Vapeur ou non) ----
+  let tEnd = T.end;
+  at(T.pay, () => {
+    res = k.pay(); if (!res) { finish(); return; } flash('#9b5cff', .5, 380);
+    const vap = !!res.vapor, tV = T.v2 + 760, tE = vap ? T.v2 + 1750 : T.v2 + 920, tF = tE + (res.volleys[2].hits.some(Boolean) ? 1000 : 200);
+    tEnd = tF + 1500;
+    const abs = (ms, fn) => setTimeout(() => { if (live()) fn(); }, Math.max(0, ms - T.pay));
+    abs(T.v1, () => volley('eau', res.volleys[0].hits));
+    abs(T.v1 + 330, () => { nums(res.volleys[0].hits, 'eau'); apply(res.volleys[0].hits); flash('#4fc3ff', .35, 360); });
+    abs(T.v2, () => volley('feu', res.volleys[1].hits));
+    abs(T.v2 + 330, () => { nums(res.volleys[1].hits, 'feu'); apply(res.volleys[1].hits); flash('#ff8a2a', .4, 360); });
+    if (vap) abs(tV, () => { // la Vapeur : le feu rencontre les ennemis trempés
+      const v = res.vapor;
+      flash('#ffffff', .85, 520); shake();
+      v.hits.forEach(x => { const p = byI[x.i]; if (p) { stmHit(scene, p, 'steam', 1.9); stmHit(scene, { x: p.x, y: p.g }, 'steam', 1.3); } });
+      ecaText(card, '♨️ VAPEUR !', '', 'stm');
+      for (let i = 0; i < 16; i++) add('stm-fp sg-vent', `left:${(fx + stmR(-spread / 2 - 40, spread / 2 + 40)).toFixed(0)}px;top:${(gy - stmR(0, 40)).toFixed(0)}px;--dx:${stmR(-30, 30).toFixed(0)}px;--dy:${stmR(-90, -30).toFixed(0)}px;--s:${stmR(30, 56).toFixed(0)}px;--d:${i * 28}ms`, 1700);
+      setTimeout(() => { nums(v.hits, 'vap'); apply(v.hits); }, 140);
+    });
+    abs(tE, () => { // la Terre : des pics de roche jaillissent sous chaque ennemi
+      const hits = res.volleys[2].hits;
+      sources().forEach(src => { if (src.el) ecaState(src.el, 'fire', 420); else heroGesture(fu, 'atk'); });
+      shake(); flash('#c99a52', .4, 420);
+      hits.filter(Boolean).forEach(x => {
+        const p = byI[x.i]; if (!p) return;
+        [[0, 1, 1], [-.6, .62, .7], [.6, .62, .7], [-1.1, .38, .5], [1.1, .38, .5]].forEach(([ox, hh, ww]) => {
+          const wd = Math.round(sw * .34 * ww), ht = Math.round(H * .74 * hh * (.85 + Math.random() * .3));
+          const e = add('sg-spike', `left:${(p.x + ox * sw * .42 - wd / 2).toFixed(0)}px;top:${(p.g - ht).toFixed(0)}px;width:${wd}px;height:${ht}px`, 1700);
+          an(e, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1.07)', offset: .5 }, { transform: 'scaleY(1)', offset: .66 }, { transform: 'scaleY(1)', opacity: 1, offset: .82 }, { transform: 'scaleY(.3)', opacity: 0 }], { duration: 1500, easing: 'cubic-bezier(.2,.9,.3,1)' });
+        });
+        stmHit(scene, { x: p.x, y: p.y }, 'terre', 1.6);
+        for (let n = 0; n < 3; n++) add('sg-wave', `left:${p.x.toFixed(0)}px;top:${p.g.toFixed(0)}px;--w:${Math.round(sw * 2.2)}px;animation-delay:${n * 110}ms`, 1200);
+      });
+      setTimeout(() => { nums(hits, 'terre'); apply(hits); }, 140);
+    });
+    abs(tF, () => { // le soin de la Défensive, le magnétisme de la Tactique
+      const dt = turs.find(t => t.s === 'def');
+      if (res.heal > 0) {
+        const o = dt || { x: hp.x - 40, y: hp.y - 30 };
+        for (let i = 0; i < 6; i++) setTimeout(() => { if (!live()) return; const d = stmBolt(scene, { x: o.x, y: o.y - 10 }, { x: hp.x, y: hp.y }, { c: '#6fe8c0', size: 8, dur: 380, lift: 26 + i * 6, cls: 'heal', html: '+', trail: false }); if (i === 5) setTimeout(() => { fxImpact(scene, hp, '#6fe8c0', 1.3); stmFloat(fu, '+' + fmt(res.heal), 'heal'); ecaState(fu, 'stm-mend', 800); }, d); }, i * 70);
+      }
+      (res.mag || []).forEach((i, n) => { const p = byI[i]; if (!p) return;
+        setTimeout(() => {
+          if (!live()) return;
+          const m = add('sg-magnet', `left:${p.x.toFixed(0)}px;top:${(p.y - 30).toFixed(0)}px`, 1300, '🧲');
+          an(m, [{ transform: 'translate(-50%,-300%) scale(.6) rotate(-20deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.3) rotate(8deg)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-50%) scale(1) rotate(-6deg)', opacity: 1, offset: .75 }, { transform: 'translate(-50%,-90%) scale(1)', opacity: 0 }], { duration: 1150 });
+          for (let r = 0; r < 2; r++) add('sg-ring', `left:${p.x.toFixed(0)}px;top:${p.y.toFixed(0)}px;animation-delay:${r * 160}ms`, 1000);
+        }, n * 120);
+      });
+    });
+    abs(tEnd - 500, () => { an(q('.sg-dark'), [{ opacity: 1 }, { opacity: 0 }], { duration: 500 }); qa('.sg-seal,.sg-pipes').forEach(e => an(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 500 })); });
+    setTimeout(finish, tEnd - T.pay);
+  });
+  const finish = () => { if (finish.done) return; finish.done = 1; ov.remove(); fg.remove(); scene.classList.remove('sg-on'); fu.classList.remove('stm-surge'); turs.forEach(t => t.el.classList.remove('charged')); k.done(); };
+  setTimeout(() => { if (!res) finish(); }, T.pay + 1500); // garde-fou : la cinématique n'a jamais payé (carte redessinée en route)
+}
+/* fumée de vapeur qui s'échappe d'une tourelle qui se charge */
+function stmSmokeUp(el) {
+  if (!FX_OK()) return;
+  for (let i = 0; i < 4; i++) { const s = document.createElement('i'); s.className = 'stm-smoke white'; s.style.cssText = `--dx:${(Math.random() * 24 - 12).toFixed(0)}px;--s:${(9 + Math.random() * 8).toFixed(0)}px;animation-delay:${i * 80}ms`; el.appendChild(s); setTimeout(() => s.remove(), 1500); }
+}
+/* =====================================================================
    AMAKNA IDLE — INTERFACE v2
    Barre latérale (navigation + groupe), scènes de combat, poupée
    d'équipement, inventaire en cases avec inspecteur.
@@ -11230,6 +12569,7 @@ function loadGame(snapshot) {
 /* ---------------------------- Notifications ---------------------------- */
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
+  turretNew(h, s) { toast(`⚙️ ${h.name} déploie sa ${STM_NAMES[s].toLowerCase()} !`, 'quest'); },
   levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
     for (const g of gear) toast(ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic ? 'relic' : g.stasis ? 'stasis' : 'rare');
@@ -11259,6 +12599,7 @@ const CLASS_GLYPH = {
   enutrof: '<ellipse cx="12" cy="17.5" rx="7" ry="2.6" fill="currentColor" opacity=".55"/><ellipse cx="12" cy="14.5" rx="7" ry="2.6" fill="currentColor" opacity=".8"/><circle cx="12" cy="9" r="5.8" fill="currentColor"/><circle cx="12" cy="9" r="3.9" fill="none" stroke="var(--c)" stroke-width="1.2"/><path d="M12 6.6l1.6 2.4-1.6 2.4-1.6-2.4Z" fill="var(--c)"/>',
   ecaflip: '<path d="M4.2 3.8 9 7.9c1.9-.6 4.1-.6 6 0l4.8-4.1.5 8.7c0 4.6-3.6 7.7-8.3 7.7S3.7 17.1 3.7 12.5Z" fill="currentColor"/><path d="M7.6 12.2c.9-1.1 2.1-1.1 2.8 0M13.6 12.2c.9-1.1 2.1-1.1 2.8 0" stroke="var(--c)" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M12 14.1l-1.3 1.3h2.6Z" fill="var(--c)"/><path d="M12 15.4v1.1M9.9 16.7c.8.5 1.5.5 2.1 0 .6.5 1.3.5 2.1 0" stroke="var(--c)" stroke-width=".9" stroke-linecap="round" fill="none"/><path d="M1.4 12.6l3.6.8M1.7 16l3.4-.9M22.6 12.6l-3.6.8M22.3 16l-3.4-.9" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/>',
   xelor: '<path d="M6.5 3h11M6.5 21h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 3.5c0 4.6 3.6 5.8 3.6 8.5S8 15.9 8 20.5h8c0-4.6-3.6-5.8-3.6-8.5S16 7.1 16 3.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 19.6c.6-1.9 1.5-2.6 2.4-2.6s1.8.7 2.4 2.6ZM10 6.2h4c-.5 1.4-1.2 2.1-2 2.6-.8-.5-1.5-1.2-2-2.6Z" fill="currentColor"/><circle cx="12" cy="13.4" r=".7" fill="currentColor"/>',
+  steamer: '<circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="3.2" stroke-dasharray="3.3 3.3"/><circle cx="12" cy="12" r="6.6" fill="currentColor"/><circle cx="12" cy="12" r="3.1" fill="var(--c)"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><path d="M12 12h8.6" stroke="var(--c)" stroke-width="4.6" stroke-linecap="round"/><path d="M12 12h8.6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
   sram: '<path d="M14.5 3.2A8.8 8.8 0 1 0 20.8 16 7 7 0 1 1 14.5 3.2Z" fill="currentColor"/><path d="M17.5 5.5 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19.2 3.8l1-1M16.3 4.3l3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
 };
 function emblem(cls, size) {
@@ -11449,9 +12790,9 @@ function fightCard(h) {
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
       return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
-        <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>
+        <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>${h.cls === 'steamer' ? `<div class="mst" data-k="mst">${stmMonChips(m)}</div>` : ''}
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
-    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}</div><div class="foes">${foes}</div>`;
+    stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}${h.cls === 'steamer' ? yardHtml(h) : ''}</div><div class="foes">${foes}</div>`;
   }
   return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
@@ -11463,15 +12804,17 @@ function fightCard(h) {
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
     <div class="fc-body">
-      <div class="scene${harvest ? ' harvest' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur') && !harvest ? ' has-fury' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
+      <div class="scene${harvest ? ' harvest' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur' || h.cls === 'steamer') && !harvest ? ' has-fury' : ''}${h.cls === 'steamer' && !harvest ? ' has-yard' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}"${h.cls === 'zobal' ? ` data-mask="${zobMask(h)}"` : ''}>
           <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
           ${h.cls === 'sacrieur' ? bloodGauge(h) : ''}
           ${h.cls === 'sacrieur' ? `<button class="fury-btn blood-btn" data-act="sacolosse" data-hero="${h.id}" data-k="bloodbtn" title="Déclencher le Colosse de Sang !" aria-label="Déclencher le Colosse de Sang"${bloodReady(h) && h.fight ? '' : ' hidden'}>${COLOSSE_ICON}</button>` : ''}
+          ${h.cls === 'steamer' ? steamGauge(h) : ''}
+          ${h.cls === 'steamer' ? `<button class="fury-btn steam-btn" data-act="steamsurge" data-hero="${h.id}" data-k="steambtn" title="Déclencher la Surcharge Stasis !" aria-label="Déclencher la Surcharge Stasis"${steamReady(h) && h.fight ? '' : ' hidden'}>${SURGE_ICON}</button>` : ''}
           ${h.cls === 'xelor' ? chronoBtn(h) : ''}
-          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}">${heroSprite(h.cls)}</div></div>
+          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}"${h.cls === 'steamer' ? ` style="--pr:${clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1).toFixed(3)}"` : ''}>${heroSprite(h.cls)}</div></div>
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
@@ -12095,6 +13438,7 @@ function patchCombat() {
       el.classList.toggle('dead', mhp <= 0); if (mhp > 0) el.classList.remove('still');
       if (m.frozen && mhp > 0 && !el.classList.contains('frozen')) iceBurst(el);
       el.classList.toggle('frozen', !!m.frozen && mhp > 0);
+      if (h.cls === 'steamer' && !held) stmMonPatch(el, m, mhp);
       setBar(el, mhp, m.max);
       el.querySelector('[data-k="mhp"]').textContent = fmt(mhp);
     });
@@ -12137,6 +13481,7 @@ function patchCombat() {
         cb.classList.toggle('full', c >= CHRONO_MAX);
       }
     }
+    if (h.cls === 'steamer') stmPatch(card, h, scene);
     const fu = q('fury'); if (fu) { const p = clamp((h.fury || 0) / FURY_MAX, 0, 1); fu.firstElementChild.style.setProperty('--p', p.toFixed(3)); fu.classList.toggle('full', p >= 1); const lb = fu.lastElementChild, tx = p >= 1 ? 'FUREUR !' : 'Fureur ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
     const fb = q('furybtn'); if (fb) { const show = furyReady(h) && !!h.fight && !FURY_ANIM[h.id] && h.fight.mons.some(m => m.hp > 0); if (fb.hidden === show) fb.hidden = !show; }
     const bl = q('blood'); if (bl) { const p = clamp((h.blood || 0) / SAC_BLOOD_MAX, 0, 1); bl.firstElementChild.style.setProperty('--p', p.toFixed(3)); bl.classList.toggle('full', p >= 1); const lb = bl.lastElementChild, tx = p >= 1 ? 'COLOSSE !' : 'Sang ' + Math.floor(p * 100) + ' %'; if (lb.textContent !== tx) lb.textContent = tx; }
@@ -12173,7 +13518,7 @@ function renderRecruit(first) {
   return `<section class="panel recruit">
     <div><h2 class="display big-title">${first ? 'Bienvenue dans le Monde des Douze' : 'Recruter un héros'}</h2>
       <p class="sub" style="margin:4px 0 0">${first ? 'Choisis la classe de ton premier héros. Il combattra seul dans les zones que tu choisis, tant que le jeu est ouvert.' : `Héros ${st.heroes.length + 1} sur ${RECRUIT_COST.length}. Chaque héros a sa propre activité et son propre équipement.`}</p></div>
-    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">Élément ${STAT_ELEM[k.elem] || '—'}</span></button>`).join('')}</div>
+    <div class="cls-grid">${Object.entries(CLASSES).map(([id, k]) => `<button class="cls-card" data-act="rcls" data-cls="${id}" aria-pressed="${ui.recruitCls === id}" style="--c:${k.color}">${emblem(id, 'big')}<b>${k.name}</b><small>${k.role}</small><span class="cls-elem">${k.elemTxt ? 'Éléments ' + k.elemTxt : 'Élément ' + (STAT_ELEM[k.elem] || '—')}</span></button>`).join('')}</div>
     <div class="recruit-detail" style="--c:${c.color}">
       ${emblem(ui.recruitCls, 'xl')}
       <div class="rd-main"><h3 class="display">${c.name} <small>${c.role}</small></h3><p>${c.desc}</p>
@@ -12312,7 +13657,7 @@ function statsPanel(h) {
     const p = sp.type === 'buff' ? null : spellPower(h, t, null, sp);
     const eff = sp.type === 'buff' ? Object.entries(sp.buff).map(([k, v]) => `+${v} ${STAT_LABEL[k]}`).join(', ') + ` pendant ${sp.turns} tours`
       : `${sp.type === 'heal' ? 'Soigne' : 'Inflige'} ~${fmt(p.avg)}${sp.type === 'aoe' ? ' à tous les ennemis' : sp.type === 'poison' ? ` par tour pendant ${sp.turns} tours` : sp.type === 'drain' ? ' et vole la moitié en PV' : ''}`;
-    const lim = [sp.freeze ? `+${sp.freeze} % de chance de figer` : '', sp.grains ? `+${sp.grains} grains` : '', sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
+    const lim = [sp.freeze ? `+${sp.freeze} % de chance de figer` : '', sp.grains ? `+${sp.grains} grains` : '', sp.note || '', sp.cd ? `recharge ${sp.cd} t` : '', sp.max_ ? `${sp.max_}×/tour` : ''].filter(Boolean).join(' · ');
     const locked = h.lvl < sp.lvl;
     return `<div class="spell${locked ? ' locked' : ''}"><span class="pa" title="Points d'action">${sp.pa}</span>
       <div><b>${sp.name}</b>${sp.stat && STAT_ELEM[sp.stat] ? ` <span class="elem" style="--c:${STAT_COLOR[sp.stat]}">${STAT_ELEM[sp.stat]}</span>` : ''}<div class="desc">${eff}${lim ? ' · ' + lim : ''}</div></div>
@@ -12619,6 +13964,21 @@ const ACTIONS = {
       impact: () => { delete PF_HOLD[h.id]; card.querySelectorAll('.unit.mon').forEach(el => { const m = h.fight && h.fight.mons[+el.dataset.mon]; if (m) el.dataset.hp = m.hp; }); patchCombat(); },
       heal: () => { const r = colosseHeal(st, h); patchCombat(); return r; },
       done: () => { colosseHeal(st, h); delete PF_HOLD[h.id]; delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 700); patchCombat(); saveGame(); },
+    });
+    return 'keep';
+  },
+  steamsurge(d) {
+    const h = heroById(d.hero); if (!h || !steamReady(h) || !h.fight || FURY_ANIM[h.id]) return 'keep';
+    const card = document.querySelector(`[data-hero-card="${h.id}"]`); if (!card) return 'keep';
+    FURY_ANIM[h.id] = true; FURY_FREEZE++;
+    const btn = card.querySelector('[data-k="steambtn"]'); if (btn) btn.hidden = true;
+    PF_HOLD[h.id] = {}; card.querySelectorAll('.unit.mon').forEach(el => { PF_HOLD[h.id][+el.dataset.mon] = +el.dataset.hp; }); // les PV des ennemis baissent salve après salve
+    const sync = () => card.querySelectorAll('.unit.mon').forEach(el => { const m = h.fight && h.fight.mons[+el.dataset.mon], v = PF_HOLD[h.id] ? PF_HOLD[h.id][+el.dataset.mon] : (m && m.hp); if (v != null) el.dataset.hp = v; }); // évite les chiffres génériques : la cinématique a les siens
+    playSurge(card, h, {
+      pay: () => { const r = unleashSurge(st, h, liveEv); patchCombat(); return r; },
+      hold: held => { PF_HOLD[h.id] = held; sync(); patchCombat(); },
+      release: () => { delete PF_HOLD[h.id]; sync(); patchCombat(); },
+      done: () => { delete PF_HOLD[h.id]; delete FURY_ANIM[h.id]; FURY_FREEZE = Math.max(0, FURY_FREEZE - 1); h.wait = Math.max(h.wait, 700); patchCombat(); saveGame(); },
     });
     return 'keep';
   },

@@ -180,6 +180,7 @@ function startFight(st, h, ev) {
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   if (h.cls === 'zobal') { h.mask = h.mask || 'rire'; h.ferv = Math.max(1, h.ferv || 1); }
+  if (h.cls === 'steamer') stmInit(h, heroTotals(st, h), h.fight);
   const names = group.map(m => MONSTERS[m].name);
   if (group.length === 1 && MONSTERS[group[0]].archi) { h.fight.archi = true; ev.log(h, `👹 ARCHIMONSTRE ! ${h.name} affronte ${names[0]}.`, 'boss'); }
   else ev.log(h, `Combat contre ${names.join(', ')}.`, 'start');
@@ -222,6 +223,7 @@ function heroTurn(st, h, t, ev) {
   let pre = '';
   if (t.regen && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * t.regen / 100)); h.hp += r; pre += `Relique +${r} PV · `; }
   if (h.cls === 'zobal') pre += zobTurnStart(h, t, f, ev);
+  if (h.cls === 'steamer') f.elems = [];
   if (h.cls === 'sacrieur') { // Pacte de sang : il se saigne volontairement (jamais sous 40 % de PV) et gagne un Stigmate
     f.stig = f.stig || 0;
     if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
@@ -259,6 +261,7 @@ function heroTurn(st, h, t, ev) {
         const totalHp = alive.reduce((s, m) => s + m.hp, 0);
         val = already ? 0 : totalHp > t.pa * 8 ? 9999 : 0;
       }
+      if (h.cls === 'steamer' && val > 0) val *= stmSpellBonus(h, f, sp, alive);
       if (h.cls === 'cra' && sp.type === 'dmg' && (h.focus || 0) >= CRA_FOCUS_MAX) val = Math.max(val, 1) * 6; // garde le Tir Parfait pour la proie
       val = val / sp.pa;
       if (val > bestVal) { bestVal = val; best = sp; }
@@ -271,6 +274,8 @@ function heroTurn(st, h, t, ev) {
     const pf0 = f.perfectSeq || 0;
     const line = castSpell(st, h, t, best, target, alive);
     actions.push(line);
+    let stm = null;
+    if (h.cls === 'steamer' && best.type !== 'buff' && best.type !== 'heal') { stm = stmActivate(h, t, f, best, target); if (stm && stm.text) actions.push(stm.text); }
     if (h.cls === 'ecaflip' && f.double && (best.type === 'dmg' || best.type === 'aoe')) { // Quitte ou Double gagné : le sort frappe deux fois
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
@@ -283,7 +288,7 @@ function heroTurn(st, h, t, ev) {
     enuChest(h, f, actions);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
-    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts, pf: (f.perfectSeq || 0) > pf0 ? 1 : 0 }); // pf : ce tir est le Tir Parfait (la cinématique le joue à la place)
+    (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts, pf: (f.perfectSeq || 0) > pf0 ? 1 : 0, tur: stm ? stm.shots : null }); // pf : ce tir est le Tir Parfait (la cinématique le joue à la place)
     if (f.fx.length > 16) f.fx.shift();
     if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
   }
@@ -335,12 +340,13 @@ function castSpell(st, h, t, sp, target, alive) {
     return '';
   };
   if (sp.type === 'aoe') {
-    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
+    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); if (m.crack) r.v = Math.round(r.v * STM_CRACK); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
     if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
     return `${sp.name} → ${parts.join('/')}`;
   }
   if (h.cls === 'cra' && sp.type === 'dmg' && f.mons.indexOf(target) === f.mark && (h.focus || 0) >= CRA_FOCUS_MAX) return perfectShot(h, t, f, sp, target);
   const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
+  if (target.crack) r.v = Math.round(r.v * STM_CRACK);
   if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
   if (sp.type === 'poison') {
     target.poison = { dmg: r.v, turns: sp.turns };
@@ -363,7 +369,15 @@ function monsterTurn(st, h, t, m, ev) {
     if (--m.poison.turns <= 0) m.poison = null;
     if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.${h.cls === 'sram' && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'mon'); return; }
   }
+  if (m.burn) { // Brûlure du Steamer
+    m.hp = Math.max(0, m.hp - m.burn.dmg);
+    line += `${def.name} brûle : −${m.burn.dmg}. `;
+    if (--m.burn.turns <= 0) m.burn = null;
+    if (m.hp <= 0) { ev.log(h, line + `${def.name} succombe.`, 'mon'); return; }
+  }
+  const wet = m.wet > 0; if (wet) m.wet--; // Trempé : −20 % de dégâts infligés
   if (m.bribed) { m.bribed = false; ev.log(h, line + `${def.name} se jette sur les pièces d’or et oublie d’attaquer.`, 'mon'); return; }
+  if (m.mag) { m.mag = false; f.magSeq = (f.magSeq || 0) + 1; ev.log(h, line + `${def.name} est collé à la tourelle tactique et ne peut pas agir.`, 'hero'); return; }
   if (m.frozen) { m.frozen = false; ev.log(h, line + `${def.name} est figé dans le temps et ne peut pas agir.`, 'mon'); return; }
   f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
@@ -380,7 +394,7 @@ function monsterTurn(st, h, t, m, ev) {
   let special = false;
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
-  dmg = Math.max(1, Math.round(dmg * (1 - res / 100)));
+  dmg = Math.max(1, Math.round(dmg * (1 - res / 100) * (wet ? STM_WET : 1)));
   if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100))); // Masque Pleureur
   if (h.cls === 'ecaflip') {
     if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
@@ -390,6 +404,7 @@ function monsterTurn(st, h, t, m, ev) {
       return;
     }
   }
+  if (h.cls === 'steamer' && stmDecoy(h, f, def, line, dmg, special, ev)) return; // une tourelle encaisse le coup à sa place
   const hpBefore = h.hp;
   h.hp = Math.max(0, h.hp - dmg);
   gainBlood(h, hpBefore - h.hp, t.maxHp); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
@@ -642,6 +657,164 @@ function unleashFury(st, h, ev) {
   return hits;
 }
 
+/* ---------------------- Steamer : tourelles, Vapeur et Surcharge Stasis ----------------------
+   Trois tourelles (Offensive, Défensive, Tactique) dont la progression est gardée à vie (h.turXp : activations cumulées).
+   Elles ne tirent jamais seules : chaque sort d'attaque les ACTIVE, et elles tirent avec l'élément du sort (Feu, Terre ou Eau).
+   Chaque élément laisse un état sur l'ennemi touché : Feu = Brûlure, Terre = Fissure, Eau = Trempé.
+   Feu sur un ennemi Trempé, ou Eau sur un ennemi en Brûlure : VAPEUR (explosion sur tous les ennemis).
+   Chaque activation remplit la Pression (h.steam, gardée d'un combat à l'autre) ; pleine, le joueur déclenche la Surcharge Stasis.
+   Un ennemi sur 4 s'en prend à une tourelle plutôt qu'au Steamer (f.tur : PV des tourelles pour ce combat). */
+const STM_SLOTS = ['off', 'def', 'tac'];
+const STM_UNLOCK = { off: 1, def: 12, tac: 24 };
+const STM_NAMES = { off: 'Tourelle offensive', def: 'Tourelle défensive', tac: 'Tourelle tactique' };
+const STM_ROMAN = ['', 'I', 'II', 'III'];
+const STM_EVO = [80, 400];                // activations pour passer niveau II puis III
+const STM_ELEM = { int: 'feu', for: 'terre', cha: 'eau' };
+const STM_ELEM_ICON = { feu: '🔥', terre: '⛰️', eau: '💧' };
+const STM_BARREL = 0.10;                  // part d'un sort par canon de l'Offensive (1 canon par niveau)
+const STM_HEAL = [0, 0.012, 0.017, 0.022]; // part des PV max rendue par la Défensive (×1,5 avec l'Eau)
+const STM_MAG = [0, 0.13, 0.19, 0.25];    // chances de magnétiser un ennemi par activation de la Tactique
+const STM_BURN = 0.22, STM_BURN_TURNS = 2, STM_CRACK = 1.15, STM_WET = 0.85, STM_WET_TURNS = 2;
+const STM_VAPOR_SPELL = { id: 'vapeur', name: 'Vapeur', min: 7, max: 10, type: 'aoe' };
+const STM_STEAM_MAX = 320, STM_STEAM_ACT = 3, STM_STEAM_VAPOR = 10;
+const STM_DECOY = 0.14, STM_TUR_HP = 0.2, STM_TUR_HPMULT = [0, 1, 1.35, 1.8];
+const STM_SURGE = { id: 'surcharge', name: 'Surcharge Stasis', min: 40, max: 54, type: 'aoe' };
+const STM_SURGE_HEAL = 0.3;
+function stmXp(h) { return h.turXp || (h.turXp = { off: 0, def: 0, tac: 0 }); }
+function stmBaseLvl(h, s) { const x = stmXp(h)[s] || 0; return x >= STM_EVO[1] ? 3 : x >= STM_EVO[0] ? 2 : 1; }
+function stmBoost(f) { return !!(f && f.buffs && f.buffs.some(b => b.id === 'evolution')); }
+function stmLvl(h, f, s) { return Math.min(3, stmBaseLvl(h, s) + (stmBoost(f) ? 1 : 0)); }
+function stmHas(h, s) { return h.lvl >= STM_UNLOCK[s]; }
+function stmAlive(f, s) { const T = f && f.tur && f.tur[s]; return !!T && T.hp > 0; }
+function steamReady(h) { return h.cls === 'steamer' && (h.steam || 0) >= STM_STEAM_MAX; }
+/* Début de combat : les tourelles sont déployées, réparées à neuf */
+function stmInit(h, t, f) {
+  f.tur = {}; f.elems = [];
+  for (const s of STM_SLOTS) if (stmHas(h, s)) { const max = Math.max(1, Math.round(t.maxHp * STM_TUR_HP * STM_TUR_HPMULT[stmBaseLvl(h, s)])); f.tur[s] = { hp: max, max }; }
+}
+/* Le Steamer préfère les sorts qui changent d'élément, et surtout ceux qui déclenchent la Vapeur */
+function stmSpellBonus(h, f, sp, alive) {
+  const el = STM_ELEM[sp.stat]; if (!el) return 1;
+  let b = (f.elems || []).includes(el) ? 1 : 1.2;
+  if (stmAlive(f, 'off') && alive.some(m => (el === 'feu' && m.wet > 0) || (el === 'eau' && m.burn))) b *= 1.5;
+  return b;
+}
+function stmVapor(h, t, f, m, out) {
+  m.burn = null; m.wet = 0;
+  const hits = [];
+  for (const o of f.mons) if (o.hp > 0) {
+    const r = rollSpell(h, t, f, STM_VAPOR_SPELL, monsterStats(o.mid).res);
+    const v = Math.max(1, Math.round(r.v * (o.crack ? STM_CRACK : 1)));
+    o.hp = Math.max(0, o.hp - v); hits.push({ i: f.mons.indexOf(o), v });
+  }
+  h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_VAPOR);
+  f.vapSeq = (f.vapSeq || 0) + 1;
+  out.push({ i: f.mons.indexOf(m), hits });
+}
+/* Effet d'élément d'un tir de tourelle sur un ennemi encore debout */
+function stmElemHit(h, t, f, m, el, rv, vapors) {
+  if (m.hp <= 0) return;
+  if (el === 'feu') { if (m.wet > 0) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.burn = { dmg: Math.max(1, Math.round(rv * STM_BURN)), turns: STM_BURN_TURNS }; }
+  else if (el === 'eau') { if (m.burn) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.wet = STM_WET_TURNS; }
+  else m.crack = true;
+}
+/* Active les tourelles après un sort d'attaque. Retourne { text, shots } (shots sert aux animations) */
+function stmActivate(h, t, f, sp, target) {
+  const el = STM_ELEM[sp.stat]; if (!el || !f.tur) return null;
+  (f.elems = f.elems || []).push(el);
+  const shots = [], txt = [], vapors = [];
+  for (const s of STM_SLOTS) {
+    if (!stmHas(h, s) || !stmAlive(f, s)) continue;
+    const alive = f.mons.filter(m => m.hp > 0);
+    if (!alive.length) break;
+    const L = stmLvl(h, f, s), shot = { s, el, lvl: L, t: [], v: [] };
+    if (s === 'off') {
+      const order = [target && target.hp > 0 ? target : null, ...alive.slice().sort((a, b) => a.hp - b.hp)].filter((m, i, a) => m && a.indexOf(m) === i), parts = [];
+      for (let b = 0; b < L; b++) {
+        let m = order[b % order.length]; if (!m || m.hp <= 0) m = f.mons.find(x => x.hp > 0); if (!m) break;
+        const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res);
+        const v = Math.max(1, Math.round(r.v * STM_BARREL * (m.crack ? STM_CRACK : 1)));
+        m.hp = Math.max(0, m.hp - v); shot.t.push(f.mons.indexOf(m)); shot.v.push(v); parts.push(v + (r.crit ? ' CC' : ''));
+        stmElemHit(h, t, f, m, el, r.v, vapors);
+      }
+      txt.push(`${STM_ELEM_ICON[el]} Offensive ${parts.join('+')}`);
+    } else if (s === 'def') {
+      let heal = 0, rep = 0;
+      if (h.hp < t.maxHp) { heal = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * STM_HEAL[L] * (el === 'eau' ? 1.5 : 1)))); h.hp += heal; }
+      for (const o of STM_SLOTS) {
+        const T = o !== 'def' && f.tur[o]; if (!T) continue;
+        if (T.hp > 0 && T.hp < T.max) { const r = Math.min(T.max - T.hp, Math.round(T.max * 0.15 * L)); T.hp += r; rep += r; }
+        else if (T.hp <= 0 && L >= 3) { T.hp = Math.round(T.max * 0.25); rep += T.hp; (shot.revive = shot.revive || []).push(o); }
+      }
+      shot.heal = heal; shot.rep = rep; shot.t = [];
+      txt.push(`Défensive${heal ? ' +' + heal + ' PV' : ''}${rep ? ' 🔧' : ''}`);
+    } else {
+      const foe = alive.filter(m => !m.mag).sort((a, b) => b.hp - a.hp)[0];
+      if (foe) {
+        const d = MONSTERS[foe.mid], chance = STM_MAG[L] * (d.boss || d.archi ? 0.5 : 1);
+        shot.t.push(f.mons.indexOf(foe));
+        if (Math.random() < chance) { foe.mag = true; shot.mag = true; txt.push(`🧲 Tactique : ${d.name} magnétisé`); }
+      }
+    }
+    h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_ACT);
+    const before = stmBaseLvl(h, s); stmXp(h)[s]++; const after = stmBaseLvl(h, s);
+    if (after > before) { f.evoSeq = (f.evoSeq || 0) + 1; f.evoFx = { n: f.evoSeq, s, lvl: after }; shot.evo = after; txt.push(`🔧 ${STM_NAMES[s]} niveau ${STM_ROMAN[after]} !`); }
+    shots.push(shot);
+  }
+  if (vapors.length) txt.push(`♨️ VAPEUR ${vapors[0].hits.map(x => x.v).join('/')}`);
+  return { text: txt.join(' · '), shots: Object.assign(shots, { vapor: vapors[0] || null }) };
+}
+/* Un ennemi s'en prend à une tourelle plutôt qu'au Steamer. Retourne true si le coup est encaissé par une tourelle */
+function stmDecoy(h, f, def, line, dmg, special, ev) {
+  if (!f.tur || Math.random() >= STM_DECOY) return false;
+  const live = STM_SLOTS.filter(s => stmHas(h, s) && stmAlive(f, s)); if (!live.length) return false;
+  const s = live[irnd(0, live.length - 1)], T = f.tur[s], real = Math.min(T.hp, dmg);
+  T.hp = Math.max(0, T.hp - dmg);
+  f.decoySeq = (f.decoySeq || 0) + 1; f.decoyFx = { n: f.decoySeq, s, v: real, broke: T.hp <= 0 };
+  ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} la ${STM_NAMES[s].toLowerCase()} : −${real}${T.hp <= 0 ? ' · 💥 hors service !' : ''}`, 'mon');
+  return true;
+}
+/* Surcharge Stasis : toutes les tourelles tirent une salve Eau, Feu puis Terre sur tous les ennemis */
+function unleashSurge(st, h, ev) {
+  const f = h.fight;
+  if (!steamReady(h) || !f || !f.mons.some(m => m.hp > 0)) return null;
+  const t = heroTotals(st, h);
+  for (const s of STM_SLOTS) if (f.tur && f.tur[s]) f.tur[s].hp = f.tur[s].max; // la surcharge remet tout en état
+  const { scale } = spellPower(h, t, f, STM_SURGE), mult = 1 + 0.2 * (stmLvl(h, f, 'off') - 1);
+  const res = { volleys: [], vapor: null, heal: 0, mag: [] };
+  const vapors = [];
+  for (const el of ['eau', 'feu', 'terre']) {
+    const hits = f.mons.map((m, i) => {
+      if (m.hp <= 0) return null;
+      const crit = Math.random() * 100 < t.critPct + 20;
+      let v = (rnd(STM_SURGE.min, STM_SURGE.max) * scale + t.dmg) * mult;
+      if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
+      if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+      if (m.crack) v *= STM_CRACK;
+      v = Math.max(1, Math.round(v)); // ignore les résistances
+      m.hp = Math.max(0, m.hp - v);
+      if (m.hp > 0) { if (el === 'eau') m.wet = STM_WET_TURNS; else if (el === 'terre') m.crack = true; else if (!m.wet) m.burn = { dmg: Math.max(1, Math.round(v * STM_BURN)), turns: STM_BURN_TURNS }; }
+      return { i, v, crit };
+    });
+    res.volleys.push({ el, hits });
+    if (el === 'feu' && f.mons.some(m => m.hp > 0 && m.wet > 0)) { // le feu sur des ennemis trempés : la Vapeur explose
+      const v = { i: -1, hits: [] };
+      for (const o of f.mons) if (o.hp > 0 && o.wet > 0) {
+        const r = rollSpell(h, t, f, STM_VAPOR_SPELL, 0); const d = Math.max(1, Math.round(r.v * 1.6 * (o.crack ? STM_CRACK : 1)));
+        o.hp = Math.max(0, o.hp - d); o.wet = 0; o.burn = null; v.hits.push({ i: f.mons.indexOf(o), v: d });
+      }
+      f.vapSeq = (f.vapSeq || 0) + 1; res.vapor = v; vapors.push(v);
+    }
+  }
+  if (stmHas(h, 'def')) { const heal = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * STM_SURGE_HEAL)); if (heal > 0) { h.hp += heal; res.heal = heal; } }
+  if (stmHas(h, 'tac')) f.mons.forEach((m, i) => { if (m.hp > 0) { m.mag = true; res.mag.push(i); } });
+  for (const s of STM_SLOTS) if (stmHas(h, s)) { stmXp(h)[s] += 4; }
+  h.steam = 0; h.surgeCount = (h.surgeCount || 0) + 1; f.ult = (f.ult || 0) + 1; f.surge = (f.surge || 0) + 1;
+  const part = v => v.hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join('/');
+  ev.log(h, `💥 SURCHARGE STASIS ! 💧 ${part(res.volleys[0])} · 🔥 ${part(res.volleys[1])} · ⛰️ ${part(res.volleys[2])}${res.vapor ? ` · ♨️ VAPEUR ${res.vapor.hits.map(x => x.v).join('/')}` : ''}${res.heal ? ` · +${res.heal} PV` : ''}${res.mag.length ? ' · 🧲' : ''}`, 'boss');
+  return res;
+}
+
 /* Avance le combat d'une action. Retourne 'win' | 'lose' | null */
 function fightStep(st, h, ev) {
   const f = h.fight, t = heroTotals(st, h);
@@ -687,6 +860,7 @@ function gainXp(st, h, xp, ev) {
     h.capital += CAPITAL_PER_LEVEL;
     if (h.auto) autoAllocate(h);
     const newSpells = spellsOf(h).filter(sp => sp.lvl === h.lvl);
+    if (h.cls === 'steamer') for (const s of STM_SLOTS) if (STM_UNLOCK[s] === h.lvl && h.lvl > 1) { ev.log(h, `⚙️ Nouvelle tourelle : ${STM_NAMES[s]} !`, 'win'); ev.turretNew && ev.turretNew(h, s); }
     ev.levelup && ev.levelup(h, newSpells);
   }
 }
