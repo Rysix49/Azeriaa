@@ -43,9 +43,9 @@ let st;
 const ui = {
   view: 'combat', hero: null, job: 'tailleur', invFilter: 'all', sel: null, slot: null, hslot: null, eqTab: 'combat',
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
-  recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '',
+  recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '', fcFold: {},
 };
-const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier'];
+const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'fcFold'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -230,7 +230,7 @@ function renderCombat() {
   if (!st.heroes.length) return renderRecruit(true);
   const more = st.heroes.length < RECRUIT_COST.length;
   const cost = RECRUIT_COST[st.heroes.length];
-  return `<div class="fights">${st.heroes.map(fightCard).join('')}</div>
+  return `${cbOverview()}<div class="fights">${st.heroes.map(fightCard).join('')}</div>
     ${more ? `<div class="hint-band"><span>Ton groupe peut accueillir un héros de plus${st.kamas >= cost ? '.' : ` (${fmt(cost)} kamas).`}</span><button class="btn sm ${st.kamas >= cost ? 'gold' : ''}" data-act="recruitnav">Recruter un héros</button></div>` : ''}`;
 }
 function passiveHtml(c) {
@@ -293,23 +293,27 @@ function fightCard(h) {
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
       return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
-        <div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>${h.cls === 'steamer' ? `<div class="mst" data-k="mst">${stmMonChips(m)}</div>` : ''}
+        <i class="act-mark" aria-hidden="true">▼</i><div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>${h.cls === 'steamer' ? `<div class="mst" data-k="mst">${stmMonChips(m)}</div>` : ''}
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
     stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}${h.cls === 'steamer' ? yardHtml(h) : ''}</div><div class="foes">${foes}</div>`;
   }
-  return `<article class="fc" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
+  const folded = !!(ui.fcFold && ui.fcFold[h.id]);
+  return `<article class="fc${folded ? ' fold' : ''}${harvest ? ' is-harvest' : ''}" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
       ${emblem(h.cls)}
       <div class="fc-who"><b class="fc-name">${esc(h.name)}</b><span class="fc-sub">${CLASSES[h.cls].name} · <span class="lvl">Niv. ${h.lvl}</span>${h.capital ? ` · <button class="link" data-act="gohero" data-hero="${h.id}">${h.capital} pts à répartir</button>` : ''}</span></div>
       <div class="fc-where">${place ? `<span class="tag">${actLabel(h)}</span><b>${esc(subName(place, h.act))}</b>${room}` : '<span class="sub">Aucune activité</span>'}</div>
       <span class="buff" data-k="buff"${h.food ? '' : ' hidden'}>${foodChip(h)}</span>
+      <span class="fc-mini" data-k="fcmini" title="Points de vie">${bar('hp thin', hp, t.maxHp)}</span>
       <span class="status ${sc}" data-k="status">${stxt}</span>
+      <button class="btn sm ghost fc-fold" data-act="fcfold" data-hero="${h.id}" aria-label="Réduire ou déplier la carte" title="Réduire / déplier">${folded ? '▾' : '▴'}</button>
       ${place ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : `<button class="btn sm gold" data-act="gomap" data-hero="${h.id}">Choisir une zone</button>`}
     </header>
+    ${cbRibbon(h)}
     <div class="fc-body">
       <div class="scene${harvest ? ' harvest' : ''}${(h.cls === 'iop' || h.cls === 'sacrieur' || h.cls === 'steamer') && !harvest ? ' has-fury' : ''}${h.cls === 'steamer' && !harvest ? ' has-yard' : ''}${h.cls === 'xelor' && !harvest ? ' has-chrono' : ''}" style="${themeStyle(arenaTheme(h))}" data-fx="${(h.fight && h.fight.fxSeq) || 0}" data-rw="${(h.fight && h.fight.rewinds) || 0}" data-px="${h.fight && h.fight.paradox ? 1 : 0}" data-pf="${(h.fight && h.fight.perfect && h.fight.perfect.n) || 0}" data-tr="${(h.fight && h.fight.trapFx && h.fight.trapFx.n) || 0}" data-vn="${(h.fight && h.fight.vanishSeq) || 0}" data-ms="${(h.fight && h.fight.missSeq) || 0}" data-ch="${(h.fight && h.fight.chestSeq) || 0}" data-jk="${(h.fight && h.fight.jackSeq) || 0}" data-bb="${(h.fight && h.fight.bribeSeq) || 0}" data-co="${(h.fight && h.fight.coinSeq) || 0}" data-gm="${(h.fight && h.fight.gambleSeq) || 0}" data-nv="${(h.fight && h.fight.lifeSeq) || 0}" data-dg="${(h.fight && h.fight.dodgeSeq) || 0}" data-mt="${(h.fight && h.fight.martyrSeq) || 0}" data-rp="${(h.fight && h.fight.ruptSeq) || 0}" data-ma="${(h.fight && h.fight.monAct && h.fight.monAct.n) || 0}">
         <div class="unit hero${h.hp <= 0 && h.resting ? ' dead still' : ''}${h.fight ? ' active' : ''}${h.cls === 'sram' && h.fight && h.fight.invis ? ' invis' : ''}" data-k="fighter" data-hp="${hp}"${h.cls === 'zobal' ? ` data-mask="${zobMask(h)}"` : ''}>
-          <div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
+          <i class="act-mark" aria-hidden="true">▼</i><div class="u-name">${esc(h.name)}</div><div data-k="hpb">${bar('hp', hp, t.maxHp)}</div><div class="u-hp num" data-k="hpt">${fmt(hp)} / ${fmt(t.maxHp)}</div>
           ${h.cls === 'iop' ? furyGauge(h) : ''}
           ${h.cls === 'iop' ? `<button class="fury-btn" data-act="iopfury" data-hero="${h.id}" data-k="furybtn" title="Déclencher la Colère de Iop !" aria-label="Déclencher la Colère de Iop"${furyReady(h) && h.fight ? '' : ' hidden'}>${COLERE_ICON}</button>` : ''}
           ${h.cls === 'sacrieur' ? bloodGauge(h) : ''}
@@ -321,8 +325,9 @@ function fightCard(h) {
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
-      <div class="fc-log" data-k="log">${logHtml(h)}</div>
+      <aside class="fc-side">${harvest ? '' : cbSide(h)}<div class="fc-log" data-k="log">${logHtml(h)}</div></aside>
     </div>
+    ${cbSpellbar(h)}
     <footer class="fc-foot">
       <div class="xpline"><span class="lbl">XP</span><div class="grow" data-k="xpb">${bar('xp thin', h.xp, xpToNext(h.lvl))}</div><span class="num" data-k="xpt">${h.lvl >= MAX_LEVEL ? 'Max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))}`}</span></div>
       <div class="rates" data-k="rates">${fightRates(h)}</div>
@@ -834,7 +839,7 @@ function playColosse(card, h, k) {
   at(T.end - 450, () => { an(q('.cc-dark'), [{ opacity: 1 }, { opacity: 0 }], { duration: 450 }); qa('.cc-seal').forEach(e => an(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 450 })); });
   setTimeout(() => { ov.remove(); scene.classList.remove('cc-on', 'cc-rumble'); fu.classList.remove('sac-cast'); k.done(); }, T.end);
 }
-function logHtml(h) { return h.log.slice(-9).reverse().map(l => `<div class="${l.c || ''}">${esc(l.t)}</div>`).join(''); }
+function logHtml(h) { return cbLogHtml(h); }
 function floatNum(el, txt, cls) {
   const f = document.createElement('span'); f.className = 'fnum ' + cls; f.textContent = txt;
   el.appendChild(f); setTimeout(() => f.remove(), 950);
@@ -945,6 +950,8 @@ function patchCombat() {
       setBar(el, mhp, m.max);
       el.querySelector('[data-k="mhp"]').textContent = fmt(mhp);
     });
+    cbPatch(h, card, scene);
+    setBar(q('fcmini'), hp, t.maxHp);
     const lg = q('log'); const lk = h.log.length + ':' + (h.log.length ? h.log[h.log.length - 1].t : '');
     if (lg && lg.dataset.lk !== lk && !held) { lg.innerHTML = logHtml(h); lg.dataset.lk = lk; }
     const bf = q('buff'); if (bf) { const tx = foodChip(h); bf.hidden = !tx; if (bf.textContent !== tx) bf.textContent = tx; }
@@ -1010,6 +1017,7 @@ function patchCombat() {
     const r = q('rates'); if (r) { const html = fightRates(h); if (r.innerHTML !== html) r.innerHTML = html; }
     if (h.act && h.act.type === 'harvest') harvestPatch(q, card, h, scene);
   }
+  cbOvPatch();
   updateArchiBtn();
 }
 
@@ -1547,6 +1555,9 @@ const ACTIONS = {
   unequipuid(d) { const by = equippedBy(st, d.uid); if (by) unequipUid(by, d.uid); },
   toggledetail() { ui.detailHidden = !ui.detailHidden; },
   unrelic() { selHero().relic = null; },
+  fcfold(d) { const f = ui.fcFold || (ui.fcFold = {}); f[d.hero] = !f[d.hero]; const c = document.querySelector(`[data-hero-card="${d.hero}"]`); if (c) { c.classList.toggle('fold', !!f[d.hero]); const b = c.querySelector('.fc-fold'); if (b) b.textContent = f[d.hero] ? '▾' : '▴'; } saveGame(); return 'keep'; },
+  fcfoldall(d) { const f = ui.fcFold || (ui.fcFold = {}); for (const h of st.heroes) f[h.id] = d.v === 'on'; document.querySelectorAll('[data-hero-card]').forEach(c => { c.classList.toggle('fold', d.v === 'on'); const b = c.querySelector('.fc-fold'); if (b) b.textContent = d.v === 'on' ? '▾' : '▴'; }); saveGame(); return 'keep'; },
+  ovgo(d) { const f = ui.fcFold || (ui.fcFold = {}); f[d.hero] = false; const c = document.querySelector(`[data-hero-card="${d.hero}"]`); if (c) { c.classList.remove('fold'); const b = c.querySelector('.fc-fold'); if (b) b.textContent = '▴'; c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } saveGame(); return 'keep'; },
   undofus(d) { const h = selHero(); if (h.dofus) delete h.dofus[d.slot]; },
   dofusslot(d) { ui.dslot = ui.dslot === d.slot ? null : d.slot; },
   eqtab(d) { ui.eqTab = d.v; },
