@@ -78,7 +78,7 @@ function wmSubScenery() {
   for (const [x, y, k] of [[1296, 372, .8], [1366, 334, .7], [1330, 368, .9]]) o += `<g transform="translate(${x} ${y}) scale(${k})"><path d="M0-16 5-4 0 0-5-4Z" fill="#9fe8ff" stroke="#3a8ab8" stroke-width=".8" stroke-linejoin="round"/><path d="M0-16 5-4 0 0Z" fill="#fff" opacity=".4"/></g>`;
   o += rock(1292, 396, .7, '#b8c8d8') + rock(1364, 388, .6, '#b8c8d8');
   // entrée du donjon du Mansot Royal : porche de glace
-  o += `<g transform="translate(1318 150)"><ellipse cx="0" cy="2" rx="40" ry="6" fill="#000" opacity=".22"/><path d="M-36 0-10-46 10-46 36 0Z" fill="#c4d8ec"/><path d="M-10-46 10-46 36 0H12Z" fill="#7a96b4" opacity=".6"/><path d="M-11 0v-12a11 13 0 0 1 22 0V0Z" fill="#1a2a3e"/><path d="M-7 0v-10a7 9 0 0 1 14 0V0Z" fill="#6ad4ff" opacity=".5"/></g>`;
+  o += `<g transform="translate(1312 118)"><ellipse cx="0" cy="2" rx="40" ry="6" fill="#000" opacity=".22"/><path d="M-36 0-10-46 10-46 36 0Z" fill="#c4d8ec"/><path d="M-10-46 10-46 36 0H12Z" fill="#7a96b4" opacity=".6"/><path d="M-11 0v-12a11 13 0 0 1 22 0V0Z" fill="#1a2a3e"/><path d="M-7 0v-10a7 9 0 0 1 14 0V0Z" fill="#6ad4ff" opacity=".5"/></g>`;
   return o;
 }
 

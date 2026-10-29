@@ -3508,7 +3508,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793234863';
+const BUILD_ID = '1793235508';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -4267,8 +4267,8 @@ function skillFmt(k, v) { const s = SKILL_STAT[k]; return `+${String(+v.toFixed(
 /* =====================================================================
    SOUS-ZONES DE LA CARTE — des coins de Dofus rattachés aux zones principales
    Chaque sous-zone a ses monstres, un GROS MONSTRE (avec archimonstre), sa panoplie et sa relique.
-   Île des Wabbits · Lac des Blops · Village Kanniboul · Territoire des Porcos
-   Sanctuaire des Dragoeufs · Frigost
+   Sous-zones : Île des Wabbits · Lac des Blops · Village Kanniboul
+   Zones normales (suite de la route principale) : Territoire des Porcos · Sanctuaire des Dragoeufs · Frigost
    Trois gros monstres ont leur propre DONJON (Dragon Cochon, Crocabulia, Mansot Royal) : ils n'apparaissent
    plus dans leur zone, qui a un autre gros monstre (zone.archiBase) dont l'archimonstre est la version ×2.
    Les niveaux de métier des recettes restent ≤ 100 (MAX_JOB_LEVEL).
@@ -4365,7 +4365,7 @@ Object.assign(MONSTERS, {
                    drops: [['cristal_mansot', 0.3], ['eclat_givre', 0.8], ['croc_givre', 0.6], ['poil_mansot', 0.6]] },
 });
 
-/* ---------------------------- Sous-zones ---------------------------- */
+/* ---------------------------- Sous-zones, puis zones Porcos / Dragoeufs / Frigost ---------------------------- */
 ZONES.push(
   { id: 'wabbits', sub: true, parent: 'abraknydes', name: 'Île des Wabbits', region: 'Wabbits', lvl: [21, 34], monsters: ['wabbit', 'black_wabbit', 'wo_wabbit', 'wa_wabbit'],
     text: 'Une île verdoyante où les lapins ont pris le pouvoir. Le Wa Wabbit règne sur son château de carottes.' },
@@ -4373,18 +4373,18 @@ ZONES.push(
     text: 'Dans les eaux troubles du lac de Cania, les blops de toutes les couleurs se dandinent autour de leur souverain multicolore.' },
   { id: 'kanniboul', sub: true, parent: 'koalaks', name: 'Village Kanniboul', region: 'Moon', lvl: [52, 66], monsters: ['kanniboul_jav', 'kanniboul_ark', 'kanniboul_sarbak', 'kanniboul_ebil'],
     text: "Au cœur de l'île de Moon, une tribu masquée défend son village à coups de javelots, de flèches et de sarbacanes." },
-  { id: 'porcos', sub: true, parent: 'sidimote', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan'], archiBase: 'verrat_guerre',
+  { id: 'porcos', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan'], archiBase: 'verrat_guerre',
     text: "Fermes, boue et lard : le territoire des Porcos. Un verrat de guerre rôde, et le repaire du Dragon Cochon n'est pas loin." },
-  { id: 'dragoeufs', sub: true, parent: 'sidimote', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse'], archiBase: 'mere_dragoeuf',
+  { id: 'dragoeufs', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse'], archiBase: 'mere_dragoeuf',
     text: "Un sanctuaire de coquilles brûlantes où les œufs éclosent en dragons. L'antre de Crocabulia s'ouvre au fond de la couvée." },
-  { id: 'frigost', sub: true, parent: 'porcos', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot'], archiBase: 'mansot_colosse',
+  { id: 'frigost', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot'], archiBase: 'mansot_colosse',
     text: "Sur la banquise de Frigost, les Mansots creusent l'excavation de leur roi. Prévois un gros manteau." },
 );
 Object.assign(ARCHI_NAMES, {
   wabbits: 'Wa Wabbit Impérial', blops: 'Blop Prismatique Primordial', kanniboul: 'Ebil le Dévoreur',
   porcos: 'Verrat de Guerre Légendaire', dragoeufs: 'Mère Dragoeuf Primordiale', frigost: 'Mansot Colosse Éternel',
 });
-for (const z of ZONES) if (z.sub) addArchi(z);
+for (const z of ZONES) if (!ARCHIS[z.id]) addArchi(z);
 
 /* ---------------------------- Donjons des gros monstres ---------------------------- */
 DUNGEONS.push(
@@ -10862,7 +10862,7 @@ function skBranch(h, b, just) {
 const WM_W = 1400, WM_H = 430;
 const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150],
     wabbits: [268, 338], blops: [590, 322], kanniboul: [872, 338], porcos: [1034, 282], dragoeufs: [1132, 146], frigost: [1216, 304] },
-  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62], dj_dragon_cochon: [982, 44], dj_crocabulia: [1176, 38], dj_mansot: [1318, 118] } };
+  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62], dj_dragon_cochon: [982, 44], dj_crocabulia: [1176, 38], dj_mansot: [1312, 86] } };
 const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania', dj_dragon_cochon: 'porcos', dj_crocabulia: 'dragoeufs', dj_mansot: 'frigost' };
 for (const z of ZONES) if (z.sub) WM_LINK[z.id] = z.parent; // chemin en pointillés vers la zone mère
 const cph = p => `animation-delay:-${Date.now() % p}ms`;
@@ -10939,7 +10939,7 @@ function readiness(p) {
 function wmNode(p, type) {
   const [x, y] = WM_POS[type][p.id]; const sel = ui.place.type === type && ui.place.id === p.id;
   const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : p.sub ? (mons.find(m => MONSTERS[m].big) || p.archiBase || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
+  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : (p.sub || p.archiBase) ? (mons.find(m => MONSTERS[m].big) || p.archiBase || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
   const th = _wmTh(p.region), keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
   return `<button class="wn ${type}${p.sub ? ' sub' : ''}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / WM_W * 100).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
     ${p.sub ? `<span class="wn-orbit" style="${cph(18000)}"></span>` : ''}<span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
@@ -11104,7 +11104,7 @@ function wmSubScenery() {
   for (const [x, y, k] of [[1296, 372, .8], [1366, 334, .7], [1330, 368, .9]]) o += `<g transform="translate(${x} ${y}) scale(${k})"><path d="M0-16 5-4 0 0-5-4Z" fill="#9fe8ff" stroke="#3a8ab8" stroke-width=".8" stroke-linejoin="round"/><path d="M0-16 5-4 0 0Z" fill="#fff" opacity=".4"/></g>`;
   o += rock(1292, 396, .7, '#b8c8d8') + rock(1364, 388, .6, '#b8c8d8');
   // entrée du donjon du Mansot Royal : porche de glace
-  o += `<g transform="translate(1318 150)"><ellipse cx="0" cy="2" rx="40" ry="6" fill="#000" opacity=".22"/><path d="M-36 0-10-46 10-46 36 0Z" fill="#c4d8ec"/><path d="M-10-46 10-46 36 0H12Z" fill="#7a96b4" opacity=".6"/><path d="M-11 0v-12a11 13 0 0 1 22 0V0Z" fill="#1a2a3e"/><path d="M-7 0v-10a7 9 0 0 1 14 0V0Z" fill="#6ad4ff" opacity=".5"/></g>`;
+  o += `<g transform="translate(1312 118)"><ellipse cx="0" cy="2" rx="40" ry="6" fill="#000" opacity=".22"/><path d="M-36 0-10-46 10-46 36 0Z" fill="#c4d8ec"/><path d="M-10-46 10-46 36 0H12Z" fill="#7a96b4" opacity=".6"/><path d="M-11 0v-12a11 13 0 0 1 22 0V0Z" fill="#1a2a3e"/><path d="M-7 0v-10a7 9 0 0 1 14 0V0Z" fill="#6ad4ff" opacity=".5"/></g>`;
   return o;
 }
 

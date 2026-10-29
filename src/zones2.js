@@ -1,8 +1,8 @@
 /* =====================================================================
    SOUS-ZONES DE LA CARTE — des coins de Dofus rattachés aux zones principales
    Chaque sous-zone a ses monstres, un GROS MONSTRE (avec archimonstre), sa panoplie et sa relique.
-   Île des Wabbits · Lac des Blops · Village Kanniboul · Territoire des Porcos
-   Sanctuaire des Dragoeufs · Frigost
+   Sous-zones : Île des Wabbits · Lac des Blops · Village Kanniboul
+   Zones normales (suite de la route principale) : Territoire des Porcos · Sanctuaire des Dragoeufs · Frigost
    Trois gros monstres ont leur propre DONJON (Dragon Cochon, Crocabulia, Mansot Royal) : ils n'apparaissent
    plus dans leur zone, qui a un autre gros monstre (zone.archiBase) dont l'archimonstre est la version ×2.
    Les niveaux de métier des recettes restent ≤ 100 (MAX_JOB_LEVEL).
@@ -99,7 +99,7 @@ Object.assign(MONSTERS, {
                    drops: [['cristal_mansot', 0.3], ['eclat_givre', 0.8], ['croc_givre', 0.6], ['poil_mansot', 0.6]] },
 });
 
-/* ---------------------------- Sous-zones ---------------------------- */
+/* ---------------------------- Sous-zones, puis zones Porcos / Dragoeufs / Frigost ---------------------------- */
 ZONES.push(
   { id: 'wabbits', sub: true, parent: 'abraknydes', name: 'Île des Wabbits', region: 'Wabbits', lvl: [21, 34], monsters: ['wabbit', 'black_wabbit', 'wo_wabbit', 'wa_wabbit'],
     text: 'Une île verdoyante où les lapins ont pris le pouvoir. Le Wa Wabbit règne sur son château de carottes.' },
@@ -107,18 +107,18 @@ ZONES.push(
     text: 'Dans les eaux troubles du lac de Cania, les blops de toutes les couleurs se dandinent autour de leur souverain multicolore.' },
   { id: 'kanniboul', sub: true, parent: 'koalaks', name: 'Village Kanniboul', region: 'Moon', lvl: [52, 66], monsters: ['kanniboul_jav', 'kanniboul_ark', 'kanniboul_sarbak', 'kanniboul_ebil'],
     text: "Au cœur de l'île de Moon, une tribu masquée défend son village à coups de javelots, de flèches et de sarbacanes." },
-  { id: 'porcos', sub: true, parent: 'sidimote', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan'], archiBase: 'verrat_guerre',
+  { id: 'porcos', name: 'Territoire des Porcos', region: 'Porcos', lvl: [72, 88], monsters: ['porsalu', 'cochon_farle', 'don_dorgan'], archiBase: 'verrat_guerre',
     text: "Fermes, boue et lard : le territoire des Porcos. Un verrat de guerre rôde, et le repaire du Dragon Cochon n'est pas loin." },
-  { id: 'dragoeufs', sub: true, parent: 'sidimote', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse'], archiBase: 'mere_dragoeuf',
+  { id: 'dragoeufs', name: 'Sanctuaire des Dragoeufs', region: 'Dragoeufs', lvl: [90, 106], monsters: ['dragoeuf_guerrier', 'dragoss_dore', 'dragueuse'], archiBase: 'mere_dragoeuf',
     text: "Un sanctuaire de coquilles brûlantes où les œufs éclosent en dragons. L'antre de Crocabulia s'ouvre au fond de la couvée." },
-  { id: 'frigost', sub: true, parent: 'porcos', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot'], archiBase: 'mansot_colosse',
+  { id: 'frigost', name: 'Frigost', region: 'Frigost', lvl: [108, 126], monsters: ['timansot', 'mansobese', 'shamansot'], archiBase: 'mansot_colosse',
     text: "Sur la banquise de Frigost, les Mansots creusent l'excavation de leur roi. Prévois un gros manteau." },
 );
 Object.assign(ARCHI_NAMES, {
   wabbits: 'Wa Wabbit Impérial', blops: 'Blop Prismatique Primordial', kanniboul: 'Ebil le Dévoreur',
   porcos: 'Verrat de Guerre Légendaire', dragoeufs: 'Mère Dragoeuf Primordiale', frigost: 'Mansot Colosse Éternel',
 });
-for (const z of ZONES) if (z.sub) addArchi(z);
+for (const z of ZONES) if (!ARCHIS[z.id]) addArchi(z);
 
 /* ---------------------------- Donjons des gros monstres ---------------------------- */
 DUNGEONS.push(

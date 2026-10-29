@@ -5,7 +5,7 @@
 const WM_W = 1400, WM_H = 430;
 const WM_POS = { zone: { incarnam: [78, 262], astrub: [232, 168], abraknydes: [404, 268], cania: [578, 160], koalaks: [752, 264], sidimote: [920, 150],
     wabbits: [268, 338], blops: [590, 322], kanniboul: [872, 338], porcos: [1034, 282], dragoeufs: [1132, 146], frigost: [1216, 304] },
-  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62], dj_dragon_cochon: [982, 44], dj_crocabulia: [1176, 38], dj_mansot: [1318, 118] } };
+  dungeon: { dj_bouftou: [352, 66], dj_bwork: [690, 62], dj_dragon_cochon: [982, 44], dj_crocabulia: [1176, 38], dj_mansot: [1312, 86] } };
 const WM_LINK = { dj_bouftou: 'astrub', dj_bwork: 'cania', dj_dragon_cochon: 'porcos', dj_crocabulia: 'dragoeufs', dj_mansot: 'frigost' };
 for (const z of ZONES) if (z.sub) WM_LINK[z.id] = z.parent; // chemin en pointillés vers la zone mère
 const cph = p => `animation-delay:-${Date.now() % p}ms`;
@@ -82,7 +82,7 @@ function readiness(p) {
 function wmNode(p, type) {
   const [x, y] = WM_POS[type][p.id]; const sel = ui.place.type === type && ui.place.id === p.id;
   const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
-  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : p.sub ? (mons.find(m => MONSTERS[m].big) || p.archiBase || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
+  const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : (p.sub || p.archiBase) ? (mons.find(m => MONSTERS[m].big) || p.archiBase || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
   const th = _wmTh(p.region), keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
   return `<button class="wn ${type}${p.sub ? ' sub' : ''}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / WM_W * 100).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
     ${p.sub ? `<span class="wn-orbit" style="${cph(18000)}"></span>` : ''}<span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
