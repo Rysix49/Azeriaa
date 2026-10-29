@@ -266,5 +266,5 @@ Object.assign(GEAR_DROPS, {
 });
 Object.assign(RELIC_DROPS, {
   wa_wabbit: [['relique_wabbit', 0.0005]], blop_royal: [['relique_blop', 0.0005]], kanniboul_ebil: [['relique_kanniboul', 0.0005]],
-  dragon_cochon: [['relique_porcos', 0.02], ['dofus_turquoise', 0.01]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
+  dragon_cochon: [['relique_porcos', 0.02], ['dofus_turquoise', 0.002]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
 });
