@@ -515,7 +515,9 @@
 .sp.fire::after { content: ""; position: absolute; left: 11px; top: 7px; width: 46px; height: 46px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--sc); pointer-events: none; animation: sp-ring .6s ease-out forwards; }
 @keyframes sp-fire { 0% { transform: translateY(-7px) scale(1.2); } 100% { transform: none; } }
 @keyframes sp-ring { to { transform: scale(1.9); opacity: 0; } }
-.sb-buf { flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 5px; align-content: center; max-width: 100%; }
+.sb { position: relative; }
+.sb-buf { position: absolute; right: 12px; bottom: calc(100% + 6px); z-index: 9; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; max-width: calc(100% - 24px); pointer-events: none; } /* flotte sur l'arène : n'agrandit plus la console quand un bonus apparaît */
+.sb-buf .bf { background-color: #0b0d08cc; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
 .sb-buf:empty { display: none; }
 .bf { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800; background: #ffffff0d; border: 1px solid #ffffff1c; white-space: nowrap; }
 .bf b { color: #fff3c8; font-variant-numeric: tabular-nums; }
@@ -527,6 +529,10 @@
 .cbs-c i { font-style: normal; font-size: 13px; line-height: 1; }
 .cbs-c b { font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cbs-c:nth-child(1) b { color: #ffb09c; } .cbs-c:nth-child(2) b { color: #ff7a6a; } .cbs-c:nth-child(3) b { color: var(--gold-2); } .cbs-c:nth-child(4) b { color: #ffe9a0; }
+
+/* mise en page figée : la console ne change jamais de hauteur quand les chiffres grandissent */
+@media (min-width: 1250px) { .sb { flex-wrap: nowrap; } .sb-sp { flex: 1 1 0; } }
+@media (max-width: 1249px) { .cbs { flex-basis: 100%; justify-content: flex-end; margin-left: 0; } }
 
 /* --- journal repliable --- */
 .jr { --jl: 18px; position: relative; display: block; padding: 8px 42px 8px 16px; cursor: pointer; border-top: 1px solid #ffffff0a; background: #0000002e; -webkit-tap-highlight-color: transparent; transition: background .2s; }
