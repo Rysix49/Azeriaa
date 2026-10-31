@@ -1947,6 +1947,7 @@ function start(data) {
   if (away > 15000) offline(away);
   render(true);
   if (st.talentReset) { const n = st.talentReset; delete st.talentReset; setTimeout(() => toast(`🌳 Nouveaux talents de classe ! Les points de ${n > 1 ? 'tes ' + n + ' héros ont été rendus' : 'ton héros ont été rendus'} : ouvre l’onglet Talents pour les dépenser.`, 'quest'), 1200); }
+  if (st.balNotice) { delete st.balNotice; setTimeout(() => toast('⚖️ Équipement rééquilibré : stats des objets, panoplies, reliques et Dofus revues. Tes objets ont été adaptés à jet égal.', 'quest'), 2400); }
   chatLoop();
   accSync();
   setInterval(() => accCloudSave(), 60000);

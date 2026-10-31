@@ -139,68 +139,68 @@ DUNGEONS.push(
 
 /* ---------------------------- Panoplies ---------------------------- */
 Object.assign(SETS, {
-  pandala:  { name: 'Panoplie de Pandala',          bonus: { 2: { vit: 180 }, 3: { deg: 100, vit: 280, res: 8 }, 4: { deg: 170, vit: 380, res: 11 }, 5: { deg: 250, vit: 500, res: 14, dodge: 5 } } },
-  etang:    { name: 'Panoplie de la Carpe Céleste', bonus: { 2: { res: 4 }, 3: { vit: 180, deg: 80 }, 4: { vit: 260, deg: 140, res: 7 }, 5: { vit: 360, deg: 200, res: 10, regen: 1 } } },
-  dunes:    { name: 'Panoplie des Dunes',           bonus: { 2: { vit: 220 }, 3: { deg: 120, vit: 340, res: 8 }, 4: { deg: 200, vit: 450, res: 11 }, 5: { deg: 300, vit: 600, res: 14, crit: 4 } } },
-  mines:    { name: "Panoplie du Mineur d'Ocre",    bonus: { 2: { pp: 30 }, 3: { deg: 110, pp: 45 }, 4: { deg: 190, pp: 65, kamas: 8 }, 5: { deg: 280, pp: 90, kamas: 14, vit: 300 } } },
-  srambad:  { name: 'Panoplie de Srambad',          bonus: { 2: { vit: 260 }, 3: { deg: 150, vit: 400, dodge: 3 }, 4: { deg: 250, vit: 540, dodge: 5 }, 5: { deg: 380, vit: 720, crit: 6, dodge: 7 } } },
-  roseraie: { name: 'Panoplie de la Roseraie Noire', bonus: { 2: { regen: 1 }, 3: { deg: 140, vit: 320 }, 4: { deg: 230, vit: 450, regen: 1 }, 5: { deg: 340, vit: 600, regen: 2, crit: 5 } } },
+  pandala:  { name: 'Panoplie de Pandala',          bonus: { 2: { vit: 130 }, 3: { deg: 60, vit: 160, res: 8 }, 4: { deg: 130, vit: 290, res: 11 }, 5: { deg: 180, vit: 360, res: 14, dodge: 5 } } },
+  etang:    { name: 'Panoplie de la Carpe Céleste', bonus: { 2: { vit: 55, res: 4 }, 3: { deg: 110, vit: 250 }, 4: { deg: 180, vit: 330, res: 7 }, 5: { deg: 230, vit: 410, res: 10, regen: 1 } } },
+  dunes:    { name: 'Panoplie des Dunes',           bonus: { 2: { vit: 160 }, 3: { deg: 70, vit: 200, res: 8 }, 4: { deg: 160, vit: 360, res: 11 }, 5: { deg: 250, vit: 500, res: 14, crit: 4 } } },
+  mines:    { name: "Panoplie du Mineur d'Ocre",    bonus: { 2: { vit: 140, pp: 30 }, 3: { deg: 140, vit: 270, pp: 45 }, 4: { deg: 250, vit: 490, pp: 65, kamas: 8 }, 5: { deg: 370, vit: 740, pp: 90, kamas: 14 } } },
+  srambad:  { name: 'Panoplie de Srambad',          bonus: { 2: { vit: 160 }, 3: { deg: 110, vit: 280, dodge: 3 }, 4: { deg: 210, vit: 460, dodge: 5 }, 5: { deg: 320, vit: 610, dodge: 7, crit: 6 } } },
+  roseraie: { name: 'Panoplie de la Roseraie Noire', bonus: { 2: { vit: 40, regen: 1 }, 3: { deg: 140, vit: 320 }, 4: { deg: 230, vit: 440, regen: 1 }, 5: { deg: 310, vit: 550, crit: 5, regen: 2 } } },
 });
 
 /* ---------------------------- Équipements, reliques & Dofus ----------------------------
    Pour chaque pièce, la description du dessin attendu est donnée en commentaire (art4a-c.js). */
 Object.assign(ITEMS, {
   /* Panoplie de Pandala — jade, bambou, laque rouge et or */
-  coiffe_pandala:   { icon: '👒', name: 'Kasa de Bambou', slot: 'coiffe', lvl: 130, set: 'pandala', stats: { deg: [56, 80], vit: [138, 196], res: [3, 5] } },
-  cape_pandala:     { icon: '🧥', name: 'Haori du Kitsou', slot: 'cape', lvl: 134, set: 'pandala', stats: { vit: [144, 204], sag: [48, 72], dodge: [4, 6] } },
-  bottes_pandala:   { icon: '👡', name: 'Geta du Tengu', slot: 'bottes', lvl: 138, set: 'pandala', stats: { deg: [62, 86], vit: [88, 126], dodge: [5, 7] } },
-  amulette_pandala: { icon: '🍶', name: 'Gourde du Tanukoui', slot: 'amulette', lvl: 142, set: 'pandala', stats: { deg: [50, 70], vit: [150, 214], pp: [40, 64] } },
-  katana_jade:      { icon: '🗡️', name: 'Katana du Dragon de Jade', slot: 'arme', lvl: 146, set: 'pandala', stats: { deg: [142, 200], crit: [4, 7] } },
-  relique_dragon_jade: { name: 'Perle du Dragon de Jade', slot: 'relique', lvl: 146, relic: true, stats: { dmgPct: [16, 22], res: [8, 12], crit: [3, 5] } },
-  dofus_emeraude:   { name: 'Dofus Émeraude', slot: 'dofus', lvl: 144, dofus: true, stats: { vit: [450, 450], res: [10, 10], regen: [1, 1] } },
+  coiffe_pandala:   { icon: '👒', name: 'Kasa de Bambou', slot: 'coiffe', lvl: 130, set: 'pandala', stats: { deg: [57, 82], vit: [141, 201], res: [3, 5] } },
+  cape_pandala:     { icon: '🧥', name: 'Haori du Kitsou', slot: 'cape', lvl: 134, set: 'pandala', stats: { vit: [138, 197], sag: [48, 72], dodge: [4, 6] } },
+  bottes_pandala:   { icon: '👡', name: 'Geta du Tengu', slot: 'bottes', lvl: 138, set: 'pandala', stats: { deg: [64, 91], vit: [92, 131], dodge: [5, 7] } },
+  amulette_pandala: { icon: '🍶', name: 'Gourde du Tanukoui', slot: 'amulette', lvl: 142, set: 'pandala', stats: { deg: [52, 74], vit: [158, 225], pp: [40, 64] } },
+  katana_jade:      { icon: '🗡️', name: 'Katana du Dragon de Jade', slot: 'arme', lvl: 146, set: 'pandala', stats: { deg: [158, 225], crit: [4, 7] } },
+  relique_dragon_jade: { name: 'Perle du Dragon de Jade', slot: 'relique', lvl: 146, relic: true, stats: { deg: [101, 143], res: [6, 9], crit: [3, 5], dmgPct: [12, 16] } },
+  dofus_emeraude:   { name: 'Dofus Émeraude', slot: 'dofus', lvl: 144, dofus: true, stats: { vit: [280, 280], res: [8, 8], regen: [1, 1] } },
 
   /* Panoplie de la Carpe Céleste — lotus rose, écailles de koï orange, eau turquoise */
-  coiffe_etang:     { icon: '🪷', name: 'Couronne de Lotus', slot: 'coiffe', lvl: 132, set: 'etang', stats: { deg: [54, 78], vit: [136, 194], res: [3, 5] } },
-  cape_etang:       { icon: '🐠', name: 'Nageoires de Koï', slot: 'cape', lvl: 136, set: 'etang', stats: { vit: [142, 202], sag: [46, 70], dodge: [4, 6] } },
-  ceinture_etang:   { icon: '🎗️', name: "Ceinture d'Écailles", slot: 'ceinture', lvl: 138, set: 'etang', stats: { deg: [58, 82], vit: [96, 138], pp: [40, 62] } },
-  anneau_etang:     { icon: '💍', name: "Anneau de Perle d'Eau", slot: 'anneau', lvl: 142, set: 'etang', stats: { deg: [70, 98], pp: [42, 66], crit: [1, 2] } },
-  eventail_carpe:   { icon: '🪭', name: 'Éventail de la Carpe-Dragon', slot: 'arme', lvl: 146, set: 'etang', stats: { deg: [138, 194], crit: [3, 6] } },
-  relique_carpe:    { name: 'Perle Céleste de la Carpe-Dragon', slot: 'relique', lvl: 140, relic: true, stats: { regen: [3, 5], dodge: [6, 9], vit: [120, 190] } },
+  coiffe_etang:     { icon: '🪷', name: 'Couronne de Lotus', slot: 'coiffe', lvl: 132, set: 'etang', stats: { deg: [57, 82], vit: [143, 204], res: [3, 5] } },
+  cape_etang:       { icon: '🐠', name: 'Nageoires de Koï', slot: 'cape', lvl: 136, set: 'etang', stats: { vit: [140, 200], sag: [46, 70], dodge: [4, 6] } },
+  ceinture_etang:   { icon: '🎗️', name: "Ceinture d'Écailles", slot: 'ceinture', lvl: 138, set: 'etang', stats: { deg: [59, 84], vit: [99, 141], pp: [40, 62] } },
+  anneau_etang:     { icon: '💍', name: "Anneau de Perle d'Eau", slot: 'anneau', lvl: 142, set: 'etang', stats: { deg: [72, 103], pp: [42, 66], crit: [1, 2] } },
+  eventail_carpe:   { icon: '🪭', name: 'Éventail de la Carpe-Dragon', slot: 'arme', lvl: 146, set: 'etang', stats: { deg: [164, 233], crit: [3, 6] } },
+  relique_carpe:    { name: 'Perle Céleste de la Carpe-Dragon', slot: 'relique', lvl: 140, relic: true, stats: { vit: [235, 335], dodge: [4, 6], regen: [1, 2] } },
 
   /* Panoplie des Dunes — or, lin, lapis, ankh et sable */
-  coiffe_dunes:     { icon: '👑', name: 'Némès du Scarabosse', slot: 'coiffe', lvl: 152, set: 'dunes', stats: { deg: [66, 94], vit: [160, 228], res: [3, 6] } },
-  cape_dunes:       { icon: '🧣', name: 'Linceul Royal', slot: 'cape', lvl: 156, set: 'dunes', stats: { vit: [164, 234], sag: [54, 82], res: [3, 5] } },
-  amulette_dunes:   { icon: '📿', name: "Ousekh d'Or", slot: 'amulette', lvl: 160, set: 'dunes', stats: { deg: [60, 86], vit: [170, 240], pp: [48, 76] } },
-  bottes_dunes:     { icon: '👡', name: 'Sandales de Sable', slot: 'bottes', lvl: 162, set: 'dunes', stats: { deg: [72, 100], vit: [104, 146], dodge: [5, 8] } },
-  khepesh_pharaon:  { icon: '🗡️', name: 'Khépesh du Pharaon Éternel', slot: 'arme', lvl: 168, set: 'dunes', stats: { deg: [164, 230], crit: [5, 8] } },
-  relique_pharaon:  { name: 'Ankh du Pharaon Éternel', slot: 'relique', lvl: 168, relic: true, stats: { dmgPct: [18, 24], speed: [14, 22], vit: [150, 220] } },
-  dofus_ocre:       { name: 'Dofus Ocre', slot: 'dofus', lvl: 166, dofus: true, stats: { deg: [110, 110], pp: [45, 45], kamas: [15, 15], xpPct: [8, 8] } },
+  coiffe_dunes:     { icon: '👑', name: 'Némès du Scarabosse', slot: 'coiffe', lvl: 152, set: 'dunes', stats: { deg: [66, 94], vit: [161, 229], res: [3, 6] } },
+  cape_dunes:       { icon: '🧣', name: 'Linceul Royal', slot: 'cape', lvl: 156, set: 'dunes', stats: { vit: [184, 263], sag: [54, 82], res: [3, 5] } },
+  amulette_dunes:   { icon: '📿', name: "Ousekh d'Or", slot: 'amulette', lvl: 160, set: 'dunes', stats: { deg: [63, 89], vit: [176, 250], pp: [48, 76] } },
+  bottes_dunes:     { icon: '👡', name: 'Sandales de Sable', slot: 'bottes', lvl: 162, set: 'dunes', stats: { deg: [76, 108], vit: [110, 157], dodge: [5, 8] } },
+  khepesh_pharaon:  { icon: '🗡️', name: 'Khépesh du Pharaon Éternel', slot: 'arme', lvl: 168, set: 'dunes', stats: { deg: [170, 242], crit: [5, 8] } },
+  relique_pharaon:  { name: 'Ankh du Pharaon Éternel', slot: 'relique', lvl: 168, relic: true, stats: { vit: [225, 320], dmgPct: [14, 18], speed: [12, 18] } },
+  dofus_ocre:       { name: 'Dofus Ocre', slot: 'dofus', lvl: 166, dofus: true, stats: { deg: [310, 310], pp: [70, 70], dmgPct: [12, 12], kamas: [20, 20], xpPct: [10, 10] } },
 
   /* Panoplie du Mineur d'Ocre — cuir, fer, lampe, cristaux ocre et cyan */
-  coiffe_mines:     { icon: '⛑️', name: 'Casque de Mineur à Lampe', slot: 'coiffe', lvl: 154, set: 'mines', stats: { deg: [68, 96], vit: [162, 230], pp: [40, 64] } },
-  ceinture_mines:   { icon: '🎗️', name: 'Ceinture à Outils', slot: 'ceinture', lvl: 158, set: 'mines', stats: { deg: [70, 98], vit: [114, 164], pp: [48, 76] } },
-  bottes_mines:     { icon: '🥾', name: 'Bottes à Crampons', slot: 'bottes', lvl: 160, set: 'mines', stats: { deg: [74, 102], vit: [106, 150], dodge: [4, 6] } },
-  amulette_mines:   { icon: '💎', name: "Pendentif d'Ocre", slot: 'amulette', lvl: 164, set: 'mines', stats: { deg: [64, 90], vit: [172, 246], res: [4, 6], pp: [50, 80] } },
-  pioche_ocre:      { icon: '⛏️', name: "Pioche de Cristal d'Ocre", slot: 'arme', lvl: 170, set: 'mines', stats: { deg: [160, 228], crit: [4, 7] } },
-  relique_mines:    { name: "Cœur de Cristal d'Ocre", slot: 'relique', lvl: 160, relic: true, stats: { kamas: [60, 100], pp: [50, 80], xpPct: [8, 14] } },
+  coiffe_mines:     { icon: '⛑️', name: 'Casque de Mineur à Lampe', slot: 'coiffe', lvl: 154, set: 'mines', stats: { deg: [80, 113], vit: [190, 271], pp: [40, 64] } },
+  ceinture_mines:   { icon: '🎗️', name: 'Ceinture à Outils', slot: 'ceinture', lvl: 158, set: 'mines', stats: { deg: [68, 97], vit: [113, 160], pp: [48, 76] } },
+  bottes_mines:     { icon: '🥾', name: 'Bottes à Crampons', slot: 'bottes', lvl: 160, set: 'mines', stats: { deg: [85, 121], vit: [124, 177], dodge: [4, 6] } },
+  amulette_mines:   { icon: '💎', name: "Pendentif d'Ocre", slot: 'amulette', lvl: 164, set: 'mines', stats: { deg: [42, 59], vit: [113, 161], pp: [50, 80], res: [4, 6] } },
+  pioche_ocre:      { icon: '⛏️', name: "Pioche de Cristal d'Ocre", slot: 'arme', lvl: 170, set: 'mines', stats: { deg: [178, 253], crit: [4, 7] } },
+  relique_mines:    { name: "Cœur de Cristal d'Ocre", slot: 'relique', lvl: 160, relic: true, stats: { deg: [119, 170], vit: [357, 509], pp: [60, 90], kamas: [60, 100], xpPct: [8, 14] } },
 
   /* Panoplie de Srambad — cuir noir, prune, argent et lanternes rouges */
-  coiffe_srambad:   { icon: '🥷', name: 'Capuche du Rat Cagoulé', slot: 'coiffe', lvl: 172, set: 'srambad', stats: { deg: [76, 106], vit: [184, 258], dodge: [3, 5] } },
-  cape_srambad:     { icon: '🦇', name: 'Cape de Vampyro', slot: 'cape', lvl: 176, set: 'srambad', stats: { vit: [188, 264], sag: [62, 92], dodge: [4, 6] } },
-  ceinture_srambad: { icon: '🎗️', name: 'Ceinturon de Dagues', slot: 'ceinture', lvl: 180, set: 'srambad', stats: { deg: [78, 110], vit: [124, 176], pp: [54, 86] } },
-  bottes_srambad:   { icon: '🥾', name: "Bottes Feutrées d'Ombre", slot: 'bottes', lvl: 184, set: 'srambad', stats: { deg: [82, 114], vit: [120, 168], dodge: [6, 9] } },
-  rapiere_comte:    { icon: '🗡️', name: 'Rapière du Comte Vespéral', slot: 'arme', lvl: 190, set: 'srambad', stats: { deg: [180, 256], crit: [6, 10] } },
-  relique_comte:    { name: 'Médaillon du Comte Vespéral', slot: 'relique', lvl: 190, relic: true, stats: { dmgPct: [22, 30], crit: [4, 7], dodge: [5, 8] } },
-  dofus_pourpre:    { name: 'Dofus Pourpre', slot: 'dofus', lvl: 188, dofus: true, stats: { deg: [220, 220], dmgPct: [14, 14], critDmg: [50, 50] } },
-  dofus_ebene:      { name: 'Dofus Ébène', slot: 'dofus', lvl: 190, dofus: true, stats: { crit: [15, 15], dodge: [8, 8], speed: [15, 15] } },
+  coiffe_srambad:   { icon: '🥷', name: 'Capuche du Rat Cagoulé', slot: 'coiffe', lvl: 172, set: 'srambad', stats: { deg: [74, 105], vit: [179, 255], dodge: [3, 5] } },
+  cape_srambad:     { icon: '🦇', name: 'Cape de Vampyro', slot: 'cape', lvl: 176, set: 'srambad', stats: { vit: [167, 238], sag: [62, 92], dodge: [4, 6] } },
+  ceinture_srambad: { icon: '🎗️', name: 'Ceinturon de Dagues', slot: 'ceinture', lvl: 180, set: 'srambad', stats: { deg: [72, 103], vit: [115, 164], pp: [54, 86] } },
+  bottes_srambad:   { icon: '🥾', name: "Bottes Feutrées d'Ombre", slot: 'bottes', lvl: 184, set: 'srambad', stats: { deg: [74, 106], vit: [109, 156], dodge: [6, 9] } },
+  rapiere_comte:    { icon: '🗡️', name: 'Rapière du Comte Vespéral', slot: 'arme', lvl: 190, set: 'srambad', stats: { deg: [177, 252], crit: [6, 10] } },
+  relique_comte:    { name: 'Médaillon du Comte Vespéral', slot: 'relique', lvl: 190, relic: true, stats: { deg: [146, 209], dodge: [4, 7], crit: [4, 7], dmgPct: [16, 22] } },
+  dofus_pourpre:    { name: 'Dofus Pourpre', slot: 'dofus', lvl: 188, dofus: true, stats: { deg: [290, 290], critDmg: [50, 50], dmgPct: [14, 14] } },
+  dofus_ebene:      { name: 'Dofus Ébène', slot: 'dofus', lvl: 190, dofus: true, stats: { vit: [210, 210], dodge: [10, 10], crit: [18, 18], speed: [15, 15] } },
 
   /* Panoplie de la Roseraie Noire — pétales noirs, épines, rouge sang et vert sombre */
-  coiffe_roseraie:  { icon: '🥀', name: "Couronne d'Épines Noires", slot: 'coiffe', lvl: 176, set: 'roseraie', stats: { deg: [76, 108], vit: [184, 262], res: [3, 6] } },
-  cape_roseraie:    { icon: '🧥', name: 'Cape de Pétales Noirs', slot: 'cape', lvl: 180, set: 'roseraie', stats: { vit: [190, 268], sag: [62, 94], res: [3, 5] } },
-  amulette_roseraie:{ icon: '📿', name: 'Pendentif de Rose Noire', slot: 'amulette', lvl: 184, set: 'roseraie', stats: { deg: [70, 98], vit: [196, 276], pp: [54, 86] } },
-  anneau_roseraie:  { icon: '💍', name: "Bague d'Épine", slot: 'anneau', lvl: 186, set: 'roseraie', stats: { deg: [86, 120], pp: [56, 90], crit: [1, 3] } },
-  fouet_epines:     { icon: '🌹', name: "Fouet d'Épines de la Reine", slot: 'arme', lvl: 190, set: 'roseraie', stats: { deg: [176, 250], crit: [5, 9] } },
-  relique_roseraie: { name: 'Rose Éternelle de la Reine', slot: 'relique', lvl: 182, relic: true, stats: { regen: [4, 6], dmgPct: [12, 18], vit: [200, 300] } },
+  coiffe_roseraie:  { icon: '🥀', name: "Couronne d'Épines Noires", slot: 'coiffe', lvl: 176, set: 'roseraie', stats: { deg: [72, 103], vit: [175, 249], res: [3, 6] } },
+  cape_roseraie:    { icon: '🧥', name: 'Cape de Pétales Noirs', slot: 'cape', lvl: 180, set: 'roseraie', stats: { vit: [186, 265], sag: [62, 94], res: [3, 5] } },
+  amulette_roseraie:{ icon: '📿', name: 'Pendentif de Rose Noire', slot: 'amulette', lvl: 184, set: 'roseraie', stats: { deg: [66, 94], vit: [185, 263], pp: [54, 86] } },
+  anneau_roseraie:  { icon: '💍', name: "Bague d'Épine", slot: 'anneau', lvl: 186, set: 'roseraie', stats: { deg: [78, 111], pp: [56, 90], crit: [1, 3] } },
+  fouet_epines:     { icon: '🌹', name: "Fouet d'Épines de la Reine", slot: 'arme', lvl: 190, set: 'roseraie', stats: { deg: [184, 262], crit: [5, 9] } },
+  relique_roseraie: { name: 'Rose Éternelle de la Reine', slot: 'relique', lvl: 182, relic: true, stats: { vit: [268, 382], dmgPct: [10, 14], regen: [1, 2] } },
 });
 
 /* ---------------------------- Recettes (coût ×CRAFT_COST_MULT appliqué ici) ---------------------------- */

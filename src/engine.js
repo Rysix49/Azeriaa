@@ -36,6 +36,7 @@ function monsterStats(mid) {
 function newState() {
   return {
     v: SAVE_VERSION,
+    bal: BAL_VERSION,       // version d'équilibrage de l'équipement (voir balmig.js)
     kamas: 200,
     archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
@@ -1347,6 +1348,9 @@ function migrate(obj) {
     if (h.fight && h.fight.mons.some(m => !MONSTERS[m.mid])) h.fight = null;
   }
   st.gear = st.gear.filter(g => ITEMS[g.id]);
+  // équipement rééquilibré : les objets possédés sont convertis dans les nouvelles plages, à jet égal
+  if ((obj.bal || 0) < BAL_VERSION && st.gear.length) { for (const g of st.gear) balRemapGear(g); st.balNotice = true; }
+  st.bal = BAL_VERSION;
   for (const g of st.gear) migrateGear(g, (obj.v || 1) < 2);
   for (const k of Object.keys(st.res)) if (!RESOURCES[k]) delete st.res[k];
   st.v = SAVE_VERSION;

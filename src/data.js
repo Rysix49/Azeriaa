@@ -318,11 +318,11 @@ const SLOT_ICON = { dofus: '🥚', relique: '🔮', outil: '🪓', gants: '🧤'
 
 const SETS = {
   aventurier: { name: "Panoplie de l'Aventurier", bonus: { 2: { vit: 10 }, 4: { vit: 20, sag: 20 }, 6: { deg: 20, vit: 30, sag: 30 } } },
-  bouftou:    { name: 'Panoplie du Bouftou', bonus: { 2: { vit: 20 }, 3: { deg: 15, vit: 30 }, 4: { deg: 40, vit: 40, res: 5 } } },
-  abraknyde:  { name: 'Panoplie Abraknyde', bonus: { 2: { sag: 20 }, 3: { deg: 20, sag: 30 }, 4: { deg: 30, sag: 40, res: 5 } } },
-  bwork:      { name: 'Panoplie du Bwork', bonus: { 2: { deg: 20 }, 3: { deg: 30, vit: 50 }, 4: { deg: 80, vit: 80 } } },
-  koalak:     { name: 'Panoplie Koalak', bonus: { 2: { deg: 25 }, 3: { deg: 75, crit: 3 } } },
-  chafer:     { name: 'Panoplie du Chafer', bonus: { 2: { vit: 80 }, 3: { deg: 50, vit: 120, res: 8 } } },
+  bouftou:    { name: 'Panoplie du Bouftou', bonus: { 2: { vit: 15 }, 3: { deg: 15, vit: 35 }, 4: { deg: 40, vit: 40, res: 5 } } },
+  abraknyde:  { name: 'Panoplie Abraknyde', bonus: { 2: { vit: 30, sag: 20 }, 3: { deg: 30, vit: 60, sag: 30 }, 4: { deg: 45, vit: 95, sag: 40, res: 5 } } },
+  bwork:      { name: 'Panoplie du Bwork', bonus: { 2: { deg: 20, vit: 25 }, 3: { deg: 60, vit: 75 }, 4: { deg: 110, vit: 140 } } },
+  koalak:     { name: 'Panoplie Koalak', bonus: { 2: { deg: 30, vit: 35 }, 3: { deg: 90, vit: 95, crit: 3 } } },
+  chafer:     { name: 'Panoplie du Chafer', bonus: { 2: { vit: 95 }, 3: { deg: 50, vit: 120, res: 8 } } },
 };
 
 /* Équipement de récolte : emplacements séparés, bonus aux métiers de récolte.
@@ -345,12 +345,12 @@ Object.assign(STAT_SHORT, { kamas: '% Kamas', xpPct: '% XP', dmgPct: '% Dégâts
 const ITEMS = {
   /* Reliques */
   relique_tofu:     { name: 'Plume du Tofu Céleste', slot: 'relique', lvl: 1, relic: true, stats: { dodge: [5, 8], speed: [5, 10] } },
-  relique_bouftou:  { name: "Toison d'Or du Bouftou Royal", slot: 'relique', lvl: 15, relic: true, stats: { xpPct: [15, 20], vit: [20, 40] } },
-  relique_abra:     { name: "Graine d'Abraknyde Millénaire", slot: 'relique', lvl: 20, relic: true, stats: { regen: [2, 3], vit: [30, 50] } },
-  relique_craq:     { name: 'Noyau de Craqueleur', slot: 'relique', lvl: 35, relic: true, stats: { res: [6, 10], vit: [40, 60] } },
-  relique_bworkette:{ name: 'Cœur de Bworkette', slot: 'relique', lvl: 45, relic: true, stats: { deg: [10, 20], dmgPct: [12, 18] } },
-  relique_kanigrou: { name: 'Sablier du Kanigrou', slot: 'relique', lvl: 55, relic: true, stats: { deg: [15, 25], speed: [15, 25] } },
-  relique_chafer:   { name: 'Lanterne des Âmes', slot: 'relique', lvl: 70, relic: true, stats: { kamas: [30, 50], pp: [30, 50], xpPct: [5, 10] } },
+  relique_bouftou:  { name: "Toison d'Or du Bouftou Royal", slot: 'relique', lvl: 15, relic: true, stats: { vit: [30, 47], xpPct: [15, 20] } },
+  relique_abra:     { name: "Graine d'Abraknyde Millénaire", slot: 'relique', lvl: 20, relic: true, stats: { vit: [20, 32], regen: [1, 2] } },
+  relique_craq:     { name: 'Noyau de Craqueleur', slot: 'relique', lvl: 35, relic: true, stats: { vit: [38, 54], res: [6, 10] } },
+  relique_bworkette:{ name: 'Cœur de Bworkette', slot: 'relique', lvl: 45, relic: true, stats: { deg: [26, 41], dmgPct: [12, 18] } },
+  relique_kanigrou: { name: 'Sablier du Kanigrou', slot: 'relique', lvl: 55, relic: true, stats: { deg: [68, 96], speed: [15, 25] } },
+  relique_chafer:   { name: 'Lanterne des Âmes', slot: 'relique', lvl: 70, relic: true, stats: { deg: [37, 52], vit: [110, 157], pp: [40, 60], kamas: [30, 50], xpPct: [10, 16] } },
 
   /* Récolte */
   faux_paysan:     { name: 'Faux du Paysan', slot: 'outil', lvl: 1, harvest: true, stats: { rspd: [5, 10], rxp: [5, 10] } },
@@ -368,44 +368,44 @@ const ITEMS = {
   anneau_aventurier:   { icon: '💍', name: "Anneau de l'Aventurier", slot: 'anneau', lvl: 1, set: 'aventurier', stats: { deg: [4, 7], pp: [4, 7] } },
   bottes_aventurier:   { icon: '👢', name: "Bottes de l'Aventurier", slot: 'bottes', lvl: 1, set: 'aventurier', stats: { deg: [2, 5], vit: [3, 6] } },
   ceinture_aventurier: { icon: '🎗️', name: "Ceinture de l'Aventurier", slot: 'ceinture', lvl: 1, set: 'aventurier', stats: { deg: [4, 7] } },
-  baton_debutant:      { icon: '🪄', name: 'Bâton du Débutant', slot: 'arme', lvl: 3, stats: { deg: [7, 15] } },
-  epee_boisaille:      { icon: '🗡️', name: 'Épée de Boisaille', slot: 'arme', lvl: 3, stats: { deg: [7, 15] } },
+  baton_debutant:      { icon: '🪄', name: 'Bâton du Débutant', slot: 'arme', lvl: 3, stats: { deg: [9, 14] } },
+  epee_boisaille:      { icon: '🗡️', name: 'Épée de Boisaille', slot: 'arme', lvl: 3, stats: { deg: [9, 14] } },
 
   /* Niveau 10-20 */
-  coiffe_bouftou:      { icon: '🎩', name: 'Coiffe du Bouftou', slot: 'coiffe', lvl: 10, set: 'bouftou', stats: { deg: [5, 10], vit: [20, 35] } },
-  cape_bouftou:        { icon: '🧥', name: 'Cape du Bouftou', slot: 'cape', lvl: 10, set: 'bouftou', stats: { vit: [15, 25], sag: [6, 12] } },
-  amulette_bouftou:    { icon: '🧿', name: 'Amulette du Bouftou', slot: 'amulette', lvl: 15, set: 'bouftou', stats: { deg: [8, 14], vit: [20, 30], pp: [8, 14] } },
-  marteau_bouftou:     { icon: '🔨', name: 'Marteau du Bouftou', slot: 'arme', lvl: 18, set: 'bouftou', stats: { deg: [25, 43], vit: [10, 20] } },
-  bottes_moskito:      { icon: '🥾', name: 'Bottes Moskito', slot: 'bottes', lvl: 12, stats: { deg: [8, 14], vit: [8, 14], dodge: [1, 3] } },
-  anneau_arakne:       { icon: '💠', name: "Anneau d'Arakne", slot: 'anneau', lvl: 14, stats: { deg: [8, 16], pp: [8, 13] } },
-  ceinture_champ:      { icon: '🌾', name: 'Ceinture Champêtre', slot: 'ceinture', lvl: 16, stats: { vit: [15, 25], sag: [10, 20] } },
-  arc_moskito:         { icon: '🏹', name: 'Arc Moskito', slot: 'arme', lvl: 15, stats: { deg: [22, 36], crit: [1, 2] } },
-  pelle_champ:         { icon: '⛏️', name: 'Pelle des Champs', slot: 'arme', lvl: 15, stats: { deg: [22, 36], pp: [8, 14] } },
+  coiffe_bouftou:      { icon: '🎩', name: 'Coiffe du Bouftou', slot: 'coiffe', lvl: 10, set: 'bouftou', stats: { deg: [5, 8], vit: [20, 31] } },
+  cape_bouftou:        { icon: '🧥', name: 'Cape du Bouftou', slot: 'cape', lvl: 10, set: 'bouftou', stats: { vit: [15, 23], sag: [6, 12] } },
+  amulette_bouftou:    { icon: '🧿', name: 'Amulette du Bouftou', slot: 'amulette', lvl: 15, set: 'bouftou', stats: { deg: [8, 13], vit: [19, 29], pp: [8, 14] } },
+  marteau_bouftou:     { icon: '🔨', name: 'Marteau du Bouftou', slot: 'arme', lvl: 18, set: 'bouftou', stats: { deg: [19, 30], vit: [8, 13] } },
+  bottes_moskito:      { icon: '🥾', name: 'Bottes Moskito', slot: 'bottes', lvl: 12, stats: { deg: [8, 13], vit: [8, 13], dodge: [1, 3] } },
+  anneau_arakne:       { icon: '💠', name: "Anneau d'Arakne", slot: 'anneau', lvl: 14, stats: { deg: [9, 14], pp: [8, 13] } },
+  ceinture_champ:      { icon: '🌾', name: 'Ceinture Champêtre', slot: 'ceinture', lvl: 16, stats: { vit: [15, 24], sag: [10, 20] } },
+  arc_moskito:         { icon: '🏹', name: 'Arc Moskito', slot: 'arme', lvl: 15, stats: { deg: [23, 36], crit: [1, 2] } },
+  pelle_champ:         { icon: '⛏️', name: 'Pelle des Champs', slot: 'arme', lvl: 15, stats: { deg: [24, 37], pp: [8, 14] } },
 
   /* Niveau 25-35 */
-  baton_abraknyde:     { icon: '🌿', name: 'Bâton Abraknyde', slot: 'arme', lvl: 25, set: 'abraknyde', stats: { deg: [35, 55] } },
-  cape_abraknyde:      { icon: '🍃', name: 'Cape Abraknyde', slot: 'cape', lvl: 25, set: 'abraknyde', stats: { vit: [25, 40], sag: [12, 24] } },
-  anneau_ecurouille:   { icon: '🌰', name: "Anneau d'Écurouille", slot: 'anneau', lvl: 25, set: 'abraknyde', stats: { deg: [14, 24], pp: [11, 19] } },
-  bottes_sanglier:     { icon: '🐾', name: 'Bottes du Sanglier', slot: 'bottes', lvl: 30, set: 'abraknyde', stats: { deg: [15, 25], res: [2, 4], vit: [10, 20] } },
-  coiffe_prespic:      { icon: '👒', name: 'Coiffe Prespic', slot: 'coiffe', lvl: 28, stats: { deg: [10, 15], vit: [30, 45], res: [1, 3], pp: [12, 20] } },
+  baton_abraknyde:     { icon: '🌿', name: 'Bâton Abraknyde', slot: 'arme', lvl: 25, set: 'abraknyde', stats: { deg: [40, 58] } },
+  cape_abraknyde:      { icon: '🍃', name: 'Cape Abraknyde', slot: 'cape', lvl: 25, set: 'abraknyde', stats: { vit: [40, 56], sag: [12, 24] } },
+  anneau_ecurouille:   { icon: '🌰', name: "Anneau d'Écurouille", slot: 'anneau', lvl: 25, set: 'abraknyde', stats: { deg: [15, 24], pp: [11, 19] } },
+  bottes_sanglier:     { icon: '🐾', name: 'Bottes du Sanglier', slot: 'bottes', lvl: 30, set: 'abraknyde', stats: { deg: [23, 36], vit: [17, 27], res: [2, 4] } },
+  coiffe_prespic:      { icon: '👒', name: 'Coiffe Prespic', slot: 'coiffe', lvl: 28, stats: { deg: [14, 21], vit: [43, 62], pp: [12, 20], res: [1, 3] } },
 
   /* Niveau 40-55 */
-  hache_bwork:         { icon: '🪓', name: 'Hache du Bwork', slot: 'arme', lvl: 45, set: 'bwork', stats: { deg: [60, 90], crit: [1, 3] } },
-  casque_bwork:        { icon: '⛑️', name: 'Casque du Bwork', slot: 'coiffe', lvl: 42, set: 'bwork', stats: { deg: [15, 25], vit: [45, 65] } },
-  ceinture_bwork:      { icon: '⛓️', name: 'Ceinture du Bwork', slot: 'ceinture', lvl: 42, set: 'bwork', stats: { deg: [10, 15], vit: [30, 45] } },
-  amulette_craqueleur: { icon: '🪬', name: 'Amulette du Craqueleur', slot: 'amulette', lvl: 40, set: 'bwork', stats: { vit: [50, 80], res: [3, 5], pp: [15, 26] } },
-  cape_kwak:           { icon: '🧊', name: 'Cape Kwakwa', slot: 'cape', lvl: 35, stats: { deg: [29, 42], pp: [14, 24] } },
-  bottes_scara:        { icon: '🩴', name: 'Bottes Scarafeuille', slot: 'bottes', lvl: 38, stats: { vit: [30, 45], res: [3, 5], sag: [10, 20] } },
+  hache_bwork:         { icon: '🪓', name: 'Hache du Bwork', slot: 'arme', lvl: 45, set: 'bwork', stats: { deg: [62, 89], crit: [1, 3] } },
+  casque_bwork:        { icon: '⛑️', name: 'Casque du Bwork', slot: 'coiffe', lvl: 42, set: 'bwork', stats: { deg: [24, 38], vit: [71, 101] } },
+  ceinture_bwork:      { icon: '⛓️', name: 'Ceinture du Bwork', slot: 'ceinture', lvl: 42, set: 'bwork', stats: { deg: [12, 20], vit: [40, 56] } },
+  amulette_craqueleur: { icon: '🪬', name: 'Amulette du Craqueleur', slot: 'amulette', lvl: 40, set: 'bwork', stats: { vit: [53, 76], pp: [15, 26], res: [3, 5] } },
+  cape_kwak:           { icon: '🧊', name: 'Cape Kwakwa', slot: 'cape', lvl: 35, stats: { deg: [21, 34], vit: [34, 48], pp: [14, 24] } },
+  bottes_scara:        { icon: '🩴', name: 'Bottes Scarafeuille', slot: 'bottes', lvl: 38, stats: { vit: [48, 68], sag: [10, 20], res: [3, 5] } },
 
   /* Niveau 55-70 */
-  coiffe_koalak:       { icon: '🎓', name: 'Coiffe Koalak', slot: 'coiffe', lvl: 55, set: 'koalak', stats: { deg: [20, 30], vit: [60, 90], pp: [20, 34] } },
-  bottes_kanigrou:     { icon: '🦶', name: 'Bottes Kanigrou', slot: 'bottes', lvl: 60, set: 'koalak', stats: { deg: [40, 55], vit: [30, 45], dodge: [3, 5] } },
-  anneau_mufafah:      { icon: '🔶', name: 'Anneau Mufafah', slot: 'anneau', lvl: 65, set: 'koalak', stats: { deg: [37, 53], pp: [23, 39] } },
+  coiffe_koalak:       { icon: '🎓', name: 'Coiffe Koalak', slot: 'coiffe', lvl: 55, set: 'koalak', stats: { deg: [27, 42], vit: [85, 121], pp: [20, 34] } },
+  bottes_kanigrou:     { icon: '🦶', name: 'Bottes Kanigrou', slot: 'bottes', lvl: 60, set: 'koalak', stats: { deg: [46, 66], vit: [37, 52], dodge: [3, 5] } },
+  anneau_mufafah:      { icon: '🔶', name: 'Anneau Mufafah', slot: 'anneau', lvl: 65, set: 'koalak', stats: { deg: [43, 62], pp: [23, 39] } },
 
   /* Niveau 75-100 */
-  cape_chafer:         { icon: '🦇', name: 'Cape du Chafer', slot: 'cape', lvl: 75, set: 'chafer', stats: { vit: [90, 130], sag: [30, 50], pp: [26, 44] } },
-  ceinture_ecto:       { icon: '🌀', name: 'Ceinture Ectoplasmique', slot: 'ceinture', lvl: 85, set: 'chafer', stats: { deg: [29, 48], pp: [29, 49] } },
-  epee_chafer:         { icon: '⚔️', name: 'Épée du Chafer', slot: 'arme', lvl: 90, set: 'chafer', stats: { deg: [76, 104], crit: [3, 5] } },
+  cape_chafer:         { icon: '🦇', name: 'Cape du Chafer', slot: 'cape', lvl: 75, set: 'chafer', stats: { vit: [116, 165], sag: [30, 50], pp: [26, 44] } },
+  ceinture_ecto:       { icon: '🌀', name: 'Ceinture Ectoplasmique', slot: 'ceinture', lvl: 85, set: 'chafer', stats: { deg: [41, 58], vit: [68, 96], pp: [29, 49] } },
+  epee_chafer:         { icon: '⚔️', name: 'Épée du Chafer', slot: 'arme', lvl: 90, set: 'chafer', stats: { deg: [105, 149], crit: [3, 5] } },
 };
 
 /* --------------------------------------------------------------------

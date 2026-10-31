@@ -4265,7 +4265,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793469605';
+const BUILD_ID = '1793470817';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -4586,11 +4586,11 @@ const SLOT_ICON = { dofus: '🥚', relique: '🔮', outil: '🪓', gants: '🧤'
 
 const SETS = {
   aventurier: { name: "Panoplie de l'Aventurier", bonus: { 2: { vit: 10 }, 4: { vit: 20, sag: 20 }, 6: { deg: 20, vit: 30, sag: 30 } } },
-  bouftou:    { name: 'Panoplie du Bouftou', bonus: { 2: { vit: 20 }, 3: { deg: 15, vit: 30 }, 4: { deg: 40, vit: 40, res: 5 } } },
-  abraknyde:  { name: 'Panoplie Abraknyde', bonus: { 2: { sag: 20 }, 3: { deg: 20, sag: 30 }, 4: { deg: 30, sag: 40, res: 5 } } },
-  bwork:      { name: 'Panoplie du Bwork', bonus: { 2: { deg: 20 }, 3: { deg: 30, vit: 50 }, 4: { deg: 80, vit: 80 } } },
-  koalak:     { name: 'Panoplie Koalak', bonus: { 2: { deg: 25 }, 3: { deg: 75, crit: 3 } } },
-  chafer:     { name: 'Panoplie du Chafer', bonus: { 2: { vit: 80 }, 3: { deg: 50, vit: 120, res: 8 } } },
+  bouftou:    { name: 'Panoplie du Bouftou', bonus: { 2: { vit: 15 }, 3: { deg: 15, vit: 35 }, 4: { deg: 40, vit: 40, res: 5 } } },
+  abraknyde:  { name: 'Panoplie Abraknyde', bonus: { 2: { vit: 30, sag: 20 }, 3: { deg: 30, vit: 60, sag: 30 }, 4: { deg: 45, vit: 95, sag: 40, res: 5 } } },
+  bwork:      { name: 'Panoplie du Bwork', bonus: { 2: { deg: 20, vit: 25 }, 3: { deg: 60, vit: 75 }, 4: { deg: 110, vit: 140 } } },
+  koalak:     { name: 'Panoplie Koalak', bonus: { 2: { deg: 30, vit: 35 }, 3: { deg: 90, vit: 95, crit: 3 } } },
+  chafer:     { name: 'Panoplie du Chafer', bonus: { 2: { vit: 95 }, 3: { deg: 50, vit: 120, res: 8 } } },
 };
 
 /* Équipement de récolte : emplacements séparés, bonus aux métiers de récolte.
@@ -4613,12 +4613,12 @@ Object.assign(STAT_SHORT, { kamas: '% Kamas', xpPct: '% XP', dmgPct: '% Dégâts
 const ITEMS = {
   /* Reliques */
   relique_tofu:     { name: 'Plume du Tofu Céleste', slot: 'relique', lvl: 1, relic: true, stats: { dodge: [5, 8], speed: [5, 10] } },
-  relique_bouftou:  { name: "Toison d'Or du Bouftou Royal", slot: 'relique', lvl: 15, relic: true, stats: { xpPct: [15, 20], vit: [20, 40] } },
-  relique_abra:     { name: "Graine d'Abraknyde Millénaire", slot: 'relique', lvl: 20, relic: true, stats: { regen: [2, 3], vit: [30, 50] } },
-  relique_craq:     { name: 'Noyau de Craqueleur', slot: 'relique', lvl: 35, relic: true, stats: { res: [6, 10], vit: [40, 60] } },
-  relique_bworkette:{ name: 'Cœur de Bworkette', slot: 'relique', lvl: 45, relic: true, stats: { deg: [10, 20], dmgPct: [12, 18] } },
-  relique_kanigrou: { name: 'Sablier du Kanigrou', slot: 'relique', lvl: 55, relic: true, stats: { deg: [15, 25], speed: [15, 25] } },
-  relique_chafer:   { name: 'Lanterne des Âmes', slot: 'relique', lvl: 70, relic: true, stats: { kamas: [30, 50], pp: [30, 50], xpPct: [5, 10] } },
+  relique_bouftou:  { name: "Toison d'Or du Bouftou Royal", slot: 'relique', lvl: 15, relic: true, stats: { vit: [30, 47], xpPct: [15, 20] } },
+  relique_abra:     { name: "Graine d'Abraknyde Millénaire", slot: 'relique', lvl: 20, relic: true, stats: { vit: [20, 32], regen: [1, 2] } },
+  relique_craq:     { name: 'Noyau de Craqueleur', slot: 'relique', lvl: 35, relic: true, stats: { vit: [38, 54], res: [6, 10] } },
+  relique_bworkette:{ name: 'Cœur de Bworkette', slot: 'relique', lvl: 45, relic: true, stats: { deg: [26, 41], dmgPct: [12, 18] } },
+  relique_kanigrou: { name: 'Sablier du Kanigrou', slot: 'relique', lvl: 55, relic: true, stats: { deg: [68, 96], speed: [15, 25] } },
+  relique_chafer:   { name: 'Lanterne des Âmes', slot: 'relique', lvl: 70, relic: true, stats: { deg: [37, 52], vit: [110, 157], pp: [40, 60], kamas: [30, 50], xpPct: [10, 16] } },
 
   /* Récolte */
   faux_paysan:     { name: 'Faux du Paysan', slot: 'outil', lvl: 1, harvest: true, stats: { rspd: [5, 10], rxp: [5, 10] } },
@@ -4636,44 +4636,44 @@ const ITEMS = {
   anneau_aventurier:   { icon: '💍', name: "Anneau de l'Aventurier", slot: 'anneau', lvl: 1, set: 'aventurier', stats: { deg: [4, 7], pp: [4, 7] } },
   bottes_aventurier:   { icon: '👢', name: "Bottes de l'Aventurier", slot: 'bottes', lvl: 1, set: 'aventurier', stats: { deg: [2, 5], vit: [3, 6] } },
   ceinture_aventurier: { icon: '🎗️', name: "Ceinture de l'Aventurier", slot: 'ceinture', lvl: 1, set: 'aventurier', stats: { deg: [4, 7] } },
-  baton_debutant:      { icon: '🪄', name: 'Bâton du Débutant', slot: 'arme', lvl: 3, stats: { deg: [7, 15] } },
-  epee_boisaille:      { icon: '🗡️', name: 'Épée de Boisaille', slot: 'arme', lvl: 3, stats: { deg: [7, 15] } },
+  baton_debutant:      { icon: '🪄', name: 'Bâton du Débutant', slot: 'arme', lvl: 3, stats: { deg: [9, 14] } },
+  epee_boisaille:      { icon: '🗡️', name: 'Épée de Boisaille', slot: 'arme', lvl: 3, stats: { deg: [9, 14] } },
 
   /* Niveau 10-20 */
-  coiffe_bouftou:      { icon: '🎩', name: 'Coiffe du Bouftou', slot: 'coiffe', lvl: 10, set: 'bouftou', stats: { deg: [5, 10], vit: [20, 35] } },
-  cape_bouftou:        { icon: '🧥', name: 'Cape du Bouftou', slot: 'cape', lvl: 10, set: 'bouftou', stats: { vit: [15, 25], sag: [6, 12] } },
-  amulette_bouftou:    { icon: '🧿', name: 'Amulette du Bouftou', slot: 'amulette', lvl: 15, set: 'bouftou', stats: { deg: [8, 14], vit: [20, 30], pp: [8, 14] } },
-  marteau_bouftou:     { icon: '🔨', name: 'Marteau du Bouftou', slot: 'arme', lvl: 18, set: 'bouftou', stats: { deg: [25, 43], vit: [10, 20] } },
-  bottes_moskito:      { icon: '🥾', name: 'Bottes Moskito', slot: 'bottes', lvl: 12, stats: { deg: [8, 14], vit: [8, 14], dodge: [1, 3] } },
-  anneau_arakne:       { icon: '💠', name: "Anneau d'Arakne", slot: 'anneau', lvl: 14, stats: { deg: [8, 16], pp: [8, 13] } },
-  ceinture_champ:      { icon: '🌾', name: 'Ceinture Champêtre', slot: 'ceinture', lvl: 16, stats: { vit: [15, 25], sag: [10, 20] } },
-  arc_moskito:         { icon: '🏹', name: 'Arc Moskito', slot: 'arme', lvl: 15, stats: { deg: [22, 36], crit: [1, 2] } },
-  pelle_champ:         { icon: '⛏️', name: 'Pelle des Champs', slot: 'arme', lvl: 15, stats: { deg: [22, 36], pp: [8, 14] } },
+  coiffe_bouftou:      { icon: '🎩', name: 'Coiffe du Bouftou', slot: 'coiffe', lvl: 10, set: 'bouftou', stats: { deg: [5, 8], vit: [20, 31] } },
+  cape_bouftou:        { icon: '🧥', name: 'Cape du Bouftou', slot: 'cape', lvl: 10, set: 'bouftou', stats: { vit: [15, 23], sag: [6, 12] } },
+  amulette_bouftou:    { icon: '🧿', name: 'Amulette du Bouftou', slot: 'amulette', lvl: 15, set: 'bouftou', stats: { deg: [8, 13], vit: [19, 29], pp: [8, 14] } },
+  marteau_bouftou:     { icon: '🔨', name: 'Marteau du Bouftou', slot: 'arme', lvl: 18, set: 'bouftou', stats: { deg: [19, 30], vit: [8, 13] } },
+  bottes_moskito:      { icon: '🥾', name: 'Bottes Moskito', slot: 'bottes', lvl: 12, stats: { deg: [8, 13], vit: [8, 13], dodge: [1, 3] } },
+  anneau_arakne:       { icon: '💠', name: "Anneau d'Arakne", slot: 'anneau', lvl: 14, stats: { deg: [9, 14], pp: [8, 13] } },
+  ceinture_champ:      { icon: '🌾', name: 'Ceinture Champêtre', slot: 'ceinture', lvl: 16, stats: { vit: [15, 24], sag: [10, 20] } },
+  arc_moskito:         { icon: '🏹', name: 'Arc Moskito', slot: 'arme', lvl: 15, stats: { deg: [23, 36], crit: [1, 2] } },
+  pelle_champ:         { icon: '⛏️', name: 'Pelle des Champs', slot: 'arme', lvl: 15, stats: { deg: [24, 37], pp: [8, 14] } },
 
   /* Niveau 25-35 */
-  baton_abraknyde:     { icon: '🌿', name: 'Bâton Abraknyde', slot: 'arme', lvl: 25, set: 'abraknyde', stats: { deg: [35, 55] } },
-  cape_abraknyde:      { icon: '🍃', name: 'Cape Abraknyde', slot: 'cape', lvl: 25, set: 'abraknyde', stats: { vit: [25, 40], sag: [12, 24] } },
-  anneau_ecurouille:   { icon: '🌰', name: "Anneau d'Écurouille", slot: 'anneau', lvl: 25, set: 'abraknyde', stats: { deg: [14, 24], pp: [11, 19] } },
-  bottes_sanglier:     { icon: '🐾', name: 'Bottes du Sanglier', slot: 'bottes', lvl: 30, set: 'abraknyde', stats: { deg: [15, 25], res: [2, 4], vit: [10, 20] } },
-  coiffe_prespic:      { icon: '👒', name: 'Coiffe Prespic', slot: 'coiffe', lvl: 28, stats: { deg: [10, 15], vit: [30, 45], res: [1, 3], pp: [12, 20] } },
+  baton_abraknyde:     { icon: '🌿', name: 'Bâton Abraknyde', slot: 'arme', lvl: 25, set: 'abraknyde', stats: { deg: [40, 58] } },
+  cape_abraknyde:      { icon: '🍃', name: 'Cape Abraknyde', slot: 'cape', lvl: 25, set: 'abraknyde', stats: { vit: [40, 56], sag: [12, 24] } },
+  anneau_ecurouille:   { icon: '🌰', name: "Anneau d'Écurouille", slot: 'anneau', lvl: 25, set: 'abraknyde', stats: { deg: [15, 24], pp: [11, 19] } },
+  bottes_sanglier:     { icon: '🐾', name: 'Bottes du Sanglier', slot: 'bottes', lvl: 30, set: 'abraknyde', stats: { deg: [23, 36], vit: [17, 27], res: [2, 4] } },
+  coiffe_prespic:      { icon: '👒', name: 'Coiffe Prespic', slot: 'coiffe', lvl: 28, stats: { deg: [14, 21], vit: [43, 62], pp: [12, 20], res: [1, 3] } },
 
   /* Niveau 40-55 */
-  hache_bwork:         { icon: '🪓', name: 'Hache du Bwork', slot: 'arme', lvl: 45, set: 'bwork', stats: { deg: [60, 90], crit: [1, 3] } },
-  casque_bwork:        { icon: '⛑️', name: 'Casque du Bwork', slot: 'coiffe', lvl: 42, set: 'bwork', stats: { deg: [15, 25], vit: [45, 65] } },
-  ceinture_bwork:      { icon: '⛓️', name: 'Ceinture du Bwork', slot: 'ceinture', lvl: 42, set: 'bwork', stats: { deg: [10, 15], vit: [30, 45] } },
-  amulette_craqueleur: { icon: '🪬', name: 'Amulette du Craqueleur', slot: 'amulette', lvl: 40, set: 'bwork', stats: { vit: [50, 80], res: [3, 5], pp: [15, 26] } },
-  cape_kwak:           { icon: '🧊', name: 'Cape Kwakwa', slot: 'cape', lvl: 35, stats: { deg: [29, 42], pp: [14, 24] } },
-  bottes_scara:        { icon: '🩴', name: 'Bottes Scarafeuille', slot: 'bottes', lvl: 38, stats: { vit: [30, 45], res: [3, 5], sag: [10, 20] } },
+  hache_bwork:         { icon: '🪓', name: 'Hache du Bwork', slot: 'arme', lvl: 45, set: 'bwork', stats: { deg: [62, 89], crit: [1, 3] } },
+  casque_bwork:        { icon: '⛑️', name: 'Casque du Bwork', slot: 'coiffe', lvl: 42, set: 'bwork', stats: { deg: [24, 38], vit: [71, 101] } },
+  ceinture_bwork:      { icon: '⛓️', name: 'Ceinture du Bwork', slot: 'ceinture', lvl: 42, set: 'bwork', stats: { deg: [12, 20], vit: [40, 56] } },
+  amulette_craqueleur: { icon: '🪬', name: 'Amulette du Craqueleur', slot: 'amulette', lvl: 40, set: 'bwork', stats: { vit: [53, 76], pp: [15, 26], res: [3, 5] } },
+  cape_kwak:           { icon: '🧊', name: 'Cape Kwakwa', slot: 'cape', lvl: 35, stats: { deg: [21, 34], vit: [34, 48], pp: [14, 24] } },
+  bottes_scara:        { icon: '🩴', name: 'Bottes Scarafeuille', slot: 'bottes', lvl: 38, stats: { vit: [48, 68], sag: [10, 20], res: [3, 5] } },
 
   /* Niveau 55-70 */
-  coiffe_koalak:       { icon: '🎓', name: 'Coiffe Koalak', slot: 'coiffe', lvl: 55, set: 'koalak', stats: { deg: [20, 30], vit: [60, 90], pp: [20, 34] } },
-  bottes_kanigrou:     { icon: '🦶', name: 'Bottes Kanigrou', slot: 'bottes', lvl: 60, set: 'koalak', stats: { deg: [40, 55], vit: [30, 45], dodge: [3, 5] } },
-  anneau_mufafah:      { icon: '🔶', name: 'Anneau Mufafah', slot: 'anneau', lvl: 65, set: 'koalak', stats: { deg: [37, 53], pp: [23, 39] } },
+  coiffe_koalak:       { icon: '🎓', name: 'Coiffe Koalak', slot: 'coiffe', lvl: 55, set: 'koalak', stats: { deg: [27, 42], vit: [85, 121], pp: [20, 34] } },
+  bottes_kanigrou:     { icon: '🦶', name: 'Bottes Kanigrou', slot: 'bottes', lvl: 60, set: 'koalak', stats: { deg: [46, 66], vit: [37, 52], dodge: [3, 5] } },
+  anneau_mufafah:      { icon: '🔶', name: 'Anneau Mufafah', slot: 'anneau', lvl: 65, set: 'koalak', stats: { deg: [43, 62], pp: [23, 39] } },
 
   /* Niveau 75-100 */
-  cape_chafer:         { icon: '🦇', name: 'Cape du Chafer', slot: 'cape', lvl: 75, set: 'chafer', stats: { vit: [90, 130], sag: [30, 50], pp: [26, 44] } },
-  ceinture_ecto:       { icon: '🌀', name: 'Ceinture Ectoplasmique', slot: 'ceinture', lvl: 85, set: 'chafer', stats: { deg: [29, 48], pp: [29, 49] } },
-  epee_chafer:         { icon: '⚔️', name: 'Épée du Chafer', slot: 'arme', lvl: 90, set: 'chafer', stats: { deg: [76, 104], crit: [3, 5] } },
+  cape_chafer:         { icon: '🦇', name: 'Cape du Chafer', slot: 'cape', lvl: 75, set: 'chafer', stats: { vit: [116, 165], sag: [30, 50], pp: [26, 44] } },
+  ceinture_ecto:       { icon: '🌀', name: 'Ceinture Ectoplasmique', slot: 'ceinture', lvl: 85, set: 'chafer', stats: { deg: [41, 58], vit: [68, 96], pp: [29, 49] } },
+  epee_chafer:         { icon: '⚔️', name: 'Épée du Chafer', slot: 'arme', lvl: 90, set: 'chafer', stats: { deg: [105, 149], crit: [3, 5] } },
 };
 
 /* --------------------------------------------------------------------
@@ -5087,65 +5087,65 @@ DUNGEONS.push(
 
 /* ---------------------------- Panoplies ---------------------------- */
 Object.assign(SETS, {
-  wabbit:    { name: 'Panoplie du Wabbit',    bonus: { 2: { pp: 12 }, 3: { deg: 25, pp: 20 }, 4: { deg: 35, dodge: 3, pp: 30 }, 5: { deg: 55, dodge: 5, crit: 2, pp: 40 } } },
-  blop:      { name: 'Panoplie Blop',         bonus: { 2: { res: 3 }, 3: { vit: 60, deg: 20 }, 4: { vit: 90, deg: 45, res: 6 }, 5: { vit: 130, deg: 80, res: 8, regen: 1 } } },
-  kanniboul: { name: 'Panoplie Kanniboul',    bonus: { 2: { deg: 30 }, 3: { deg: 60, crit: 3 }, 4: { deg: 100, crit: 4, dodge: 3 }, 5: { deg: 150, crit: 6, dodge: 5 } } },
-  porcos:    { name: 'Panoplie du Porcos',    bonus: { 2: { vit: 60 }, 3: { deg: 50, vit: 120 }, 4: { deg: 90, vit: 170, res: 7 }, 5: { deg: 130, vit: 230, res: 10, kamas: 10 } } },
-  dragoeuf:  { name: 'Panoplie du Dragoeuf',  bonus: { 2: { vit: 100 }, 3: { deg: 60, vit: 160 }, 4: { deg: 110, vit: 220, crit: 3 }, 5: { deg: 160, vit: 300, crit: 5, res: 8 } } },
-  mansot:    { name: 'Panoplie du Mansot',    bonus: { 2: { vit: 140 }, 3: { deg: 80, vit: 220, res: 6 }, 4: { deg: 140, vit: 300, res: 9 }, 5: { deg: 210, vit: 400, res: 12, dodge: 4 } } },
+  wabbit:    { name: 'Panoplie du Wabbit',    bonus: { 2: { vit: 30, pp: 12 }, 3: { deg: 30, vit: 60, pp: 20 }, 4: { deg: 50, vit: 100, pp: 30, dodge: 3 }, 5: { deg: 70, vit: 140, pp: 40, dodge: 5, crit: 2 } } },
+  blop:      { name: 'Panoplie Blop',         bonus: { 2: { vit: 30, res: 3 }, 3: { deg: 35, vit: 110 }, 4: { deg: 65, vit: 130, res: 6 }, 5: { deg: 95, vit: 150, res: 8, regen: 1 } } },
+  kanniboul: { name: 'Panoplie Kanniboul',    bonus: { 2: { deg: 30, vit: 30 }, 3: { deg: 80, vit: 85, crit: 3 }, 4: { deg: 130, vit: 140, dodge: 3, crit: 4 }, 5: { deg: 180, vit: 200, dodge: 5, crit: 6 } } },
+  porcos:    { name: 'Panoplie du Porcos',    bonus: { 2: { vit: 80 }, 3: { deg: 70, vit: 160 }, 4: { deg: 110, vit: 210, res: 7 }, 5: { deg: 170, vit: 290, res: 10, kamas: 10 } } },
+  dragoeuf:  { name: 'Panoplie du Dragoeuf',  bonus: { 2: { vit: 95 }, 3: { deg: 75, vit: 200 }, 4: { deg: 150, vit: 300, crit: 3 }, 5: { deg: 190, vit: 360, res: 8, crit: 5 } } },
+  mansot:    { name: 'Panoplie du Mansot',    bonus: { 2: { vit: 110 }, 3: { deg: 60, vit: 160, res: 6 }, 4: { deg: 130, vit: 270, res: 9 }, 5: { deg: 180, vit: 340, res: 12, dodge: 4 } } },
 });
 
 /* ---------------------------- Équipements & reliques ---------------------------- */
 Object.assign(ITEMS, {
   /* Panoplie du Wabbit — oreilles, pattes et carottes */
-  coiffe_wabbit:   { icon: '🐰', name: 'Coiffe du Wabbit', slot: 'coiffe', lvl: 24, set: 'wabbit', stats: { deg: [12, 18], vit: [32, 48], pp: [10, 16] } },
-  bottes_wabbit:   { icon: '🐾', name: 'Pattes de Wabbit', slot: 'bottes', lvl: 26, set: 'wabbit', stats: { deg: [18, 28], vit: [14, 22], dodge: [2, 4] } },
+  coiffe_wabbit:   { icon: '🐰', name: 'Coiffe du Wabbit', slot: 'coiffe', lvl: 24, set: 'wabbit', stats: { deg: [14, 21], vit: [39, 55], pp: [10, 16] } },
+  bottes_wabbit:   { icon: '🐾', name: 'Pattes de Wabbit', slot: 'bottes', lvl: 26, set: 'wabbit', stats: { deg: [21, 32], vit: [16, 25], dodge: [2, 4] } },
   anneau_wabbit:   { icon: '🥕', name: 'Anneau de la Carotte Dorée', slot: 'anneau', lvl: 28, set: 'wabbit', stats: { deg: [17, 27], pp: [14, 22] } },
-  cape_wabbit:     { icon: '🧥', name: 'Cape du Wa Wabbit', slot: 'cape', lvl: 32, set: 'wabbit', stats: { vit: [30, 46], sag: [14, 26], pp: [12, 20] } },
-  sceptre_wabbit:  { icon: '🔱', name: 'Sceptre du Wa Wabbit', slot: 'arme', lvl: 34, set: 'wabbit', stats: { deg: [45, 68], crit: [1, 2] } },
-  relique_wabbit:  { name: 'Patte de Lapin du Wa Wabbit', slot: 'relique', lvl: 30, relic: true, stats: { kamas: [15, 25], dodge: [4, 7], pp: [15, 25] } },
+  cape_wabbit:     { icon: '🧥', name: 'Cape du Wa Wabbit', slot: 'cape', lvl: 32, set: 'wabbit', stats: { vit: [50, 72], sag: [14, 26], pp: [12, 20] } },
+  sceptre_wabbit:  { icon: '🔱', name: 'Sceptre du Wa Wabbit', slot: 'arme', lvl: 34, set: 'wabbit', stats: { deg: [50, 72], crit: [1, 2] } },
+  relique_wabbit:  { name: 'Patte de Lapin du Wa Wabbit', slot: 'relique', lvl: 30, relic: true, stats: { vit: [41, 59], pp: [15, 25], dodge: [4, 7], kamas: [15, 25] } },
 
   /* Panoplie Blop — une couleur par pièce, la masse est multicolore */
-  coiffe_blop:     { icon: '🟤', name: 'Coiffe Blop Coco', slot: 'coiffe', lvl: 38, set: 'blop', stats: { deg: [14, 22], vit: [52, 74], res: [2, 4] } },
-  cape_blop:       { icon: '🔴', name: 'Cape Blop Griotte', slot: 'cape', lvl: 40, set: 'blop', stats: { deg: [24, 36], vit: [30, 46], pp: [14, 22] } },
-  amulette_blop:   { icon: '🔵', name: 'Amulette Blop Indigo', slot: 'amulette', lvl: 44, set: 'blop', stats: { vit: [55, 84], res: [3, 5], pp: [16, 28] } },
-  anneau_blop:     { icon: '🟢', name: 'Anneau Blop Reinette', slot: 'anneau', lvl: 46, set: 'blop', stats: { deg: [28, 40], pp: [18, 30], sag: [8, 14] } },
-  masse_blop:      { icon: '🌈', name: 'Masse du Blop Multicolore', slot: 'arme', lvl: 49, set: 'blop', stats: { deg: [66, 98], vit: [15, 30] } },
-  relique_blop:    { name: 'Cœur Prismatique du Blop Royal', slot: 'relique', lvl: 48, relic: true, stats: { regen: [3, 4], res: [5, 8], vit: [40, 70] } },
+  coiffe_blop:     { icon: '🟤', name: 'Coiffe Blop Coco', slot: 'coiffe', lvl: 38, set: 'blop', stats: { deg: [15, 23], vit: [54, 77], res: [2, 4] } },
+  cape_blop:       { icon: '🔴', name: 'Cape Blop Griotte', slot: 'cape', lvl: 40, set: 'blop', stats: { deg: [29, 45], vit: [39, 55], pp: [14, 22] } },
+  amulette_blop:   { icon: '🔵', name: 'Amulette Blop Indigo', slot: 'amulette', lvl: 44, set: 'blop', stats: { vit: [63, 89], pp: [16, 28], res: [3, 5] } },
+  anneau_blop:     { icon: '🟢', name: 'Anneau Blop Reinette', slot: 'anneau', lvl: 46, set: 'blop', stats: { deg: [27, 41], sag: [8, 14], pp: [18, 30] } },
+  masse_blop:      { icon: '🌈', name: 'Masse du Blop Multicolore', slot: 'arme', lvl: 49, set: 'blop', stats: { deg: [59, 85], vit: [15, 24] } },
+  relique_blop:    { name: 'Cœur Prismatique du Blop Royal', slot: 'relique', lvl: 48, relic: true, stats: { vit: [24, 38], res: [5, 8], regen: [1, 2] } },
 
   /* Panoplie Kanniboul — os, plumes et masques */
-  coiffe_kanniboul:  { icon: '🎭', name: 'Masque du Kanniboul', slot: 'coiffe', lvl: 54, set: 'kanniboul', stats: { deg: [24, 36], vit: [50, 76], crit: [1, 2] } },
-  cape_kanniboul:    { icon: '🦚', name: 'Pagne de Plumes', slot: 'cape', lvl: 58, set: 'kanniboul', stats: { deg: [20, 32], vit: [66, 98], dodge: [2, 4] } },
-  ceinture_kanniboul:{ icon: '🦴', name: "Ceinture d'Os", slot: 'ceinture', lvl: 60, set: 'kanniboul', stats: { deg: [30, 46], vit: [40, 58] } },
-  bottes_kanniboul:  { icon: '🥾', name: 'Sandales du Chasseur', slot: 'bottes', lvl: 62, set: 'kanniboul', stats: { deg: [42, 58], vit: [34, 50], dodge: [3, 5] } },
-  lance_kanniboul:   { icon: '🔱', name: "Javelot d'Ebil", slot: 'arme', lvl: 64, set: 'kanniboul', stats: { deg: [68, 98], crit: [2, 4] } },
-  relique_kanniboul: { name: "Totem d'Ebil", slot: 'relique', lvl: 62, relic: true, stats: { deg: [20, 35], dmgPct: [10, 16], crit: [3, 6] } },
+  coiffe_kanniboul:  { icon: '🎭', name: 'Masque du Kanniboul', slot: 'coiffe', lvl: 54, set: 'kanniboul', stats: { deg: [36, 51], vit: [75, 107], crit: [1, 2] } },
+  cape_kanniboul:    { icon: '🦚', name: 'Pagne de Plumes', slot: 'cape', lvl: 58, set: 'kanniboul', stats: { deg: [20, 32], vit: [68, 96], dodge: [2, 4] } },
+  ceinture_kanniboul:{ icon: '🦴', name: "Ceinture d'Os", slot: 'ceinture', lvl: 60, set: 'kanniboul', stats: { deg: [37, 52], vit: [48, 68] } },
+  bottes_kanniboul:  { icon: '🥾', name: 'Sandales du Chasseur', slot: 'bottes', lvl: 62, set: 'kanniboul', stats: { deg: [46, 66], vit: [39, 55], dodge: [3, 5] } },
+  lance_kanniboul:   { icon: '🔱', name: "Javelot d'Ebil", slot: 'arme', lvl: 64, set: 'kanniboul', stats: { deg: [87, 123], crit: [2, 4] } },
+  relique_kanniboul: { name: "Totem d'Ebil", slot: 'relique', lvl: 62, relic: true, stats: { deg: [46, 66], crit: [3, 6], dmgPct: [10, 16] } },
 
   /* Panoplie du Porcos — lard, boucle et grosse chaîne dorée */
-  coiffe_porcos:   { icon: '🎩', name: 'Chapeau de Don Dorgan', slot: 'coiffe', lvl: 76, set: 'porcos', stats: { deg: [28, 42], vit: [70, 104], pp: [24, 38] } },
-  cape_porcos:     { icon: '🧥', name: 'Redingote de Farle', slot: 'cape', lvl: 78, set: 'porcos', stats: { vit: [80, 116], sag: [24, 40], res: [2, 4] } },
-  ceinture_porcos: { icon: '🎗️', name: 'Ceinture du Porsalu', slot: 'ceinture', lvl: 80, set: 'porcos', stats: { deg: [32, 50], vit: [52, 72] } },
-  amulette_porcos: { icon: '📿', name: 'Médaillon du Porcos', slot: 'amulette', lvl: 82, set: 'porcos', stats: { vit: [90, 130], res: [4, 6], pp: [28, 46] } },
-  rotissoire_cochon:{ icon: '🍖', name: 'Rôtissoire du Dragon Cochon', slot: 'arme', lvl: 88, set: 'porcos', stats: { deg: [78, 112], vit: [20, 35] } },
+  coiffe_porcos:   { icon: '🎩', name: 'Chapeau de Don Dorgan', slot: 'coiffe', lvl: 76, set: 'porcos', stats: { deg: [43, 61], vit: [107, 152], pp: [24, 38] } },
+  cape_porcos:     { icon: '🧥', name: 'Redingote de Farle', slot: 'cape', lvl: 78, set: 'porcos', stats: { vit: [108, 154], sag: [24, 40], res: [2, 4] } },
+  ceinture_porcos: { icon: '🎗️', name: 'Ceinture du Porsalu', slot: 'ceinture', lvl: 80, set: 'porcos', stats: { deg: [45, 64], vit: [68, 96] } },
+  amulette_porcos: { icon: '📿', name: 'Médaillon du Porcos', slot: 'amulette', lvl: 82, set: 'porcos', stats: { vit: [97, 138], pp: [28, 46], res: [4, 6] } },
+  rotissoire_cochon:{ icon: '🍖', name: 'Rôtissoire du Dragon Cochon', slot: 'arme', lvl: 88, set: 'porcos', stats: { deg: [96, 136], vit: [26, 41] } },
   /* Dofus : objet à part (emplacements Dofus du héros), pas de jet : les stats sont fixes */
-  dofus_turquoise: { name: 'Dofus Turquoise', slot: 'dofus', lvl: 80, dofus: true, stats: { crit: [20, 20], critDmg: [50, 50] } },
-  relique_porcos:  { name: 'Tirelire du Dragon Cochon', slot: 'relique', lvl: 80, relic: true, stats: { kamas: [50, 80], vit: [80, 130] } },
+  dofus_turquoise: { name: 'Dofus Turquoise', slot: 'dofus', lvl: 80, dofus: true, stats: { crit: [22, 22], critDmg: [60, 60] } },
+  relique_porcos:  { name: 'Tirelire du Dragon Cochon', slot: 'relique', lvl: 80, relic: true, stats: { deg: [33, 47], vit: [166, 237], kamas: [50, 80] } },
 
   /* Panoplie du Dragoeuf — coquille, ailes et braise */
-  coiffe_dragoeuf:  { icon: '🥚', name: 'Coquille du Dragoeuf', slot: 'coiffe', lvl: 90, set: 'dragoeuf', stats: { deg: [36, 52], vit: [90, 130], res: [2, 4] } },
-  cape_dragoeuf:    { icon: '🦇', name: 'Ailes de Dragoss', slot: 'cape', lvl: 94, set: 'dragoeuf', stats: { vit: [100, 144], sag: [34, 54], dodge: [3, 5] } },
-  amulette_dragoeuf:{ icon: '📿', name: 'Collier de Dragueuse', slot: 'amulette', lvl: 96, set: 'dragoeuf', stats: { deg: [40, 58], vit: [100, 140], pp: [30, 50] } },
-  anneau_dragoeuf:  { icon: '💍', name: 'Anneau de Dragoss Doré', slot: 'anneau', lvl: 98, set: 'dragoeuf', stats: { deg: [52, 72], pp: [32, 52], crit: [1, 2] } },
-  croc_crocabulia:  { icon: '🦷', name: 'Croc de Crocabulia', slot: 'arme', lvl: 104, set: 'dragoeuf', stats: { deg: [100, 140], crit: [3, 5] } },
-  relique_dragoeuf: { name: 'Œuf de Crocabulia', slot: 'relique', lvl: 100, relic: true, stats: { speed: [18, 28], dmgPct: [12, 18], vit: [80, 120] } },
+  coiffe_dragoeuf:  { icon: '🥚', name: 'Coquille du Dragoeuf', slot: 'coiffe', lvl: 90, set: 'dragoeuf', stats: { deg: [43, 62], vit: [109, 155], res: [2, 4] } },
+  cape_dragoeuf:    { icon: '🦇', name: 'Ailes de Dragoss', slot: 'cape', lvl: 94, set: 'dragoeuf', stats: { vit: [116, 165], sag: [34, 54], dodge: [3, 5] } },
+  amulette_dragoeuf:{ icon: '📿', name: 'Collier de Dragueuse', slot: 'amulette', lvl: 96, set: 'dragoeuf', stats: { deg: [43, 62], vit: [106, 151], pp: [30, 50] } },
+  anneau_dragoeuf:  { icon: '💍', name: 'Anneau de Dragoss Doré', slot: 'anneau', lvl: 98, set: 'dragoeuf', stats: { deg: [57, 81], pp: [32, 52], crit: [1, 2] } },
+  croc_crocabulia:  { icon: '🦷', name: 'Croc de Crocabulia', slot: 'arme', lvl: 104, set: 'dragoeuf', stats: { deg: [125, 178], crit: [3, 5] } },
+  relique_dragoeuf: { name: 'Œuf de Crocabulia', slot: 'relique', lvl: 100, relic: true, stats: { vit: [123, 175], dmgPct: [8, 12], speed: [10, 16] } },
 
   /* Panoplie du Mansot — fourrure, givre et glace éternelle */
-  coiffe_mansot:   { icon: '🧣', name: 'Capuche du Mansot', slot: 'coiffe', lvl: 108, set: 'mansot', stats: { deg: [46, 66], vit: [110, 160], res: [3, 5] } },
-  cape_mansot:     { icon: '🧥', name: 'Manteau du Mansot', slot: 'cape', lvl: 112, set: 'mansot', stats: { vit: [120, 170], sag: [40, 62], res: [3, 5] } },
-  bottes_mansot:   { icon: '🥾', name: 'Bottes de Givre', slot: 'bottes', lvl: 114, set: 'mansot', stats: { deg: [58, 80], vit: [70, 100], dodge: [4, 6] } },
-  ceinture_mansot: { icon: '🎗️', name: 'Ceinture de Glace', slot: 'ceinture', lvl: 118, set: 'mansot', stats: { deg: [54, 76], vit: [80, 116], pp: [36, 58] } },
-  masse_mansot:    { icon: '🔨', name: 'Masse du Mansot Royal', slot: 'arme', lvl: 126, set: 'mansot', stats: { deg: [120, 168], crit: [3, 6] } },
-  relique_mansot:  { name: 'Cœur de Givre du Mansot Royal', slot: 'relique', lvl: 120, relic: true, stats: { res: [8, 12], dmgPct: [14, 20], dodge: [4, 7] } },
+  coiffe_mansot:   { icon: '🧣', name: 'Capuche du Mansot', slot: 'coiffe', lvl: 108, set: 'mansot', stats: { deg: [49, 70], vit: [119, 170], res: [3, 5] } },
+  cape_mansot:     { icon: '🧥', name: 'Manteau du Mansot', slot: 'cape', lvl: 112, set: 'mansot', stats: { vit: [130, 184], sag: [40, 62], res: [3, 5] } },
+  bottes_mansot:   { icon: '🥾', name: 'Bottes de Givre', slot: 'bottes', lvl: 114, set: 'mansot', stats: { deg: [66, 94], vit: [81, 116], dodge: [4, 6] } },
+  ceinture_mansot: { icon: '🎗️', name: 'Ceinture de Glace', slot: 'ceinture', lvl: 118, set: 'mansot', stats: { deg: [56, 80], vit: [85, 121], pp: [36, 58] } },
+  masse_mansot:    { icon: '🔨', name: 'Masse du Mansot Royal', slot: 'arme', lvl: 126, set: 'mansot', stats: { deg: [143, 204], crit: [3, 6] } },
+  relique_mansot:  { name: 'Cœur de Givre du Mansot Royal', slot: 'relique', lvl: 120, relic: true, stats: { vit: [89, 126], res: [5, 8], dodge: [3, 5], dmgPct: [8, 12] } },
 });
 
 /* ---------------------------- Recettes (coût ×CRAFT_COST_MULT appliqué ici) ---------------------------- */
@@ -5358,68 +5358,68 @@ DUNGEONS.push(
 
 /* ---------------------------- Panoplies ---------------------------- */
 Object.assign(SETS, {
-  pandala:  { name: 'Panoplie de Pandala',          bonus: { 2: { vit: 180 }, 3: { deg: 100, vit: 280, res: 8 }, 4: { deg: 170, vit: 380, res: 11 }, 5: { deg: 250, vit: 500, res: 14, dodge: 5 } } },
-  etang:    { name: 'Panoplie de la Carpe Céleste', bonus: { 2: { res: 4 }, 3: { vit: 180, deg: 80 }, 4: { vit: 260, deg: 140, res: 7 }, 5: { vit: 360, deg: 200, res: 10, regen: 1 } } },
-  dunes:    { name: 'Panoplie des Dunes',           bonus: { 2: { vit: 220 }, 3: { deg: 120, vit: 340, res: 8 }, 4: { deg: 200, vit: 450, res: 11 }, 5: { deg: 300, vit: 600, res: 14, crit: 4 } } },
-  mines:    { name: "Panoplie du Mineur d'Ocre",    bonus: { 2: { pp: 30 }, 3: { deg: 110, pp: 45 }, 4: { deg: 190, pp: 65, kamas: 8 }, 5: { deg: 280, pp: 90, kamas: 14, vit: 300 } } },
-  srambad:  { name: 'Panoplie de Srambad',          bonus: { 2: { vit: 260 }, 3: { deg: 150, vit: 400, dodge: 3 }, 4: { deg: 250, vit: 540, dodge: 5 }, 5: { deg: 380, vit: 720, crit: 6, dodge: 7 } } },
-  roseraie: { name: 'Panoplie de la Roseraie Noire', bonus: { 2: { regen: 1 }, 3: { deg: 140, vit: 320 }, 4: { deg: 230, vit: 450, regen: 1 }, 5: { deg: 340, vit: 600, regen: 2, crit: 5 } } },
+  pandala:  { name: 'Panoplie de Pandala',          bonus: { 2: { vit: 130 }, 3: { deg: 60, vit: 160, res: 8 }, 4: { deg: 130, vit: 290, res: 11 }, 5: { deg: 180, vit: 360, res: 14, dodge: 5 } } },
+  etang:    { name: 'Panoplie de la Carpe Céleste', bonus: { 2: { vit: 55, res: 4 }, 3: { deg: 110, vit: 250 }, 4: { deg: 180, vit: 330, res: 7 }, 5: { deg: 230, vit: 410, res: 10, regen: 1 } } },
+  dunes:    { name: 'Panoplie des Dunes',           bonus: { 2: { vit: 160 }, 3: { deg: 70, vit: 200, res: 8 }, 4: { deg: 160, vit: 360, res: 11 }, 5: { deg: 250, vit: 500, res: 14, crit: 4 } } },
+  mines:    { name: "Panoplie du Mineur d'Ocre",    bonus: { 2: { vit: 140, pp: 30 }, 3: { deg: 140, vit: 270, pp: 45 }, 4: { deg: 250, vit: 490, pp: 65, kamas: 8 }, 5: { deg: 370, vit: 740, pp: 90, kamas: 14 } } },
+  srambad:  { name: 'Panoplie de Srambad',          bonus: { 2: { vit: 160 }, 3: { deg: 110, vit: 280, dodge: 3 }, 4: { deg: 210, vit: 460, dodge: 5 }, 5: { deg: 320, vit: 610, dodge: 7, crit: 6 } } },
+  roseraie: { name: 'Panoplie de la Roseraie Noire', bonus: { 2: { vit: 40, regen: 1 }, 3: { deg: 140, vit: 320 }, 4: { deg: 230, vit: 440, regen: 1 }, 5: { deg: 310, vit: 550, crit: 5, regen: 2 } } },
 });
 
 /* ---------------------------- Équipements, reliques & Dofus ----------------------------
    Pour chaque pièce, la description du dessin attendu est donnée en commentaire (art4a-c.js). */
 Object.assign(ITEMS, {
   /* Panoplie de Pandala — jade, bambou, laque rouge et or */
-  coiffe_pandala:   { icon: '👒', name: 'Kasa de Bambou', slot: 'coiffe', lvl: 130, set: 'pandala', stats: { deg: [56, 80], vit: [138, 196], res: [3, 5] } },
-  cape_pandala:     { icon: '🧥', name: 'Haori du Kitsou', slot: 'cape', lvl: 134, set: 'pandala', stats: { vit: [144, 204], sag: [48, 72], dodge: [4, 6] } },
-  bottes_pandala:   { icon: '👡', name: 'Geta du Tengu', slot: 'bottes', lvl: 138, set: 'pandala', stats: { deg: [62, 86], vit: [88, 126], dodge: [5, 7] } },
-  amulette_pandala: { icon: '🍶', name: 'Gourde du Tanukoui', slot: 'amulette', lvl: 142, set: 'pandala', stats: { deg: [50, 70], vit: [150, 214], pp: [40, 64] } },
-  katana_jade:      { icon: '🗡️', name: 'Katana du Dragon de Jade', slot: 'arme', lvl: 146, set: 'pandala', stats: { deg: [142, 200], crit: [4, 7] } },
-  relique_dragon_jade: { name: 'Perle du Dragon de Jade', slot: 'relique', lvl: 146, relic: true, stats: { dmgPct: [16, 22], res: [8, 12], crit: [3, 5] } },
-  dofus_emeraude:   { name: 'Dofus Émeraude', slot: 'dofus', lvl: 144, dofus: true, stats: { vit: [450, 450], res: [10, 10], regen: [1, 1] } },
+  coiffe_pandala:   { icon: '👒', name: 'Kasa de Bambou', slot: 'coiffe', lvl: 130, set: 'pandala', stats: { deg: [57, 82], vit: [141, 201], res: [3, 5] } },
+  cape_pandala:     { icon: '🧥', name: 'Haori du Kitsou', slot: 'cape', lvl: 134, set: 'pandala', stats: { vit: [138, 197], sag: [48, 72], dodge: [4, 6] } },
+  bottes_pandala:   { icon: '👡', name: 'Geta du Tengu', slot: 'bottes', lvl: 138, set: 'pandala', stats: { deg: [64, 91], vit: [92, 131], dodge: [5, 7] } },
+  amulette_pandala: { icon: '🍶', name: 'Gourde du Tanukoui', slot: 'amulette', lvl: 142, set: 'pandala', stats: { deg: [52, 74], vit: [158, 225], pp: [40, 64] } },
+  katana_jade:      { icon: '🗡️', name: 'Katana du Dragon de Jade', slot: 'arme', lvl: 146, set: 'pandala', stats: { deg: [158, 225], crit: [4, 7] } },
+  relique_dragon_jade: { name: 'Perle du Dragon de Jade', slot: 'relique', lvl: 146, relic: true, stats: { deg: [101, 143], res: [6, 9], crit: [3, 5], dmgPct: [12, 16] } },
+  dofus_emeraude:   { name: 'Dofus Émeraude', slot: 'dofus', lvl: 144, dofus: true, stats: { vit: [280, 280], res: [8, 8], regen: [1, 1] } },
 
   /* Panoplie de la Carpe Céleste — lotus rose, écailles de koï orange, eau turquoise */
-  coiffe_etang:     { icon: '🪷', name: 'Couronne de Lotus', slot: 'coiffe', lvl: 132, set: 'etang', stats: { deg: [54, 78], vit: [136, 194], res: [3, 5] } },
-  cape_etang:       { icon: '🐠', name: 'Nageoires de Koï', slot: 'cape', lvl: 136, set: 'etang', stats: { vit: [142, 202], sag: [46, 70], dodge: [4, 6] } },
-  ceinture_etang:   { icon: '🎗️', name: "Ceinture d'Écailles", slot: 'ceinture', lvl: 138, set: 'etang', stats: { deg: [58, 82], vit: [96, 138], pp: [40, 62] } },
-  anneau_etang:     { icon: '💍', name: "Anneau de Perle d'Eau", slot: 'anneau', lvl: 142, set: 'etang', stats: { deg: [70, 98], pp: [42, 66], crit: [1, 2] } },
-  eventail_carpe:   { icon: '🪭', name: 'Éventail de la Carpe-Dragon', slot: 'arme', lvl: 146, set: 'etang', stats: { deg: [138, 194], crit: [3, 6] } },
-  relique_carpe:    { name: 'Perle Céleste de la Carpe-Dragon', slot: 'relique', lvl: 140, relic: true, stats: { regen: [3, 5], dodge: [6, 9], vit: [120, 190] } },
+  coiffe_etang:     { icon: '🪷', name: 'Couronne de Lotus', slot: 'coiffe', lvl: 132, set: 'etang', stats: { deg: [57, 82], vit: [143, 204], res: [3, 5] } },
+  cape_etang:       { icon: '🐠', name: 'Nageoires de Koï', slot: 'cape', lvl: 136, set: 'etang', stats: { vit: [140, 200], sag: [46, 70], dodge: [4, 6] } },
+  ceinture_etang:   { icon: '🎗️', name: "Ceinture d'Écailles", slot: 'ceinture', lvl: 138, set: 'etang', stats: { deg: [59, 84], vit: [99, 141], pp: [40, 62] } },
+  anneau_etang:     { icon: '💍', name: "Anneau de Perle d'Eau", slot: 'anneau', lvl: 142, set: 'etang', stats: { deg: [72, 103], pp: [42, 66], crit: [1, 2] } },
+  eventail_carpe:   { icon: '🪭', name: 'Éventail de la Carpe-Dragon', slot: 'arme', lvl: 146, set: 'etang', stats: { deg: [164, 233], crit: [3, 6] } },
+  relique_carpe:    { name: 'Perle Céleste de la Carpe-Dragon', slot: 'relique', lvl: 140, relic: true, stats: { vit: [235, 335], dodge: [4, 6], regen: [1, 2] } },
 
   /* Panoplie des Dunes — or, lin, lapis, ankh et sable */
-  coiffe_dunes:     { icon: '👑', name: 'Némès du Scarabosse', slot: 'coiffe', lvl: 152, set: 'dunes', stats: { deg: [66, 94], vit: [160, 228], res: [3, 6] } },
-  cape_dunes:       { icon: '🧣', name: 'Linceul Royal', slot: 'cape', lvl: 156, set: 'dunes', stats: { vit: [164, 234], sag: [54, 82], res: [3, 5] } },
-  amulette_dunes:   { icon: '📿', name: "Ousekh d'Or", slot: 'amulette', lvl: 160, set: 'dunes', stats: { deg: [60, 86], vit: [170, 240], pp: [48, 76] } },
-  bottes_dunes:     { icon: '👡', name: 'Sandales de Sable', slot: 'bottes', lvl: 162, set: 'dunes', stats: { deg: [72, 100], vit: [104, 146], dodge: [5, 8] } },
-  khepesh_pharaon:  { icon: '🗡️', name: 'Khépesh du Pharaon Éternel', slot: 'arme', lvl: 168, set: 'dunes', stats: { deg: [164, 230], crit: [5, 8] } },
-  relique_pharaon:  { name: 'Ankh du Pharaon Éternel', slot: 'relique', lvl: 168, relic: true, stats: { dmgPct: [18, 24], speed: [14, 22], vit: [150, 220] } },
-  dofus_ocre:       { name: 'Dofus Ocre', slot: 'dofus', lvl: 166, dofus: true, stats: { deg: [110, 110], pp: [45, 45], kamas: [15, 15], xpPct: [8, 8] } },
+  coiffe_dunes:     { icon: '👑', name: 'Némès du Scarabosse', slot: 'coiffe', lvl: 152, set: 'dunes', stats: { deg: [66, 94], vit: [161, 229], res: [3, 6] } },
+  cape_dunes:       { icon: '🧣', name: 'Linceul Royal', slot: 'cape', lvl: 156, set: 'dunes', stats: { vit: [184, 263], sag: [54, 82], res: [3, 5] } },
+  amulette_dunes:   { icon: '📿', name: "Ousekh d'Or", slot: 'amulette', lvl: 160, set: 'dunes', stats: { deg: [63, 89], vit: [176, 250], pp: [48, 76] } },
+  bottes_dunes:     { icon: '👡', name: 'Sandales de Sable', slot: 'bottes', lvl: 162, set: 'dunes', stats: { deg: [76, 108], vit: [110, 157], dodge: [5, 8] } },
+  khepesh_pharaon:  { icon: '🗡️', name: 'Khépesh du Pharaon Éternel', slot: 'arme', lvl: 168, set: 'dunes', stats: { deg: [170, 242], crit: [5, 8] } },
+  relique_pharaon:  { name: 'Ankh du Pharaon Éternel', slot: 'relique', lvl: 168, relic: true, stats: { vit: [225, 320], dmgPct: [14, 18], speed: [12, 18] } },
+  dofus_ocre:       { name: 'Dofus Ocre', slot: 'dofus', lvl: 166, dofus: true, stats: { deg: [310, 310], pp: [70, 70], dmgPct: [12, 12], kamas: [20, 20], xpPct: [10, 10] } },
 
   /* Panoplie du Mineur d'Ocre — cuir, fer, lampe, cristaux ocre et cyan */
-  coiffe_mines:     { icon: '⛑️', name: 'Casque de Mineur à Lampe', slot: 'coiffe', lvl: 154, set: 'mines', stats: { deg: [68, 96], vit: [162, 230], pp: [40, 64] } },
-  ceinture_mines:   { icon: '🎗️', name: 'Ceinture à Outils', slot: 'ceinture', lvl: 158, set: 'mines', stats: { deg: [70, 98], vit: [114, 164], pp: [48, 76] } },
-  bottes_mines:     { icon: '🥾', name: 'Bottes à Crampons', slot: 'bottes', lvl: 160, set: 'mines', stats: { deg: [74, 102], vit: [106, 150], dodge: [4, 6] } },
-  amulette_mines:   { icon: '💎', name: "Pendentif d'Ocre", slot: 'amulette', lvl: 164, set: 'mines', stats: { deg: [64, 90], vit: [172, 246], res: [4, 6], pp: [50, 80] } },
-  pioche_ocre:      { icon: '⛏️', name: "Pioche de Cristal d'Ocre", slot: 'arme', lvl: 170, set: 'mines', stats: { deg: [160, 228], crit: [4, 7] } },
-  relique_mines:    { name: "Cœur de Cristal d'Ocre", slot: 'relique', lvl: 160, relic: true, stats: { kamas: [60, 100], pp: [50, 80], xpPct: [8, 14] } },
+  coiffe_mines:     { icon: '⛑️', name: 'Casque de Mineur à Lampe', slot: 'coiffe', lvl: 154, set: 'mines', stats: { deg: [80, 113], vit: [190, 271], pp: [40, 64] } },
+  ceinture_mines:   { icon: '🎗️', name: 'Ceinture à Outils', slot: 'ceinture', lvl: 158, set: 'mines', stats: { deg: [68, 97], vit: [113, 160], pp: [48, 76] } },
+  bottes_mines:     { icon: '🥾', name: 'Bottes à Crampons', slot: 'bottes', lvl: 160, set: 'mines', stats: { deg: [85, 121], vit: [124, 177], dodge: [4, 6] } },
+  amulette_mines:   { icon: '💎', name: "Pendentif d'Ocre", slot: 'amulette', lvl: 164, set: 'mines', stats: { deg: [42, 59], vit: [113, 161], pp: [50, 80], res: [4, 6] } },
+  pioche_ocre:      { icon: '⛏️', name: "Pioche de Cristal d'Ocre", slot: 'arme', lvl: 170, set: 'mines', stats: { deg: [178, 253], crit: [4, 7] } },
+  relique_mines:    { name: "Cœur de Cristal d'Ocre", slot: 'relique', lvl: 160, relic: true, stats: { deg: [119, 170], vit: [357, 509], pp: [60, 90], kamas: [60, 100], xpPct: [8, 14] } },
 
   /* Panoplie de Srambad — cuir noir, prune, argent et lanternes rouges */
-  coiffe_srambad:   { icon: '🥷', name: 'Capuche du Rat Cagoulé', slot: 'coiffe', lvl: 172, set: 'srambad', stats: { deg: [76, 106], vit: [184, 258], dodge: [3, 5] } },
-  cape_srambad:     { icon: '🦇', name: 'Cape de Vampyro', slot: 'cape', lvl: 176, set: 'srambad', stats: { vit: [188, 264], sag: [62, 92], dodge: [4, 6] } },
-  ceinture_srambad: { icon: '🎗️', name: 'Ceinturon de Dagues', slot: 'ceinture', lvl: 180, set: 'srambad', stats: { deg: [78, 110], vit: [124, 176], pp: [54, 86] } },
-  bottes_srambad:   { icon: '🥾', name: "Bottes Feutrées d'Ombre", slot: 'bottes', lvl: 184, set: 'srambad', stats: { deg: [82, 114], vit: [120, 168], dodge: [6, 9] } },
-  rapiere_comte:    { icon: '🗡️', name: 'Rapière du Comte Vespéral', slot: 'arme', lvl: 190, set: 'srambad', stats: { deg: [180, 256], crit: [6, 10] } },
-  relique_comte:    { name: 'Médaillon du Comte Vespéral', slot: 'relique', lvl: 190, relic: true, stats: { dmgPct: [22, 30], crit: [4, 7], dodge: [5, 8] } },
-  dofus_pourpre:    { name: 'Dofus Pourpre', slot: 'dofus', lvl: 188, dofus: true, stats: { deg: [220, 220], dmgPct: [14, 14], critDmg: [50, 50] } },
-  dofus_ebene:      { name: 'Dofus Ébène', slot: 'dofus', lvl: 190, dofus: true, stats: { crit: [15, 15], dodge: [8, 8], speed: [15, 15] } },
+  coiffe_srambad:   { icon: '🥷', name: 'Capuche du Rat Cagoulé', slot: 'coiffe', lvl: 172, set: 'srambad', stats: { deg: [74, 105], vit: [179, 255], dodge: [3, 5] } },
+  cape_srambad:     { icon: '🦇', name: 'Cape de Vampyro', slot: 'cape', lvl: 176, set: 'srambad', stats: { vit: [167, 238], sag: [62, 92], dodge: [4, 6] } },
+  ceinture_srambad: { icon: '🎗️', name: 'Ceinturon de Dagues', slot: 'ceinture', lvl: 180, set: 'srambad', stats: { deg: [72, 103], vit: [115, 164], pp: [54, 86] } },
+  bottes_srambad:   { icon: '🥾', name: "Bottes Feutrées d'Ombre", slot: 'bottes', lvl: 184, set: 'srambad', stats: { deg: [74, 106], vit: [109, 156], dodge: [6, 9] } },
+  rapiere_comte:    { icon: '🗡️', name: 'Rapière du Comte Vespéral', slot: 'arme', lvl: 190, set: 'srambad', stats: { deg: [177, 252], crit: [6, 10] } },
+  relique_comte:    { name: 'Médaillon du Comte Vespéral', slot: 'relique', lvl: 190, relic: true, stats: { deg: [146, 209], dodge: [4, 7], crit: [4, 7], dmgPct: [16, 22] } },
+  dofus_pourpre:    { name: 'Dofus Pourpre', slot: 'dofus', lvl: 188, dofus: true, stats: { deg: [290, 290], critDmg: [50, 50], dmgPct: [14, 14] } },
+  dofus_ebene:      { name: 'Dofus Ébène', slot: 'dofus', lvl: 190, dofus: true, stats: { vit: [210, 210], dodge: [10, 10], crit: [18, 18], speed: [15, 15] } },
 
   /* Panoplie de la Roseraie Noire — pétales noirs, épines, rouge sang et vert sombre */
-  coiffe_roseraie:  { icon: '🥀', name: "Couronne d'Épines Noires", slot: 'coiffe', lvl: 176, set: 'roseraie', stats: { deg: [76, 108], vit: [184, 262], res: [3, 6] } },
-  cape_roseraie:    { icon: '🧥', name: 'Cape de Pétales Noirs', slot: 'cape', lvl: 180, set: 'roseraie', stats: { vit: [190, 268], sag: [62, 94], res: [3, 5] } },
-  amulette_roseraie:{ icon: '📿', name: 'Pendentif de Rose Noire', slot: 'amulette', lvl: 184, set: 'roseraie', stats: { deg: [70, 98], vit: [196, 276], pp: [54, 86] } },
-  anneau_roseraie:  { icon: '💍', name: "Bague d'Épine", slot: 'anneau', lvl: 186, set: 'roseraie', stats: { deg: [86, 120], pp: [56, 90], crit: [1, 3] } },
-  fouet_epines:     { icon: '🌹', name: "Fouet d'Épines de la Reine", slot: 'arme', lvl: 190, set: 'roseraie', stats: { deg: [176, 250], crit: [5, 9] } },
-  relique_roseraie: { name: 'Rose Éternelle de la Reine', slot: 'relique', lvl: 182, relic: true, stats: { regen: [4, 6], dmgPct: [12, 18], vit: [200, 300] } },
+  coiffe_roseraie:  { icon: '🥀', name: "Couronne d'Épines Noires", slot: 'coiffe', lvl: 176, set: 'roseraie', stats: { deg: [72, 103], vit: [175, 249], res: [3, 6] } },
+  cape_roseraie:    { icon: '🧥', name: 'Cape de Pétales Noirs', slot: 'cape', lvl: 180, set: 'roseraie', stats: { vit: [186, 265], sag: [62, 94], res: [3, 5] } },
+  amulette_roseraie:{ icon: '📿', name: 'Pendentif de Rose Noire', slot: 'amulette', lvl: 184, set: 'roseraie', stats: { deg: [66, 94], vit: [185, 263], pp: [54, 86] } },
+  anneau_roseraie:  { icon: '💍', name: "Bague d'Épine", slot: 'anneau', lvl: 186, set: 'roseraie', stats: { deg: [78, 111], pp: [56, 90], crit: [1, 3] } },
+  fouet_epines:     { icon: '🌹', name: "Fouet d'Épines de la Reine", slot: 'arme', lvl: 190, set: 'roseraie', stats: { deg: [184, 262], crit: [5, 9] } },
+  relique_roseraie: { name: 'Rose Éternelle de la Reine', slot: 'relique', lvl: 182, relic: true, stats: { vit: [268, 382], dmgPct: [10, 14], regen: [1, 2] } },
 });
 
 /* ---------------------------- Recettes (coût ×CRAFT_COST_MULT appliqué ici) ---------------------------- */
@@ -5490,6 +5490,143 @@ Object.assign(RELIC_DROPS, {
   pharaon: [['relique_pharaon', 0.02], ['dofus_ocre', 0.002]],
   comte_vesperal: [['relique_comte', 0.02], ['dofus_pourpre', 0.002], ['dofus_ebene', 0.0015]],
 });
+/* ---------------------------------------------------------------------
+   ÉQUILIBRAGE DE L'ÉQUIPEMENT — migration des sauvegardes
+   BAL_OLD : plages de stats (min, max) de chaque objet AVANT le rééquilibrage de l'équipement
+   (budget de puissance par emplacement et par niveau, voir tools/equip_budget.js et CLAUDE.md).
+   À la première ouverture d'une ancienne sauvegarde (state.bal < BAL_VERSION), chaque objet possédé
+   est converti dans les nouvelles plages en gardant la qualité de son jet (et la part de surjet forgemagie).
+   Pour un futur rééquilibrage : incrémenter BAL_VERSION et remplacer BAL_OLD par les plages d'avant.
+   --------------------------------------------------------------------- */
+const BAL_VERSION = 2;
+const BAL_OLD = {
+  amulette_blop: { vit: [55, 84], res: [3, 5], pp: [16, 28] },
+  amulette_bouftou: { deg: [8, 14], vit: [20, 30], pp: [8, 14] },
+  amulette_craqueleur: { vit: [50, 80], res: [3, 5], pp: [15, 26] },
+  amulette_dragoeuf: { deg: [40, 58], vit: [100, 140], pp: [30, 50] },
+  amulette_dunes: { deg: [60, 86], vit: [170, 240], pp: [48, 76] },
+  amulette_mines: { deg: [64, 90], vit: [172, 246], res: [4, 6], pp: [50, 80] },
+  amulette_pandala: { deg: [50, 70], vit: [150, 214], pp: [40, 64] },
+  amulette_porcos: { vit: [90, 130], res: [4, 6], pp: [28, 46] },
+  amulette_roseraie: { deg: [70, 98], vit: [196, 276], pp: [54, 86] },
+  anneau_arakne: { deg: [8, 16], pp: [8, 13] },
+  anneau_blop: { deg: [28, 40], pp: [18, 30], sag: [8, 14] },
+  anneau_dragoeuf: { deg: [52, 72], pp: [32, 52], crit: [1, 2] },
+  anneau_ecurouille: { deg: [14, 24], pp: [11, 19] },
+  anneau_etang: { deg: [70, 98], pp: [42, 66], crit: [1, 2] },
+  anneau_mufafah: { deg: [37, 53], pp: [23, 39] },
+  anneau_roseraie: { deg: [86, 120], pp: [56, 90], crit: [1, 3] },
+  arc_moskito: { deg: [22, 36], crit: [1, 2] },
+  baton_abraknyde: { deg: [35, 55] },
+  baton_debutant: { deg: [7, 15] },
+  bottes_dunes: { deg: [72, 100], vit: [104, 146], dodge: [5, 8] },
+  bottes_kanigrou: { deg: [40, 55], vit: [30, 45], dodge: [3, 5] },
+  bottes_kanniboul: { deg: [42, 58], vit: [34, 50], dodge: [3, 5] },
+  bottes_mansot: { deg: [58, 80], vit: [70, 100], dodge: [4, 6] },
+  bottes_mines: { deg: [74, 102], vit: [106, 150], dodge: [4, 6] },
+  bottes_moskito: { deg: [8, 14], vit: [8, 14], dodge: [1, 3] },
+  bottes_pandala: { deg: [62, 86], vit: [88, 126], dodge: [5, 7] },
+  bottes_sanglier: { deg: [15, 25], res: [2, 4], vit: [10, 20] },
+  bottes_scara: { vit: [30, 45], res: [3, 5], sag: [10, 20] },
+  bottes_srambad: { deg: [82, 114], vit: [120, 168], dodge: [6, 9] },
+  bottes_wabbit: { deg: [18, 28], vit: [14, 22], dodge: [2, 4] },
+  cape_abraknyde: { vit: [25, 40], sag: [12, 24] },
+  cape_blop: { deg: [24, 36], vit: [30, 46], pp: [14, 22] },
+  cape_bouftou: { vit: [15, 25], sag: [6, 12] },
+  cape_chafer: { vit: [90, 130], sag: [30, 50], pp: [26, 44] },
+  cape_dragoeuf: { vit: [100, 144], sag: [34, 54], dodge: [3, 5] },
+  cape_dunes: { vit: [164, 234], sag: [54, 82], res: [3, 5] },
+  cape_etang: { vit: [142, 202], sag: [46, 70], dodge: [4, 6] },
+  cape_kanniboul: { deg: [20, 32], vit: [66, 98], dodge: [2, 4] },
+  cape_kwak: { deg: [29, 42], pp: [14, 24] },
+  cape_mansot: { vit: [120, 170], sag: [40, 62], res: [3, 5] },
+  cape_pandala: { vit: [144, 204], sag: [48, 72], dodge: [4, 6] },
+  cape_porcos: { vit: [80, 116], sag: [24, 40], res: [2, 4] },
+  cape_roseraie: { vit: [190, 268], sag: [62, 94], res: [3, 5] },
+  cape_srambad: { vit: [188, 264], sag: [62, 92], dodge: [4, 6] },
+  cape_wabbit: { vit: [30, 46], sag: [14, 26], pp: [12, 20] },
+  casque_bwork: { deg: [15, 25], vit: [45, 65] },
+  ceinture_bwork: { deg: [10, 15], vit: [30, 45] },
+  ceinture_champ: { vit: [15, 25], sag: [10, 20] },
+  ceinture_ecto: { deg: [29, 48], pp: [29, 49] },
+  ceinture_etang: { deg: [58, 82], vit: [96, 138], pp: [40, 62] },
+  ceinture_kanniboul: { deg: [30, 46], vit: [40, 58] },
+  ceinture_mansot: { deg: [54, 76], vit: [80, 116], pp: [36, 58] },
+  ceinture_mines: { deg: [70, 98], vit: [114, 164], pp: [48, 76] },
+  ceinture_porcos: { deg: [32, 50], vit: [52, 72] },
+  ceinture_srambad: { deg: [78, 110], vit: [124, 176], pp: [54, 86] },
+  coiffe_blop: { deg: [14, 22], vit: [52, 74], res: [2, 4] },
+  coiffe_bouftou: { deg: [5, 10], vit: [20, 35] },
+  coiffe_dragoeuf: { deg: [36, 52], vit: [90, 130], res: [2, 4] },
+  coiffe_dunes: { deg: [66, 94], vit: [160, 228], res: [3, 6] },
+  coiffe_etang: { deg: [54, 78], vit: [136, 194], res: [3, 5] },
+  coiffe_kanniboul: { deg: [24, 36], vit: [50, 76], crit: [1, 2] },
+  coiffe_koalak: { deg: [20, 30], vit: [60, 90], pp: [20, 34] },
+  coiffe_mansot: { deg: [46, 66], vit: [110, 160], res: [3, 5] },
+  coiffe_mines: { deg: [68, 96], vit: [162, 230], pp: [40, 64] },
+  coiffe_pandala: { deg: [56, 80], vit: [138, 196], res: [3, 5] },
+  coiffe_porcos: { deg: [28, 42], vit: [70, 104], pp: [24, 38] },
+  coiffe_prespic: { deg: [10, 15], vit: [30, 45], res: [1, 3], pp: [12, 20] },
+  coiffe_roseraie: { deg: [76, 108], vit: [184, 262], res: [3, 6] },
+  coiffe_srambad: { deg: [76, 106], vit: [184, 258], dodge: [3, 5] },
+  coiffe_wabbit: { deg: [12, 18], vit: [32, 48], pp: [10, 16] },
+  croc_crocabulia: { deg: [100, 140], crit: [3, 5] },
+  dofus_ebene: { crit: [15, 15], dodge: [8, 8], speed: [15, 15] },
+  dofus_emeraude: { vit: [450, 450], res: [10, 10], regen: [1, 1] },
+  dofus_ocre: { deg: [110, 110], pp: [45, 45], kamas: [15, 15], xpPct: [8, 8] },
+  dofus_pourpre: { deg: [220, 220], dmgPct: [14, 14], critDmg: [50, 50] },
+  epee_boisaille: { deg: [7, 15] },
+  epee_chafer: { deg: [76, 104], crit: [3, 5] },
+  eventail_carpe: { deg: [138, 194], crit: [3, 6] },
+  fouet_epines: { deg: [176, 250], crit: [5, 9] },
+  hache_bwork: { deg: [60, 90], crit: [1, 3] },
+  katana_jade: { deg: [142, 200], crit: [4, 7] },
+  khepesh_pharaon: { deg: [164, 230], crit: [5, 8] },
+  lance_kanniboul: { deg: [68, 98], crit: [2, 4] },
+  marteau_bouftou: { deg: [25, 43], vit: [10, 20] },
+  masse_blop: { deg: [66, 98], vit: [15, 30] },
+  masse_mansot: { deg: [120, 168], crit: [3, 6] },
+  pelle_champ: { deg: [22, 36], pp: [8, 14] },
+  pioche_ocre: { deg: [160, 228], crit: [4, 7] },
+  rapiere_comte: { deg: [180, 256], crit: [6, 10] },
+  relique_abra: { regen: [2, 3], vit: [30, 50] },
+  relique_blop: { regen: [3, 4], res: [5, 8], vit: [40, 70] },
+  relique_bouftou: { xpPct: [15, 20], vit: [20, 40] },
+  relique_bworkette: { deg: [10, 20], dmgPct: [12, 18] },
+  relique_carpe: { regen: [3, 5], dodge: [6, 9], vit: [120, 190] },
+  relique_chafer: { kamas: [30, 50], pp: [30, 50], xpPct: [5, 10] },
+  relique_comte: { dmgPct: [22, 30], crit: [4, 7], dodge: [5, 8] },
+  relique_craq: { res: [6, 10], vit: [40, 60] },
+  relique_dragoeuf: { speed: [18, 28], dmgPct: [12, 18], vit: [80, 120] },
+  relique_dragon_jade: { dmgPct: [16, 22], res: [8, 12], crit: [3, 5] },
+  relique_kanigrou: { deg: [15, 25], speed: [15, 25] },
+  relique_kanniboul: { deg: [20, 35], dmgPct: [10, 16], crit: [3, 6] },
+  relique_mansot: { res: [8, 12], dmgPct: [14, 20], dodge: [4, 7] },
+  relique_mines: { kamas: [60, 100], pp: [50, 80], xpPct: [8, 14] },
+  relique_pharaon: { dmgPct: [18, 24], speed: [14, 22], vit: [150, 220] },
+  relique_porcos: { kamas: [50, 80], vit: [80, 130] },
+  relique_roseraie: { regen: [4, 6], dmgPct: [12, 18], vit: [200, 300] },
+  relique_wabbit: { kamas: [15, 25], dodge: [4, 7], pp: [15, 25] },
+  rotissoire_cochon: { deg: [78, 112], vit: [20, 35] },
+  sceptre_wabbit: { deg: [45, 68], crit: [1, 2] },
+};
+
+function balRemapGear(g) {
+  const old = BAL_OLD[g.id], def = ITEMS[g.id];
+  if (!old || !def) return;
+  let tot = 0, n = 0;
+  for (const [k, [a, b]] of Object.entries(old)) if (g.stats[k] !== undefined && b > a) { tot += Math.max(0, Math.min(1, (g.stats[k] - a) / (b - a))); n++; }
+  const q0 = n ? tot / n : 0.5; // qualité moyenne : sert aux stats que l'objet n'avait pas encore
+  const out = {};
+  for (const [k, [na, nb]] of Object.entries(def.stats)) {
+    const o = old[k], v = g.stats[k];
+    if (g.stasis) out[k] = nb * 2;
+    else if (o && v !== undefined && o[1] > o[0]) out[k] = v <= o[1] ? Math.round(na + (nb - na) * Math.max(0, v - o[0]) / (o[1] - o[0])) : Math.round(nb + (v - o[1]) * (nb / o[1])); // au-delà du max : surjet
+    else if (o && v !== undefined) out[k] = na; // stat fixe (Dofus)
+    else out[k] = Math.round(na + (nb - na) * q0);
+  }
+  g.stats = out;
+}
 /* =====================================================================
    TALENTS DE CLASSE — un arbre par classe, 3 voies de 13 talents chacune
    1 point de talent tous les 3 niveaux (66 au niveau 200).
@@ -6581,6 +6718,7 @@ function monsterStats(mid) {
 function newState() {
   return {
     v: SAVE_VERSION,
+    bal: BAL_VERSION,       // version d'équilibrage de l'équipement (voir balmig.js)
     kamas: 200,
     archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
@@ -7892,6 +8030,9 @@ function migrate(obj) {
     if (h.fight && h.fight.mons.some(m => !MONSTERS[m.mid])) h.fight = null;
   }
   st.gear = st.gear.filter(g => ITEMS[g.id]);
+  // équipement rééquilibré : les objets possédés sont convertis dans les nouvelles plages, à jet égal
+  if ((obj.bal || 0) < BAL_VERSION && st.gear.length) { for (const g of st.gear) balRemapGear(g); st.balNotice = true; }
+  st.bal = BAL_VERSION;
   for (const g of st.gear) migrateGear(g, (obj.v || 1) < 2);
   for (const k of Object.keys(st.res)) if (!RESOURCES[k]) delete st.res[k];
   st.v = SAVE_VERSION;
@@ -18367,6 +18508,7 @@ function start(data) {
   if (away > 15000) offline(away);
   render(true);
   if (st.talentReset) { const n = st.talentReset; delete st.talentReset; setTimeout(() => toast(`🌳 Nouveaux talents de classe ! Les points de ${n > 1 ? 'tes ' + n + ' héros ont été rendus' : 'ton héros ont été rendus'} : ouvre l’onglet Talents pour les dépenser.`, 'quest'), 1200); }
+  if (st.balNotice) { delete st.balNotice; setTimeout(() => toast('⚖️ Équipement rééquilibré : stats des objets, panoplies, reliques et Dofus revues. Tes objets ont été adaptés à jet égal.', 'quest'), 2400); }
   chatLoop();
   accSync();
   setInterval(() => accCloudSave(), 60000);
