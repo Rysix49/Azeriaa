@@ -17,6 +17,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 
 /* ---------------------------- Courbes ---------------------------- */
 function xpToNext(lvl) { return 2 * Math.floor((16 * Math.pow(lvl, 2.25) + 20 * lvl) * (1 + Math.pow(lvl / 35, 2))); }
+const CRAFT_XP_MULT = 4; // XP de métier de craft ×4 (forgeron, tailleur, bijoutier, cordonnier, bricoleur, boulanger, forgemage)
 function jobXpToNext(lvl) { return Math.floor(40 * Math.pow(lvl, 1.7)); }
 
 const _monCache = {};
@@ -1027,14 +1028,17 @@ function displayHp(st, h) {
 /* ---------------------------- Hors-ligne ---------------------------- */
 function simulateOffline(st, ms) {
   ms = Math.min(ms, OFFLINE_CAP_MS);
-  const sum = { ms, xp: 0, kamas: 0, kills: 0, loot: {}, levels: {}, deaths: 0, runs: 0, harvest: {}, gear: [] };
+  const sum = { ms, xp: 0, kamas: 0, kills: 0, loot: {}, levels: {}, deaths: 0, runs: 0, harvest: {}, gear: [], heroes: {}, food: [] };
   if (ms < 5000) return sum;
   const startLv = Object.fromEntries(st.heroes.map(h => [h.id, h.lvl]));
+  for (const h of st.heroes) sum.heroes[h.id] = { id: h.id, name: h.name, cls: h.cls, act: h.act ? { type: h.act.type, id: h.act.id, room: h.act.room, tier: h.act.tier } : null, xp: 0, kamas: 0, kills: 0, deaths: 0, runs: 0, gear: 0 };
+  const hs = h => sum.heroes[h.id] || (sum.heroes[h.id] = { id: h.id, name: h.name, cls: h.cls, act: null, xp: 0, kamas: 0, kills: 0, deaths: 0, runs: 0, gear: 0 });
   const ev = {
     log() {},
-    reward(h, xp, k, loot, gear = []) { sum.gear.push(...gear); sum.xp += xp; sum.kamas += k; sum.kills += h.fight.mons.length; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; },
-    defeat() { sum.deaths++; },
-    dungeonDone() { sum.runs++; },
+    reward(h, xp, k, loot, gear = []) { sum.gear.push(...gear); sum.xp += xp; sum.kamas += k; sum.kills += h.fight.mons.length; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; const o = hs(h); o.xp += xp; o.kamas += k; o.kills += h.fight.mons.length; o.gear += gear.length; },
+    defeat(h) { sum.deaths++; if (h) hs(h).deaths++; },
+    dungeonDone(h) { sum.runs++; if (h) hs(h).runs++; },
+    foodEnd(h) { if (h && !sum.food.includes(h.name)) sum.food.push(h.name); },
   };
   const res0 = { ...st.res }; const jobs0 = Object.fromEntries(Object.entries(st.jobs).map(([k, j]) => [k, j.lvl]));
   for (const h of st.heroes) tickHero(st, h, ms, ev, 1e6);
@@ -1118,7 +1122,7 @@ function craft(st, r) {
   for (const [id, n] of Object.entries(r.ing)) st.res[id] -= n;
   const job = st.jobs[r.job];
   const ingCount = Object.values(r.ing).reduce((a, b) => a + b, 0);
-  const xp = Math.round((10 + ingCount * 3) * (1 + r.lvl / 10) * (job.lvl - r.lvl > 20 ? 0.3 : 1));
+  const xp = Math.round((10 + ingCount * 3) * (1 + r.lvl / 10) * (job.lvl - r.lvl > 20 ? 0.3 : 1) * CRAFT_XP_MULT);
   const lvUp = gainJobXp(st, r.job, xp);
   st.stats.crafted++;
   const m0 = masteryOf(st, r.out); st.mastery = st.mastery || {}; st.mastery[r.out] = m0.n + 1;
@@ -1150,7 +1154,7 @@ function brisage(st, uid) {
   if (!tot) { const top = Object.keys(brisageRunes(g)).sort((a, b) => g.stats[b] / RUNES[b].step - g.stats[a] / RUNES[a].step)[0]; if (top) got[top] = 1; }
   st.gear = st.gear.filter(x => x.uid !== uid);
   for (const [k, n] of Object.entries(got)) addRes(st, 'rune_' + k, n);
-  const xp = Math.round(6 + ITEMS[g.id].lvl * 1.6), lvUp = gainJobXp(st, 'forgemage', xp);
+  const xp = Math.round((6 + ITEMS[g.id].lvl * 1.6) * CRAFT_XP_MULT), lvUp = gainJobXp(st, 'forgemage', xp);
   return { id: g.id, runes: got, xp, lvUp, stasis: !!g.stasis };
 }
 function forgeInfo(st, g, k) {
@@ -1169,7 +1173,7 @@ function forgemagie(st, uid, k) {
   const inf = forgeInfo(st, g, k); if (!inf.ok) return { err: inf.why };
   st.res['rune_' + k] -= 1; if (!st.res['rune_' + k]) delete st.res['rune_' + k];
   st.kamas -= inf.cost;
-  const xp = Math.round(4 + ITEMS[g.id].lvl * 0.8); const lvUp = gainJobXp(st, 'forgemage', xp);
+  const xp = Math.round((4 + ITEMS[g.id].lvl * 0.8) * CRAFT_XP_MULT); const lvUp = gainJobXp(st, 'forgemage', xp);
   let kind, lost = null, gain = 0;
   if (Math.random() < inf.chance) {
     const crit = !inf.over && Math.random() < 0.12; gain = Math.min(crit ? inf.step * 2 : inf.step, inf.cap - inf.cur);
