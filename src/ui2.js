@@ -1392,7 +1392,7 @@ function resInspector(id) {
   const crop = CROPS.find(c => c.id === id);
   return `<div class="insp-head"><div class="tile lg res"><span class="t-emo">${r.icon}</span></div><div class="ih-t"><b class="display">${r.name}</b><small>${r.key ? 'Clef de donjon' : r.food ? 'Consommable' : r.crop ? 'Céréale' : r.rare ? 'Ressource rare' : 'Ressource'}</small><span class="qty num">×${fmt(n)}</span></div></div>
     <div class="cstats two"><div class="cs"><small>Prix unitaire</small><b>${r.value} K</b></div><div class="cs"><small>Stock</small><b class="num">${fmt(r.value * n)} K</b></div></div>
-    ${r.food ? `<div class="food-desc">${r.icon} ${r.food.desc}. Manger un nouveau repas remplace l’effet en cours.</div>
+    ${r.food ? `<div class="food-desc">${r.icon} ${r.food.desc}. Un héros ne peut manger qu’un repas à la fois : il faut attendre la fin de l’effet.</div>
       <div class="label">Faire manger à</div><div class="send-list">${st.heroes.map(h => heroChip(h, `data-act="eat" data-id="${id}" data-hero="${h.id}"`, h.food ? `En cours · ${mmss(h.food.left)}` : 'Manger', 'sm')).join('')}</div>` : ''}
     <div class="insp-sell"><button class="btn sm" data-act="sellres" data-id="${id}" data-n="1">Vendre 1</button><button class="btn sm" data-act="sellres" data-id="${id}" data-n="10" ${n < 10 ? 'disabled' : ''}>Vendre 10</button><button class="btn sm danger" data-act="sellres" data-id="${id}" data-n="all">Tout vendre</button></div>
     ${uses.length ? `<div class="label">Utilisé dans</div><div class="uses">${uses.join('')}</div>` : ''}
