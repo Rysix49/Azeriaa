@@ -49,10 +49,10 @@ function skOverview(h, tree, sk, spent) {
 }
 function skBranch(h, b, just) {
   if (!ui.skSel || !SKILL_NODE[ui.skSel] || SKILL_NODE[ui.skSel].branch !== b.id) { const first = b.nodes.find(n => skillCheck(h, n[0]) === null) || b.nodes[0]; ui.skSel = first[0]; }
-  const sel = SKILL_NODE[ui.skSel], W = 300, rows = 6, spB = skillBranchSpent(h, b.id);
+  const sel = SKILL_NODE[ui.skSel], W = 300, rows = SKILL_GATE.length, spB = skillBranchSpent(h, b.id);
   const lines = b.nodes.flatMap(n => n[7].map(q => { const a = SKILL_NODE[q], z = SKILL_NODE[n[0]], ra = (h.skills && h.skills[q]) || 0, rz = (h.skills && h.skills[n[0]]) || 0;
     return `<line class="${ra > 0 && rz > 0 ? 'lit' : ra > 0 ? 'half' : ''}" x1="${(a.c + .5) * W / 3}" y1="${(a.r + .5) * SK_ROW_H}" x2="${(z.c + .5) * W / 3}" y2="${(z.r + .5) * SK_ROW_H}" vector-effect="non-scaling-stroke"/>`; })).join('');
-  const gates = [2, 3, 4, 5].map(r => `<div class="sk-gate${spB >= SKILL_GATE[r] ? ' open' : ''}" style="grid-row:${r + 1}"><span>${spB >= SKILL_GATE[r] ? '🔓' : '🔒'} ${SKILL_GATE[r]} pts dans la voie</span></div>`).join('');
+  const gates = SKILL_GATE.map((g, r) => r).filter(r => r >= 2).map(r => `<div class="sk-gate${spB >= SKILL_GATE[r] ? ' open' : ''}" style="grid-row:${r + 1}"><span>${spB >= SKILL_GATE[r] ? '🔓' : '🔒'} ${SKILL_GATE[r]} pts dans la voie</span></div>`).join('');
   const nodes = b.nodes.map(n => { const z = SKILL_NODE[n[0]], s = skNodeState(h, z);
     return `<button class="sk-n${s.r ? ' has' : ''}${s.max ? ' maxed' : ''}${s.can ? ' can' : ''}${!s.open && !s.r ? ' lock' : ''}${z.cost > 1 ? ' key' : ''}${ui.skSel === z.id ? ' sel' : ''}${just === z.id ? ' just' : ''}" data-act="sknode" data-id="${z.id}" style="grid-column:${z.c + 1};grid-row:${z.r + 1};--p:${(s.r / z.max * 100).toFixed(0)}%" aria-label="${esc(z.name)} ${s.r}/${z.max}">
       <span class="sk-ico">${z.icon}</span><span class="sk-rk num">${s.r}/${z.max}</span><b class="sk-nm">${esc(z.name)}</b></button>`; }).join('');
@@ -69,5 +69,5 @@ function skBranch(h, b, just) {
       <div class="bar sk-bar sk-bbar"><i style="width:${Math.min(100, spB / skBranchMax(b) * 100).toFixed(0)}%"></i></div>
       <div class="sk-per">✦ Chaque point dépensé dans la voie : ${skStatLine(b.per)} <span class="sub">· actuellement ${skStatLine(b.per, spB)}</span></div>
       <div class="sk-motes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sk-tree" style="grid-template-rows:repeat(${rows},${SK_ROW_H}px)"><svg class="sk-lines" viewBox="0 0 ${W} ${rows * SK_ROW_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>${gates}${nodes}</div></div>
-    <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie <small>(tous les 4 points)</small></h4>${skMilestones(h, b)}</div></aside></div>`;
+    <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie <small>(${b.mile.map(m => m[0]).join(' · ')} points)</small></h4>${skMilestones(h, b)}</div></aside></div>`;
 }
