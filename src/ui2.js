@@ -25,6 +25,7 @@ const THEME = {
   /* sous-zones de la carte */
   Wabbits: ['#a8dcef', '#7ec45e'], Blops: ['#7cc0cc', '#3f8a7a'], Moon: ['#7ec8b0', '#2f7a48'], Porcos: ['#e8c0a8', '#b08a52'],
   Dragoeufs: ['#d98a5a', '#6a3226'], Frigost: ['#b4d4ee', '#9cbad6'],
+  Pandala: ['#b9dcc0', '#4f9a58'], Etang: ['#a6dcd8', '#3f9a8a'], Dunes: ['#efce8e', '#c28c4a'], Ocre: ['#8a6a58', '#3a2a24'], Srambad: ['#6a4a7e', '#2a2038'], Roseraie: ['#4a2a46', '#1c1220'],
   harvest: ['#ecd58e', '#b89140'], idle: ['#7a8a96', '#4f5a44'],
 };
 

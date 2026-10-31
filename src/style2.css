@@ -3329,9 +3329,9 @@ label.btn { cursor: pointer; }
 /* =====================================================================
    SOUS-ZONES DE LA CARTE (Île des Wabbits, Lac des Blops, Kanniboul, Porcos, Dragoeufs, Frigost)
    ===================================================================== */
-.wm { aspect-ratio: 1640 / 470; min-width: 1400px; }
-@media (max-width: 700px) { .wm { min-width: 1340px; } }
-@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(1860px); } }
+.wm { aspect-ratio: 2560 / 470; min-width: 2185px; }
+@media (max-width: 700px) { .wm { min-width: 2092px; } }
+@keyframes wm-cloud { from { transform: translateX(-150px); } to { transform: translateX(2760px); } }
 .wm-svg g, .wm-svg ellipse, .wm-svg circle { transform-box: fill-box; }
 .wn.sub { width: 46px; height: 46px; }
 .wn.sub .wn-art { border-width: 2.5px; font-size: 25px; padding-bottom: 4px; border-color: color-mix(in srgb, var(--ground) 30%, #fff);
@@ -3354,7 +3354,12 @@ label.btn { cursor: pointer; }
 .wm-ripple { animation: wm-ripple 3.6s ease-out infinite; } @keyframes wm-ripple { from { transform: scale(.4); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
 .wm-flame { animation: wm-flame .9s ease-in-out infinite; transform-origin: 50% 100%; } @keyframes wm-flame { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.88, 1.18) skewX(3deg); } }
 .wm-pig { animation: wm-pig 2.8s ease-in-out infinite; } @keyframes wm-pig { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(5px, -1.5px); } 50% { transform: translate(10px, 0); } 75% { transform: translate(5px, 1px); } }
-@media (prefers-reduced-motion: reduce) { .wm-aurora, .wm-snow, .wm-ember, .wm-smoke, .wm-lavaglow, .wm-blopb, .wm-ripple, .wm-flame, .wm-pig, .wn-orbit { animation: none !important; } }
+/* nouvelles terres : pétales, sable, chauves-souris, fenêtres */
+.wm-petal { animation: wm-petal 6s linear infinite; opacity: 0; } @keyframes wm-petal { from { transform: translate(0, 0) rotate(0); opacity: 0; } 12% { opacity: .95; } 50% { transform: translate(-9px, 22px) rotate(140deg); } to { transform: translate(6px, 56px) rotate(300deg); opacity: 0; } }
+.wm-sand { animation: wm-sand 5s ease-in-out infinite; opacity: 0; } @keyframes wm-sand { from { transform: translate(0, 0); opacity: 0; } 25% { opacity: .75; } to { transform: translate(64px, -4px); opacity: 0; } }
+.wm-bat { animation: wm-bat 6s ease-in-out infinite; } @keyframes wm-bat { 0%, 100% { transform: translate(-22px, 4px) scale(1, 1); } 25% { transform: translate(-6px, -4px) scale(1, .7); } 50% { transform: translate(14px, 2px) scale(1, 1); } 75% { transform: translate(28px, -5px) scale(1, .7); } }
+.wm-flicker { animation: wm-flicker 2.8s ease-in-out infinite; } @keyframes wm-flicker { 0%, 100% { opacity: .15; } 20% { opacity: .5; } 45% { opacity: .22; } 70% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .wm-aurora, .wm-snow, .wm-ember, .wm-smoke, .wm-lavaglow, .wm-blopb, .wm-ripple, .wm-flame, .wm-pig, .wm-petal, .wm-sand, .wm-bat, .wm-flicker, .wn-orbit { animation: none !important; } }
 /* liens entre zone mère et sous-zones */
 .linked { display: flex; flex-direction: column; gap: 6px; }
 .lk-row { display: flex; flex-wrap: wrap; gap: 8px; }
