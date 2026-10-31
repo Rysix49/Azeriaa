@@ -1045,10 +1045,11 @@ function simulateOffline(st, ms) {
 }
 
 /* ---------------------------- Actions joueur ---------------------------- */
-/* Faire manger un consommable à un héros (remplace l'effet en cours) */
+/* Faire manger un consommable à un héros (refusé tant qu'un repas est actif) */
 function eat(st, h, id) {
   const r = RESOURCES[id]; if (!r || !r.food) return 'Cet objet ne se mange pas.';
   if ((st.res[id] || 0) < 1) return `Plus de ${r.name}.`;
+  if (h.food && h.food.left > 0 && RESOURCES[h.food.id]) return `${h.name} a déjà mangé (${RESOURCES[h.food.id].name}) : attends la fin de l’effet (encore ${Math.floor(Math.ceil(h.food.left / 1000) / 60)}:${String(Math.ceil(h.food.left / 1000) % 60).padStart(2, '0')}) avant de reprendre un repas.`;
   st.res[id]--; if (!st.res[id]) delete st.res[id];
   const ms = Math.round(r.food.ms * (1 + (skillTotals(h).foodDur || 0) / 100));
   h.food = { id, left: ms, total: ms };

@@ -18,12 +18,13 @@ Jeu idle de fan (thème Dofus), un seul fichier `index.html`, en français. L'ut
 Commits : trailers `Co-Authored-By: Claude <modèle> <noreply@anthropic.com>` et `Claude-Session: <url de la session>` (suivre le rappel d'attribution de la session).
 
 ## Sources (`src/`)
-- `data.js`, `zones2.js` : classes, sorts, monstres, zones, objets, recettes.
-- `engine.js` : combat et calculs (dégâts, passifs de classe).
-- `ui2.js`, `ui3.js`, `carte*.js`, `atelier.js`, `recolte.js`, `talents.js` : interface.
-- `style2.css`, `style3.css` : styles ; `gen_mobile.py` en dérive la version mobile.
-- `monart.js`, `monart2.js` : sprites SVG animés des monstres (`MON_ART[id]`). `heroart*.js`, `art*.js`, `skin.js` : héros, icônes, apparences.
-- `spellfx.js`, `stmfx.js` : effets de sorts. `update.js` : bandeau de mise à jour.
+- `data.js` : classes (iop, cra, zobal, sacrieur, enutrof, ecaflip, sram, xelor, steamer — l'Eniripsa a été supprimée), sorts, monstres, objets, recettes, taux de drop (`GEAR_DROP_RATE*`, déjà ×3).
+- `zones2.js` : sous-zones et zones de la route principale (Wabbits, Blops, Kanniboul, Porcos, Dragoeufs, Frigost), donjons, archimonstres, ressources.
+- `engine.js` : combat et calculs (dégâts, passifs de classe). Les ressources de classe qui se gardent d'un combat à l'autre (grains du Xélor, Ferveur du Zobal, Trèfles de l'Ecaflip…) sont stockées sur le héros (`h.grains`, `h.ferv`…), pas seulement dans `h.fight`, qui est recréé à chaque combat.
+- `ui2.js`, `ui3.js` : interface principale. `cbhud.js` : HUD de combat v3 (frise de portraits, grimoire, journal). `carte.js`, `carte2.js` : carte du monde. `atelier.js` (forge, Forgemage, Boulanger), `recolte.js` (Paysan, Alchimiste), `talents.js` (arbre de compétences).
+- `style2.css`, `style3.css` : styles (la fenêtre de combat `.scene` est dézoomée à 82 %) ; `gen_mobile.py` en dérive la version mobile. Ordre de concaténation dans `build.sh`.
+- `monart.js` : sprites SVG animés des monstres d'Incarnam et des premières zones (`MON_ART[id]`). `monart2.js` : monstres des sous-zones, générés par familles (blops, wabbits, kanniboul, porcos, dragoeufs, mansots). `heroart*.js`, `art*.js`, `skin.js` : héros, icônes, équipements, apparences.
+- `spellfx.js` : effets de sorts. `stmfx.js` : Steamer (tourelles, Pression, Surcharge). `update.js` : bandeau de mise à jour.
 
 ## Sprites de monstres
 - SVG original, `viewBox="0 0 128 128"`, classe racine `ms ms-<id>`, ids de dégradés préfixés par 2 lettres propres au monstre.
@@ -37,4 +38,4 @@ Commits : trailers `Co-Authored-By: Claude <modèle> <noreply@anthropic.com>` et
 - Sur mobile, l'utilisateur teste depuis son téléphone : penser à la mise en page étroite.
 
 ## Historique résumé
-Refonte des stats (Force/Intel/Chance/Agi fusionnées en Dégâts ; Sagesse = XP ; Prospection), passifs de classe (Iop colère, Cra focus, Sacrieur, Sram, Ecaflip pile/face), migration Netlify → Cloudflare, sprites originaux pour tous les monstres (oiseau Tofu validé comme référence de style).
+Refonte des stats (Force/Intel/Chance/Agi fusionnées en Dégâts ; Sagesse = XP ; Prospection), passifs de classe (Iop colère, Cra focus/Tir Parfait, Sacrieur Stigmates/Berserk, Sram, Ecaflip pile/face, Xélor sablier/Éclat du temps, Zobal masques/Ferveur, Steamer tourelles), migration Netlify → Cloudflare, sprites originaux pour tous les monstres (oiseau Tofu validé comme référence de style), carte refaite avec sous-zones et donjons, métiers (Récolte, Boulanger, Forgemage), arbre de compétences, écran Combats v3, Dofus Turquoise.
