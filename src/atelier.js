@@ -199,7 +199,7 @@ function brkMatches() {
 function brkSelected() { const f = brkState(); return brkMatches().filter(g => !f.off[g.uid]); }
 function brkSummary() {
   const sel = brkSelected(), tot = {}, mul = 1 + st.jobs.forgemage.lvl * 0.005; let xp = 0;
-  for (const g of sel) { for (const [k, v] of Object.entries(brisageRunes(g))) tot[k] = (tot[k] || 0) + v * mul; xp += Math.round(6 + ITEMS[g.id].lvl * 1.6); }
+  for (const g of sel) { for (const [k, v] of Object.entries(brisageRunes(g))) tot[k] = (tot[k] || 0) + v * mul; xp += Math.round((6 + ITEMS[g.id].lvl * 1.6) * CRAFT_XP_MULT); }
   return { sel, tot, xp };
 }
 function brkListHtml() {
