@@ -1064,11 +1064,26 @@ function renderHeros() {
     <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : tab === 'dofus' ? dofusPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
-/* Y a-t-il en réserve (non porté) un objet utilisable par le héros et meilleur que celui porté dans cet emplacement ? */
+/* « Meilleur » = meilleur en STATISTIQUES pour ce héros, pas en niveau d'objet.
+   On compare ses totaux réels (bonus de panoplie compris) avec l'objet porté puis avec le candidat,
+   chaque statistique ayant un poids (les PA, % dégâts, % PV, critique… valent bien plus qu'un point de Vitalité). */
+const UP_W = { vit: .5, sag: .6, res: 3, crit: 3, dodge: 3, pp: .8, pa: 14, dmgPct: 6, hpPct: 6, regen: 3, speed: 3 };
+function slotUpgrade(h, slot, g) {
+  const cur = h.equip[slot] && gearById(st, h.equip[slot]); if (cur && cur.uid === g.uid) return false;
+  let diff = 0;
+  if ((cur && ITEMS[cur.id].set) || ITEMS[g.id].set) { // une panoplie change les bonus : on compare les totaux réels du héros
+    const before = heroTotals(st, h), keep = h.equip[slot]; h.equip[slot] = g.uid; const after = heroTotals(st, h); h.equip[slot] = keep;
+    for (const k of new Set([...Object.keys(before), ...Object.keys(after)])) if (typeof after[k] === 'number' && typeof before[k] === 'number' && !/^(maxHp|critPct|dodgePct|resPct|ppTotal|xpBonus)$/.test(k)) diff += (after[k] - before[k]) * (UP_W[k] ?? 1);
+  } else {
+    const ks = new Set([...Object.keys(g.stats), ...Object.keys(cur ? cur.stats : {})]);
+    for (const k of ks) diff += ((g.stats[k] || 0) - ((cur && cur.stats[k]) || 0)) * (UP_W[k] ?? 1);
+  }
+  return diff > 0.5;
+}
+/* Y a-t-il en réserve (non porté) un objet utilisable par le héros et meilleur en stats que celui porté dans cet emplacement ? */
 function slotHasBetter(h, slot) {
-  const cur = h.equip[slot] && gearById(st, h.equip[slot]), cs = gearScore(cur);
   return st.gear.some(g => { const d = ITEMS[g.id]; if (!d || d.harvest || d.relic || d.dofus || !slotsFor(d.slot).includes(slot) || h.lvl < d.lvl) return false;
-    if (equippedBy(st, g.uid)) return false; return gearScore(g) > cs; }); // un objet déjà porté (par ce héros ou un autre) ne compte pas
+    return !equippedBy(st, g.uid) && slotUpgrade(h, slot, g); });
 }
 function slotTile(h, slot) {
   const g = h.equip[slot] && gearById(st, h.equip[slot]); const sel = ui.slot === slot;
@@ -1132,7 +1147,7 @@ function combatGear(h) {
     const types = ['coiffe', 'cape', 'amulette', 'anneau', 'ceinture', 'bottes', 'arme'];
     body = `<div class="type-grid">${types.map(ty => {
       const items = free.filter(g => ITEMS[g.id].slot === ty); const slot = ty === 'anneau' ? 'anneau1' : ty;
-      const up = items.some(g => h.lvl >= ITEMS[g.id].lvl && !equippedBy(st, g.uid) && gearScore(g) > gearScore(compareTarget(h, g)));
+      const up = items.some(g => h.lvl >= ITEMS[g.id].lvl && !equippedBy(st, g.uid) && slotsFor(ty).some(sl => slotUpgrade(h, sl, g)));
       return `<button class="type-btn${items.length ? '' : ' none'}" data-act="pickslot" data-slot="${slot}" ${items.length ? '' : 'disabled'}><span class="tb-ic">${SLOT_ICON[ty]}</span><span class="tb-t"><b>${SLOT_LABEL[slot]}${ty === 'anneau' ? 'x' : 's'}</b><small>${items.length ? `${items.length} objet${items.length > 1 ? 's' : ''}` : 'aucun'}</small></span>${up ? '<i class="tb-up" title="Un objet meilleur que celui porté est disponible">▲</i>' : ''}</button>`;
     }).join('')}</div>`;
   } else {
