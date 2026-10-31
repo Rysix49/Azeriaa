@@ -14,7 +14,7 @@ cat <<'HEAD'
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap">
 HEAD
-cat style2.css style3.css > .all.css
+cat style2.css style3.css skillicons.css > .all.css
 echo '<style id="css-new">'; cat .all.css; python3 gen_mobile.py .all.css; echo '</style>'
 rm -f .all.css
 echo '<div id="app"></div>'
@@ -22,7 +22,7 @@ echo '<div class="toasts" id="toasts" aria-live="polite"></div>'
 echo '<div class="modal-back" id="modal" hidden></div>'
 echo '<script>'
 echo "const BUILD_ID = '$BUILD_ID';"
-cat data.js zones2.js skilltrees.js engine.js art.js art2.js art3.js monart.js monart2.js skin.js update.js
+cat data.js zones2.js skilltrees.js skillicons.js skillicons_a.js skillicons_b.js skillicons_c.js skillicons_d.js skillicons_e.js engine.js art.js art2.js art3.js monart.js monart2.js skin.js update.js
 echo '(function () {'
 cat cbhud.js spellfx.js stmfx.js heroart.js heroart2.js atelier.js recolte.js talents.js carte.js carte2.js ui3.js ui2.js
 echo '})();'

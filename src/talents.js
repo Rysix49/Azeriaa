@@ -1,5 +1,5 @@
 /* =====================================================================
-   TALENTS DE CLASSE — onglet « Talents » : un arbre propre à chaque classe (3 voies de 8 talents).
+   TALENTS DE CLASSE — onglet « Talents » : un arbre propre à chaque classe (3 voies de 13 talents).
    Données : skilltrees.js (CLASS_TREES) · calculs : engine.js (skillCheck, skillTotals…)
    ===================================================================== */
 const SK_ROW_H = 108;
@@ -25,7 +25,7 @@ function renderTalents() {
     <div class="sk-pts ${free > 0 ? 'has' : ''}"><b class="num">${free}</b><small>point${free > 1 ? 's' : ''} de talent</small><span class="sub num">${spent} dépensé${spent > 1 ? 's' : ''} sur ${total}${next ? ` · prochain niv. ${next}` : ''}</span></div>
     <div class="sk-rs">${ui.skConfirm ? `<span class="sub">Rendre tous les points pour ${fmt(skillRespecCost(h))} K ?</span><button class="btn sm danger" data-act="skrespec2">Confirmer</button><button class="btn sm ghost" data-act="skrespec0">Annuler</button>` : `<button class="btn sm" data-act="skrespec" ${spent ? '' : 'disabled'}>↺ Réinitialiser${spent ? ` · ${fmt(skillRespecCost(h))} K` : ''}</button>`}</div></div>
     <div class="hero-tabs sk-heroes">${chips}</div>`;
-  const tabs = `<div class="sk-tabs" style="--hc:${c.color}"><button data-act="skbranch" data-v="all" aria-pressed="${bid === 'all'}"><span>🌳</span>Vue d’ensemble</button>${tree.map(b => `<button data-act="skbranch" data-v="${b.id}" aria-pressed="${bid === b.id}" style="--bc:${b.col}"><span>${b.icon}</span>${b.name.replace(/^Voie (du |de la |de l’|des |d’)?/, '')}<em class="num">${skillBranchSpent(h, b.id)}</em></button>`).join('')}</div>`;
+  const tabs = `<div class="sk-tabs" style="--hc:${c.color}"><button data-act="skbranch" data-v="all" aria-pressed="${bid === 'all'}"><span class="sk-tic">${skIco('tree')}</span>Vue d’ensemble</button>${tree.map(b => `<button data-act="skbranch" data-v="${b.id}" aria-pressed="${bid === b.id}" style="--bc:${b.col}"><span class="sk-tic">${skIco(b.icon)}</span>${b.name.replace(/^Voie (du |de la |de l’|des |d’)?/, '')}<em class="num">${skillBranchSpent(h, b.id)}</em></button>`).join('')}</div>`;
   return `<div class="sk" style="--hc:${c.color}">${head}${tabs}${bid === 'all' ? skOverview(h, tree, sk, spent) : skBranch(h, tree.find(b => b.id === bid), just)}</div>`;
 }
 function skMilestones(h, b, compact) {
@@ -35,11 +35,11 @@ function skMilestones(h, b, compact) {
 }
 function skOverview(h, tree, sk, spent) {
   const cards = tree.map(b => { const sp = skillBranchSpent(h, b.id), maxp = skBranchMax(b), kn = skKeyNode(b), keyed = (h.skills && h.skills[kn.id]) > 0;
-    return `<button class="sk-card${keyed ? ' keyed' : ''}" data-act="skbranch" data-v="${b.id}" data-ic="${b.icon}" style="--bc:${b.col}"><span class="sk-cico">${b.icon}</span><b class="display">${b.name}</b><small>${b.text}</small>
+    return `<button class="sk-card${keyed ? ' keyed' : ''}" data-act="skbranch" data-v="${b.id}" style="--bc:${b.col}"><span class="sk-wm" aria-hidden="true">${skIco(b.icon)}</span><span class="sk-cico">${skIco(b.icon)}</span><b class="display">${b.name}</b><small>${b.text}</small>
       <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span><span class="sk-per">✦ Par point : ${skStatLine(b.per)}</span>${skMilestones(h, b, true)}</button>`; }).join('');
   /* passifs de classe : un talent clé par voie, qui change vraiment la façon de jouer */
   const keys = tree.map(b => { const kn = skKeyNode(b), r = (h.skills && h.skills[kn.id]) || 0, s = skNodeState(h, kn), sp = skillBranchSpent(h, b.id), need = SKILL_GATE[kn.r];
-    return `<button class="sk-key${r ? ' on' : ''}${s.can ? ' can' : ''}" data-act="skopen" data-v="${b.id}" data-id="${kn.id}" style="--bc:${b.col}"><span class="sk-key-ic"><i>${kn.icon}</i></span><span class="sk-key-t"><span class="sk-key-h"><b class="display">${esc(kn.name)}</b><em class="sk-key-s">${r ? '✓ Appris' : s.can ? 'Prêt · 3 pts' : `🔒 ${sp}/${need} pts`}</em></span><small>${esc(kn.txt)}</small><span class="sk-fx">${skStatLine(kn.fx)}</span></span></button>`; }).join('');
+    return `<button class="sk-key${r ? ' on' : ''}${s.can ? ' can' : ''}" data-act="skopen" data-v="${b.id}" data-id="${kn.id}" style="--bc:${b.col}"><span class="sk-key-ic"><i>${skIco(kn.icon)}</i></span><span class="sk-key-t"><span class="sk-key-h"><b class="display">${esc(kn.name)}</b><em class="sk-key-s">${r ? '✓ Appris' : s.can ? 'Prêt · 3 pts' : `${skIco('padlock', 'sk-mini')} ${sp}/${need} pts`}</em></span><small>${esc(kn.txt)}</small><span class="sk-fx">${skStatLine(kn.fx)}</span></span></button>`; }).join('');
   const tot = Object.entries(sk).filter(([k, v]) => SKILL_STAT[k] && Math.abs(v) >= 0.005).sort((a, b) => Object.keys(SKILL_STAT).indexOf(a[0]) - Object.keys(SKILL_STAT).indexOf(b[0]));
   const glob = `<div class="sk-glob"><h4 class="at-h">Seuils de puissance <small>(points dépensés au total : ${spent})</small></h4><div class="sk-mile">${SKILL_GLOBAL.map(([at, fx]) => `<div class="${spent >= at ? 'on' : ''}"><span class="sk-mn num">${at}</span><div><small>${spent >= at ? 'Actif' : `${spent}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div></div>`;
   return `<div class="sk-grid">${cards}</div>
@@ -52,12 +52,12 @@ function skBranch(h, b, just) {
   const sel = SKILL_NODE[ui.skSel], W = 300, rows = SKILL_GATE.length, spB = skillBranchSpent(h, b.id);
   const lines = b.nodes.flatMap(n => n[7].map(q => { const a = SKILL_NODE[q], z = SKILL_NODE[n[0]], ra = (h.skills && h.skills[q]) || 0, rz = (h.skills && h.skills[n[0]]) || 0;
     return `<line class="${ra > 0 && rz > 0 ? 'lit' : ra > 0 ? 'half' : ''}" x1="${(a.c + .5) * W / 3}" y1="${(a.r + .5) * SK_ROW_H}" x2="${(z.c + .5) * W / 3}" y2="${(z.r + .5) * SK_ROW_H}" vector-effect="non-scaling-stroke"/>`; })).join('');
-  const gates = SKILL_GATE.map((g, r) => r).filter(r => r >= 2).map(r => `<div class="sk-gate${spB >= SKILL_GATE[r] ? ' open' : ''}" style="grid-row:${r + 1}"><span>${spB >= SKILL_GATE[r] ? '🔓' : '🔒'} ${SKILL_GATE[r]} pts dans la voie</span></div>`).join('');
+  const gates = SKILL_GATE.map((g, r) => r).filter(r => r >= 2).map(r => `<div class="sk-gate${spB >= SKILL_GATE[r] ? ' open' : ''}" style="grid-row:${r + 1}"><span>${skIco(spB >= SKILL_GATE[r] ? 'lock' : 'padlock', 'sk-mini')} ${SKILL_GATE[r]} pts dans la voie</span></div>`).join('');
   const nodes = b.nodes.map(n => { const z = SKILL_NODE[n[0]], s = skNodeState(h, z);
     return `<button class="sk-n${s.r ? ' has' : ''}${s.max ? ' maxed' : ''}${s.can ? ' can' : ''}${!s.open && !s.r ? ' lock' : ''}${z.cost > 1 ? ' key' : ''}${ui.skSel === z.id ? ' sel' : ''}${just === z.id ? ' just' : ''}" data-act="sknode" data-id="${z.id}" style="grid-column:${z.c + 1};grid-row:${z.r + 1};--p:${(s.r / z.max * 100).toFixed(0)}%" aria-label="${esc(z.name)} ${s.r}/${z.max}">
-      <span class="sk-ico">${z.icon}</span><span class="sk-rk num">${s.r}/${z.max}</span><b class="sk-nm">${esc(z.name)}</b></button>`; }).join('');
+      <span class="sk-ico">${skIco(z.icon)}</span><span class="sk-rk num">${s.r}/${z.max}</span><b class="sk-nm">${esc(z.name)}</b></button>`; }).join('');
   const s = skNodeState(h, sel), cur = s.r, nx = Math.min(sel.max, cur + 1);
-  const detail = `<div class="sk-det${sel.cost > 1 ? ' is-key' : ''}"><div class="sk-dh"><span class="sk-dico">${sel.icon}</span><div><b class="display">${esc(sel.name)}</b><small>${sel.cost > 1 ? '★ Talent clé' : `Ligne ${sel.r + 1}`} · rang <b class="num">${cur}</b> / ${sel.max}</small></div></div>
+  const detail = `<div class="sk-det${sel.cost > 1 ? ' is-key' : ''}"><div class="sk-dh"><span class="sk-dico">${skIco(sel.icon)}</span><div><b class="display">${esc(sel.name)}</b><small>${sel.cost > 1 ? '★ Talent clé' : `Ligne ${sel.r + 1}`} · rang <b class="num">${cur}</b> / ${sel.max}</small></div></div>
     ${sel.txt ? `<p class="sk-txt">${esc(sel.txt)}</p>` : ''}
     <div class="label">${sel.max > 1 ? 'Par rang' : 'Effet'}</div><div class="sk-fx">${skStatLine(sel.fx)}</div>
     ${cur && sel.max > 1 ? `<div class="label">Actuellement</div><div class="sk-fx">${skStatLine(sel.fx, cur)}</div>` : ''}
@@ -65,7 +65,7 @@ function skBranch(h, b, just) {
     <p class="sub">${sel.req.length ? `Nécessite : ${sel.req.map(q => SKILL_NODE[q].name).join(' ou ')}. ` : ''}${SKILL_GATE[sel.r] ? `Ouvre à ${SKILL_GATE[sel.r]} points dans la voie. ` : ''}Coût : ${sel.cost} point${sel.cost > 1 ? 's' : ''}${sel.max > 1 ? ' par rang' : ''}.</p>
     <button class="btn gold sk-buy" data-act="skbuy" data-id="${sel.id}" ${s.can ? '' : 'disabled'}>${s.max ? 'Rang maximal' : s.can ? `Apprendre · ${sel.cost} pt${sel.cost > 1 ? 's' : ''}` : 'Indisponible'}</button>
     ${!s.can && !s.max ? `<small class="sk-why">${esc(s.err)}</small>` : ''}</div>`;
-  return `<div class="sk-wrap" style="--bc:${b.col}"><div class="sk-treew"><div class="sk-bhead"><span class="sk-bico">${b.icon}</span><div><b class="display">${b.name}</b><small>${b.text}</small></div><span class="sk-bp num">${spB} pts</span></div>
+  return `<div class="sk-wrap" style="--bc:${b.col}"><div class="sk-treew"><div class="sk-bhead"><span class="sk-bico">${skIco(b.icon)}</span><div><b class="display">${b.name}</b><small>${b.text}</small></div><span class="sk-bp num">${spB} pts</span></div>
       <div class="bar sk-bar sk-bbar"><i style="width:${Math.min(100, spB / skBranchMax(b) * 100).toFixed(0)}%"></i></div>
       <div class="sk-per">✦ Chaque point dépensé dans la voie : ${skStatLine(b.per)} <span class="sub">· actuellement ${skStatLine(b.per, spB)}</span></div>
       <div class="sk-motes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sk-tree" style="grid-template-rows:repeat(${rows},${SK_ROW_H}px)"><svg class="sk-lines" viewBox="0 0 ${W} ${rows * SK_ROW_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>${gates}${nodes}</div></div>
