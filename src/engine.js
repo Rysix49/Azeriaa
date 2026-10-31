@@ -26,7 +26,8 @@ function monsterStats(mid) {
   const m = MONSTERS[mid]; const l = m.lvl;
   const hp = Math.round((12 + l * 8 + l * l * 0.12) * (m.hpm || 1));
   const avg = (2.5 + l * 0.8 + l * l * 0.003) * (m.dm || 1);
-  const xp = Math.round((10 + l * 6 + l * l * 1.9) * (m.hpm || 1) * (m.boss ? 1.5 : 1));
+  const xl = m.xpl || l; // monstre héroïque : l'XP suit son niveau d'origine (puis × xpmul)
+  const xp = Math.round((10 + xl * 6 + xl * xl * 1.9) * (m.xhpm || m.hpm || 1) * (m.boss ? 1.5 : 1) * (m.xpmul || 1));
   const kamas = [Math.round(l * 1.5 + 2), Math.round(l * 3 + 6)].map(k => m.boss ? k * 8 : k);
   const mu = m.mult || 1, rw = m.archi ? ARCHI_REWARD : 1; // archimonstre : PV et dégâts ×2, XP et kamas ×6
   return (_monCache[mid] = { hp: hp * mu, dmin: Math.max(1, Math.round(avg * 0.8 * mu)), dmax: Math.round(avg * 1.2 * mu), xp: xp * rw, kamas: kamas.map(k => k * rw), res: m.res || 0 });
@@ -115,7 +116,7 @@ function spellsOf(h) { return CLASSES[h.cls].spells; }
 function spellUnlocked(h, sp) { return h.lvl >= sp.lvl; }
 
 /* ---------------------------- Activités ---------------------------- */
-function findPlace(type, id) { return type === 'dungeon' ? DUNGEONS.find(d => d.id === id) : type === 'harvest' ? CROPS.find(c => c.id === id) : ZONES.find(z => z.id === id); }
+function findPlace(type, id) { return type === 'dungeon' ? (DUNGEONS.find(d => d.id === id) || HDUNGEONS.find(d => d.id === id)) :type === 'harvest' ? CROPS.find(c => c.id === id) : ZONES.find(z => z.id === id); }
 
 function setActivity(st, h, type, id, tier = 0) {
   h.fight = null; h.resting = false; h.wait = 0; h.restTotal = 0; h.nextArchi = null;
@@ -161,14 +162,15 @@ function startFight(st, h, ev) {
   let group;
   if (h.act.type === 'dungeon') {
     if (h.act.room === 0) {
-      if ((st.res[place.key] || 0) <= 0) {
-        ev.log(h, `Plus de ${RESOURCES[place.key].name} : ${h.name} quitte le donjon.`, 'warn');
-        ev.stopped && ev.stopped(h, 'Plus de clef');
+      const cost = place.keys || 1;
+      if ((st.res[place.key] || 0) < cost) {
+        ev.log(h, `Plus assez de ${RESOURCES[place.key].name} (${cost} requises) : ${h.name} quitte le donjon.`, 'warn');
+        ev.stopped && ev.stopped(h, cost > 1 ? `Il faut ${cost} clefs pour entrer` : 'Plus de clef');
         setActivity(st, h, null);
         return false;
       }
-      st.res[place.key]--;
-      ev.log(h, `${h.name} entre dans ${place.name} (clef utilisée).`, 'info');
+      st.res[place.key] -= cost;
+      ev.log(h, `${h.name} entre dans ${place.name} (${cost > 1 ? cost + ' clefs utilisées' : 'clef utilisée'}).`, place.heroic ? 'boss' : 'info');
     }
     group = h.act.room < place.rooms.length ? place.rooms[h.act.room] : place.boss;
   } else {
@@ -423,6 +425,7 @@ function monsterTurn(st, h, t, m, ev) {
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
+  if (def.heroic && f.turn > HEROIC_ENRAGE_TURN) dmg *= 1 + HEROIC_ENRAGE_STEP * (f.turn - HEROIC_ENRAGE_TURN); // héroïque : les monstres s'enragent
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100) * (wet ? STM_WET : 1)));
   if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100) * (1 - Math.min(60, t.larmeDef || 0) / 100))); // Masque Pleureur
@@ -940,6 +943,14 @@ function resolveWin(st, h, ev) {
     st.stats.kills[m.mid] = (st.stats.kills[m.mid] || 0) + 1;
     st.stats.totalKills++;
   }
+  if (place.heroic && h.act.type === 'dungeon' && h.act.room >= place.rooms.length) { // fin d'un donjon héroïque : butin exclusif (pièce, arme, relique, Dofus)
+    for (const [iid, ch] of (HEROIC_LOOT[place.id] || [])) {
+      let g = null; const d = ITEMS[iid];
+      if (Math.random() < ch * t.ppTotal / 100) g = rollItem(iid);
+      else if (!d.relic && !d.dofus && Math.random() < HEROIC_STASIS * t.ppTotal / 100) { g = rollStasis(iid); st.stats.stasisDropped = (st.stats.stasisDropped || 0) + 1; }
+      if (g) { st.gear.push(g); gearLoot.push(g); st.stats.heroicDropped = (st.stats.heroicDropped || 0) + 1; }
+    }
+  }
   const n = f.mons.length;
   xp *= (1 + (n - 1) * 0.15) * (1 + t.xpBonus / 100) * (place.bonusXp || 1);
   kamas = Math.round(kamas * (1 + ((t.kamas || 0) + (10 + (t.jackpotKamas || 0)) * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
@@ -962,6 +973,7 @@ function resolveWin(st, h, ev) {
     if (h.act.room > place.rooms.length) {
       h.act.room = 0; h.act.fails = 0;
       if (h.session) h.session.runs++;
+      if (place.heroic) { st.stats.heroicRuns = st.stats.heroicRuns || {}; st.stats.heroicRuns[place.id] = (st.stats.heroicRuns[place.id] || 0) + 1; }
       ev.log(h, `${place.name} terminé !`, 'boss');
       ev.dungeonDone && ev.dungeonDone(h, place);
     }

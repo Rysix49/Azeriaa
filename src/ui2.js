@@ -48,7 +48,7 @@ const ui = {
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
   recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '', fcFold: {}, jrOpen: false,
 };
-const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'fcFold', 'jrOpen'];
+const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'djHeroic', 'fcFold', 'jrOpen'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -121,17 +121,21 @@ function placeName(act) { if (!act) return ''; const p = findPlace(act.type, act
 function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
 function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RESOURCES[h.food.id]; return `${r.icon} ${r.name} · ${mmss(h.food.left)}`; }
 function themeStyle(th) { return `--sky:${th[0]};--ground:${th[1]}`; }
+/* Objets héroïques (butin des donjons héroïques) : classe `hx` en plus, pour le cadre rouge braise */
 function qClass(g) {
-  if (ITEMS[g.id].relic) return 'q-relic';
-  if (ITEMS[g.id].dofus) return 'q-dofus';
-  if (g.stasis) return 'q-stasis';
+  const d = ITEMS[g.id], hx = d.heroic ? ' hx' : '';
+  if (d.relic) return 'q-relic' + hx;
+  if (d.dofus) return 'q-dofus' + hx;
+  if (g.stasis) return 'q-stasis' + hx;
+  if (d.heroic) return 'q-heroic hx';
   const q = itemQuality(g); return q > 0.8 ? 'q-high' : q > 0.4 ? 'q-mid' : 'q-low';
 }
 function qualityTag(g) {
-  if (ITEMS[g.id].relic) return '<span class="qtag q-relic">Relique</span>';
-  if (ITEMS[g.id].dofus) return '<span class="qtag q-dofus">Dofus</span>';
-  if (g.stasis) return '<span class="qtag q-stasis">Stasifié ×2</span>';
-  return `<span class="qtag ${qClass(g)}">Jet ${Math.round(itemQuality(g) * 100)} %</span>`;
+  const d = ITEMS[g.id], hx = d.heroic ? '<span class="qtag q-heroic">Héroïque</span>' : '';
+  if (d.relic) return hx + '<span class="qtag q-relic">Relique</span>';
+  if (d.dofus) return hx + '<span class="qtag q-dofus">Dofus</span>';
+  if (g.stasis) return hx + '<span class="qtag q-stasis">Stasifié ×2</span>';
+  return `${hx}<span class="qtag ${itemQuality(g) > 0.8 ? 'q-high' : itemQuality(g) > 0.4 ? 'q-mid' : 'q-low'}">Jet ${Math.round(itemQuality(g) * 100)} %</span>`;
 }
 function statusOf(h) {
   if (!h.act) return ['idle', 'Inactif'];
@@ -140,7 +144,7 @@ function statusOf(h) {
   if (h.fight) return ['fighting', `Combat · tour ${h.fight.turn}`];
   return ['resting', 'En route'];
 }
-function actLabel(h) { return !h.act ? '' : h.act.type === 'dungeon' ? 'Donjon' : h.act.type === 'harvest' ? 'Récolte' : 'Zone'; }
+function actLabel(h) { return !h.act ? '' : h.act.type === 'dungeon' ? (findPlace('dungeon', h.act.id).heroic ? 'Donjon héroïque' : 'Donjon') : h.act.type === 'harvest' ? 'Récolte' : 'Zone'; }
 function arenaTheme(h) {
   if (!h.act) return THEME.idle;
   if (h.act.type === 'harvest') return harvestTheme(findPlace('harvest', h.act.id));
@@ -298,14 +302,14 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${d.heroic ? ' heroic' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <i class="act-mark" aria-hidden="true">▼</i><div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>${h.cls === 'steamer' ? `<div class="mst" data-k="mst">${stmMonChips(m)}</div>` : ''}
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
     stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}${h.cls === 'steamer' ? yardHtml(h) : ''}</div><div class="foes">${foes}</div>`;
   }
   const folded = !!(ui.fcFold && ui.fcFold[h.id]);
-  return `<article class="fc${folded ? ' fold' : ''}${harvest ? ' is-harvest' : ''}" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
+  return `<article class="fc${folded ? ' fold' : ''}${harvest ? ' is-harvest' : ''}${place && place.heroic ? ' heroic' : ''}" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
       ${emblem(h.cls)}
       <div class="fc-who"><b class="fc-name">${esc(h.name)}</b><span class="fc-sub">${CLASSES[h.cls].name} · <span class="lvl">Niv. ${h.lvl}</span>${h.capital ? ` · <button class="link" data-act="gohero" data-hero="${h.id}">${h.capital} pts à répartir</button>` : ''}</span></div>
@@ -1267,7 +1271,7 @@ function dofusPanel(h) {
       return `<div class="relic-entry dofus-entry${has ? ' has' : ''}"><div class="relic-mini-ic">${itemIcon(id)}</div><div class="re-main"><b>${has ? esc(d.name) : '???'}</b> <small class="sub">niv. ${d.lvl}</small>
         <div class="sub">${Object.entries(d.stats).map(([k, [a, b]]) => `${a === b ? a : a + '–' + b} ${STAT_SHORT[k]}`).join(' · ')}</div><div class="re-src">${relicSources(id)}</div></div></div>`; }).join('')}</div>`;
 }
-function relicSources(id) { return Object.entries(RELIC_DROPS).filter(([, l]) => l.some(([r]) => r === id)).map(([m, l]) => `${monIcon(m)} ${MONSTERS[m].name} (${pct(l.find(([r]) => r === id)[1])})`).join(', '); }
+function relicSources(id) { return [...Object.entries(RELIC_DROPS).filter(([, l]) => l.some(([r]) => r === id)).map(([m, l]) => `${monIcon(m)} ${MONSTERS[m].name} (${pct(l.find(([r]) => r === id)[1])})`), ...Object.entries(HEROIC_LOOT).filter(([, l]) => l.some(([r]) => r === id)).map(([dj, l]) => `☠ ${findPlace('dungeon', dj).name} (${pct(l.find(([r]) => r === id)[1])} par donjon)`)].join(', '); }
 function relicPanel(h) {
   const cur = h.relic && gearById(st, h.relic);
   const owned = st.gear.filter(g => ITEMS[g.id].relic && g.uid !== h.relic).sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl);
@@ -1289,7 +1293,10 @@ function relicPanel(h) {
 /* ---------------------------- Vue : Carte ---------------------------- */
 function defaultPlace() {
   const h = selHero();
-  if (h && h.act && h.act.type !== 'harvest') return { type: h.act.type, id: h.act.id };
+  if (h && h.act && h.act.type !== 'harvest') {
+    if (h.act.type === 'dungeon' && HERO_BASE[h.act.id]) { ui.djHeroic = ui.djHeroic || {}; ui.djHeroic[HERO_BASE[h.act.id]] = true; return { type: 'dungeon', id: HERO_BASE[h.act.id] }; } // donjon héroïque : on affiche son donjon normal, en mode héroïque
+    return { type: h.act.type, id: h.act.id };
+  }
   const lv = h ? h.lvl : 1;
   const z = [...ZONES].reverse().find(x => !x.sub && lv >= x.lvl[0]) || ZONES[0];
   return { type: 'zone', id: z.id };
@@ -1603,6 +1610,7 @@ const ACTIONS = {
   },
   togglemon(d) { ui.openMons = ui.openMons || {}; ui.openMons[d.k] = !ui.openMons[d.k]; },
   ztier(d) { ui.zoneTier = ui.zoneTier || {}; ui.zoneTier[d.id] = +d.t; },
+  djmode(d) { ui.djHeroic = ui.djHeroic || {}; ui.djHeroic[d.id] = d.m === '1'; },
   pick(d) {
     ui.sel = d.kind === 'gear' ? { k: 'gear', uid: d.uid } : { k: 'res', id: d.id }; ui.sellUid = null;
     if (innerWidth < 1000) setTimeout(() => { const el = $('.inspector'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 30);

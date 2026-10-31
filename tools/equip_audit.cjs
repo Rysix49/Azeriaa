@@ -7,14 +7,15 @@
    Principe : chaque objet vaut un certain gain de « puissance de combat » (dégâts × survie) pour un héros de
    référence de son niveau, plus une valeur d'utilitaire (prospection, sagesse, kamas, XP, vitesse).
    Cette valeur doit suivre le budget de son emplacement (constant avec le niveau, rampe au début du jeu).
+   Objets héroïques (butin des donjons héroïques, heroic.js) : même budget × HEROIC_POWER[rang − 1] (1,30 → 1,72).
    Reliques : 16 + 0,14 × niveau. Dofus : idem − 2. Panoplies : bonus cumulé 8 / 25 / 46 / 72 % (5 pièces),
    8 / 26 / 50 (4 pièces), 9 / 28 (3 pièces), 6 / 18 / 40 (6 pièces). Plus de détails dans CLAUDE.md. */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const SRC = path.join(__dirname, '..', 'src') + path.sep;
-let src = ['data.js', 'zones2.js', 'zones3.js', 'balmig.js', 'skilltrees.js', 'engine.js'].map(f => fs.readFileSync(SRC + f, 'utf8')).join('\n;\n') + '\n;globalThis.__x={ITEMS,SETS};';
+let src = ['data.js', 'zones2.js', 'zones3.js', 'balmig.js', 'heroic.js', 'skilltrees.js', 'engine.js'].map(f => fs.readFileSync(SRC + f, 'utf8')).join('\n;\n') + '\n;globalThis.__x={ITEMS,SETS,HEROIC_POWER};';
 const ctx = { console, Math, Date, Object, Array, JSON, Number, String, Set, Map, parseInt, parseFloat, isNaN, setTimeout }; ctx.globalThis = ctx;
 vm.createContext(ctx); vm.runInContext(src, ctx);
-const { ITEMS, SETS } = ctx.__x;
+const { ITEMS, SETS, HEROIC_POWER } = ctx.__x;
 
 const HP_MULT = 1.05;
 const UTIL = { pp: 0.04, sag: 0.03, xpPct: 0.06, kamas: 0.03, speed: 0.5 }; // % de puissance par point de stat
@@ -47,7 +48,7 @@ function power(L, t) {
 const util = v => Object.entries(UTIL).reduce((s, [k, w]) => s + (v[k] || 0) * w, 0);
 function loadout(L, excludeId, slot) { // meilleur objet de niveau <= L par emplacement
   const best = {};
-  for (const [id, i] of Object.entries(ITEMS)) { if (i.relic || i.dofus || i.harvest || !COMBAT.includes(i.slot) || i.lvl > L || id === excludeId) continue; if (!best[i.slot] || i.lvl > ITEMS[best[i.slot]].lvl) best[i.slot] = id; }
+  for (const [id, i] of Object.entries(ITEMS)) { if (i.relic || i.dofus || i.harvest || i.heroic || !COMBAT.includes(i.slot) || i.lvl > L || id === excludeId) continue; if (!best[i.slot] || i.lvl > ITEMS[best[i.slot]].lvl) best[i.slot] = id; }
   const vs = []; for (const [s, id] of Object.entries(best)) { if (s === slot && slot !== 'anneau') continue; vs.push(vec(ITEMS[id])); if (s === 'anneau' && slot !== 'anneau') vs.push(vec(ITEMS[id])); } return vs;
 }
 const value = (L, base, v) => (power(L, totals(L, [...base, v])) / power(L, totals(L, base)) - 1) * 100 + util(v);
@@ -64,10 +65,10 @@ const all = process.argv.includes('--all'); let bad = 0;
 const show = (label, v, target) => { const dev = (v / target - 1) * 100; const flag = Math.abs(dev) > 8; if (flag) bad++; if (flag || all) console.log(`${flag ? '⚠' : ' '} ${label.padEnd(36)} valeur ${v.toFixed(1).padStart(5)} / budget ${target.toFixed(1).padStart(5)}  (${dev >= 0 ? '+' : ''}${dev.toFixed(0)} %)`); };
 for (const [id, i] of Object.entries(ITEMS)) {
   if (i.harvest) continue;
-  const L = i.lvl;
-  if (COMBAT.includes(i.slot)) { if (L <= 1) continue; show(`${id} (${i.slot} ${L})`, value(L, loadout(L, id, i.slot), vec(i)), interp(BUDGET[i.slot], L)); }
-  else if (i.relic) { if (L <= 1) continue; show(`${id} (relique ${L})`, value(L, loadout(L, null, 'relique'), vec(i)), RELIC_B(L)); }
-  else if (i.dofus) show(`${id} (Dofus ${L})`, value(L, loadout(L, null, 'dofus'), vec(i)), DOFUS_B(L));
+  const L = i.lvl, hm = i.heroic ? HEROIC_POWER[i.hr - 1] : 1; // objets héroïques : budget normal × HEROIC_POWER[rang − 1]
+  if (COMBAT.includes(i.slot)) { if (L <= 1) continue; show(`${id} (${i.slot} ${L})`, value(L, loadout(L, id, i.slot), vec(i)), interp(BUDGET[i.slot], L) * hm); }
+  else if (i.relic) { if (L <= 1) continue; show(`${id} (relique ${L})`, value(L, loadout(L, null, 'relique'), vec(i)), RELIC_B(L) * hm); }
+  else if (i.dofus) show(`${id} (Dofus ${L})`, value(L, loadout(L, null, 'dofus'), vec(i)), DOFUS_B(L) * hm);
 }
 for (const [sid, s] of Object.entries(SETS)) {
   if (sid === 'aventurier') continue;

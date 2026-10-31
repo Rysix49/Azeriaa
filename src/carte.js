@@ -84,10 +84,10 @@ function readiness(p) {
 }
 function wmNode(p, type) {
   const [x, y] = WM_POS[type][p.id]; const sel = ui.place.type === type && ui.place.id === p.id;
-  const here = st.heroes.filter(h => h.act && h.act.type === type && h.act.id === p.id);
+  const hid = type === 'dungeon' ? HERO_OF[p.id] : null, here = st.heroes.filter(h => h.act && h.act.type === type && (h.act.id === p.id || h.act.id === hid)), hxHere = here.some(h => h.act.id === hid);
   const mons = placeMons(p, type), icon = monIcon(type === 'dungeon' ? p.boss[0] : (p.sub || p.archiBase) ? (mons.find(m => MONSTERS[m].big) || p.archiBase || mons[0]) : mons[0]); const [rd, rl] = readiness(p);
   const th = _wmTh(p.region), keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
-  return `<button class="wn ${type}${p.sub ? ' sub' : ''}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / WM_W * 100).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
+  return `<button class="wn ${type}${p.sub ? ' sub' : ''}${sel ? ' sel' : ''}${here.length ? ' occ' : ''}${hxHere ? ' hx' : ''}" data-act="place" data-type="${type}" data-id="${p.id}" style="left:${(x / WM_W * 100).toFixed(2)}%;top:${(y / WM_H * 100).toFixed(2)}%;${themeStyle(th)}" aria-label="${esc(p.name)}" aria-pressed="${sel}">
     ${p.sub ? `<span class="wn-orbit" style="${cph(18000)}"></span>` : ''}<span class="wn-ring" style="${cph(2400)}"></span><span class="wn-art">${icon}</span><span class="wn-dot ${rd}" title="${rl} · niveau conseillé ${p.lvl[0]}">${rd === 'ok' ? '✓' : rd === 'near' ? '!' : '✕'}</span>
     ${type === 'dungeon' ? `<span class="wn-key${keyN ? '' : ' none'}" title="Clefs en stock">🗝 ${keyN}</span>` : ''}
     ${here.length ? `<span class="wn-heroes">${here.map((h, i) => `<span class="wn-h" style="${cph(2200 + i * 130)}">${emblem(h.cls, true)}</span>`).join('')}</span>` : ''}
@@ -100,7 +100,7 @@ function wmMap() {
 }
 
 function carteSig() {
-  return JSON.stringify([st.heroes.map(h => [h.id, h.lvl, h.act && [h.act.type, h.act.id, h.act.tier || 0]]), ui.place, ui.zoneTier, ui.openMons, DUNGEONS.map(d => st.res[d.key] | 0), st.heroes.length]);
+  return JSON.stringify([st.heroes.map(h => [h.id, h.lvl, h.act && [h.act.type, h.act.id, h.act.tier || 0]]), ui.place, ui.zoneTier, ui.openMons, DUNGEONS.map(d => st.res[d.key] | 0), ui.djHeroic, st.heroes.length]);
 }
 let _wmFirst = true;
 function wmAfter() {
@@ -129,10 +129,10 @@ function monCard(p, type, mid, T) {
         <div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b2]]) => `${b2 * 2} ${STAT_SHORT[k]}`).join(' · ')}</div></div>
         <div class="dr-pcs"><b class="dr-pc gold">${pct(gr)}</b><b class="dr-pc stasis">${pct(STASIS_RATE * T.drop)}</b></div></div>`; }).join('')}
     </div></div>` : '';
-  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}" data-act="togglemon" data-k="${key}">
+  return `<article class="mc${mo ? ' open' : ''}${ar ? ' archi' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.heroic ? ' heroic' : ''}" data-act="togglemon" data-k="${key}">
     <div class="mc-head" tabindex="0" role="button" aria-expanded="${mo}" title="Voir tous les objets droppables">
       <span class="mc-ico" aria-hidden="true"><span style="${cph(2600 + (key.length % 7) * 150)}">${monIcon(mid)}</span></span>
-      <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${d.big ? '<em class="bg">Gros monstre</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
+      <div class="mc-id"><b>${ar ? '👑 ' : ''}${d.name}</b><span class="mc-tags"><em class="lv">Niv. ${d.lvl}</em>${d.boss ? '<em class="bs">Boss</em>' : ''}${d.big ? '<em class="bg">Gros monstre</em>' : ''}${d.heroic ? '<em class="hr">Héroïque</em>' : ''}${ar ? '<em class="ar">Archimonstre</em>' : ''}</span></div>
       <span class="chev" aria-hidden="true">▸</span></div>
     <div class="mc-more">${mo ? 'Cliquer pour replier' : `Voir les ${d.drops.length + gd.length + rl.length} objets droppables`}</div>
     <div class="mc-stats"><span class="hp">❤ <b class="num">${fmt(ms.hp * T.hp)}</b> PV</span><span class="dm">⚔ <b class="num">${fmt(ms.dmin * T.dmg)}–${fmt(ms.dmax * T.dmg)}</b> dégâts</span></div>
@@ -143,30 +143,47 @@ function monCard(p, type, mid, T) {
     ${detail}</article>`;
 }
 
-function placeDetail(p, type) {
+/* Butin exclusif d'un donjon héroïque : objets, stats, chance de chute (selon la meilleure prospection) et de stasifié */
+function heroicLootHtml(p, pp) {
+  const kind = it => it.relic ? 'Relique' : it.dofus ? 'Dofus' : SLOT_LABEL[it.slot] || it.slot;
+  const rows = (HEROIC_LOOT[p.id] || []).map(([iid, c]) => {
+    const it = ITEMS[iid], rare = it.relic || it.dofus, cls = it.relic ? 'q-relic hx' : it.dofus ? 'q-dofus hx' : 'q-heroic hx';
+    return `<article class="hl-item"><div class="tile md ${cls}">${itemIcon(iid)}</div><div class="hl-main"><b>${esc(it.name)}</b><small>${kind(it)} · niv. ${it.lvl}</small>
+      <div class="hl-st">${Object.entries(it.stats).map(([k, [a, b]]) => `<span style="color:${STAT_COLOR[k] || 'var(--fg)'}">${a === b ? a : a + '–' + b} ${STAT_SHORT[k]}</span>`).join('')}</div>
+      ${rare ? '' : `<div class="sub dr-stasis-line">Stasifié : ${Object.entries(it.stats).map(([k, [, b]]) => `${b * 2} ${STAT_SHORT[k]}`).join(' · ')}</div>`}</div>
+      <div class="hl-pc"><b class="dr-pc ${rare ? 'relic' : 'gold'}">${pct(c * pp / 100)}</b>${rare ? '' : `<b class="dr-pc stasis" title="Chance de stasifié">${pct(HEROIC_STASIS * pp / 100)}</b>`}</div></article>`;
+  }).join('');
+  return `<div class="hloot"><div class="label" style="margin-bottom:8px">Butin héroïque exclusif <span class="mc-leg">chance à chaque donjon terminé · prospection ${pp}</span></div><div class="hl-grid">${rows}</div></div>`;
+}
+function placeDetail(p0, type) {
+  const hx = type === 'dungeon' && !!HERO_OF[p0.id] && !!(ui.djHeroic || {})[p0.id];
+  const p = hx ? findPlace('dungeon', HERO_OF[p0.id]) : p0;
   const mons = placeMons(p, type);
-  const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0;
+  const keyN = type === 'dungeon' ? (st.res[p.key] || 0) : 0, need = p.keys || 1;
   const tier = type === 'zone' ? ((ui.zoneTier || {})[p.id] || 0) : 0; const T = SUBZONES[tier];
   const best = st.heroes.reduce((m, h) => Math.max(m, heroTotals(st, h).ppTotal), 100);
   const cards = (type === 'zone' && ARCHIS[p.id] ? [...mons, ARCHIS[p.id]] : mons).map(mid => monCard(p, type, mid, T)).join('');
   const sends = st.heroes.length ? st.heroes.map(h => {
     const there = h.act && h.act.type === type && h.act.id === p.id && (type !== 'zone' || (h.act.tier || 0) === tier);
     const low = h.lvl < p.lvl[0] - 3;
-    const label = there ? 'Est ici' : low ? `Niveau conseillé ${p.lvl[0]}` : h.act ? `Quitte ${placeName(h.act)}` : 'Disponible';
-    return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="${type}" data-id="${p.id}" data-t="${tier}" ${there || (type === 'dungeon' && !keyN) ? 'disabled' : ''}`, esc(label), (there ? 'here' : '') + (low ? ' low' : ''));
+    const label = there ? 'Est ici' : low ? `Niveau conseillé ${p.lvl[0]}${hx ? ' et +' : ''}` : h.act ? `Quitte ${placeName(h.act)}` : 'Disponible';
+    return heroChip(h, `data-act="send" data-hero="${h.id}" data-type="${type}" data-id="${p.id}" data-t="${tier}" ${there || (type === 'dungeon' && keyN < need) ? 'disabled' : ''}`, esc(label), (there ? 'here' : '') + (low ? ' low' : ''));
   }).join('') : '<span class="sub">Recrute un héros d’abord.</span>';
   const [rd, rl] = readiness(p), th = _wmTh(p.region);
   const hills = `<svg class="pb-hills" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100V58C60 36 110 66 170 50S290 30 400 56V100Z" fill="${_mx(th[1], '#c8d8e8', .3)}" opacity=".55"/><path d="M0 100V72C70 56 130 84 200 68S320 54 400 74V100Z" fill="${_mx(th[1], '#0e110b', .25)}"/></svg>`;
   const motes = Array.from({ length: 7 }, (_, i) => `<i style="left:${8 + i * 13}%;animation-duration:${7000 + i * 900}ms;${cph(7000 + i * 900)}"></i>`).join('');
   return `<div class="place-banner" style="${themeStyle(th)}">${hills}<span class="pb-motes" aria-hidden="true">${motes}</span>
       <div class="pb-txt"><span class="label">${type === 'dungeon' ? 'Donjon · ' : p.sub ? `Sous-zone de ${ZONES.find(z => z.id === p.parent).name}` : ''}${type === 'dungeon' ? p.region : p.sub ? '' : p.region}</span><h2>${type === 'zone' ? `${p.name} ${tier + 1}` : p.name}</h2><p>${p.text}</p></div>
-      <div class="pb-side"><span class="lvl-badge">Niv. ${p.lvl[0]}–${p.lvl[1]}</span><span class="rd ${rd}">${rl}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map((m, i) => `<span style="${cph(2400 + i * 260)}"><span>${monIcon(m)}</span></span>`).join('')}</div></div>
+      <div class="pb-side"><span class="lvl-badge">${hx ? `☠ Niv. ${p.lvl[0]}+ · monstres ${p.mlvl[0]}–${p.mlvl[1]}` : `Niv. ${p.lvl[0]}–${p.lvl[1]}`}</span><span class="rd ${rd}">${rl}</span><div class="pb-mons" aria-hidden="true">${mons.slice(0, 4).map((m, i) => `<span style="${cph(2400 + i * 260)}"><span>${monIcon(m)}</span></span>`).join('')}</div></div>
     </div>
-    ${wmLinked(p, type)}
+    ${wmLinked(p0, type)}
+    ${type === 'dungeon' && HERO_OF[p0.id] ? `<div class="tiers djmodes">${[0, 1].map(m => { const n = st.heroes.filter(h => h.act && h.act.type === 'dungeon' && h.act.id === (m ? HERO_OF[p0.id] : p0.id)).length;
+      return `<button data-act="djmode" data-id="${p0.id}" data-m="${m}" aria-pressed="${!!m === hx}" style="--tc:${m ? '#ff5a3c' : '#8fd65a'}"><span class="tr-pips">${[0, 1, 2, 3].map(k => `<i${m || !k ? ' class="on"' : ''}></i>`).join('')}</span><b>${m ? '☠ Héroïque' : 'Normal'}</b><span>${m ? `Monstres de niveau ×2 · ${HEROIC_COST} clefs · le meilleur butin du jeu` : 'Difficulté normale · une clef'}</span>${n ? `<i class="tr-n">${n} héros</i>` : ''}</button>`; }).join('')}</div>` : ''}
     ${type === 'zone' ? `<div class="tiers">${SUBZONES.map((s, i) => { const n = st.heroes.filter(h => h.act && h.act.type === 'zone' && h.act.id === p.id && (h.act.tier || 0) === i).length;
       return `<button data-act="ztier" data-id="${p.id}" data-t="${i}" aria-pressed="${i === tier}" style="--tc:${['#8fd65a', '#e8d04a', '#f09a3a', '#e8503a'][i]}"><span class="tr-pips">${[0, 1, 2, 3].map(k => `<i${k <= i ? ' class="on"' : ''}></i>`).join('')}</span><b>${p.name} ${i + 1}</b><span>${i ? `PV ×${s.hp} · Dégâts ×${String(s.dmg).replace('.', ',')} · Équip. ×${s.drop}` : 'Difficulté normale'}</span>${n ? `<i class="tr-n">${n} héros</i>` : ''}</button>`; }).join('')}</div>`
-      : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp} · une clef par entrée</span>${keyN ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
+      : `<div class="keybox"><span>${RESOURCES[p.key].icon} ${RESOURCES[p.key].name}</span><b style="color:${keyN ? 'var(--win)' : 'var(--hp)'}">${keyN} en stock</b><span class="sub">· 3 salles puis le boss · XP ×${p.bonusXp * (hx ? HEROIC_XP_MULT : 1)} · ${need > 1 ? need + ' clefs' : 'une clef'} par entrée${hx ? ' · le boss s’enrage après ' + HEROIC_ENRAGE_TURN + ' tours' : ''}</span>${keyN >= need ? '' : '<button class="btn sm" data-act="gocraftkey">Fabriquer des clefs</button>'}</div>`}
     <div><div class="label" style="margin-bottom:6px">Envoyer un héros</div><div class="send-list">${sends}</div></div>
+    ${hx ? heroicLootHtml(p, best) : ''}
     <div><div class="label" style="margin-bottom:8px">Monstres et butin <span class="mc-leg">❤ PV · ⚔ dégâts · ✦ stasifié</span></div><div class="mgrid">${cards}</div></div>
     <p class="hint">Taux par monstre vaincu pour 100 de prospection (ta meilleure : ${best}, soit ×${(best / 100).toFixed(2).replace('.', ',')}). Équipement et stasifié : taux par objet. <span style="color:var(--relic)">En jaune</span> : reliques. Clique sur un monstre pour le détail.</p>`;
 }

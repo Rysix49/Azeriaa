@@ -22,7 +22,7 @@ function cbRibbon(h) {
   if (f) f.mons.forEach((m, i) => {
     const d = MONSTERS[m.mid];
     q.push('<span class="tl-ar" aria-hidden="true"></span>');
-    q.push(cbPortrait(`mon${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${m.hp <= 0 ? ' dead' : ''}`, i + 1, cbPct(m.hp, m.max), monIcon(m.mid), `${d.name} · niv. ${d.lvl}`, d.name));
+    q.push(cbPortrait(`mon${d.boss ? ' boss' : ''}${d.archi ? ' archi' : ''}${d.heroic ? ' heroic' : ''}${m.hp <= 0 ? ' dead' : ''}`, i + 1, cbPct(m.hp, m.max), monIcon(m.mid), `${d.name} · niv. ${d.lvl}`, d.name));
   }); else q.push('<span class="tl-ar" aria-hidden="true"></span><span class="tl-idle">en route…</span>');
   let track = '';
   if (h.act.type === 'dungeon' && place) {
