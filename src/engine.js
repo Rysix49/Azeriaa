@@ -178,6 +178,7 @@ function startFight(st, h, ev) {
     mons: group.map(mid => { const ms = monsterStats(mid); const hp = Math.round(ms.hp * tierOf(h).hp); return { mid, hp, max: hp, poison: null }; }),
     tier: h.act.tier || 0, turn: 1, phase: 0, buffs: [], cds: {}, casts: {},
   };
+  if (h.cls === 'xelor') h.fight.grains = h.grains || 0; // le sablier se garde d'un combat à l'autre
   if (h.cls === 'sram') { h.fight.invis = true; h.fight.trap = irnd(0, group.length - 1); }
   if (h.cls === 'enutrof') h.fight.treasure = irnd(0, group.length - 1);
   if (h.cls === 'zobal') { h.mask = h.mask || 'rire'; h.ferv = Math.max(1, h.ferv || 1); }
@@ -304,6 +305,7 @@ function heroTurn(st, h, t, ev) {
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
   if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (xel) h.grains = f.grains || 0;
   if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
     const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
     if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
@@ -430,7 +432,7 @@ function monsterTurn(st, h, t, m, ev) {
     ev.log(h, `🤝 Pot-de-vin ! ${h.name} jette ${spent} 🪙 : les ennemis se ruent sur l’or et il s’en tire avec ${h.hp} PV.`, 'win');
   }
   if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
-    f.paradox = true; f.grains = 0;
+    f.paradox = true; f.grains = 0; h.grains = 0;
     h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
   }
