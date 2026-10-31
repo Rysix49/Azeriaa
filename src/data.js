@@ -619,8 +619,8 @@ const FM_OVER = 1.3;
    DROPS D'ÉQUIPEMENT (très rares) — monstre -> objets, dans le thème de sa zone
    Chance de base par monstre vaincu (modifiée par la prospection).
    -------------------------------------------------------------------- */
-const GEAR_DROP_RATE = 0.002;
-const GEAR_DROP_RATE_BOSS = 0.03;
+const GEAR_DROP_RATE = 0.006; // x3
+const GEAR_DROP_RATE_BOSS = 0.09; // x3
 /* Forme stasifiée : stats = 2 × jet maximum. Chance par objet et par monstre,
    multipliée par la difficulté de la sous-zone et la prospection. */
 const STASIS_RATE = 0.0001;

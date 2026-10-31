@@ -270,7 +270,7 @@ function zobShards(card) {
       const mx = (b.x - a.x) * .5 + (Math.random() - .5) * 50, my = -40 - Math.random() * 60;
       e.animate([{ transform: 'translate(0,0) rotate(0)', opacity: 1 }, { transform: `translate(${mx}px,${my}px) rotate(180deg)`, opacity: 1, offset: .45 }, { transform: `translate(${b.x - a.x + (Math.random() - .5) * 30}px,${b.y - a.y}px) rotate(540deg) scale(.5)`, opacity: .9 }], { duration: 650 + Math.random() * 250, delay: i * 40, easing: 'cubic-bezier(.4,0,.6,1)', fill: 'both' }).onfinish = () => e.remove(); } });
 }
-function grainsHtml(h) { const g = (h.fight && h.fight.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
+function grainsHtml(h) { const g = (h.fight ? h.fight.grains : h.grains) || 0; return `⏳ ${g}/12${h.fight && h.fight.paradox ? ' · ✗' : ''}`; }
 function rateChips(list) { return list.map(([l, v]) => `<span class="rate" title="Moyenne des 2 dernières minutes"><small>${l}</small><b class="num">${v}</b></span>`).join(''); }
 function fightRates(h) {
   const s = h.session; if (!s) return '';
