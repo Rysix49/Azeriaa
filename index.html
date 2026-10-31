@@ -125,12 +125,12 @@ main { width: 100%; max-width: 1440px; padding-block: 22px 40px; padding-left: 2
 
 .bottom-nav {
   display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   background: #151911f2; backdrop-filter: blur(10px); border-top: 1px solid var(--line);
   padding-top: 6px; padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
   padding-left: max(6px, env(safe-area-inset-left, 0px)); padding-right: max(6px, env(safe-area-inset-right, 0px));
 }
-.bottom-nav .nav-btn { flex-direction: column; gap: 3px; padding: 6px 2px; font-size: 10.5px; justify-content: center; text-align: center; border-radius: 8px; min-width: 0; }
+.bottom-nav .nav-btn { flex-direction: column; gap: 3px; padding: 6px 1px; font-size: 9.6px; letter-spacing: -.01em; justify-content: center; text-align: center; border-radius: 8px; min-width: 0; }
 .bottom-nav .nav-btn span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bottom-nav .nav-btn[aria-current="true"]::before { left: 28%; right: 28%; top: -7px; bottom: auto; width: auto; height: 3px; border-radius: 0 0 3px 3px; }
 
@@ -3041,13 +3041,6 @@ label.btn { cursor: pointer; }
 /* =====================================================================
    ARBRE DE COMPÉTENCES
    ===================================================================== */
-.sk-open { display: flex; align-items: center; gap: 14px; width: 100%; margin: 0 0 14px; padding: 12px 16px; border-radius: 14px; text-align: left; border: 1px solid #5a8a3a; background: radial-gradient(ellipse at 6% 50%, #93cf5f33, transparent 55%), linear-gradient(135deg, #1e2a16, #131a0f 70%); transition: border-color .15s, transform .15s; }
-.sk-open:hover { border-color: #93cf5f; transform: translateY(-1px); }
-.sk-open.has { border-color: var(--gold); box-shadow: 0 0 18px #e8aa2e44; background: radial-gradient(ellipse at 6% 50%, #e8aa2e33, transparent 55%), linear-gradient(135deg, #2e2410, #15110a 70%); }
-.sk-oi { font-size: 30px; filter: drop-shadow(0 2px 3px #000a); animation: at-bob 3.4s ease-in-out infinite; }
-.sk-ot { display: flex; flex-direction: column; flex: 1; min-width: 0; } .sk-ot b { font-size: 19px; font-weight: 600; } .sk-ot small { color: var(--muted); }
-.sk-op { padding: 4px 12px; border-radius: 999px; font-weight: 900; font-size: 12.5px; background: #00000050; border: 1px solid var(--line-2); white-space: nowrap; }
-.sk-open.has .sk-op { color: #2a1c04; background: linear-gradient(180deg, #ffe58a, #e8aa2e); border-color: #b9800f; animation: sk-glow 1.8s ease-in-out infinite; }
 @keyframes sk-glow { 50% { box-shadow: 0 0 14px #e8aa2e; } }
 .sk { display: flex; flex-direction: column; gap: 14px; }
 .sk-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--line-2); background: radial-gradient(ellipse at 8% 50%, color-mix(in srgb, var(--hc) 28%, transparent), transparent 55%), linear-gradient(135deg, #1f2418, #121510 72%); }
@@ -3400,6 +3393,58 @@ label.btn { cursor: pointer; }
 .ah-nums { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; font-weight: 700; }
 .away-best { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(90deg, #ffd24a22, transparent); border: 1px solid #ffd24a55; }
 .away-best > div { display: flex; flex-direction: column; min-width: 0; } .away-best small { color: #ffd24a; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; font-size: 10px; } .away-best em { font-style: normal; font-size: 11px; color: var(--muted); }
+
+
+/* ===== Onglet Talents : un arbre par classe ===== */
+.nav-btn { position: relative; }
+.nav-badge { display: none; font-style: normal; }
+.nav-btn.has-badge .nav-badge { display: grid; place-items: center; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; font-size: 10px; font-weight: 900; color: #2a1c04; background: linear-gradient(180deg, #ffe58a, #e8aa2e); border: 1px solid #b9800f; box-shadow: 0 0 10px #e8aa2eaa; animation: sk-glow 1.8s ease-in-out infinite; margin-left: auto; }
+.bottom-nav .nav-btn.has-badge .nav-badge { position: absolute; top: 1px; right: calc(50% - 22px); margin: 0; min-width: 15px; height: 15px; font-size: 9px; padding: 0 3px; }
+.sk-ban { position: relative; overflow: hidden; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 14px 16px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--hc) 45%, var(--line-2)); background: radial-gradient(ellipse at 6% 30%, color-mix(in srgb, var(--hc) 34%, transparent), transparent 58%), radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--hc) 14%, transparent), transparent 50%), linear-gradient(180deg, #1d2217, #11140d); box-shadow: 0 6px 26px #0007, inset 0 1px 0 #ffffff12; }
+.sk-ban::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(115deg, transparent 0 22px, #ffffff05 22px 23px); }
+.sk-ban > * { position: relative; z-index: 1; }
+.sk-ban-art { flex: none; display: grid; place-items: center; width: 74px; height: 74px; border-radius: 20px; background: radial-gradient(circle at 35% 25%, color-mix(in srgb, var(--hc) 55%, #fff3), color-mix(in srgb, var(--hc) 30%, #000)); border: 2px solid color-mix(in srgb, var(--hc) 70%, #fff4); box-shadow: 0 6px 18px color-mix(in srgb, var(--hc) 40%, transparent), inset 0 2px 0 #ffffff33; transform: rotate(-4deg); }
+.sk-ban .sk-who { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; flex: 1; min-width: 150px; }
+.sk-ban .sk-who b { font-size: 26px; line-height: 1.05; text-shadow: 0 2px 0 #0008; }
+.sk-ban .sk-cls { text-transform: uppercase; letter-spacing: .14em; font-size: 10px; font-weight: 900; color: color-mix(in srgb, var(--hc) 70%, #fff); }
+.sk-sig { margin-top: 5px; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; color: var(--fg); background: color-mix(in srgb, var(--hc) 24%, #00000066); border: 1px solid color-mix(in srgb, var(--hc) 55%, transparent); }
+.sk-fp { font-style: normal; color: var(--gold-2); font-weight: 900; }
+.sk-tabs { --bc: var(--hc, var(--gold)); }
+.sk-keys { padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--panel-2); }
+.sk-kl { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 10px; margin-top: 8px; }
+.sk-key { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px; text-align: left; border-radius: 13px; border: 1px solid color-mix(in srgb, var(--bc) 35%, var(--line)); background: radial-gradient(ellipse at 0% 50%, color-mix(in srgb, var(--bc) 16%, transparent), transparent 62%), #0e110a; transition: transform .15s, border-color .2s, box-shadow .2s; }
+.sk-key:hover { transform: translateY(-2px); border-color: var(--bc); }
+.sk-key-ic { flex: none; width: 50px; height: 50px; display: grid; place-items: center; font-size: 25px; border-radius: 16px; transform: rotate(45deg); background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--bc) 40%, #1a1d14), #0b0d08); border: 2px solid color-mix(in srgb, var(--bc) 55%, #000); filter: grayscale(.7); }
+.sk-key-ic i { font-style: normal; transform: rotate(-45deg); }
+.sk-key-t { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; } .sk-key-t b { font-size: 17px; font-weight: 600; } .sk-key-t small { color: var(--muted); font-size: 12px; line-height: 1.3; }
+.sk-key-t .sk-fx { font-size: 12px; gap: 2px 10px; }
+.sk-key-s { flex: none; align-self: flex-start; font-size: 10.5px; font-weight: 900; padding: 2px 8px; border-radius: 999px; color: var(--muted); background: #00000055; border: 1px solid var(--line); white-space: nowrap; }
+.sk-key.can .sk-key-s { color: #2a1c04; background: linear-gradient(180deg, #ffe58a, #e8aa2e); border-color: #b9800f; }
+.sk-key.on { border-color: var(--bc); box-shadow: 0 0 18px color-mix(in srgb, var(--bc) 40%, transparent); }
+.sk-key.on .sk-key-ic { filter: none; border-color: var(--bc); box-shadow: 0 0 14px color-mix(in srgb, var(--bc) 60%, transparent); }
+.sk-key.on .sk-key-s { color: var(--win); border-color: color-mix(in srgb, var(--win) 55%, transparent); }
+.sk-txt { margin: 2px 0 4px; padding: 8px 10px; border-radius: 10px; font-size: 12.5px; line-height: 1.4; color: var(--fg); background: color-mix(in srgb, var(--bc, var(--gold)) 14%, #00000050); border-left: 3px solid var(--bc, var(--gold)); }
+.sk-det.is-key { border-color: color-mix(in srgb, var(--bc, var(--gold)) 70%, var(--line)); box-shadow: 0 0 22px color-mix(in srgb, var(--bc, var(--gold)) 25%, transparent); }
+
+.sk-key-h { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.sk-key-s { font-style: normal; flex: none; align-self: auto; }
+.bottom-nav .nav-btn span[data-short] { font-size: 0; }
+.bottom-nav .nav-btn span[data-short]::after { content: attr(data-short); font-size: 9.6px; }
+@media (max-width: 700px) {
+  .sk-heroes { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .sk-heroes::-webkit-scrollbar { display: none; }
+  .sk-heroes .htab { flex: none; min-width: 150px; }
+  .sk-ban { padding: 12px; gap: 10px 12px; }
+  .sk-ban-art { width: 60px; height: 60px; border-radius: 17px; }
+  .sk-ban .sk-who b { font-size: 22px; }
+  .sk-ban .sk-pts { flex: 1 1 100%; flex-direction: row; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 6px 12px; }
+  .sk-ban .sk-pts b { font-size: 26px; } .sk-ban .sk-pts .sub { flex-basis: 100%; text-align: center; }
+  .sk-kl { grid-template-columns: 1fr; }
+  .sk-key { padding: 10px; gap: 10px; } .sk-key-ic { width: 42px; height: 42px; font-size: 21px; border-radius: 13px; }
+}
+.sk-ban-art .emblem { --s: 56px; box-shadow: none; } .sk-ban-art .emblem::after { display: none; }
+@media (max-width: 700px) { .sk-ban-art .emblem { --s: 46px; } }
+.sk-key-ic { margin: 4px 6px 4px 4px; }
 /* =====================================================================
    STEAMER — personnage, tourelles, jauge de Pression, cinématique de Surcharge
    (l'ordre compte : ce fichier est collé après style2.css)
@@ -4121,6 +4166,19 @@ label.btn { cursor: pointer; }
 :root[data-layout="mobile"] .pb-mons { font-size: 36px; }
 :root[data-layout="mobile"] .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 :root[data-layout="mobile"] .wm { min-width: 1340px; }
+:root[data-layout="mobile"] .sk-heroes { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+:root[data-layout="mobile"] .sk-heroes::-webkit-scrollbar { display: none; }
+:root[data-layout="mobile"] .sk-heroes .htab { flex: none; min-width: 150px; }
+:root[data-layout="mobile"] .sk-ban { padding: 12px; gap: 10px 12px; }
+:root[data-layout="mobile"] .sk-ban-art { width: 60px; height: 60px; border-radius: 17px; }
+:root[data-layout="mobile"] .sk-ban .sk-who b { font-size: 22px; }
+:root[data-layout="mobile"] .sk-ban .sk-pts { flex: 1 1 100%; flex-direction: row; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 6px 12px; }
+:root[data-layout="mobile"] .sk-ban .sk-pts b { font-size: 26px; }
+:root[data-layout="mobile"] .sk-ban .sk-pts .sub { flex-basis: 100%; text-align: center; }
+:root[data-layout="mobile"] .sk-kl { grid-template-columns: 1fr; }
+:root[data-layout="mobile"] .sk-key { padding: 10px; gap: 10px; }
+:root[data-layout="mobile"] .sk-key-ic { width: 42px; height: 42px; font-size: 21px; border-radius: 13px; }
+:root[data-layout="mobile"] .sk-ban-art .emblem { --s: 46px; }
 :root[data-layout="mobile"] .yard { --tw: 44px; }
 :root[data-layout="mobile"] .tur-lv { min-width: 11px; height: 11px; font-size: 7px; }
 :root[data-layout="mobile"] .tur-pad span { font-size: 6.5px; padding: 0 3px; }
@@ -4164,7 +4222,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793413385';
+const BUILD_ID = '1793453499';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -4846,105 +4904,6 @@ const HERO_NAMES = [
   'Mandrak', 'Nébuleuse', 'Olgrim', 'Paprika', 'Quartzine', 'Rouquin', 'Saphyra', 'Tonnerre', 'Ulysse', 'Vortan', 'Willow', 'Yzalis',
 ];
 
-/* --------------------------------------------------------------------
-   ARBRE DE COMPÉTENCES — 1 point tous les 3 niveaux, 6 voies
-   Chaque nœud : [id, nom, icône, rangs max, bonus par rang, ligne 0-5, colonne 0-2, prérequis (l'un des deux), coût par rang]
-   Stats : deg dmgPct dmg crit critDmg speed pa vit hpPct res dodge regen soin pp kamas xpPct
-           rxp rqty rspd rmir (récolte), foodPow foodDur (repas)
-   -------------------------------------------------------------------- */
-const SKILL_LEVELS_PER_POINT = 3;
-const SKILL_GATE = [0, 0, 3, 6, 10, 15];   // points déjà dépensés dans la voie pour ouvrir la ligne
-const SKILL_STAT = {
-  deg: ['Dégâts', ' %'], dmgPct: ['Dégâts finaux', ' %'], dmg: ['Dommages fixes', ''], crit: ['Critique', ' %'], critDmg: ['Dégâts critiques', ' %'],
-  speed: ['Vitesse de combat', ' %'], pa: ['PA', ''], vit: ['Vitalité', ''], hpPct: ['PV max', ' %'], res: ['Résistance', ' %'], dodge: ['Esquive', ' %'],
-  regen: ['Régénération par tour', ' % PV'], soin: ['Soins', ''], pp: ['Prospection', ''], kamas: ['Kamas gagnés', ' %'], xpPct: ['XP de combat', ' %'],
-  rxp: ['XP de récolte', ' %'], rqty: ['Quantité récoltée', ' %'], rspd: ['Vitesse de récolte', ' %'], rmir: ['Chance de miracle', ' %'],
-  foodPow: ['Effet des repas', ' %'], foodDur: ['Durée des repas', ' %'],
-};
-const SKILL_BRANCHES = [
-  { id: 'guerrier', name: 'Voie du Guerrier', icon: '⚔️', col: '#e0533f', text: 'Frapper plus fort, plus souvent, plus juste.',
-    per: { dmgPct: 0.3 },
-    mile: [[3, { dmgPct: 2 }], [6, { crit: 3, dmg: 5 }], [9, { deg: 5 }], [12, { critDmg: 15, dmgPct: 3 }], [15, { speed: 5 }], [18, { dmgPct: 5, crit: 3 }], [21, { deg: 8 }], [24, { critDmg: 20, dmg: 10 }], [27, { dmgPct: 6 }], [30, { crit: 5, dmgPct: 5 }], [33, { dmgPct: 10, critDmg: 25, speed: 10 }]],
-    nodes: [
-      ['a1', 'Poigne de Fer', '💪', 5, { deg: 3 }, 0, 1, [], 1],
-      ['a2', 'Lames Affûtées', '🗡️', 5, { dmg: 3 }, 1, 0, ['a1'], 1],
-      ['a3', 'Œil du Tueur', '👁️', 5, { crit: 1 }, 1, 2, ['a1'], 1],
-      ['a4', 'Rage Contenue', '😤', 5, { dmgPct: 2 }, 2, 1, ['a2', 'a3'], 1],
-      ['a5', 'Coup Fatal', '☠️', 4, { critDmg: 8 }, 3, 0, ['a4'], 1],
-      ['a6', 'Frénésie', '🔥', 4, { speed: 4 }, 3, 2, ['a4'], 1],
-      ['a7', "Maître d'Armes", '🏅', 3, { deg: 4, dmgPct: 2 }, 4, 1, ['a5', 'a6'], 1],
-      ['a8', 'Colère des Dieux', '⚡', 1, { pa: 1, crit: 5, dmgPct: 5 }, 5, 1, ['a7'], 3],
-    ] },
-  { id: 'rempart', name: 'Voie du Rempart', icon: '🛡️', col: '#55a8ea', text: 'Encaisser, esquiver, se relever.',
-    per: { hpPct: 0.4 },
-    mile: [[3, { vit: 40 }], [6, { res: 2 }], [9, { hpPct: 4 }], [12, { dodge: 2, regen: 0.3 }], [15, { vit: 60 }], [18, { hpPct: 5, res: 2 }], [21, { soin: 10 }], [24, { res: 3, dodge: 3 }], [27, { hpPct: 6 }], [30, { regen: 0.8, soin: 15 }], [33, { hpPct: 10, res: 4, dodge: 3 }]],
-    nodes: [
-      ['b1', 'Constitution', '❤️', 5, { vit: 25 }, 0, 1, [], 1],
-      ['b2', 'Peau de Pierre', '🪨', 5, { res: 1 }, 1, 0, ['b1'], 1],
-      ['b3', 'Esquive Féline', '🐈', 5, { dodge: 1 }, 1, 2, ['b1'], 1],
-      ['b4', 'Cœur Robuste', '💖', 5, { hpPct: 3 }, 2, 1, ['b2', 'b3'], 1],
-      ['b5', 'Soins Vitaux', '🩹', 4, { soin: 5 }, 3, 0, ['b4'], 1],
-      ['b6', 'Seconde Peau', '🌿', 4, { regen: 0.6 }, 3, 2, ['b4'], 1],
-      ['b7', 'Forteresse', '🏰', 3, { hpPct: 4, res: 1 }, 4, 1, ['b5', 'b6'], 1],
-      ['b8', 'Inébranlable', '🗿', 1, { hpPct: 18, res: 5, regen: 1.5 }, 5, 1, ['b7'], 3],
-    ] },
-  { id: 'vent', name: 'Voie du Vent', icon: '🌪️', col: '#74c552', text: 'La vitesse avant tout : jouer avant les autres.',
-    per: { speed: 0.5 },
-    mile: [[3, { speed: 5 }], [6, { dodge: 2 }], [9, { crit: 2 }], [12, { speed: 8, pp: 10 }], [15, { dodge: 2 }], [18, { dmgPct: 4, speed: 6 }], [21, { crit: 3 }], [24, { speed: 10, critDmg: 10 }], [27, { dodge: 3 }], [30, { dmgPct: 5, crit: 3 }], [33, { speed: 15, dodge: 4, dmgPct: 5 }]],
-    nodes: [
-      ['c1', 'Pas Léger', '👟', 5, { speed: 3 }, 0, 1, [], 1],
-      ['c2', 'Réflexes', '⚡', 5, { dodge: 1 }, 1, 0, ['c1'], 1],
-      ['c3', 'Visée', '🎯', 5, { crit: 1 }, 1, 2, ['c1'], 1],
-      ['c4', 'Souffle Court', '💨', 5, { speed: 3 }, 2, 1, ['c2', 'c3'], 1],
-      ['c5', 'Lame de Vent', '🍃', 4, { dmgPct: 2.5 }, 3, 0, ['c4'], 1],
-      ['c6', "Coup d'Œil", '🔭', 4, { pp: 6 }, 3, 2, ['c4'], 1],
-      ['c7', 'Tourbillon', '🌀', 3, { speed: 4, crit: 1 }, 4, 1, ['c5', 'c6'], 1],
-      ['c8', 'Maître du Temps', '⏳', 1, { speed: 25, dodge: 4, critDmg: 15 }, 5, 1, ['c7'], 3],
-    ] },
-  { id: 'marchand', name: 'Voie du Marchand', icon: '💰', col: '#e8aa2e', text: 'Kamas, butin et savoir : tout se monnaie.',
-    per: { kamas: 0.5 },
-    mile: [[3, { kamas: 5 }], [6, { pp: 15 }], [9, { xpPct: 4 }], [12, { kamas: 8, pp: 10 }], [15, { xpPct: 4 }], [18, { pp: 25, kamas: 6 }], [21, { kamas: 8 }], [24, { xpPct: 8, pp: 15 }], [27, { kamas: 10 }], [30, { xpPct: 8, pp: 25 }], [33, { kamas: 20, xpPct: 10, pp: 30 }]],
-    nodes: [
-      ['d1', 'Bourse Pleine', '👛', 5, { kamas: 4 }, 0, 1, [], 1],
-      ['d2', 'Flair', '👃', 5, { pp: 8 }, 1, 0, ['d1'], 1],
-      ['d3', 'Érudit', '📚', 5, { xpPct: 3 }, 1, 2, ['d1'], 1],
-      ['d4', 'Négociant', '🤝', 5, { kamas: 4 }, 2, 1, ['d2', 'd3'], 1],
-      ['d5', 'Chasseur de Trésors', '🗺️', 4, { pp: 10 }, 3, 0, ['d4'], 1],
-      ['d6', 'Savoir Infus', '🔮', 4, { xpPct: 3 }, 3, 2, ['d4'], 1],
-      ['d7', 'Magnat', '🏦', 3, { kamas: 6, pp: 10 }, 4, 1, ['d5', 'd6'], 1],
-      ['d8', "Roi d'Astrub", '👑', 1, { kamas: 30, xpPct: 15, pp: 30 }, 5, 1, ['d7'], 3],
-    ] },
-  { id: 'paysan', name: 'Voie des Champs', icon: '🌾', col: '#9cba52', text: 'La terre donne plus à qui sait la cueillir.',
-    per: { rspd: 0.6 },
-    mile: [[3, { rspd: 6 }], [6, { rxp: 8 }], [9, { rqty: 6 }], [12, { rspd: 8, rmir: 0.5 }], [15, { rxp: 8 }], [18, { rqty: 8, rmir: 0.5 }], [21, { rspd: 10 }], [24, { rxp: 12, rqty: 8 }], [27, { rmir: 1 }], [30, { rspd: 12, rqty: 10 }], [33, { rmir: 2, rxp: 15, rspd: 15 }]],
-    nodes: [
-      ['e1', 'Doigts de Fée', '🤲', 5, { rspd: 4 }, 0, 1, [], 1],
-      ['e2', 'Bonne Graine', '🌱', 5, { rqty: 4 }, 1, 0, ['e1'], 1],
-      ['e3', 'Sagesse des Champs', '📖', 5, { rxp: 5 }, 1, 2, ['e1'], 1],
-      ['e4', 'Main Verte', '🌿', 5, { rspd: 4 }, 2, 1, ['e2', 'e3'], 1],
-      ['e5', 'Moisson Abondante', '🧺', 4, { rqty: 5 }, 3, 0, ['e4'], 1],
-      ['e6', 'Chance du Paysan', '🍀', 4, { rmir: 0.6 }, 3, 2, ['e4'], 1],
-      ['e7', 'Alchimie Instinctive', '⚗️', 3, { rxp: 6, rqty: 4 }, 4, 1, ['e5', 'e6'], 1],
-      ['e8', 'Avatar des Moissons', '🌻', 1, { rmir: 5, rspd: 30, rqty: 20 }, 5, 1, ['e7'], 3],
-    ] },
-  { id: 'gourmet', name: 'Voie du Gourmet', icon: '🍞', col: '#f08a6a', text: 'Les repas deviennent plus forts et durent plus longtemps.',
-    per: { foodPow: 0.6 },
-    mile: [[3, { foodPow: 5 }], [6, { foodDur: 10 }], [9, { hpPct: 2 }], [12, { foodPow: 8, vit: 40 }], [15, { foodDur: 12 }], [18, { foodPow: 8, dmgPct: 2 }], [21, { hpPct: 3 }], [24, { foodDur: 15, foodPow: 8 }], [27, { regen: 0.4 }], [30, { foodPow: 10, dmgPct: 3 }], [33, { foodPow: 20, foodDur: 25, hpPct: 5 }]],
-    nodes: [
-      ['f1', 'Palais Fin', '👅', 5, { foodPow: 4 }, 0, 1, [], 1],
-      ['f2', 'Gros Appétit', '🍽️', 5, { foodDur: 6 }, 1, 0, ['f1'], 1],
-      ['f3', "Estomac d'Acier", '🥣', 5, { vit: 20 }, 1, 2, ['f1'], 1],
-      ['f4', 'Cuisson Parfaite', '👨‍🍳', 5, { foodPow: 4 }, 2, 1, ['f2', 'f3'], 1],
-      ['f5', 'Garde-Manger', '🏺', 4, { foodDur: 8 }, 3, 0, ['f4'], 1],
-      ['f6', 'Bonne Chère', '🍷', 4, { regen: 0.5 }, 3, 2, ['f4'], 1],
-      ['f7', 'Gastronome', '🎖️', 3, { foodPow: 6, foodDur: 10 }, 4, 1, ['f5', 'f6'], 1],
-      ['f8', 'Festin Éternel', '🍰', 1, { foodPow: 40, foodDur: 50, hpPct: 8 }, 5, 1, ['f7'], 3],
-    ] },
-];
-/* Bonus de puissance selon le total de points dépensés (toutes voies) */
-const SKILL_GLOBAL = [[15, { dmgPct: 3, hpPct: 3 }], [30, { xpPct: 5, kamas: 5 }], [45, { dmgPct: 5, hpPct: 5 }], [60, { crit: 3, speed: 8, pp: 20 }]];
-const SKILL_NODE = {}; for (const b of SKILL_BRANCHES) for (const n of b.nodes) SKILL_NODE[n[0]] = { id: n[0], name: n[1], icon: n[2], max: n[3], fx: n[4], r: n[5], c: n[6], req: n[7], cost: n[8], branch: b.id };
-function skillFmt(k, v) { const s = SKILL_STAT[k]; return `+${String(+v.toFixed(2)).replace('.', ',')}${s[1]} ${s[0]}`; }
 /* =====================================================================
    SOUS-ZONES DE LA CARTE — des coins de Dofus rattachés aux zones principales
    Chaque sous-zone a ses monstres, un GROS MONSTRE (avec archimonstre), sa panoplie et sa relique.
@@ -5216,6 +5175,417 @@ Object.assign(RELIC_DROPS, {
   dragon_cochon: [['relique_porcos', 0.02], ['dofus_turquoise', 0.002]], crocabulia: [['relique_dragoeuf', 0.02]], mansot_royal: [['relique_mansot', 0.02]], // boss de donjon, comme le Bouftou Royal
 });
 /* =====================================================================
+   TALENTS DE CLASSE — un arbre par classe, 3 voies de 8 talents chacune
+   1 point de talent tous les 3 niveaux (33 au niveau 100).
+   Chaque voie s'ouvre ligne par ligne (SKILL_GATE : points déjà dépensés dans la voie) et se termine
+   par un talent clé (coût 3) qui change la façon de jouer la classe.
+   Les clés de bonus propres à une classe (furyGain, faceDmg, grainGain…) sont lues par engine.js ;
+   les bonus génériques (deg, dmgPct, crit, hpPct…) passent par heroTotals().
+   ===================================================================== */
+const SKILL_LEVELS_PER_POINT = 3;
+const SKILL_GATE = [0, 0, 3, 6, 10, 15];   // points déjà dépensés dans la voie pour ouvrir chaque ligne
+
+/* Libellés des bonus : clé → [nom, suffixe] */
+const SKILL_STAT = {
+  /* généraux */
+  deg: ['Dégâts', ' %'], dmgPct: ['Dégâts finaux', ' %'], dmg: ['Dommages fixes', ''], crit: ['Critique', ' %'], critDmg: ['Dégâts critiques', ' %'],
+  speed: ['Vitesse de combat', ' %'], pa: ['PA', ''], vit: ['Vitalité', ''], hpPct: ['PV max', ' %'], res: ['Résistance', ' %'], dodge: ['Esquive', ' %'],
+  regen: ['Régénération par tour', ' % PV'], soin: ['Soins', ''], pp: ['Prospection', ''], kamas: ['Kamas gagnés', ' %'], xpPct: ['XP de combat', ' %'],
+  /* passifs communs à toutes les classes */
+  execute: ['Dégâts aux ennemis sous 35 % de PV', ' %'], bossDmg: ['Dégâts aux boss et archimonstres', ' %'], lastStand: ['Dégâts sous 50 % de PV', ' %'],
+  firstStrike: ['Dégâts au premier tour', ' %'], killHeal: ['PV rendus par ennemi achevé', ' % PV'], thorns: ['Dégâts renvoyés', ' %'],
+  heavyDmg: ['Dégâts des sorts de 4 PA et +', ' %'], aoeDmg: ['Dégâts des sorts de zone', ' %'], poisonDmg: ['Dégâts de poison', ' %'],
+  undying: ['Survit à un coup fatal (1×/combat) avec', ' % PV'],
+  /* Iop */
+  furyGain: ['Gain de Fureur', ' %'], rageStep: ['Dégâts par cumul de Rage', ''], rageMax: ['Cumul de Rage max', ''], colereDmg: ['Dégâts de la Colère de Iop', ' %'], furyKeep: ['Fureur gardée après la Colère', ' %'],
+  /* Cra */
+  focusGain: ['Chance de Concentration double', ' %'], focusCrit: ['Critique par point de Concentration', ' %'], preyDmg: ['Dégâts sur la proie', ' %'],
+  perfectDmg: ['Dégâts du Tir Parfait', ' %'], perfectPierce: ['Transpercement du Tir Parfait', ' %'], poisonTurns: ['Durée du poison', ' tour'], dodgeFocus: ['Concentration gagnée en esquivant', ' %'],
+  /* Zobal */
+  rireDmg: ['Dégâts du Masque Rieur', ' %'], fervChance: ['Chances de gagner de la Ferveur', ' %'], apoCrit: ['Critique en Apothéose', ' %'],
+  larmeDef: ['Protection du Masque Pleureur', ' %'], larmeHeal: ['Soins du Masque Pleureur', ' %'], farceChance: ['Chances du Masque Farceur', ' %'],
+  ruptureDmg: ['Dégâts de Rupture', ' %'], fervHold: ['Durée de l’Apothéose', ' %'],
+  /* Sacrieur */
+  bloodRate: ['Remplissage du Sang versé', ' %'], colosseDmg: ['Dégâts du Colosse de Sang', ' %'], stigDmg: ['Dégâts par Stigmate', ' %'],
+  martyrHp: ['PV après le Martyre', ' % PV'], martyrBlast: ['Explosion du Martyre', ' %'], thirst: ['Soif de sang', ' %'], drainHeal: ['Soins des sorts de vol de vie', ' %'],
+  /* Enutrof */
+  coinChance: ['Chances de pièce en plus', ' %'], jackpotDmg: ['Dégâts du Jackpot', ' %'], jackpotKamas: ['Kamas par Jackpot', ' %'], ppDmg: ['« L’or fait la force »', ' %'],
+  chestRush: ['Dégâts de la Ruée vers l’or', ''], chestKamas: ['Kamas du monstre au trésor', ' %'], chestCoins: ['Pièces du coffre', ''],
+  bribeHp: ['PV après le Pot-de-vin', ' % PV'], bribeMin: ['Pièces requises (Pot-de-vin)', ''],
+  /* Ecaflip */
+  faceDmg: ['Dégâts de Face', ' %'], faceChance: ['Chances de Face', ' %'], pileDef: ['Protection de Pile', ' %'], cloverGain: ['Chance de Trèfle en plus', ' %'],
+  cloverCrit: ['Critique par Trèfle', ' %'], gambleWin: ['Réussite de Quitte ou Double', ' %'], gambleLoss: ['Coût d’un Quitte ou Double raté', ' %'], nineLives: ['Chances de Neuf Vies', ' %'],
+  /* Sram */
+  invisDmg: ['Dégâts en invisibilité', ' %'], invisMiss: ['Chances d’être raté en invisibilité', ' %'], invisCrit: ['Dégâts critiques en invisibilité', ' %'],
+  trapDmg: ['Dégâts du piège', ' %'], trapRearm: ['Chance de reposer un piège', ' %'],
+  /* Xélor */
+  grainGain: ['Grains par sort', ''], freezeChance: ['Chances de figer', ' %'], frozenDmg: ['Dégâts aux cibles figées', ' %'], rewindDmg: ['Dégâts du tour rembobiné', ' %'],
+  chronoGain: ['Chance de double Éclat du temps', ' %'], paradoxHp: ['PV après le Paradoxe', ' % PV'], paradoxGrains: ['Grains requis (Paradoxe)', ''],
+  /* Steamer */
+  turretDmg: ['Dégâts des tourelles', ' %'], burnDmg: ['Dégâts de Brûlure', ' %'], vaporDmg: ['Dégâts de Vapeur', ' %'], turretHp: ['PV des tourelles', ' %'],
+  turretHeal: ['Soins de la tourelle Défensive', ' %'], decoy: ['Chances de leurre', ' %'], steamRate: ['Remplissage de la Pression', ' %'],
+  surgeDmg: ['Dégâts de la Surcharge Stasis', ' %'], magChance: ['Chances de magnétiser', ' %'],
+};
+
+/* Disposition d'une voie : 8 talents sur 6 lignes × 3 colonnes. [ligne, colonne, prérequis (indices, l'un d'eux suffit)] */
+const SK_TOPO = [[0, 1, []], [1, 0, [0]], [1, 2, [0]], [2, 1, [1, 2]], [3, 0, [3]], [3, 2, [3]], [4, 1, [4, 5]], [5, 1, [6]]];
+
+/* Construit une voie. Talent : [nom, icône, rangs max, bonus par rang, explication?]. Le 8e est le talent clé (1 rang, 3 points). */
+function skMakeBranch(cls, id, name, icon, col, text, per, mile, nodes) {
+  const b = { id: cls + '_' + id, cls, name, icon, col, text, per, mile, nodes: [] };
+  nodes.forEach((n, i) => {
+    const [r, c, rq] = SK_TOPO[i], key = i === 7;
+    b.nodes.push([`${cls}_${id}${i + 1}`, n[0], n[1], key ? 1 : n[2], n[3], r, c, rq.map(q => `${cls}_${id}${q + 1}`), key ? 3 : 1, n[4] || '']);
+  });
+  return b;
+}
+
+const CLASS_TREES = {
+
+/* ============================== IOP : la Rage ============================== */
+iop: [
+  skMakeBranch('iop', 'rage', 'Voie de la Rage', '🔥', '#e0533f', 'Nourrir la colère : la Rage monte plus haut et la jauge de Fureur se remplit plus vite.',
+    { dmgPct: 0.2 }, [[4, { deg: 3 }], [8, { furyGain: 8 }], [12, { dmgPct: 3 }], [16, { rageStep: 2 }], [20, { colereDmg: 8 }], [24, { dmgPct: 4, crit: 2 }]], [
+    ['Sang Chaud', '🩸', 3, { furyGain: 8 }, 'La jauge de Fureur se remplit plus vite à chaque tour offensif.'],
+    ['Poings Serrés', '✊', 4, { deg: 3 }],
+    ['Hargne', '😤', 4, { rageStep: 1 }, 'Chaque cumul de Rage donne davantage de Dégâts (12 de base).'],
+    ['Crescendo', '📈', 1, { rageMax: 1 }, 'Un cumul de Rage supplémentaire (6 au lieu de 5).'],
+    ['Brasier', '🔥', 3, { furyGain: 10 }],
+    ['Rugissement', '🦁', 3, { colereDmg: 8 }],
+    ['Fureur Contenue', '🌋', 3, { colereDmg: 6, dmgPct: 1 }],
+    ['Colère Éternelle', '☄️', 1, { furyKeep: 35, colereDmg: 12 }, 'Après la Colère de Iop, 35 % de la jauge de Fureur reste pleine : la prochaine arrive bien plus vite.'],
+  ]),
+  skMakeBranch('iop', 'tranchant', 'Voie du Tranchant', '🗡️', '#f0a04b', 'Des coups plus lourds et plus précis, qui achèvent les blessés.',
+    { crit: 0.15 }, [[4, { crit: 2 }], [8, { heavyDmg: 5 }], [12, { critDmg: 10 }], [16, { execute: 5 }], [20, { dmgPct: 4 }], [24, { crit: 3, critDmg: 10 }]], [
+    ['Lame Aiguisée', '🗡️', 3, { deg: 3 }],
+    ['Œil du Guerrier', '👁️', 4, { crit: 2 }],
+    ['Poigne de Fer', '🦾', 4, { heavyDmg: 3 }, 'Bonus aux sorts de 4 PA ou plus (Épée du Destin, Épée Céleste…).'],
+    ['Coup de Grâce', '⚔️', 3, { execute: 6 }, 'Dégâts en plus contre les ennemis sous 35 % de leurs PV.'],
+    ['Entaille Profonde', '🩹', 3, { critDmg: 8 }],
+    ['Briseur de Boss', '👹', 3, { bossDmg: 5 }],
+    ['Maître d’Armes', '🏅', 3, { dmgPct: 2, crit: 1 }],
+    ['Épée du Destin', '⚡', 1, { heavyDmg: 12, execute: 10, critDmg: 10 }, 'La lame de Iop ne pardonne pas : ses plus gros sorts écrasent les ennemis affaiblis.'],
+  ]),
+  skMakeBranch('iop', 'rempart', 'Voie du Rempart', '🛡️', '#5e8ad0', 'Tenir debout là où d’autres tombent.',
+    { hpPct: 0.15 }, [[4, { hpPct: 2 }], [8, { res: 2 }], [12, { regen: 0.3 }], [16, { hpPct: 3 }], [20, { killHeal: 2 }], [24, { res: 3, hpPct: 3 }]], [
+    ['Peau Tannée', '🪨', 3, { vit: 25 }],
+    ['Cuirasse', '🛡️', 4, { res: 1 }],
+    ['Endurance', '💪', 4, { hpPct: 1.5 }],
+    ['Second Souffle', '🌬️', 3, { regen: 0.25 }],
+    ['Rage de Survivre', '😠', 3, { lastStand: 5 }, 'Dégâts en plus tant que ses PV sont sous la moitié.'],
+    ['Appétit de Guerre', '🍖', 3, { killHeal: 1.5 }, 'Chaque ennemi achevé lui rend des PV.'],
+    ['Muraille', '🧱', 3, { res: 1, hpPct: 2 }],
+    ['Increvable', '♾️', 1, { undying: 20, hpPct: 5 }, 'Une fois par combat, un coup fatal le laisse à 20 % de ses PV.'],
+  ]),
+],
+
+/* ============================== CRA : la Traque ============================== */
+cra: [
+  skMakeBranch('cra', 'traque', 'Voie de la Traque', '🎯', '#6fb04f', 'Marquer la proie et ne plus la lâcher : Concentration et Tir Parfait.',
+    { crit: 0.15 }, [[4, { crit: 2 }], [8, { focusCrit: 1 }], [12, { preyDmg: 5 }], [16, { critDmg: 10 }], [20, { perfectDmg: 10 }], [24, { dmgPct: 4 }]], [
+    ['Regard de Faucon', '🦅', 3, { crit: 2 }],
+    ['Concentration', '🔭', 4, { focusCrit: 1 }, 'Chaque point de Concentration donne davantage de critique (6 % de base).'],
+    ['Marque du Chasseur', '🏹', 4, { preyDmg: 3 }, 'Dégâts en plus sur la proie marquée.'],
+    ['Souffle Retenu', '😮‍💨', 3, { focusGain: 8 }, 'Chance de gagner un point de Concentration de plus à chaque tir sur la proie.'],
+    ['Tir Mortel', '💀', 3, { perfectDmg: 10 }],
+    ['Flèche Traversante', '➰', 3, { perfectPierce: 15 }, 'Les dégâts en trop du Tir Parfait passent plus fort à l’ennemi suivant.'],
+    ['Patience du Chasseur', '⏳', 3, { preyDmg: 3, critDmg: 5 }],
+    ['Tir Absolu', '🌠', 1, { perfectDmg: 25, perfectPierce: 35, focusGain: 15 }, 'Le Tir Parfait devient dévastateur et transperce bien plus loin.'],
+  ]),
+  skMakeBranch('cra', 'venin', 'Voie du Venin', '☠️', '#8a5ccf', 'Des poisons plus longs, plus cruels.',
+    { poisonDmg: 0.4 }, [[4, { poisonDmg: 4 }], [8, { crit: 2 }], [12, { poisonTurns: 1 }], [16, { poisonDmg: 6 }], [20, { dmgPct: 3 }], [24, { poisonDmg: 8 }]], [
+    ['Pointes Enduites', '🧪', 3, { poisonDmg: 3 }],
+    ['Dose Létale', '💉', 4, { poisonDmg: 3 }],
+    ['Poison Tenace', '⏱️', 2, { poisonTurns: 1 }, 'Ses poisons durent un tour de plus par rang.'],
+    ['Toxine Virulente', '☣️', 3, { deg: 3, poisonDmg: 2 }],
+    ['Nuée de Venin', '🐝', 3, { aoeDmg: 4 }],
+    ['Cruauté', '😈', 3, { execute: 5 }],
+    ['Maître Empoisonneur', '🐍', 3, { poisonDmg: 4, crit: 1 }],
+    ['Mort Lente', '🕸️', 1, { poisonDmg: 20, poisonTurns: 1 }, 'Ses poisons durent plus longtemps et rongent bien plus fort.'],
+  ]),
+  skMakeBranch('cra', 'esquive', 'Voie de l’Esquive', '🍃', '#4fb8a0', 'Insaisissable : on ne touche pas un Cra qui bouge.',
+    { dodge: 0.12 }, [[4, { dodge: 1 }], [8, { speed: 3 }], [12, { dodge: 1 }], [16, { hpPct: 3 }], [20, { dodge: 1, speed: 3 }], [24, { dmgPct: 4 }]], [
+    ['Pas Léger', '👟', 3, { dodge: 1 }],
+    ['Réflexes', '⚡', 4, { dodge: 1 }],
+    ['Souplesse', '🤸', 4, { speed: 2 }],
+    ['Esquive Parfaite', '🌀', 3, { dodgeFocus: 12 }, 'Quand il esquive un coup, chance de gagner un point de Concentration.'],
+    ['Course Folle', '💨', 3, { speed: 3 }],
+    ['Ombre Mouvante', '🌫️', 3, { dodge: 1, crit: 1 }],
+    ['Vent dans le Dos', '🍃', 3, { dmgPct: 2, res: 1 }],
+    ['Fantôme des Bois', '🌲', 1, { dodge: 4, dodgeFocus: 20, speed: 5 }, 'Quasi insaisissable, il transforme chaque esquive en concentration.'],
+  ]),
+],
+
+/* ============================== ZOBAL : les Masques ============================== */
+zobal: [
+  skMakeBranch('zobal', 'rieur', 'Voie du Rieur', '😆', '#e9a23b', 'Le rire est une arme : dégâts, critiques et Apothéose.',
+    { dmgPct: 0.2 }, [[4, { dmgPct: 2 }], [8, { rireDmg: 4 }], [12, { crit: 2 }], [16, { apoCrit: 5 }], [20, { dmgPct: 3 }], [24, { rireDmg: 6 }]], [
+    ['Fou Rire', '😂', 3, { rireDmg: 4 }],
+    ['Éclat de Voix', '🗣️', 4, { deg: 3 }],
+    ['Ferveur Joyeuse', '🔥', 4, { fervChance: 3 }, 'Chaque attaque a plus de chances de donner un point de Ferveur.'],
+    ['Humour Noir', '🖤', 3, { rireDmg: 4 }],
+    ['Cascade de Rires', '🎉', 3, { crit: 1.5 }],
+    ['Apothéose Éclatante', '🌞', 3, { apoCrit: 4 }, 'Davantage de critique quand la Ferveur est au maximum.'],
+    ['Maître de Cérémonie', '🎩', 3, { dmgPct: 2, fervChance: 3 }],
+    ['Éclat Solaire', '☀️', 1, { rireDmg: 15, apoCrit: 10, dmgPct: 4 }, 'Le Masque Rieur frappe bien plus fort et l’Apothéose devient presque garantie.'],
+  ]),
+  skMakeBranch('zobal', 'pleureur', 'Voie du Pleureur', '😢', '#4a8fd0', 'Un masque de larmes : encaisser, guérir, durer.',
+    { hpPct: 0.15 }, [[4, { hpPct: 2 }], [8, { larmeDef: 3 }], [12, { res: 2 }], [16, { larmeHeal: 10 }], [20, { hpPct: 3 }], [24, { killHeal: 2 }]], [
+    ['Larme Discrète', '💧', 3, { vit: 25 }],
+    ['Voile de Tristesse', '🌧️', 4, { larmeDef: 3 }],
+    ['Sanglot Salvateur', '💙', 4, { larmeHeal: 8 }],
+    ['Mélancolie', '🌫️', 3, { res: 1.5 }],
+    ['Torrent de Larmes', '🌊', 3, { larmeHeal: 10 }],
+    ['Cœur Lourd', '🪨', 3, { hpPct: 2 }],
+    ['Pleureuse Ancestrale', '🏺', 3, { larmeDef: 4, hpPct: 1 }],
+    ['Déluge Salvateur', '⛈️', 1, { larmeDef: 15, larmeHeal: 30, undying: 15 }, 'Une fois par combat, un coup fatal le laisse à 15 % de ses PV.'],
+  ]),
+  skMakeBranch('zobal', 'farceur', 'Voie du Farceur', '🤪', '#b05bd0', 'Chaos contrôlé : sorts doublés et Ruptures dévastatrices.',
+    { crit: 0.12 }, [[4, { crit: 1.5 }], [8, { farceChance: 3 }], [12, { ruptureDmg: 8 }], [16, { critDmg: 8 }], [20, { fervHold: 10 }], [24, { dmgPct: 4 }]], [
+    ['Mauvais Tour', '🃏', 3, { crit: 1.5 }],
+    ['Double Jeu', '🎭', 4, { farceChance: 2 }],
+    ['Rupture de Ton', '💥', 4, { ruptureDmg: 8 }],
+    ['Surprise !', '🎁', 3, { critDmg: 6 }],
+    ['Fiesta Prolongée', '🎊', 3, { fervHold: 8 }, 'La Ferveur pleine reste active plus longtemps.'],
+    ['Pièce Truquée', '🪙', 3, { farceChance: 2, crit: 1 }],
+    ['Bouffon Royal', '👑', 3, { ruptureDmg: 8, dmgPct: 2 }],
+    ['Carnaval Total', '🎆', 1, { farceChance: 10, ruptureDmg: 30, fervHold: 20 }, 'Ses sorts doublent bien plus souvent et chaque Rupture est un feu d’artifice.'],
+  ]),
+],
+
+/* ============================== SACRIEUR : le Sang ============================== */
+sacrieur: [
+  skMakeBranch('sacrieur', 'sang', 'Voie du Sang', '🩸', '#c0392b', 'Faire couler le sang, jusqu’au Colosse.',
+    { dmgPct: 0.2 }, [[4, { dmgPct: 2 }], [8, { bloodRate: 8 }], [12, { stigDmg: 1 }], [16, { colosseDmg: 8 }], [20, { dmgPct: 3 }], [24, { bloodRate: 12 }]], [
+    ['Saignée', '🔪', 3, { bloodRate: 6 }, 'La jauge de Sang versé se remplit plus vite.'],
+    ['Soif de Douleur', '😖', 4, { bloodRate: 6 }],
+    ['Sang Épais', '🩸', 4, { deg: 3 }],
+    ['Stigmates Profonds', '✴️', 3, { stigDmg: 1 }, 'Chaque Stigmate donne davantage de dégâts finaux (8 % de base).'],
+    ['Poing de Sang', '👊', 3, { colosseDmg: 8 }],
+    ['Offrande', '🕯️', 3, { crit: 1.5, critDmg: 5 }],
+    ['Fureur Écarlate', '🌹', 3, { dmgPct: 2, bloodRate: 5 }],
+    ['Colosse Ancestral', '👹', 1, { colosseDmg: 30, stigDmg: 2, bloodRate: 15 }, 'Le Colosse de Sang se remplit plus vite et écrase tout sur son passage.'],
+  ]),
+  skMakeBranch('sacrieur', 'douleur', 'Voie de la Douleur', '🪞', '#9b59b6', 'Renvoyer chaque coup, survivre au pire.',
+    { hpPct: 0.15 }, [[4, { hpPct: 2 }], [8, { thorns: 4 }], [12, { res: 2 }], [16, { martyrHp: 3 }], [20, { hpPct: 3 }], [24, { thorns: 6 }]], [
+    ['Peau Épineuse', '🌵', 3, { thorns: 3 }, 'Renvoie une plus grande part des dégâts reçus (30 % de base avec la Douleur partagée).'],
+    ['Chair Résistante', '🥩', 4, { vit: 30 }],
+    ['Masochisme', '😬', 4, { thorns: 3 }],
+    ['Armure de Cicatrices', '⚔️', 3, { res: 1.5 }],
+    ['Dernier Souffle', '💨', 3, { martyrHp: 3 }, 'Après le Martyre, il garde davantage de PV.'],
+    ['Explosion de Rage', '💥', 3, { martyrBlast: 15 }, 'Le sang du Martyre explose plus fort.'],
+    ['Martyr Éternel', '☠️', 3, { hpPct: 2.5, thorns: 2 }],
+    ['Martyr Sublime', '😇', 1, { thorns: 12, martyrHp: 10, martyrBlast: 40 }, 'Le Martyre le laisse bien plus vivant et son sang ravage les ennemis.'],
+  ]),
+  skMakeBranch('sacrieur', 'vampire', 'Voie du Vampire', '🧛', '#cf4b7a', 'Voler la vie pour ne plus jamais tomber.',
+    { hpPct: 0.1 }, [[4, { thirst: 3 }], [8, { hpPct: 2 }], [12, { drainHeal: 15 }], [16, { killHeal: 2 }], [20, { regen: 0.3 }], [24, { thirst: 4 }]], [
+    ['Morsure', '🦷', 3, { drainHeal: 10 }, 'Ses sorts de vol de vie rendent davantage de PV.'],
+    ['Soif de Sang', '🧛', 4, { thirst: 2 }, 'Chaque ennemi achevé lui rend plus de PV (8 % des PV max de base).'],
+    ['Absorption Vorace', '🥤', 4, { drainHeal: 10 }],
+    ['Festin', '🍷', 3, { killHeal: 1.5 }],
+    ['Régénération Sanguine', '💗', 3, { regen: 0.2 }],
+    ['Prédateur', '🐺', 3, { execute: 5 }],
+    ['Gourmandise', '😋', 3, { thirst: 2, dmgPct: 1 }],
+    ['Seigneur Vampire', '🦇', 1, { thirst: 10, drainHeal: 30, regen: 0.5 }, 'Chaque ennemi achevé le soigne bien plus, comme ses sorts de vol de vie.'],
+  ]),
+],
+
+/* ============================== ENUTROF : la Fièvre de l'Or ============================== */
+enutrof: [
+  skMakeBranch('enutrof', 'or', 'Voie de l’Or', '💰', '#e8b92e', 'Plus il est riche, plus il frappe fort : bourse, Prospection et Jackpot.',
+    { pp: 1.5 }, [[4, { pp: 10 }], [8, { ppDmg: 8 }], [12, { kamas: 5 }], [16, { jackpotDmg: 10 }], [20, { pp: 20 }], [24, { ppDmg: 12 }]], [
+    ['Flair du Pauvre', '👃', 3, { pp: 8 }],
+    ['Mains Pleines', '🤲', 4, { coinChance: 6 }, 'Chance de faire tomber une pièce de plus dans la bourse à chaque tour offensif.'],
+    ['L’Or Fait la Force', '💪', 4, { ppDmg: 5 }, 'Renforce le bonus « L’or fait la force » (+1 % de dégâts par 10 Prospection).'],
+    ['Pluie de Pièces', '🌧️', 3, { jackpotDmg: 10 }],
+    ['Cupidité Sans Borne', '😈', 3, { coinChance: 8 }],
+    ['Prospecteur', '⛏️', 3, { pp: 10 }],
+    ['Banquier Véreux', '🏦', 3, { jackpotKamas: 4, kamas: 3 }],
+    ['Roi de l’Or', '👑', 1, { jackpotDmg: 30, jackpotKamas: 12, coinChance: 20, pp: 30 }, 'Le Jackpot dévaste tout et rapporte une fortune.'],
+  ]),
+  skMakeBranch('enutrof', 'tresor', 'Voie du Trésor', '🗺️', '#3fa7a0', 'Flairer le coffre et en tirer le maximum.',
+    { kamas: 0.4 }, [[4, { kamas: 3 }], [8, { chestCoins: 1 }], [12, { xpPct: 3 }], [16, { chestRush: 8 }], [20, { kamas: 4 }], [24, { chestKamas: 15 }]], [
+    ['Carte Annotée', '📜', 3, { kamas: 3 }],
+    ['Coup de Pelle', '⛏️', 4, { deg: 3 }],
+    ['Ruée Prolongée', '🏃', 4, { chestRush: 6 }, 'Davantage de Dégâts pendant la Ruée vers l’or.'],
+    ['Coffre Bien Rempli', '🧰', 3, { chestKamas: 12 }, 'Le monstre au trésor rapporte plus de kamas.'],
+    ['Pièces Bonus', '🪙', 2, { chestCoins: 1 }, 'Le coffre ouvert verse une pièce de plus dans la bourse.'],
+    ['Archéologue', '🏺', 3, { xpPct: 2, pp: 6 }],
+    ['Chasseur de Trésors', '🧭', 3, { kamas: 3, dmgPct: 1.5 }],
+    ['Butin Légendaire', '💎', 1, { chestRush: 25, chestKamas: 50, chestCoins: 2, kamas: 8 }, 'Le trésor du monstre vaut une fortune : Ruée géante, kamas décuplés.'],
+  ]),
+  skMakeBranch('enutrof', 'potdevin', 'Voie du Pot-de-vin', '🤝', '#7b6ac0', 'Acheter sa survie, ruiner ses ennemis.',
+    { hpPct: 0.1 }, [[4, { hpPct: 2 }], [8, { bribeHp: 4 }], [12, { res: 2 }], [16, { hpPct: 3 }], [20, { bribeHp: 5 }], [24, { bribeHp: 6 }]], [
+    ['Bourse Solide', '👛', 3, { vit: 25 }],
+    ['Dessous-de-Table', '💼', 4, { bribeHp: 3 }],
+    ['Poches Profondes', '🧥', 4, { res: 1 }],
+    ['Négociateur', '🗣️', 2, { bribeMin: -1 }, 'Le Pot-de-vin demande une pièce de moins (5 de base).'],
+    ['Assurance Vie', '📋', 3, { bribeHp: 3 }],
+    ['Garde du Corps', '🛡️', 3, { res: 1, hpPct: 1.5 }],
+    ['Corruption Totale', '💰', 3, { bribeHp: 2, dmgPct: 2 }],
+    ['Immunité Dorée', '🏛️', 1, { bribeHp: 15, bribeMin: -1, undying: 10 }, 'En plus du Pot-de-vin, un second coup fatal peut être évité par combat.'],
+  ]),
+],
+
+/* ============================== ECAFLIP : Pile ou Face ============================== */
+ecaflip: [
+  skMakeBranch('ecaflip', 'face', 'Voie de Face', '😼', '#f0b43a', 'Quand la chance sourit, tout est plus fort.',
+    { dmgPct: 0.2 }, [[4, { faceChance: 3 }], [8, { faceDmg: 6 }], [12, { crit: 2 }], [16, { dmgPct: 3 }], [20, { faceDmg: 8 }], [24, { faceChance: 5 }]], [
+    ['Pièce Chanceuse', '🪙', 3, { faceChance: 3 }, 'Plus de chances de tomber sur Face au début du tour.'],
+    ['Sourire Carnassier', '😼', 4, { faceDmg: 5 }, 'Face donne davantage de dégâts (+40 % de base).'],
+    ['Griffes Aiguisées', '🐾', 4, { deg: 3 }],
+    ['Coup de Maître', '🎯', 3, { crit: 2 }],
+    ['Veine Insolente', '🍀', 3, { faceChance: 3 }],
+    ['Face Éclatante', '✨', 3, { faceDmg: 6 }],
+    ['Joueur Invétéré', '🎰', 3, { dmgPct: 2, critDmg: 5 }],
+    ['Roi du Face', '👑', 1, { faceDmg: 25, faceChance: 10, dmgPct: 4 }, 'Face tombe bien plus souvent et frappe bien plus fort.'],
+  ]),
+  skMakeBranch('ecaflip', 'pile', 'Voie de Pile', '🙀', '#5ab0d9', 'Encaisser avec le sourire, garder ses trèfles.',
+    { res: 0.1 }, [[4, { pileDef: 4 }], [8, { res: 1.5 }], [12, { cloverGain: 8 }], [16, { dodge: 1 }], [20, { cloverCrit: 1 }], [24, { hpPct: 3 }]], [
+    ['Moustaches Frémissantes', '🐱', 3, { dodge: 1 }],
+    ['Pile, Je Gagne', '🙀', 4, { pileDef: 4 }, 'Pile réduit encore davantage les dégâts subis (−35 % de base).'],
+    ['Trèfle à Quatre Feuilles', '☘️', 4, { cloverGain: 8 }, 'Chance de gagner un Trèfle de plus quand Pile tombe.'],
+    ['Chance Insolente', '🍀', 3, { cloverCrit: 1 }, 'Chaque Trèfle donne davantage de critique (3 % de base).'],
+    ['Fourrure Épaisse', '🧶', 3, { res: 1.5 }],
+    ['Équilibriste', '🤹', 3, { dodge: 1, hpPct: 1 }],
+    ['Chat Gardien', '🐈', 3, { pileDef: 4, cloverGain: 6 }],
+    ['Porte-Bonheur', '🧿', 1, { pileDef: 15, cloverGain: 25, cloverCrit: 2 }, 'Pile devient un bouclier et les Trèfles pleuvent.'],
+  ]),
+  skMakeBranch('ecaflip', 'joueur', 'Voie du Joueur', '🎲', '#d96a5a', 'Quitte ou Double, Neuf Vies : miser gros.',
+    { pp: 1 }, [[4, { nineLives: 2 }], [8, { gambleWin: 3 }], [12, { pp: 10 }], [16, { kamas: 4 }], [20, { gambleWin: 4 }], [24, { nineLives: 3 }]], [
+    ['Dés Pipés', '🎲', 3, { gambleWin: 3 }, 'Plus de chances de réussir un Quitte ou Double (60 % de base).'],
+    ['Neuf Vies', '🐾', 4, { nineLives: 3 }, 'Plus de chances d’éviter un coup fatal.'],
+    ['Tapis Vert', '🃏', 4, { pp: 6 }],
+    ['Bonne Étoile', '⭐', 3, { gambleLoss: 15 }, 'Un Quitte ou Double raté coûte moins de PV.'],
+    ['Va-Tout', '🎰', 3, { gambleWin: 3 }],
+    ['Instinct de Survie', '🧠', 3, { nineLives: 3 }],
+    ['Parieur Fou', '🤑', 3, { kamas: 4, dmgPct: 1.5 }],
+    ['Jackpot Félin', '💰', 1, { gambleWin: 8, nineLives: 6, gambleLoss: 50, kamas: 6 }, 'Quitte ou Double presque assuré, et un échec ne coûte presque rien.'],
+  ]),
+],
+
+/* ============================== SRAM : Ombre & Pièges ============================== */
+sram: [
+  skMakeBranch('sram', 'ombre', 'Voie de l’Ombre', '👁️', '#6a5fb5', 'Invisible, il frappe sans être vu.',
+    { crit: 0.1 }, [[4, { invisDmg: 3 }], [8, { crit: 2 }], [12, { invisMiss: 5 }], [16, { invisCrit: 10 }], [20, { dmgPct: 3 }], [24, { invisDmg: 6 }]], [
+    ['Pas Feutré', '🥷', 3, { invisDmg: 2 }, 'Davantage de dégâts tant qu’il est invisible (+15 % de base).'],
+    ['Voile d’Ombre', '🌑', 4, { invisMiss: 4 }, 'Les monstres le ratent plus souvent quand il est invisible (30 % de base).'],
+    ['Frappe de l’Ombre', '🗡️', 4, { invisDmg: 3 }],
+    ['Disparition Totale', '💨', 3, { dodge: 1.5 }],
+    ['Coup dans le Dos', '🔪', 3, { invisCrit: 8 }, 'Dégâts critiques en plus quand il est invisible.'],
+    ['Œil du Prédateur', '👁️', 3, { crit: 1.5 }],
+    ['Maître de l’Ombre', '🌘', 3, { invisDmg: 3, dmgPct: 1.5 }],
+    ['Lame Fantôme', '👻', 1, { invisDmg: 12, invisCrit: 30, invisMiss: 15 }, 'Invisible, il frappe comme un spectre et presque rien ne le touche.'],
+  ]),
+  skMakeBranch('sram', 'pieges', 'Voie des Pièges', '🪤', '#a0522d', 'Poser le piège parfait au bon moment.',
+    { dmgPct: 0.15 }, [[4, { trapDmg: 8 }], [8, { poisonDmg: 5 }], [12, { trapRearm: 6 }], [16, { dmgPct: 3 }], [20, { trapDmg: 12 }], [24, { trapRearm: 8 }]], [
+    ['Fil Tendu', '🪢', 3, { trapDmg: 8 }],
+    ['Mâchoires d’Acier', '⚙️', 4, { trapDmg: 8 }],
+    ['Poison Retardé', '🧪', 4, { poisonDmg: 4 }],
+    ['Piège Rusé', '🧠', 3, { trapRearm: 6 }, 'Chance de reposer aussitôt un piège sur un autre ennemi.'],
+    ['Explosif Sournois', '💣', 3, { aoeDmg: 4 }],
+    ['Chausse-Trappe', '📌', 3, { trapDmg: 8 }],
+    ['Maître Artificier', '🧨', 3, { trapRearm: 6, dmgPct: 2 }],
+    ['Piège Mortel', '☠️', 1, { trapDmg: 40, trapRearm: 25, poisonDmg: 10 }, 'Ses pièges frappent comme un marteau et se reposent presque toujours.'],
+  ]),
+  skMakeBranch('sram', 'voleur', 'Voie du Voleur', '💰', '#c9a227', 'Argent, butin et petites vilenies.',
+    { kamas: 0.4 }, [[4, { kamas: 3 }], [8, { pp: 10 }], [12, { xpPct: 3 }], [16, { kamas: 4 }], [20, { pp: 15 }], [24, { xpPct: 4 }]], [
+    ['Doigts Agiles', '🤏', 3, { kamas: 3 }],
+    ['Poche Cachée', '🎒', 4, { pp: 7 }],
+    ['Larcin', '🪙', 4, { kamas: 3 }],
+    ['Coup Bas', '🦶', 3, { firstStrike: 6 }, 'Dégâts en plus au premier tour d’un combat.'],
+    ['Receleur', '🏷️', 3, { pp: 8 }],
+    ['Cambrioleur', '🔓', 3, { xpPct: 2, crit: 1 }],
+    ['Pillard', '⛓️', 3, { kamas: 3, bossDmg: 3 }],
+    ['Roi des Voleurs', '🗝️', 1, { kamas: 12, pp: 30, firstStrike: 20, xpPct: 5 }, 'Il vole le premier tour comme il vole le reste : kamas, butin et expérience en plus.'],
+  ]),
+],
+
+/* ============================== XÉLOR : le Sablier ============================== */
+xelor: [
+  skMakeBranch('xelor', 'sablier', 'Voie du Sablier', '⏳', '#4a8fd0', 'Remplir le sablier, rembobiner le temps.',
+    { dmgPct: 0.15 }, [[4, { rewindDmg: 5 }], [8, { grainGain: 0.25 }], [12, { dmgPct: 3 }], [16, { chronoGain: 10 }], [20, { rewindDmg: 8 }], [24, { speed: 5 }]], [
+    ['Grain de Sable', '⌛', 3, { grainGain: 0.15 }, 'Chaque sort ajoute un peu plus de grains au sablier.'],
+    ['Rouages Huilés', '⚙️', 4, { speed: 2 }],
+    ['Rembobinage Éclair', '🔁', 4, { rewindDmg: 5 }, 'Dégâts en plus pendant le tour rejoué après un Rembobinage.'],
+    ['Sablier Élargi', '🏺', 3, { grainGain: 0.15 }],
+    ['Éclat du Temps', '💎', 3, { chronoGain: 8 }, 'Chance qu’un Rembobinage remplisse deux fois l’Éclat du temps.'],
+    ['Maître du Temps', '🕰️', 3, { deg: 3 }],
+    ['Boucle Temporelle', '♾️', 3, { rewindDmg: 6, dmgPct: 2 }],
+    ['Seigneur des Âges', '🌌', 1, { grainGain: 0.4, rewindDmg: 25, chronoGain: 25 }, 'Chaque sort remplit davantage le sablier et le tour rejoué est un massacre.'],
+  ]),
+  skMakeBranch('xelor', 'gel', 'Voie du Gel', '❄️', '#7fc8e8', 'Figer les ennemis, puis les briser.',
+    { crit: 0.1 }, [[4, { freezeChance: 3 }], [8, { frozenDmg: 5 }], [12, { crit: 2 }], [16, { freezeChance: 4 }], [20, { dmgPct: 3 }], [24, { frozenDmg: 8 }]], [
+    ['Givre', '🧊', 3, { freezeChance: 2 }, 'Chances de figer la cible (12 % de base).'],
+    ['Cristaux Temporels', '❄️', 4, { frozenDmg: 4 }, 'Une cible figée subit davantage de dégâts (+25 % de base).'],
+    ['Distorsion Accrue', '🌀', 4, { freezeChance: 2 }],
+    ['Brise-Glace', '🔨', 3, { frozenDmg: 5 }],
+    ['Aiguilles de Givre', '🎐', 3, { deg: 3 }],
+    ['Instant Figé', '⏸️', 3, { freezeChance: 3 }],
+    ['Maître du Froid', '🥶', 3, { execute: 4, crit: 1 }],
+    ['Zéro Absolu', '🥶', 1, { freezeChance: 15, frozenDmg: 25, aoeDmg: 6 }, 'Ses coups figent bien plus souvent et brisent les cibles gelées.'],
+  ]),
+  skMakeBranch('xelor', 'paradoxe', 'Voie du Paradoxe', '🌀', '#8e5bd0', 'Défier la mort, remonter le temps.',
+    { hpPct: 0.1 }, [[4, { hpPct: 2 }], [8, { paradoxHp: 3 }], [12, { res: 1.5 }], [16, { paradoxGrains: -1 }], [20, { hpPct: 3 }], [24, { paradoxHp: 5 }]], [
+    ['Pressentiment', '🔮', 3, { dodge: 1 }],
+    ['Mémoire du Futur', '📖', 4, { hpPct: 1.5 }],
+    ['Faille Temporelle', '🕳️', 4, { paradoxHp: 3 }, 'Le Paradoxe le ramène avec davantage de PV (30 % minimum de base).'],
+    ['Boucle de Secours', '🔄', 2, { paradoxGrains: -1 }, 'Le Paradoxe se déclenche avec moins de grains (6 de base).'],
+    ['Résilience', '🧱', 3, { res: 1.5 }],
+    ['Ancrage Temporel', '⚓', 3, { vit: 30 }],
+    ['Gardien du Temps', '🛡️', 3, { paradoxHp: 3, hpPct: 1.5 }],
+    ['Éternité', '🌠', 1, { paradoxHp: 20, paradoxGrains: -1, hpPct: 5 }, 'Le Paradoxe devient presque une seconde vie.'],
+  ]),
+],
+
+/* ============================== STEAMER : les Tourelles ============================== */
+steamer: [
+  skMakeBranch('steamer', 'artillerie', 'Voie de l’Artillerie', '🔥', '#e0602b', 'Plus de feu, plus de Vapeur.',
+    { dmgPct: 0.15 }, [[4, { turretDmg: 5 }], [8, { burnDmg: 8 }], [12, { dmgPct: 3 }], [16, { vaporDmg: 10 }], [20, { turretDmg: 8 }], [24, { crit: 2 }]], [
+    ['Munitions Renforcées', '🔩', 3, { turretDmg: 5 }, 'Les tirs de l’Offensive font plus de dégâts.'],
+    ['Canons Surchauffés', '🔥', 4, { burnDmg: 8 }],
+    ['Calibre Lourd', '💣', 4, { turretDmg: 5 }],
+    ['Poudre Noire', '⚫', 3, { deg: 3 }],
+    ['Vapeur Brûlante', '♨️', 3, { vaporDmg: 10 }],
+    ['Visée Assistée', '🎯', 3, { crit: 1.5 }],
+    ['Ingénieur de Choc', '🛠️', 3, { turretDmg: 5, dmgPct: 1.5 }],
+    ['Batterie Infernale', '🌋', 1, { turretDmg: 25, vaporDmg: 30, burnDmg: 30 }, 'Les tourelles pilonnent, la Vapeur dévaste, la Brûlure ronge.'],
+  ]),
+  skMakeBranch('steamer', 'blindage', 'Voie du Blindage', '🛡️', '#7f8c9a', 'Des tourelles increvables qui soignent.',
+    { hpPct: 0.15 }, [[4, { turretHp: 8 }], [8, { res: 2 }], [12, { turretHeal: 10 }], [16, { hpPct: 3 }], [20, { decoy: 2 }], [24, { turretHp: 15 }]], [
+    ['Plaques d’Acier', '🔲', 3, { turretHp: 8 }],
+    ['Soudure Renforcée', '🔥', 4, { res: 1 }],
+    ['Circuit de Soin', '💚', 4, { turretHeal: 10 }, 'La tourelle Défensive soigne davantage.'],
+    ['Scaphandre Épais', '🤿', 3, { vit: 30 }],
+    ['Leurres Mécaniques', '🎪', 3, { decoy: 2 }, 'Plus de coups ennemis visent les tourelles à la place du Steamer (14 % de base).'],
+    ['Boulons Frais', '🔩', 3, { turretHp: 8 }],
+    ['Chef de Chantier', '👷', 3, { hpPct: 2, turretHeal: 10 }],
+    ['Forteresse de Stasis', '🏰', 1, { turretHp: 40, turretHeal: 40, decoy: 6, res: 3 }, 'Ses tourelles encaissent tout et soignent le Steamer sans relâche.'],
+  ]),
+  skMakeBranch('steamer', 'pression', 'Voie de la Pression', '♨️', '#d9a43a', 'Remplir la chaudière et surcharger au bon moment.',
+    { pp: 0.8 }, [[4, { steamRate: 6 }], [8, { pp: 8 }], [12, { surgeDmg: 8 }], [16, { steamRate: 8 }], [20, { magChance: 6 }], [24, { surgeDmg: 12 }]], [
+    ['Chaudière Neuve', '🔧', 3, { steamRate: 6 }, 'La Pression se remplit plus vite.'],
+    ['Soupape', '🚿', 4, { steamRate: 6 }],
+    ['Électro-Aimant', '🧲', 4, { magChance: 4 }, 'La tourelle Tactique magnétise plus souvent.'],
+    ['Surtension', '⚡', 3, { surgeDmg: 8 }],
+    ['Récupérateur de Ferraille', '♻️', 3, { pp: 8 }],
+    ['Turbine', '🌀', 3, { steamRate: 8 }],
+    ['Maître-Mécano', '🧑‍🔧', 3, { surgeDmg: 8, magChance: 3 }],
+    ['Surcharge Absolue', '💥', 1, { surgeDmg: 40, steamRate: 20, magChance: 15 }, 'La Surcharge Stasis arrive bien plus vite et rase tout.'],
+  ]),
+],
+};
+
+/* Bonus de puissance selon le total de points dépensés (toutes voies de la classe) */
+const SKILL_GLOBAL = [[15, { dmgPct: 3, hpPct: 3 }], [30, { xpPct: 5, kamas: 5 }], [45, { dmgPct: 5, hpPct: 5 }], [60, { crit: 3, speed: 8, pp: 20 }]];
+
+/* Index : voies et talents de toutes les classes */
+const SKILL_BRANCHES = []; const SKILL_NODE = {};
+for (const cls in CLASS_TREES) for (const b of CLASS_TREES[cls]) { SKILL_BRANCHES.push(b); for (const n of b.nodes) SKILL_NODE[n[0]] = { id: n[0], name: n[1], icon: n[2], max: n[3], fx: n[4], r: n[5], c: n[6], req: n[7], cost: n[8], txt: n[9], branch: b.id, cls }; }
+const SKILL_BRANCH = Object.fromEntries(SKILL_BRANCHES.map(b => [b.id, b]));
+function skillTree(cls) { return CLASS_TREES[cls] || []; }
+function skillFmt(k, v) { const s = SKILL_STAT[k]; if (!s) return ''; const a = +Math.abs(v).toFixed(2); return `${v < 0 ? '−' : '+'}${String(a).replace('.', ',')}${s[1]} ${s[0]}`; }
+/* =====================================================================
    AMAKNA IDLE — MOTEUR
    Aucune dépendance au DOM : tout est testable hors navigateur.
    ===================================================================== */
@@ -5412,8 +5782,8 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
-  if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
-  if (h.cls === 'enutrof') return Math.floor((t.pp || 0) / 10); // L'or fait la force : +1 % de dégâts par 10 Prospection
+  if (h.cls === 'iop' && f) return (f.rage || 0) * (12 + (t.rageStep || 0));
+  if (h.cls === 'enutrof') return Math.floor((t.pp || 0) / 10 * (1 + (t.ppDmg || 0) / 100)); // L'or fait la force : +1 % de dégâts par 10 Prospection
   return 0;
 }
 function spellPower(h, t, f, sp) {
@@ -5422,16 +5792,33 @@ function spellPower(h, t, f, sp) {
   return { scale, avg: ((sp.min + sp.max) / 2) * scale + t.dmg };
 }
 
-function rollSpell(h, t, f, sp, monRes) {
+/* Passifs de talents communs à toutes les classes : exécution, boss, dernier souffle, premier coup, gros sorts, zone, poison */
+function talentMult(h, t, f, sp, mon) {
+  let m = 1;
+  if (mon && t.execute && mon.hp <= mon.max * 0.35) m *= 1 + t.execute / 100;
+  if (mon && t.bossDmg) { const d = MONSTERS[mon.mid]; if (d && (d.boss || d.archi)) m *= 1 + t.bossDmg / 100; }
+  if (t.lastStand && h.hp < t.maxHp * 0.5) m *= 1 + t.lastStand / 100;
+  if (t.firstStrike && f && f.turn === 1) m *= 1 + t.firstStrike / 100;
+  if (t.heavyDmg && sp.pa >= 4) m *= 1 + t.heavyDmg / 100;
+  if (t.aoeDmg && sp.type === 'aoe') m *= 1 + t.aoeDmg / 100;
+  if (t.poisonDmg && sp.type === 'poison') m *= 1 + t.poisonDmg / 100;
+  return m;
+}
+function rollSpell(h, t, f, sp, monRes, mon) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0) + (h.cls === 'zobal' && f && (h.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT : 0);
-  if (crit) v *= (h.cls === 'cra' ? 1.8 : 1.5) + (t.critDmg || 0) / 100;
-  if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
-  if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
-  if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
-  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + SAC_STIG_DMG * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
-  if (h.cls === 'zobal' && f && zobMask(h) === 'rire' && sp.type !== 'heal') v *= 1 + (ZOB_RIRE_DMG + ZOB_FERV_STEP * (h.ferv || 1)) / 100; // Masque Rieur
+  const cls = h.cls, atk = sp.type !== 'heal';
+  const invis = cls === 'sram' && f && f.invis;
+  const crit = Math.random() * 100 < t.critPct + (cls === 'cra' && f ? (h.focus || 0) * (CRA_FOCUS_CRIT + (t.focusCrit || 0)) : 0) + (cls === 'ecaflip' ? (h.clover || 0) * (3 + (t.cloverCrit || 0)) : 0) + (cls === 'zobal' && f && (h.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT + (t.apoCrit || 0) : 0);
+  if (crit) v *= (cls === 'cra' ? 1.8 : 1.5) + (t.critDmg || 0) / 100 + (invis ? (t.invisCrit || 0) / 100 : 0);
+  if (invis && atk) v *= 1 + (SRAM_INVIS_DMG + (t.invisDmg || 0)) / 100;
+  if (cls === 'ecaflip' && f && f.coin === 'face' && atk) v *= ECA_FACE_DMG + (t.faceDmg || 0) / 100; // Face : +40 % de dégâts
+  if (t.dmgPct && atk) v *= 1 + t.dmgPct / 100;
+  if (cls === 'sacrieur' && atk) v *= 1 + (SAC_STIG_DMG + (t.stigDmg || 0)) * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
+  if (cls === 'zobal' && f && zobMask(h) === 'rire' && atk) v *= 1 + (ZOB_RIRE_DMG + (t.rireDmg || 0) + ZOB_FERV_STEP * (h.ferv || 1)) / 100; // Masque Rieur
+  if (cls === 'cra' && f && mon && t.preyDmg && f.mons.indexOf(mon) === f.mark && atk) v *= 1 + t.preyDmg / 100; // proie marquée
+  if (cls === 'xelor' && f && f.rw && t.rewindDmg && atk) v *= 1 + t.rewindDmg / 100; // tour rejoué après un Rembobinage
+  if (atk) v *= talentMult(h, t, f, sp, mon);
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }
@@ -5448,7 +5835,7 @@ function heroTurn(st, h, t, ev) {
     f.stig = f.stig || 0;
     if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
       const loss = Math.max(1, Math.min(Math.round(t.maxHp * SAC_PACT_LOSS), Math.round(h.hp - t.maxHp * SAC_PACT_FLOOR)));
-      h.hp -= loss; gainBlood(h, loss, t.maxHp); f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
+      h.hp -= loss; gainBlood(h, loss, t.maxHp, t); f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
     }
   }
   const xel = h.cls === 'xelor';
@@ -5500,37 +5887,39 @@ function heroTurn(st, h, t, ev) {
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
     }
-    if (h.cls === 'zobal' && zobMask(h) === 'farce' && (best.type === 'dmg' || best.type === 'aoe') && Math.random() * 100 < ZOB_FARCE_CHANCE + ZOB_FERV_STEP * (h.ferv || 1)) { // Masque Farceur : le sort est lancé deux fois
+    if (h.cls === 'zobal' && zobMask(h) === 'farce' && (best.type === 'dmg' || best.type === 'aoe') && Math.random() * 100 < Math.min(90, ZOB_FARCE_CHANCE + (t.farceChance || 0) + ZOB_FERV_STEP * (h.ferv || 1))) { // Masque Farceur : le sort est lancé deux fois
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) { f.farceSeq = (f.farceSeq || 0) + 1; actions.push('🤪×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2)); }
     }
-    if (h.cls === 'zobal' && best.type !== 'buff' && best.type !== 'heal' && Math.random() < ZOB_FERV_CHANCE) zobGain(h); // Ferveur : 50 % de chances de +1 à chaque attaque lancée
-    enuChest(h, f, actions);
+    if (h.cls === 'zobal' && best.type !== 'buff' && best.type !== 'heal' && Math.random() < ZOB_FERV_CHANCE + (t.fervChance || 0) / 100) zobGain(h, t); // Ferveur : 50 % de chances de +1 à chaque attaque lancée
+    enuChest(h, f, actions, t);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
     (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts, pf: (f.perfectSeq || 0) > pf0 ? 1 : 0, tur: stm ? stm.shots : null }); // pf : ce tir est le Tir Parfait (la cinématique le joue à la place)
     if (f.fx.length > 16) f.fx.shift();
-    if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
+    if (xel && gainGrains) { const gg = t.grainGain || 0; f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0) + Math.floor(gg) + (Math.random() < gg - Math.floor(gg) ? 1 : 0)); }
   }
   };
   if (h.cls === 'ecaflip') ecaToss(h, t, f, actions);
   if (h.cls === 'enutrof') {
-    enuChest(h, f, actions);
-    if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
+    enuChest(h, f, actions, t);
+    if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions, t); }
   }
   const rwPre = xel ? f.mons.map(m => m.hp) : null;
   phase(true);
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
-  if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1 + (Math.random() * 100 < (t.chronoGain || 0) ? 1 : 0)); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; f.rw = true; phase(false); f.rw = false; }
   if (xel) h.grains = f.grains || 0;
+  const killsT = aliveBefore - f.mons.filter(m => m.hp > 0).length;
   if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
-    const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
-    if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
+    if (killsT > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * (SAC_THIRST + (t.thirst || 0) / 100) * killsT)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
   }
-  if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
-  if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
-  if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
+  if (t.killHeal && killsT > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * t.killHeal / 100 * killsT))); h.hp += r; actions.push(`🍖 +${r} PV`); }
+  if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0) + (Math.random() * 100 < (t.coinChance || 0) ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
+  const rageMax = 5 + (t.rageMax || 0);
+  if (h.cls === 'iop' && actions.length && (f.rage || 0) < rageMax) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/${rageMax}`); }
+  if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length, 1 + (t.furyGain || 0) / 100);
   if (h.cls === 'sram') {
     const wasInvis = f.invis; f.invis = false;
     const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
@@ -5556,27 +5945,27 @@ function castSpell(st, h, t, sp, target, alive) {
   const xel = h.cls === 'xelor';
   const distort = (m, r) => {
     if (!xel) return '';
-    if (m.frozen) r.v = Math.round(r.v * 1.25);
-    if (m.hp - r.v > 0 && !m.frozen && Math.random() * 100 < 12 + (sp.freeze || 0)) { m.frozen = true; return '❄'; }
+    if (m.frozen) r.v = Math.round(r.v * (1.25 + (t.frozenDmg || 0) / 100));
+    if (m.hp - r.v > 0 && !m.frozen && Math.random() * 100 < 12 + (sp.freeze || 0) + (t.freezeChance || 0)) { m.frozen = true; return '❄'; }
     return '';
   };
   if (sp.type === 'aoe') {
-    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); if (m.crack) r.v = Math.round(r.v * STM_CRACK); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
-    if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
+    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res, m); if (m.crack) r.v = Math.round(r.v * STM_CRACK); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
+    if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) craFocus(h, t);
     return `${sp.name} → ${parts.join('/')}`;
   }
   if (h.cls === 'cra' && sp.type === 'dmg' && f.mons.indexOf(target) === f.mark && (h.focus || 0) >= CRA_FOCUS_MAX) return perfectShot(h, t, f, sp, target);
-  const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
+  const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res, target);
   if (target.crack) r.v = Math.round(r.v * STM_CRACK);
-  if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
+  if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') craFocus(h, t);
   if (sp.type === 'poison') {
-    target.poison = { dmg: r.v, turns: sp.turns };
+    target.poison = { dmg: r.v, turns: sp.turns + (t.poisonTurns || 0) };
     return `${sp.name} sur ${MONSTERS[target.mid].name} (${r.v}/tour)`;
   }
   const fz = distort(target, r);
   target.hp = Math.max(0, target.hp - r.v);
   let s = `${sp.name} ${tag(r)}${fz ? ` ❄ ${MONSTERS[target.mid].name} figé` : ''}`;
-  if (sp.type === 'drain') { const heal = Math.round(r.v / 2); h.hp = Math.min(t.maxHp, h.hp + heal); s += ` (+${heal} PV)`; }
+  if (sp.type === 'drain') { const heal = Math.round(r.v / 2 * (1 + (t.drainHeal || 0) / 100)); h.hp = Math.min(t.maxHp, h.hp + heal); s += ` (+${heal} PV)`; }
   return s;
 }
 
@@ -5603,56 +5992,67 @@ function monsterTurn(st, h, t, m, ev) {
   f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
     f.trap = -1;
-    const tr = rollSpell(h, t, f, SRAM_TRAP, 0);
+    const tr = rollSpell(h, t, f, SRAM_TRAP, 0, m);
+    if (t.trapDmg) tr.v = Math.max(1, Math.round(tr.v * (1 + t.trapDmg / 100)));
     m.hp = Math.max(0, m.hp - tr.v);
     f.trapFx = { n: (f.trapFx ? f.trapFx.n : 0) + 1, i: f.mons.indexOf(m), v: tr.v };
-    ev.log(h, line + `🪤 ${def.name} déclenche le piège de ${h.name} : −${tr.v}${tr.crit ? ' CC' : ''} et perd son tour !${m.hp <= 0 && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'hero');
+    let again = '';
+    if (t.trapRearm && Math.random() * 100 < t.trapRearm) { // Piège rusé : un nouveau piège est posé aussitôt
+      const cand = f.mons.map((o, i) => (o.hp > 0 && o !== m ? i : -1)).filter(i => i >= 0);
+      if (cand.length) { f.trap = cand[irnd(0, cand.length - 1)]; again = ' · 🪤 piège reposé'; }
+    }
+    ev.log(h, line + `🪤 ${def.name} déclenche le piège de ${h.name} : −${tr.v}${tr.crit ? ' CC' : ''} et perd son tour !${again}${m.hp <= 0 && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'hero');
     return;
   }
-  if (h.cls === 'sram' && f.invis && Math.random() < 0.3) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
-  if (Math.random() * 100 < t.dodgePct) { f.dodgeSeq = (f.dodgeSeq || 0) + 1; ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
+  if (h.cls === 'sram' && f.invis && Math.random() < Math.min(0.8, 0.3 + (t.invisMiss || 0) / 100)) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
+  if (Math.random() * 100 < t.dodgePct) { if (h.cls === 'cra' && t.dodgeFocus && Math.random() * 100 < t.dodgeFocus) craFocus(h, null); f.dodgeSeq = (f.dodgeSeq || 0) + 1; ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100) * (wet ? STM_WET : 1)));
-  if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100))); // Masque Pleureur
+  if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100) * (1 - Math.min(60, t.larmeDef || 0) / 100))); // Masque Pleureur
   if (h.cls === 'ecaflip') {
-    if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
-    if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
+    if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF * (1 - Math.min(60, t.pileDef || 0) / 100))); // Pile : −35 % de dégâts subis
+    if (h.hp - dmg <= 0 && Math.random() < Math.min(0.75, 0.2 + 0.04 * (h.clover || 0) + (t.nineLives || 0) / 100)) { // Neuf Vies
       f.lifeSeq = (f.lifeSeq || 0) + 1; h.wait += ECA_LIFE_MS; // laisse la pirouette des Neuf Vies se jouer
       ev.log(h, line + `🐾 Neuf Vies ! ${h.name} retombe sur ses pattes : le coup de ${def.name} est évité.`, 'win');
       return;
     }
   }
-  if (h.cls === 'steamer' && stmDecoy(h, f, def, line, dmg, special, ev)) return; // une tourelle encaisse le coup à sa place
+  if (h.cls === 'steamer' && stmDecoy(h, f, def, line, dmg, special, ev, t)) return; // une tourelle encaisse le coup à sa place
   const hpBefore = h.hp;
   h.hp = Math.max(0, h.hp - dmg);
-  gainBlood(h, hpBefore - h.hp, t.maxHp); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
+  gainBlood(h, hpBefore - h.hp, t.maxHp, t); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
   if (h.cls === 'sacrieur') {
     f.stig = Math.min(SAC_STIG_MAX, (f.stig || 0) + 1); // chaque coup reçu grave un Stigmate
-    const back = Math.min(m.hp, Math.max(1, Math.round(dmg * SAC_REFLECT))); // Douleur partagée
+    const back = Math.min(m.hp, Math.max(1, Math.round(dmg * (SAC_REFLECT + (t.thorns || 0) / 100)))); // Douleur partagée
     m.hp -= back; f.reflectSeq = (f.reflectSeq || 0) + 1;
     ev.log(h, `🪞 Douleur partagée : ${def.name} subit ${back}${m.hp <= 0 ? ' et succombe' : ''}.`, 'hero');
     if (h.hp <= 0 && !f.martyr) { // Martyre : le coup fatal est évité, le sang explose sur tous les ennemis
       f.martyr = true; f.martyrSeq = (f.martyrSeq || 0) + 1; f.stig = SAC_STIG_MAX;
-      h.hp = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_HP));
-      const blast = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_BLAST));
+      h.hp = Math.max(1, Math.round(t.maxHp * (SAC_MARTYR_HP + (t.martyrHp || 0) / 100)));
+      const blast = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_BLAST * (1 + (t.martyrBlast || 0) / 100)));
       for (const o of f.mons) if (o.hp > 0) o.hp = Math.max(0, o.hp - blast);
       ev.log(h, `☠️ MARTYRE ! ${h.name} survit avec ${h.hp} PV et son sang explose : −${blast} PV à tous les ennemis.`, 'win');
     }
   }
-  if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
+  if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= Math.max(2, ENU_BRIBE_MIN + (t.bribeMin || 0))) {
     const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
-    h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
+    h.hp = Math.max(1, Math.round(t.maxHp * (0.15 + (t.bribeHp || 0) / 100)));
     f.mons.forEach(o => { if (o.hp > 0) o.bribed = true; });
     ev.log(h, `🤝 Pot-de-vin ! ${h.name} jette ${spent} 🪙 : les ennemis se ruent sur l’or et il s’en tire avec ${h.hp} PV.`, 'win');
   }
-  if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
+  if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= Math.max(2, 6 + (t.paradoxGrains || 0))) {
     f.paradox = true; f.grains = 0; h.grains = 0;
-    h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
+    h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * (0.3 + (t.paradoxHp || 0) / 100)));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
+  }
+  if (h.hp <= 0 && t.undying && !f.undying) { // Talent : un coup fatal par combat est évité
+    f.undying = true; f.undySeq = (f.undySeq || 0) + 1;
+    h.hp = Math.max(1, Math.round(t.maxHp * Math.min(60, t.undying) / 100));
+    ev.log(h, `✨ Increvable ! ${h.name} refuse de tomber et se relève avec ${h.hp} PV.`, 'win');
   }
 }
 
@@ -5665,15 +6065,15 @@ function ecaToss(h, t, f, actions) {
   f.double = false;
   if ((h.clover || 0) >= ECA_CLOVER_MAX) {
     h.clover = 0;
-    const win = Math.random() < 0.6;
+    const win = Math.random() < Math.min(0.95, 0.6 + (t.gambleWin || 0) / 100);
     f.gambleSeq = (f.gambleSeq || 0) + 1; f.gambleFx = { n: f.gambleSeq, win };
     if (win) { f.double = true; actions.push('🎲 Quitte ou Double : GAGNÉ ! Ses sorts frappent deux fois'); }
-    else { const loss = Math.max(0, Math.min(h.hp - 1, Math.round(t.maxHp * 0.08))); h.hp -= loss; actions.push(`🎲 Quitte ou Double : perdu… −${loss} PV`); }
+    else { const loss = Math.max(0, Math.min(h.hp - 1, Math.round(t.maxHp * 0.08 * (1 - Math.min(90, t.gambleLoss || 0) / 100)))); h.hp -= loss; actions.push(`🎲 Quitte ou Double : perdu… −${loss} PV`); }
   }
-  const face = Math.random() < 0.5 + 0.04 * (h.clover || 0);
+  const face = Math.random() < Math.min(0.92, 0.5 + 0.04 * (h.clover || 0) + (t.faceChance || 0) / 100);
   f.coin = face ? 'face' : 'pile'; f.coinSeq = (f.coinSeq || 0) + 1; f.coinFx = { n: f.coinSeq, face };
-  if (!face) h.clover = Math.min(ECA_CLOVER_MAX, (h.clover || 0) + 1);
-  actions.push(face ? '😼 FACE ! +40 % de dégâts' : `🙀 PILE ! −35 % de dégâts subis · 🍀 ${h.clover}/${ECA_CLOVER_MAX}`);
+  if (!face) h.clover = Math.min(ECA_CLOVER_MAX, (h.clover || 0) + 1 + (Math.random() * 100 < (t.cloverGain || 0) ? 1 : 0));
+  actions.push(face ? `😼 FACE ! +${Math.round((ECA_FACE_DMG - 1) * 100 + (t.faceDmg || 0))} % de dégâts` : `🙀 PILE ! −35 % de dégâts subis · 🍀 ${h.clover}/${ECA_CLOVER_MAX}`);
 }
 
 /* ---------------------- Fièvre de l'Or de l'Enutrof ----------------------
@@ -5691,7 +6091,7 @@ const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR =
 const ZOB_FERV_MAX = 10, ZOB_FERV_CHANCE = 0.5, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
 const ZOB_MASKS = { rire: { name: 'Masque Rieur', icon: '😆' }, larme: { name: 'Masque Pleureur', icon: '😢' }, farce: { name: 'Masque Farceur', icon: '🤪' } };
 const ZOB_RUPTURE_SPELL = { id: 'rupture', name: 'Rupture', min: 1, max: 1, type: 'aoe' };
-function zobGain(h) { if ((h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = (h.ferv || 1) + 1; if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } } // pleine, la Ferveur tient 20 s
+function zobGain(h, t) { if ((h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = (h.ferv || 1) + 1; if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD * (1 + ((t && t.fervHold) || 0) / 100); } } // pleine, la Ferveur tient 20 s
 function zobMask(h) { return ZOB_MASKS[h.mask] ? h.mask : 'rire'; }
 function setMask(h, m) {
   if (h.cls !== 'zobal' || !ZOB_MASKS[m] || zobMask(h) === m) return false;
@@ -5707,10 +6107,10 @@ function zobTurnStart(h, t, f, ev) {
   if (f.rupt) {
     const n = f.rupt; f.rupt = 0; f.ruptSeq = (f.ruptSeq || 0) + 1;
     const { scale } = spellPower(h, t, f, ZOB_RUPTURE_SPELL), parts = [];
-    for (const m of f.mons) if (m.hp > 0) { const v = Math.max(1, Math.round(ZOB_RUPTURE * n * scale * (1 - monsterStats(m.mid).res / 100))); m.hp = Math.max(0, m.hp - v); parts.push(v); }
+    for (const m of f.mons) if (m.hp > 0) { const v = Math.max(1, Math.round(ZOB_RUPTURE * n * scale * (1 + (t.ruptureDmg || 0) / 100) * (1 - monsterStats(m.mid).res / 100))); m.hp = Math.max(0, m.hp - v); parts.push(v); }
     pre += `💥 RUPTURE (Ferveur ${n}) ${parts.join('/')} · `;
   }
-  if (zobMask(h) === 'larme' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * (ZOB_LARME_HEAL * (h.ferv || 1)) / 100))); h.hp += r; pre += `😢 Larmes +${r} PV · `; }
+  if (zobMask(h) === 'larme' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * (ZOB_LARME_HEAL * (h.ferv || 1) * (1 + (t.larmeHeal || 0) / 100)) / 100))); h.hp += r; pre += `😢 Larmes +${r} PV · `; }
   return pre;
 }
 
@@ -5720,7 +6120,7 @@ function zobTurnStart(h, t, f, ev) {
    de sang écrase tous les ennemis (dégâts accrus par le sang sacrifié et les Stigmates, résistances ignorées). */
 const SAC_BLOOD_MAX = 300, SAC_BLOOD_RATE = 0.6, SAC_COLOSSE_COST = 0.35, SAC_COLOSSE_BLOOD = 1.25;
 const COLOSSE_SPELL = { id: 'colosse_ult', name: 'Colosse de Sang', min: 110, max: 150, type: 'aoe' };
-function gainBlood(h, lost, maxHp) { if (h.cls === 'sacrieur' && lost > 0 && maxHp > 0) h.blood = Math.min(SAC_BLOOD_MAX, (h.blood || 0) + lost / maxHp * 100 * SAC_BLOOD_RATE); }
+function gainBlood(h, lost, maxHp, t) { if (h.cls === 'sacrieur' && lost > 0 && maxHp > 0) h.blood = Math.min(SAC_BLOOD_MAX, (h.blood || 0) + lost / maxHp * 100 * SAC_BLOOD_RATE * (1 + ((t && t.bloodRate) || 0) / 100)); }
 function bloodReady(h) { return h.cls === 'sacrieur' && (h.blood || 0) >= SAC_BLOOD_MAX; }
 /* Soif de sang du Colosse : rend les PV différés (idempotent) */
 function colosseHeal(st, h) {
@@ -5734,7 +6134,7 @@ function unleashColosse(st, h, ev) {
   const t = heroTotals(st, h);
   const pay = Math.max(0, Math.min(Math.round(h.hp * SAC_COLOSSE_COST), Math.round(h.hp) - 1)); // le sacrifice ne tue jamais
   h.hp -= pay; f.stig = SAC_STIG_MAX; // le sang appelle le sang : Berserk garanti
-  const { scale } = spellPower(h, t, f, COLOSSE_SPELL), mult = 1 + SAC_STIG_DMG * f.stig / 100;
+  const { scale } = spellPower(h, t, f, COLOSSE_SPELL), mult = (1 + (SAC_STIG_DMG + (t.stigDmg || 0)) * f.stig / 100) * (1 + (t.colosseDmg || 0) / 100);
   let kills = 0;
   const hits = f.mons.map(m => {
     if (m.hp <= 0) return null;
@@ -5746,7 +6146,7 @@ function unleashColosse(st, h, ev) {
     m.hp = Math.max(0, m.hp - v); if (m.hp <= 0) kills++;
     return { v, crit };
   });
-  const heal = Math.round(t.maxHp * SAC_THIRST * kills); f.pendHeal = heal; // le soin n'est appliqué qu'à la fin de la cinématique (colosseHeal)
+  const heal = Math.round(t.maxHp * (SAC_THIRST + (t.thirst || 0) / 100) * kills); f.pendHeal = heal; // le soin n'est appliqué qu'à la fin de la cinématique (colosseHeal)
   h.blood = 0; h.bloodCount = (h.bloodCount || 0) + 1; f.ult = (f.ult || 0) + 1; f.colosse = (f.colosse || 0) + 1;
   ev.log(h, `🩸 COLOSSE DE SANG ! −${pay} PV sacrifiés · ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}${heal ? ` · 🧛 +${heal} PV` : ''}`, 'boss');
   return { hits, pay, heal };
@@ -5780,19 +6180,20 @@ function enuTarget(f, alive) {
 }
 function enuGain(h, n) { h.purse = Math.min(ENU_PURSE_MAX, (h.purse || 0) + n); }
 /* Le porteur du trésor est tombé : le coffre s'ouvre (une seule fois par combat) */
-function enuChest(h, f, actions) {
+function enuChest(h, f, actions, t) {
   if (f.treasure == null || f.treasure < 0 || f.chest) return;
   const c = f.mons[f.treasure]; if (!c || c.hp > 0) return;
   f.chest = true; f.chestSeq = (f.chestSeq || 0) + 1;
-  enuGain(h, 2);
+  const coins = 2 + ((t && t.chestCoins) || 0), rush = ENU_RUSH + ((t && t.chestRush) || 0);
+  enuGain(h, coins);
   const more = f.mons.some(m => m.hp > 0);
-  if (more) f.buffs.push({ id: 'ruee_or', stats: { deg: ENU_RUSH }, turns: 4 });
-  actions.push(`🗺️ Coffre ouvert ! +2 🪙${more ? ` · Ruée vers l’or (+${ENU_RUSH} Dégâts)` : ''}`);
+  if (more) f.buffs.push({ id: 'ruee_or', stats: { deg: rush }, turns: 4 });
+  actions.push(`🗺️ Coffre ouvert ! +${coins} 🪙${more ? ` · Ruée vers l’or (+${rush} Dégâts)` : ''}`);
 }
 function enuJackpot(h, t, f) {
   const alive = f.mons.filter(m => m.hp > 0);
   const hits = [];
-  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); hits.push({ i: f.mons.indexOf(m), v: r.v, crit: r.crit }); return `${r.v}${r.crit ? ' CC' : ''}`; });
+  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res, m); if (t.jackpotDmg) r.v = Math.max(1, Math.round(r.v * (1 + t.jackpotDmg / 100))); m.hp = Math.max(0, m.hp - r.v); hits.push({ i: f.mons.indexOf(m), v: r.v, crit: r.crit }); return `${r.v}${r.crit ? ' CC' : ''}`; });
   h.purse = 0; f.jackpots = (f.jackpots || 0) + 1; f.jackSeq = (f.jackSeq || 0) + 1;
   f.jackFx = { n: f.jackSeq, hits }; // pour la cinématique
   return `🎰 JACKPOT ! Pluie d’Or → ${parts.join('/')}`;
@@ -5808,6 +6209,8 @@ const SRAM_TRAP = { id: 'piege_sournois', name: 'Piège sournois', min: 9, max: 
    Le joueur choisit une proie (f.mark). Chaque tir dessus donne de la
    Concentration (h.focus). À 5, le prochain tir est un Tir Parfait qui transperce. */
 const CRA_FOCUS_MAX = 5, CRA_FOCUS_CRIT = 6;
+/* +1 Concentration (et parfois +1 de plus avec le talent Souffle retenu) */
+function craFocus(h, t) { h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1 + (t && t.focusGain && Math.random() * 100 < t.focusGain ? 1 : 0)); }
 function craPrey(f, alive) {
   const cur = f.mons[f.mark];
   if (cur && cur.hp > 0) return cur;
@@ -5825,9 +6228,10 @@ function perfectShot(h, t, f, sp, target) {
   const { scale } = spellPower(h, t, f, sp);
   let v = (rnd(sp.min, sp.max) * scale + t.dmg) * 3;
   if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+  v *= (1 + (t.perfectDmg || 0) / 100) * talentMult(h, t, f, sp, target);
   v = Math.max(1, Math.round(v));
   const ti = f.mons.indexOf(target);
-  const over = Math.max(0, v - target.hp);
+  const over = Math.max(0, v - target.hp) * (1 + (t.perfectPierce || 0) / 100);
   target.hp = Math.max(0, target.hp - v);
   let pierce = null, s = `🏹 TIR PARFAIT ! ${sp.name} ${v} CC`;
   if (over > 0) {
@@ -5846,9 +6250,9 @@ function perfectShot(h, t, f, sp, target) {
    à la main : une épée colossale frappe tous les ennemis. */
 const FURY_MAX = 300;
 const FURY_PER_TURN = 4, FURY_PER_CRIT = 3;
-function gainFury(h, casts, crits, nMons = 1) {
+function gainFury(h, casts, crits, nMons = 1, mult = 1) {
   const before = h.fury || 0;
-  h.fury = Math.min(FURY_MAX, before + (casts ? FURY_PER_TURN * (1 + nMons) / 3 : 0) + crits * FURY_PER_CRIT);
+  h.fury = Math.min(FURY_MAX, before + ((casts ? FURY_PER_TURN * (1 + nMons) / 3 : 0) + crits * FURY_PER_CRIT) * mult);
 }
 function furyReady(h) { return h.cls === 'iop' && (h.fury || 0) >= FURY_MAX; }
 const COLERE_SPELL = { id: 'colere_ult', name: 'Colère de Iop', min: 140, max: 180, type: 'aoe' };
@@ -5859,7 +6263,7 @@ function unleashFury(st, h, ev) {
   const alive = f.mons.filter(m => m.hp > 0);
   if (!alive.length) return null;
   const t = heroTotals(st, h);
-  f.rage = 5; // la colère porte la Rage au maximum
+  f.rage = 5 + (t.rageMax || 0); // la colère porte la Rage au maximum
   const { scale } = spellPower(h, t, f, COLERE_SPELL);
   const hits = f.mons.map(m => {
     if (m.hp <= 0) return null;
@@ -5867,11 +6271,12 @@ function unleashFury(st, h, ev) {
     let v = rnd(COLERE_SPELL.min, COLERE_SPELL.max) * scale + t.dmg;
     if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
     if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+    v *= (1 + (t.colereDmg || 0) / 100) * talentMult(h, t, f, COLERE_SPELL, m);
     v = Math.max(1, Math.round(v)); // ignore les résistances
     m.hp = Math.max(0, m.hp - v);
     return { v, crit };
   });
-  h.fury = 0;
+  h.fury = Math.round(FURY_MAX * Math.min(80, t.furyKeep || 0) / 100);
   h.furyCount = (h.furyCount || 0) + 1;
   f.ult = (f.ult || 0) + 1;
   ev.log(h, `⚔️ COLÈRE DE IOP ! ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}`, 'boss');
@@ -5909,9 +6314,10 @@ function stmHas(h, s) { return h.lvl >= STM_UNLOCK[s]; }
 function stmAlive(f, s) { const T = f && f.tur && f.tur[s]; return !!T && T.hp > 0; }
 function steamReady(h) { return h.cls === 'steamer' && (h.steam || 0) >= STM_STEAM_MAX; }
 /* Début de combat : les tourelles sont déployées, réparées à neuf */
+function stmSteam(h, t, n) { h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + n * (1 + ((t && t.steamRate) || 0) / 100)); }
 function stmInit(h, t, f) {
   f.tur = {}; f.elems = [];
-  for (const s of STM_SLOTS) if (stmHas(h, s)) { const max = Math.max(1, Math.round(t.maxHp * STM_TUR_HP * STM_TUR_HPMULT[stmBaseLvl(h, s)])); f.tur[s] = { hp: max, max }; }
+  for (const s of STM_SLOTS) if (stmHas(h, s)) { const max = Math.max(1, Math.round(t.maxHp * STM_TUR_HP * STM_TUR_HPMULT[stmBaseLvl(h, s)] * (1 + (t.turretHp || 0) / 100))); f.tur[s] = { hp: max, max }; }
 }
 /* Le Steamer préfère les sorts qui changent d'élément, et surtout ceux qui déclenchent la Vapeur */
 function stmSpellBonus(h, f, sp, alive) {
@@ -5924,18 +6330,18 @@ function stmVapor(h, t, f, m, out) {
   m.burn = null; m.wet = 0;
   const hits = [];
   for (const o of f.mons) if (o.hp > 0) {
-    const r = rollSpell(h, t, f, STM_VAPOR_SPELL, monsterStats(o.mid).res);
-    const v = Math.max(1, Math.round(r.v * (o.crack ? STM_CRACK : 1)));
+    const r = rollSpell(h, t, f, STM_VAPOR_SPELL, monsterStats(o.mid).res, o);
+    const v = Math.max(1, Math.round(r.v * (1 + (t.vaporDmg || 0) / 100) * (o.crack ? STM_CRACK : 1)));
     o.hp = Math.max(0, o.hp - v); hits.push({ i: f.mons.indexOf(o), v });
   }
-  h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_VAPOR);
+  stmSteam(h, t, STM_STEAM_VAPOR);
   f.vapSeq = (f.vapSeq || 0) + 1;
   out.push({ i: f.mons.indexOf(m), hits });
 }
 /* Effet d'élément d'un tir de tourelle sur un ennemi encore debout */
 function stmElemHit(h, t, f, m, el, rv, vapors) {
   if (m.hp <= 0) return;
-  if (el === 'feu') { if (m.wet > 0) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.burn = { dmg: Math.max(1, Math.round(rv * STM_BURN)), turns: STM_BURN_TURNS }; }
+  if (el === 'feu') { if (m.wet > 0) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.burn = { dmg: Math.max(1, Math.round(rv * STM_BURN * (1 + (t.burnDmg || 0) / 100))), turns: STM_BURN_TURNS }; }
   else if (el === 'eau') { if (m.burn) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.wet = STM_WET_TURNS; }
   else m.crack = true;
 }
@@ -5953,15 +6359,15 @@ function stmActivate(h, t, f, sp, target) {
       const order = [target && target.hp > 0 ? target : null, ...alive.slice().sort((a, b) => a.hp - b.hp)].filter((m, i, a) => m && a.indexOf(m) === i), parts = [];
       for (let b = 0; b < L; b++) {
         let m = order[b % order.length]; if (!m || m.hp <= 0) m = f.mons.find(x => x.hp > 0); if (!m) break;
-        const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res);
-        const v = Math.max(1, Math.round(r.v * STM_BARREL * (m.crack ? STM_CRACK : 1)));
+        const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res, m);
+        const v = Math.max(1, Math.round(r.v * STM_BARREL * (1 + (t.turretDmg || 0) / 100) * (m.crack ? STM_CRACK : 1)));
         m.hp = Math.max(0, m.hp - v); shot.t.push(f.mons.indexOf(m)); shot.v.push(v); parts.push(v + (r.crit ? ' CC' : ''));
         stmElemHit(h, t, f, m, el, r.v, vapors);
       }
       txt.push(`${STM_ELEM_ICON[el]} Offensive ${parts.join('+')}`);
     } else if (s === 'def') {
       let heal = 0, rep = 0;
-      if (h.hp < t.maxHp) { heal = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * STM_HEAL[L] * (el === 'eau' ? 1.5 : 1)))); h.hp += heal; }
+      if (h.hp < t.maxHp) { heal = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * STM_HEAL[L] * (1 + (t.turretHeal || 0) / 100) * (el === 'eau' ? 1.5 : 1)))); h.hp += heal; }
       for (const o of STM_SLOTS) {
         const T = o !== 'def' && f.tur[o]; if (!T) continue;
         if (T.hp > 0 && T.hp < T.max) { const r = Math.min(T.max - T.hp, Math.round(T.max * 0.15 * L)); T.hp += r; rep += r; }
@@ -5972,12 +6378,12 @@ function stmActivate(h, t, f, sp, target) {
     } else {
       const foe = alive.filter(m => !m.mag).sort((a, b) => b.hp - a.hp)[0];
       if (foe) {
-        const d = MONSTERS[foe.mid], chance = STM_MAG[L] * (d.boss || d.archi ? 0.5 : 1);
+        const d = MONSTERS[foe.mid], chance = (STM_MAG[L] + (t.magChance || 0) / 100) * (d.boss || d.archi ? 0.5 : 1);
         shot.t.push(f.mons.indexOf(foe));
         if (Math.random() < chance) { foe.mag = true; shot.mag = true; txt.push(`🧲 Tactique : ${d.name} magnétisé`); }
       }
     }
-    h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_ACT);
+    stmSteam(h, t, STM_STEAM_ACT);
     const before = stmBaseLvl(h, s); stmXp(h)[s]++; const after = stmBaseLvl(h, s);
     if (after > before) { f.evoSeq = (f.evoSeq || 0) + 1; f.evoFx = { n: f.evoSeq, s, lvl: after }; shot.evo = after; txt.push(`🔧 ${STM_NAMES[s]} niveau ${STM_ROMAN[after]} !`); }
     shots.push(shot);
@@ -5986,8 +6392,8 @@ function stmActivate(h, t, f, sp, target) {
   return { text: txt.join(' · '), shots: Object.assign(shots, { vapor: vapors[0] || null }) };
 }
 /* Un ennemi s'en prend à une tourelle plutôt qu'au Steamer. Retourne true si le coup est encaissé par une tourelle */
-function stmDecoy(h, f, def, line, dmg, special, ev) {
-  if (!f.tur || Math.random() >= STM_DECOY) return false;
+function stmDecoy(h, f, def, line, dmg, special, ev, t) {
+  if (!f.tur || Math.random() >= STM_DECOY + ((t && t.decoy) || 0) / 100) return false;
   const live = STM_SLOTS.filter(s => stmHas(h, s) && stmAlive(f, s)); if (!live.length) return false;
   const s = live[irnd(0, live.length - 1)], T = f.tur[s], real = Math.min(T.hp, dmg);
   T.hp = Math.max(0, T.hp - dmg);
@@ -6008,20 +6414,20 @@ function unleashSurge(st, h, ev) {
     const hits = f.mons.map((m, i) => {
       if (m.hp <= 0) return null;
       const crit = Math.random() * 100 < t.critPct + 20;
-      let v = (rnd(STM_SURGE.min, STM_SURGE.max) * scale + t.dmg) * mult;
+      let v = (rnd(STM_SURGE.min, STM_SURGE.max) * scale + t.dmg) * mult * (1 + (t.surgeDmg || 0) / 100);
       if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
       if (t.dmgPct) v *= 1 + t.dmgPct / 100;
       if (m.crack) v *= STM_CRACK;
       v = Math.max(1, Math.round(v)); // ignore les résistances
       m.hp = Math.max(0, m.hp - v);
-      if (m.hp > 0) { if (el === 'eau') m.wet = STM_WET_TURNS; else if (el === 'terre') m.crack = true; else if (!m.wet) m.burn = { dmg: Math.max(1, Math.round(v * STM_BURN)), turns: STM_BURN_TURNS }; }
+      if (m.hp > 0) { if (el === 'eau') m.wet = STM_WET_TURNS; else if (el === 'terre') m.crack = true; else if (!m.wet) m.burn = { dmg: Math.max(1, Math.round(v * STM_BURN * (1 + (t.burnDmg || 0) / 100))), turns: STM_BURN_TURNS }; }
       return { i, v, crit };
     });
     res.volleys.push({ el, hits });
     if (el === 'feu' && f.mons.some(m => m.hp > 0 && m.wet > 0)) { // le feu sur des ennemis trempés : la Vapeur explose
       const v = { i: -1, hits: [] };
       for (const o of f.mons) if (o.hp > 0 && o.wet > 0) {
-        const r = rollSpell(h, t, f, STM_VAPOR_SPELL, 0); const d = Math.max(1, Math.round(r.v * 1.6 * (o.crack ? STM_CRACK : 1)));
+        const r = rollSpell(h, t, f, STM_VAPOR_SPELL, 0, o); const d = Math.max(1, Math.round(r.v * 1.6 * (1 + (t.vaporDmg || 0) / 100) * (o.crack ? STM_CRACK : 1)));
         o.hp = Math.max(0, o.hp - d); o.wet = 0; o.burn = null; v.hits.push({ i: f.mons.indexOf(o), v: d });
       }
       f.vapSeq = (f.vapSeq || 0) + 1; res.vapor = v; vapors.push(v);
@@ -6102,7 +6508,7 @@ function resolveWin(st, h, ev) {
     const pen = gap > 10 ? clamp(1 - (gap - 10) * 0.06, 0.1, 1) : 1;
     xp += ms.xp * pen;
     const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
-    kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
+    kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 * (1 + (t.chestKamas || 0) / 100) : 1);
     const ab = def.archi ? 3 : 1; // archimonstre : ressources ×3 (et en double), équipement bien plus fréquent
     for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * ab * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (def.archi ? 2 : chest && Math.random() < 0.35 ? 2 : 1);
     for (const [rid, rc] of (RELIC_DROPS[def.base || m.mid] || [])) if (Math.random() < rc * (def.archi ? 20 : 1) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
@@ -6122,7 +6528,7 @@ function resolveWin(st, h, ev) {
   }
   const n = f.mons.length;
   xp *= (1 + (n - 1) * 0.15) * (1 + t.xpBonus / 100) * (place.bonusXp || 1);
-  kamas = Math.round(kamas * (1 + ((t.kamas || 0) + 10 * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
+  kamas = Math.round(kamas * (1 + ((t.kamas || 0) + (10 + (t.jackpotKamas || 0)) * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
   xp = Math.round(xp);
   st.kamas += kamas; st.stats.kamasEarned += kamas; st.stats.fights++;
   for (const [rid, c] of Object.entries(loot)) addRes(st, rid, c);
@@ -6521,6 +6927,8 @@ function migrate(obj) {
       if (h.auto) autoAllocate(h);
     }
     if (h.fight && h.fight.buffs) for (const b of h.fight.buffs) if (b.stats && 'pui' in b.stats) b.stats = convertOldStats(b.stats);
+    // v9 : l'arbre de compétences générique est remplacé par un arbre de talents propre à chaque classe → points remboursés
+    if (h.skills && Object.keys(h.skills).some(id => !SKILL_NODE[id] || SKILL_NODE[id].cls !== h.cls)) { h.skills = {}; st.talentReset = (st.talentReset || 0) + 1; }
     // contenu supprimé entre versions : on nettoie
     if (h.act && !findPlace(h.act.type, h.act.id)) setActivity(st, h, null);
     if (h.fight && h.fight.mons.some(m => !MONSTERS[m.mid])) h.fight = null;
@@ -6562,27 +6970,29 @@ function fmtDur(ms) {
 if (typeof module !== 'undefined') module.exports = {};
 
 
-/* ---------- Arbre de compétences ---------- */
+/* ---------- Talents de classe (src/skilltrees.js : un arbre de 3 voies par classe) ---------- */
 function skillPoints(h) { return Math.floor(h.lvl / SKILL_LEVELS_PER_POINT); }
 function skillRanks(h) { return h.skills || (h.skills = {}); }
-function skillSpent(h) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n) s += h.skills[id] * n.cost; } return s; }
-function skillBranchSpent(h, bid) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n && n.branch === bid) s += h.skills[id] * n.cost; } return s; }
+function skillMine(h, n) { return !!n && n.cls === h.cls; }
+function skillSpent(h) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (skillMine(h, n)) s += h.skills[id] * n.cost; } return s; }
+function skillBranchSpent(h, bid) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (skillMine(h, n) && n.branch === bid) s += h.skills[id] * n.cost; } return s; }
 function skillFree(h) { return skillPoints(h) - skillSpent(h); }
 function skillCheck(h, id) {
-  const n = SKILL_NODE[id]; if (!n) return 'Compétence inconnue.';
+  const n = SKILL_NODE[id]; if (!n) return 'Talent inconnu.';
+  if (n.cls !== h.cls) return 'Ce talent appartient à une autre classe.';
   const rk = h.skills || {};
   if ((rk[id] || 0) >= n.max) return 'Rang maximal atteint.';
-  if (n.req.length && !n.req.some(q => rk[q] > 0)) return 'Apprends d’abord une compétence reliée.';
+  if (n.req.length && !n.req.some(q => rk[q] > 0)) return 'Apprends d’abord un talent relié.';
   const gate = SKILL_GATE[n.r]; if (skillBranchSpent(h, n.branch) < gate) return `Dépense ${gate} points dans cette voie pour ouvrir cette ligne.`;
-  if (skillFree(h) < n.cost) return n.cost > 1 ? `Il faut ${n.cost} points.` : 'Plus de point de compétence.';
+  if (skillFree(h) < n.cost) return n.cost > 1 ? `Il faut ${n.cost} points.` : 'Plus de point de talent.';
   return null;
 }
 function skillRank(st, h, id) { const err = skillCheck(h, id); if (err) return err; const rk = skillRanks(h); rk[id] = (rk[id] || 0) + 1; return null; }
 function skillTotals(h) {
   const t = {}, rk = h.skills; if (!rk) return t;
   const bs = {}; let tot = 0;
-  for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!n || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
-  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const k in b.per) t[k] = (t[k] || 0) + b.per[k] * sp; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
+  for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!skillMine(h, n) || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
+  for (const b of skillTree(h.cls)) { const sp = bs[b.id] || 0; for (const k in b.per) t[k] = (t[k] || 0) + b.per[k] * sp; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
   for (const [at, fx] of SKILL_GLOBAL) if (tot >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k];
   return t;
 }
@@ -12427,7 +12837,8 @@ function renderRecolte() {
   document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('[data-miracle]')) e.preventDefault(); });
 })();
 /* =====================================================================
-   ARBRE DE COMPÉTENCES — 1 point tous les 3 niveaux, 6 voies
+   TALENTS DE CLASSE — onglet « Talents » : un arbre propre à chaque classe (3 voies de 8 talents).
+   Données : skilltrees.js (CLASS_TREES) · calculs : engine.js (skillCheck, skillTotals…)
    ===================================================================== */
 const SK_ROW_H = 108;
 function skStatLine(fx, mult = 1) { return Object.entries(fx).map(([k, v]) => `<i style="color:${STAT_COLOR[k] || 'var(--gold-2)'}">${skillFmt(k, v * mult)}</i>`).join(''); }
@@ -12436,58 +12847,67 @@ function skNodeState(h, n) {
   const open = (!n.req.length || n.req.some(q => h.skills && h.skills[q] > 0)) && skillBranchSpent(h, n.branch) >= SKILL_GATE[n.r];
   return { r, err, max: r >= n.max, can: !err, open };
 }
+function skBranchMax(b) { return b.nodes.reduce((a, n) => a + n[3] * n[8], 0); }
+function skKeyNode(b) { return SKILL_NODE[b.nodes[7][0]]; }
 function renderTalents() {
-  const h = selHero(); if (!h) return `<div class="empty">Recrute un héros pour utiliser l’arbre de compétences.</div>`;
-  const free = skillFree(h), total = skillPoints(h), spent = skillSpent(h), sk = skillTotals(h), c = CLASSES[h.cls];
+  const h = selHero(); if (!h) return `<div class="empty">Recrute un héros pour découvrir les talents de sa classe.</div>`;
+  const tree = skillTree(h.cls), c = CLASSES[h.cls];
+  const free = skillFree(h), total = skillPoints(h), spent = skillSpent(h), sk = skillTotals(h);
   const next = h.lvl >= MAX_LEVEL ? null : (Math.floor(h.lvl / SKILL_LEVELS_PER_POINT) + 1) * SKILL_LEVELS_PER_POINT;
-  const bid = ui.skBranch && SKILL_BRANCHES.some(b => b.id === ui.skBranch) ? ui.skBranch : 'all';
+  const bid = ui.skBranch && tree.some(b => b.id === ui.skBranch) ? ui.skBranch : 'all';
   const just = ui.skJust; ui.skJust = null;
-  const chips = st.heroes.map(x => `<button class="htab" data-act="skhero" data-hero="${x.id}" aria-pressed="${x.id === h.id}" style="--c:${CLASSES[x.cls].color}">${emblem(x.cls, true)}<span><b>${esc(x.name)}</b><small>${skillFree(x)} pt${skillFree(x) > 1 ? 's' : ''} libre${skillFree(x) > 1 ? 's' : ''}</small></span></button>`).join('');
-  const head = `<div class="sk-head" style="--hc:${c.color}">
-    <button class="btn sm ghost" data-act="view" data-v="heros">← Héros</button>
-    <div class="sk-who">${emblem(h.cls, 'xl')}<div><b class="display">${esc(h.name)}</b><small>${c.name} · Niv. ${h.lvl}</small></div></div>
-    <div class="sk-pts ${free > 0 ? 'has' : ''}"><b class="num">${free}</b><small>point${free > 1 ? 's' : ''} à dépenser</small><span class="sub num">${spent} dépensé${spent > 1 ? 's' : ''} sur ${total}${next ? ` · prochain au niveau ${next}` : ''}</span></div>
+  const chips = st.heroes.map(x => { const f = skillFree(x); return `<button class="htab" data-act="skhero" data-hero="${x.id}" aria-pressed="${x.id === h.id}" style="--c:${CLASSES[x.cls].color}">${emblem(x.cls, true)}<span><b>${esc(x.name)}</b><small>${CLASSES[x.cls].name} · ${f > 0 ? `<em class="sk-fp">${f} pt${f > 1 ? 's' : ''}</em>` : 'à jour'}</small></span></button>`; }).join('');
+  const head = `<div class="sk-ban" style="--hc:${c.color}">
+    <div class="sk-ban-art" aria-hidden="true">${emblem(h.cls, 'big')}</div>
+    <div class="sk-who"><small class="sk-cls">${c.role}</small><b class="display">${esc(h.name)}</b><small>${c.name} · niveau ${h.lvl}</small><span class="sk-sig">${c.passive ? esc(c.passive.name) : ''}</span></div>
+    <div class="sk-pts ${free > 0 ? 'has' : ''}"><b class="num">${free}</b><small>point${free > 1 ? 's' : ''} de talent</small><span class="sub num">${spent} dépensé${spent > 1 ? 's' : ''} sur ${total}${next ? ` · prochain niv. ${next}` : ''}</span></div>
     <div class="sk-rs">${ui.skConfirm ? `<span class="sub">Rendre tous les points pour ${fmt(skillRespecCost(h))} K ?</span><button class="btn sm danger" data-act="skrespec2">Confirmer</button><button class="btn sm ghost" data-act="skrespec0">Annuler</button>` : `<button class="btn sm" data-act="skrespec" ${spent ? '' : 'disabled'}>↺ Réinitialiser${spent ? ` · ${fmt(skillRespecCost(h))} K` : ''}</button>`}</div></div>
     <div class="hero-tabs sk-heroes">${chips}</div>`;
-  const tabs = `<div class="sk-tabs"><button data-act="skbranch" data-v="all" aria-pressed="${bid === 'all'}"><span>🌳</span>Vue d’ensemble</button>${SKILL_BRANCHES.map(b => `<button data-act="skbranch" data-v="${b.id}" aria-pressed="${bid === b.id}" style="--bc:${b.col}"><span>${b.icon}</span>${b.name.replace('Voie du ', '').replace('Voie des ', '')}<em class="num">${skillBranchSpent(h, b.id)}</em></button>`).join('')}</div>`;
-  return `<div class="sk">${head}${tabs}${bid === 'all' ? skOverview(h, sk, spent) : skBranch(h, SKILL_BRANCHES.find(b => b.id === bid), just)}</div>`;
+  const tabs = `<div class="sk-tabs" style="--hc:${c.color}"><button data-act="skbranch" data-v="all" aria-pressed="${bid === 'all'}"><span>🌳</span>Vue d’ensemble</button>${tree.map(b => `<button data-act="skbranch" data-v="${b.id}" aria-pressed="${bid === b.id}" style="--bc:${b.col}"><span>${b.icon}</span>${b.name.replace(/^Voie (du |de la |de l’|des |d’)?/, '')}<em class="num">${skillBranchSpent(h, b.id)}</em></button>`).join('')}</div>`;
+  return `<div class="sk" style="--hc:${c.color}">${head}${tabs}${bid === 'all' ? skOverview(h, tree, sk, spent) : skBranch(h, tree.find(b => b.id === bid), just)}</div>`;
 }
 function skMilestones(h, b, compact) {
   const sp = skillBranchSpent(h, b.id), done = b.mile.filter(([at]) => sp >= at).length;
   if (compact) { const nx = b.mile.find(([at]) => sp < at); return `<div class="sk-mile sk-mc"><div class="${done ? 'on' : ''}"><span class="sk-mn num">${done}</span><div><small>Paliers actifs sur ${b.mile.length}</small>${done ? 'Tous les bonus cumulés' : 'Aucun pour l’instant'}</div></div>${nx ? `<div><span class="sk-mn num">${nx[0]}</span><div><small>Prochain · ${sp}/${nx[0]} points</small>${skStatLine(nx[1])}</div></div>` : '<div class="on"><span class="sk-mn">★</span><div><small>Voie complète</small>Tous les paliers sont actifs</div></div>'}</div>`; }
-  return `<div class="sk-mile">${b.mile.map(([at, fx]) => `<div class="${sp >= at ? 'on' : ''}${at % 6 === 0 ? ' maj' : ''}"><span class="sk-mn num">${at}</span><div><small>${sp >= at ? 'Actif' : `${sp}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div>`;
+  return `<div class="sk-mile">${b.mile.map(([at, fx], i) => `<div class="${sp >= at ? 'on' : ''}${i === b.mile.length - 1 ? ' maj' : ''}"><span class="sk-mn num">${at}</span><div><small>${sp >= at ? 'Actif' : `${sp}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div>`;
 }
-function skOverview(h, sk, spent) {
-  const cards = SKILL_BRANCHES.map(b => { const sp = skillBranchSpent(h, b.id), maxp = b.nodes.reduce((a, n) => a + n[3] * n[8], 0), keyed = (h.skills && h.skills[b.nodes[7][0]]) > 0;
+function skOverview(h, tree, sk, spent) {
+  const cards = tree.map(b => { const sp = skillBranchSpent(h, b.id), maxp = skBranchMax(b), kn = skKeyNode(b), keyed = (h.skills && h.skills[kn.id]) > 0;
     return `<button class="sk-card${keyed ? ' keyed' : ''}" data-act="skbranch" data-v="${b.id}" data-ic="${b.icon}" style="--bc:${b.col}"><span class="sk-cico">${b.icon}</span><b class="display">${b.name}</b><small>${b.text}</small>
       <div class="bar sk-bar"><i style="width:${Math.min(100, sp / maxp * 100).toFixed(0)}%"></i></div><span class="sub num">${sp} / ${maxp} points</span><span class="sk-per">✦ Par point : ${skStatLine(b.per)}</span>${skMilestones(h, b, true)}</button>`; }).join('');
-  const tot = Object.entries(sk).filter(([k, v]) => SKILL_STAT[k] && Math.abs(v) >= 0.05).sort((a, b) => Object.keys(SKILL_STAT).indexOf(a[0]) - Object.keys(SKILL_STAT).indexOf(b[0]));
+  /* passifs de classe : un talent clé par voie, qui change vraiment la façon de jouer */
+  const keys = tree.map(b => { const kn = skKeyNode(b), r = (h.skills && h.skills[kn.id]) || 0, s = skNodeState(h, kn), sp = skillBranchSpent(h, b.id), need = SKILL_GATE[kn.r];
+    return `<button class="sk-key${r ? ' on' : ''}${s.can ? ' can' : ''}" data-act="skopen" data-v="${b.id}" data-id="${kn.id}" style="--bc:${b.col}"><span class="sk-key-ic"><i>${kn.icon}</i></span><span class="sk-key-t"><span class="sk-key-h"><b class="display">${esc(kn.name)}</b><em class="sk-key-s">${r ? '✓ Appris' : s.can ? 'Prêt · 3 pts' : `🔒 ${sp}/${need} pts`}</em></span><small>${esc(kn.txt)}</small><span class="sk-fx">${skStatLine(kn.fx)}</span></span></button>`; }).join('');
+  const tot = Object.entries(sk).filter(([k, v]) => SKILL_STAT[k] && Math.abs(v) >= 0.005).sort((a, b) => Object.keys(SKILL_STAT).indexOf(a[0]) - Object.keys(SKILL_STAT).indexOf(b[0]));
   const glob = `<div class="sk-glob"><h4 class="at-h">Seuils de puissance <small>(points dépensés au total : ${spent})</small></h4><div class="sk-mile">${SKILL_GLOBAL.map(([at, fx]) => `<div class="${spent >= at ? 'on' : ''}"><span class="sk-mn num">${at}</span><div><small>${spent >= at ? 'Actif' : `${spent}/${at} points`}</small>${skStatLine(fx)}</div></div>`).join('')}</div></div>`;
-  return `<div class="sk-grid">${cards}</div>${glob}<div class="sk-tot"><h4 class="at-h">Bonus de l’arbre</h4>${tot.length ? `<div class="sk-tl">${tot.map(([k, v]) => `<span style="--c:${STAT_COLOR[k] || 'var(--gold-2)'}">${skillFmt(k, v)}</span>`).join('')}</div>` : '<p class="sub">Aucun point dépensé pour l’instant. Choisis une voie !</p>'}</div>
-    <p class="hint">Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Chaque voie s’ouvre ligne par ligne : plus tu y mets de points, plus les lignes hautes se débloquent. Chaque point dépensé donne aussi un <b>petit bonus de voie</b>. Un <b>palier</b> de voie s’active tous les 3 points dépensés dedans (11 par voie) et les <b>seuils de puissance</b> donnent des bonus supplémentaires.</p>`;
+  return `<div class="sk-grid">${cards}</div>
+    <div class="sk-keys"><h4 class="at-h">Talents clés de ${CLASSES[h.cls].name} <small>(1 par voie · 3 points)</small></h4><div class="sk-kl">${keys}</div></div>
+    ${glob}<div class="sk-tot"><h4 class="at-h">Bonus de talents</h4>${tot.length ? `<div class="sk-tl">${tot.map(([k, v]) => `<span style="--c:${STAT_COLOR[k] || 'var(--gold-2)'}">${skillFmt(k, v)}</span>`).join('')}</div>` : '<p class="sub">Aucun point dépensé pour l’instant. Choisis une voie !</p>'}</div>
+    <p class="hint">Chaque classe a <b>son propre arbre</b> : les talents renforcent directement ses mécaniques (jauges, masques, trèfles, tourelles…). Tu gagnes <b>1 point tous les ${SKILL_LEVELS_PER_POINT} niveaux</b> (${Math.floor(MAX_LEVEL / SKILL_LEVELS_PER_POINT)} au niveau ${MAX_LEVEL}). Une voie s’ouvre ligne par ligne : plus tu y investis, plus les lignes hautes se débloquent. Chaque point donne un <b>petit bonus de voie</b>, des <b>paliers</b> s’activent en chemin et les <b>seuils de puissance</b> récompensent le total dépensé.</p>`;
 }
 function skBranch(h, b, just) {
   if (!ui.skSel || !SKILL_NODE[ui.skSel] || SKILL_NODE[ui.skSel].branch !== b.id) { const first = b.nodes.find(n => skillCheck(h, n[0]) === null) || b.nodes[0]; ui.skSel = first[0]; }
-  const sel = SKILL_NODE[ui.skSel], W = 300, rows = 6;
+  const sel = SKILL_NODE[ui.skSel], W = 300, rows = 6, spB = skillBranchSpent(h, b.id);
   const lines = b.nodes.flatMap(n => n[7].map(q => { const a = SKILL_NODE[q], z = SKILL_NODE[n[0]], ra = (h.skills && h.skills[q]) || 0, rz = (h.skills && h.skills[n[0]]) || 0;
     return `<line class="${ra > 0 && rz > 0 ? 'lit' : ra > 0 ? 'half' : ''}" x1="${(a.c + .5) * W / 3}" y1="${(a.r + .5) * SK_ROW_H}" x2="${(z.c + .5) * W / 3}" y2="${(z.r + .5) * SK_ROW_H}" vector-effect="non-scaling-stroke"/>`; })).join('');
-  const gates = [2, 3, 4, 5].map(r => `<div class="sk-gate${skillBranchSpent(h, b.id) >= SKILL_GATE[r] ? ' open' : ''}" style="grid-row:${r + 1}"><span>${skillBranchSpent(h, b.id) >= SKILL_GATE[r] ? '🔓' : '🔒'} ${SKILL_GATE[r]} pts dans la voie</span></div>`).join('');
+  const gates = [2, 3, 4, 5].map(r => `<div class="sk-gate${spB >= SKILL_GATE[r] ? ' open' : ''}" style="grid-row:${r + 1}"><span>${spB >= SKILL_GATE[r] ? '🔓' : '🔒'} ${SKILL_GATE[r]} pts dans la voie</span></div>`).join('');
   const nodes = b.nodes.map(n => { const z = SKILL_NODE[n[0]], s = skNodeState(h, z);
     return `<button class="sk-n${s.r ? ' has' : ''}${s.max ? ' maxed' : ''}${s.can ? ' can' : ''}${!s.open && !s.r ? ' lock' : ''}${z.cost > 1 ? ' key' : ''}${ui.skSel === z.id ? ' sel' : ''}${just === z.id ? ' just' : ''}" data-act="sknode" data-id="${z.id}" style="grid-column:${z.c + 1};grid-row:${z.r + 1};--p:${(s.r / z.max * 100).toFixed(0)}%" aria-label="${esc(z.name)} ${s.r}/${z.max}">
       <span class="sk-ico">${z.icon}</span><span class="sk-rk num">${s.r}/${z.max}</span><b class="sk-nm">${esc(z.name)}</b></button>`; }).join('');
   const s = skNodeState(h, sel), cur = s.r, nx = Math.min(sel.max, cur + 1);
-  const detail = `<div class="sk-det"><div class="sk-dh"><span class="sk-dico">${sel.icon}</span><div><b class="display">${esc(sel.name)}</b><small>${sel.cost > 1 ? '★ Compétence maîtresse' : `Ligne ${sel.r + 1}`} · rang <b class="num">${cur}</b> / ${sel.max}</small></div></div>
-    <div class="label">Par rang</div><div class="sk-fx">${skStatLine(sel.fx)}</div>
-    ${cur ? `<div class="label">Actuellement</div><div class="sk-fx">${skStatLine(sel.fx, cur)}</div>` : ''}
+  const detail = `<div class="sk-det${sel.cost > 1 ? ' is-key' : ''}"><div class="sk-dh"><span class="sk-dico">${sel.icon}</span><div><b class="display">${esc(sel.name)}</b><small>${sel.cost > 1 ? '★ Talent clé' : `Ligne ${sel.r + 1}`} · rang <b class="num">${cur}</b> / ${sel.max}</small></div></div>
+    ${sel.txt ? `<p class="sk-txt">${esc(sel.txt)}</p>` : ''}
+    <div class="label">${sel.max > 1 ? 'Par rang' : 'Effet'}</div><div class="sk-fx">${skStatLine(sel.fx)}</div>
+    ${cur && sel.max > 1 ? `<div class="label">Actuellement</div><div class="sk-fx">${skStatLine(sel.fx, cur)}</div>` : ''}
     ${cur < sel.max && cur ? `<div class="label">Prochain rang</div><div class="sk-fx">${skStatLine(sel.fx, nx)}</div>` : ''}
-    <p class="sub">${sel.req.length ? `Nécessite : ${sel.req.map(q => SKILL_NODE[q].name).join(' ou ')}. ` : ''}${SKILL_GATE[sel.r] ? `Ouvre à ${SKILL_GATE[sel.r]} points dans la voie. ` : ''}Coût : ${sel.cost} point${sel.cost > 1 ? 's' : ''} par rang.</p>
+    <p class="sub">${sel.req.length ? `Nécessite : ${sel.req.map(q => SKILL_NODE[q].name).join(' ou ')}. ` : ''}${SKILL_GATE[sel.r] ? `Ouvre à ${SKILL_GATE[sel.r]} points dans la voie. ` : ''}Coût : ${sel.cost} point${sel.cost > 1 ? 's' : ''}${sel.max > 1 ? ' par rang' : ''}.</p>
     <button class="btn gold sk-buy" data-act="skbuy" data-id="${sel.id}" ${s.can ? '' : 'disabled'}>${s.max ? 'Rang maximal' : s.can ? `Apprendre · ${sel.cost} pt${sel.cost > 1 ? 's' : ''}` : 'Indisponible'}</button>
     ${!s.can && !s.max ? `<small class="sk-why">${esc(s.err)}</small>` : ''}</div>`;
-  return `<div class="sk-wrap" style="--bc:${b.col}"><div class="sk-treew"><div class="sk-bhead"><span class="sk-bico">${b.icon}</span><div><b class="display">${b.name}</b><small>${b.text}</small></div><span class="sk-bp num">${skillBranchSpent(h, b.id)} pts</span></div>
-      <div class="bar sk-bar sk-bbar"><i style="width:${Math.min(100, skillBranchSpent(h, b.id) / b.nodes.reduce((a, n) => a + n[3] * n[8], 0) * 100).toFixed(0)}%"></i></div>
-      <div class="sk-per">✦ Chaque point dépensé dans la voie : ${skStatLine(b.per)} <span class="sub">· actuellement ${skStatLine(b.per, skillBranchSpent(h, b.id))}</span></div>
+  return `<div class="sk-wrap" style="--bc:${b.col}"><div class="sk-treew"><div class="sk-bhead"><span class="sk-bico">${b.icon}</span><div><b class="display">${b.name}</b><small>${b.text}</small></div><span class="sk-bp num">${spB} pts</span></div>
+      <div class="bar sk-bar sk-bbar"><i style="width:${Math.min(100, spB / skBranchMax(b) * 100).toFixed(0)}%"></i></div>
+      <div class="sk-per">✦ Chaque point dépensé dans la voie : ${skStatLine(b.per)} <span class="sub">· actuellement ${skStatLine(b.per, spB)}</span></div>
       <div class="sk-motes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sk-tree" style="grid-template-rows:repeat(${rows},${SK_ROW_H}px)"><svg class="sk-lines" viewBox="0 0 ${W} ${rows * SK_ROW_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>${gates}${nodes}</div></div>
-    <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie <small>(tous les 3 points)</small></h4>${skMilestones(h, b)}</div></aside></div>`;
+    <aside class="sk-side">${detail}<div class="sk-sm"><h4 class="at-h">Paliers de la voie <small>(tous les 4 points)</small></h4>${skMilestones(h, b)}</div></aside></div>`;
 }
 /* =====================================================================
    VUE CARTE — carte du monde illustrée et animée + fiches de monstres
@@ -13040,8 +13460,9 @@ const LS_UI = 'amakna-idle-ui2';
 const VIEWS = [
   ['combat', 'Combats', 'Tes héros combattent seuls tant que la page est ouverte.'],
   ['heros', 'Héros', 'Équipement, caractéristiques et sorts de chaque héros.'],
+  ['talents', 'Talents', 'Un arbre de talents propre à chaque classe : 1 point tous les 3 niveaux.'],
   ['carte', 'Carte', 'Choisis où envoyer chaque héros.'],
-  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.'],
+  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.', 'Sac'],
   ['recolte', 'Récolte', 'Envoie un héros travailler la terre plutôt que combattre.'],
   ['ateliers', 'Ateliers', 'Transforme tes ressources en équipements.'],
   ['options', 'Options', 'Sauvegarde, statistiques et choix de l’interface.'],
@@ -13063,6 +13484,7 @@ const IC = d => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="no
 const ICONS = {
   combat: IC('<path d="M4 4l10 10M11.5 16.5l5-5M15 15l4.5 4.5M20 4 10 14M7.5 11.5l5 5M9 15l-4.5 4.5"/>'),
   heros: IC('<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-4 3.6-6.4 7.5-6.4s6.9 2.4 7.5 6.4"/>'),
+  talents: IC('<path d="M12 21v-7"/><path d="M12 14c-4 0-6.5-2.4-6.5-5.8C9 8.2 12 10 12 14Zm0 0c4 0 6.5-2.4 6.5-5.8C15 8.2 12 10 12 14Z"/><path d="M12 10.5C9.6 9 9.2 5.6 12 3c2.8 2.6 2.4 6 0 7.5Z"/>'),
   carte: IC('<path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/>'),
   inventaire: IC('<path d="M5 8.5h14l-1.2 11.5H6.2Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/><path d="M9.5 12.5h5"/>'),
   recolte: IC('<path d="M12 21V8"/><path d="M12 8c-2.2-.9-3.2-2.8-3.2-5 2.2.9 3.2 2.8 3.2 5Zm0 0c2.2-.9 3.2-2.8 3.2-5-2.2.9-3.2 2.8-3.2 5Z"/><path d="M12 13.5c-2.3-.7-3.7-2.4-3.9-4.6 2.3.6 3.7 2.4 3.9 4.6Zm0 0c2.3-.7 3.7-2.4 3.9-4.6-2.3.6-3.7 2.4-3.9 4.6Z"/>'),
@@ -13103,7 +13525,7 @@ function loadGame(snapshot) {
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
   turretNew(h, s) { toast(`⚙️ ${h.name} déploie sa ${STM_NAMES[s].toLowerCase()} !`, 'quest'); },
-  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
+  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de talent !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
     for (const g of gear) toast(ITEMS[g.id].dofus ? `DOFUS ! ${h.name} a trouvé le ${ITEMS[g.id].name} !` : ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic || ITEMS[g.id].dofus ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
@@ -13181,7 +13603,7 @@ function heroChip(h, attrs, label, extraCls = '') {
 
 /* ---------------------------- Coquille de l'application ---------------------------- */
 function shell() {
-  const nav = VIEWS.map(([id, l]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span>${l}</span></button>`).join('');
+  const nav = VIEWS.map(([id, l, , short]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span${short ? ` data-short="${short}"` : ''}>${l}</span>${id === 'talents' ? '<i class="nav-badge"></i>' : ''}</button>`).join('');
   $('#app').innerHTML = `
   <aside class="side">
     <div class="brand">${eggSvg('egg-a')}<div><b class="display">Amakna</b><small>Idle · fan-game</small></div></div>
@@ -13210,8 +13632,12 @@ function shell() {
   </section>`;
 }
 function updateChrome() {
-  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String((ui.view === 'talents' ? 'heros' : ui.view) === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
-  const v = ui.view === 'talents' ? ['talents', 'Talents', 'Dépense tes points : 1 tous les 3 niveaux.'] : VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
+  const tp = st.heroes.reduce((a, h) => a + (skillFree(h) > 0 ? 1 : 0), 0); // nombre de héros avec des points de talent à dépenser
+  for (const b of document.querySelectorAll('.nav-btn')) {
+    const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur);
+    if (b.dataset.v === 'talents') { const bd = tp > 0 ? String(tp > 99 ? '99+' : tp) : ''; if (b.dataset.badge !== bd) { b.dataset.badge = bd; b.classList.toggle('has-badge', !!bd); const i = b.querySelector('.nav-badge'); if (i) i.textContent = bd; } }
+  }
+  const v = VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
   const tt = `<h1 class="display">${v[1]}</h1><p>${v[2]}</p>`;
   if (tt !== ui._tt) { $('#tbtitle').innerHTML = tt; ui._tt = tt; }
   const active = st.heroes.filter(h => h.act).length;
@@ -14090,9 +14516,7 @@ function renderHeros() {
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
   const tab = ['combat', 'recolte', 'relique', 'dofus'].includes(ui.eqTab) ? ui.eqTab : 'combat';
   const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique'], ['dofus', 'Dofus']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
-  const fp = skillFree(h);
-  const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
-  return `${heroTabs(h)}${skb}<div class="hero-grid">
+  return `${heroTabs(h)}<div class="hero-grid">
     <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : tab === 'dofus' ? dofusPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
@@ -14594,6 +15018,7 @@ const ACTIONS = {
   talents(d) { if (d.hero) ui.hero = d.hero; ui.view = 'talents'; ui.skConfirm = false; ui.recruitOpen = false; scrollTop(); },
   skhero(d) { ui.hero = d.hero; ui.skSel = null; ui.skConfirm = false; },
   skbranch(d) { ui.skBranch = d.v; ui.skSel = null; },
+  skopen(d) { ui.skBranch = d.v; ui.skSel = d.id; },
   sknode(d) { if (ui.skSel === d.id) return ACTIONS.skbuy(d); ui.skSel = d.id; },
   skbuy(d) { const h = selHero(); const err = skillRank(st, h, d.id); if (err) toast(err, 'warn'); else { ui.skSel = d.id; ui.skJust = d.id; } },
   skrespec() { ui.skConfirm = true; },
@@ -14972,6 +15397,7 @@ function start(data) {
   shell();
   if (away > 15000) offline(away);
   render(true);
+  if (st.talentReset) { const n = st.talentReset; delete st.talentReset; setTimeout(() => toast(`🌳 Nouveaux talents de classe ! Les points de ${n > 1 ? 'tes ' + n + ' héros ont été rendus' : 'ton héros ont été rendus'} : ouvre l’onglet Talents pour les dépenser.`, 'quest'), 1200); }
   chatLoop();
   accSync();
   setInterval(() => accCloudSave(), 60000);

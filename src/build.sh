@@ -22,7 +22,7 @@ echo '<div class="toasts" id="toasts" aria-live="polite"></div>'
 echo '<div class="modal-back" id="modal" hidden></div>'
 echo '<script>'
 echo "const BUILD_ID = '$BUILD_ID';"
-cat data.js zones2.js engine.js art.js art2.js art3.js monart.js monart2.js skin.js update.js
+cat data.js zones2.js skilltrees.js engine.js art.js art2.js art3.js monart.js monart2.js skin.js update.js
 echo '(function () {'
 cat cbhud.js spellfx.js stmfx.js heroart.js heroart2.js atelier.js recolte.js talents.js carte.js carte2.js ui3.js ui2.js
 echo '})();'

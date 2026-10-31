@@ -8,8 +8,9 @@ const LS_UI = 'amakna-idle-ui2';
 const VIEWS = [
   ['combat', 'Combats', 'Tes héros combattent seuls tant que la page est ouverte.'],
   ['heros', 'Héros', 'Équipement, caractéristiques et sorts de chaque héros.'],
+  ['talents', 'Talents', 'Un arbre de talents propre à chaque classe : 1 point tous les 3 niveaux.'],
   ['carte', 'Carte', 'Choisis où envoyer chaque héros.'],
-  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.'],
+  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.', 'Sac'],
   ['recolte', 'Récolte', 'Envoie un héros travailler la terre plutôt que combattre.'],
   ['ateliers', 'Ateliers', 'Transforme tes ressources en équipements.'],
   ['options', 'Options', 'Sauvegarde, statistiques et choix de l’interface.'],
@@ -31,6 +32,7 @@ const IC = d => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="no
 const ICONS = {
   combat: IC('<path d="M4 4l10 10M11.5 16.5l5-5M15 15l4.5 4.5M20 4 10 14M7.5 11.5l5 5M9 15l-4.5 4.5"/>'),
   heros: IC('<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-4 3.6-6.4 7.5-6.4s6.9 2.4 7.5 6.4"/>'),
+  talents: IC('<path d="M12 21v-7"/><path d="M12 14c-4 0-6.5-2.4-6.5-5.8C9 8.2 12 10 12 14Zm0 0c4 0 6.5-2.4 6.5-5.8C15 8.2 12 10 12 14Z"/><path d="M12 10.5C9.6 9 9.2 5.6 12 3c2.8 2.6 2.4 6 0 7.5Z"/>'),
   carte: IC('<path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/>'),
   inventaire: IC('<path d="M5 8.5h14l-1.2 11.5H6.2Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/><path d="M9.5 12.5h5"/>'),
   recolte: IC('<path d="M12 21V8"/><path d="M12 8c-2.2-.9-3.2-2.8-3.2-5 2.2.9 3.2 2.8 3.2 5Zm0 0c2.2-.9 3.2-2.8 3.2-5-2.2.9-3.2 2.8-3.2 5Z"/><path d="M12 13.5c-2.3-.7-3.7-2.4-3.9-4.6 2.3.6 3.7 2.4 3.9 4.6Zm0 0c2.3-.7 3.7-2.4 3.9-4.6-2.3.6-3.7 2.4-3.9 4.6Z"/>'),
@@ -71,7 +73,7 @@ function loadGame(snapshot) {
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
   turretNew(h, s) { toast(`⚙️ ${h.name} déploie sa ${STM_NAMES[s].toLowerCase()} !`, 'quest'); },
-  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
+  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de talent !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
     for (const g of gear) toast(ITEMS[g.id].dofus ? `DOFUS ! ${h.name} a trouvé le ${ITEMS[g.id].name} !` : ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic || ITEMS[g.id].dofus ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
@@ -149,7 +151,7 @@ function heroChip(h, attrs, label, extraCls = '') {
 
 /* ---------------------------- Coquille de l'application ---------------------------- */
 function shell() {
-  const nav = VIEWS.map(([id, l]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span>${l}</span></button>`).join('');
+  const nav = VIEWS.map(([id, l, , short]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span${short ? ` data-short="${short}"` : ''}>${l}</span>${id === 'talents' ? '<i class="nav-badge"></i>' : ''}</button>`).join('');
   $('#app').innerHTML = `
   <aside class="side">
     <div class="brand">${eggSvg('egg-a')}<div><b class="display">Amakna</b><small>Idle · fan-game</small></div></div>
@@ -178,8 +180,12 @@ function shell() {
   </section>`;
 }
 function updateChrome() {
-  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String((ui.view === 'talents' ? 'heros' : ui.view) === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
-  const v = ui.view === 'talents' ? ['talents', 'Talents', 'Dépense tes points : 1 tous les 3 niveaux.'] : VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
+  const tp = st.heroes.reduce((a, h) => a + (skillFree(h) > 0 ? 1 : 0), 0); // nombre de héros avec des points de talent à dépenser
+  for (const b of document.querySelectorAll('.nav-btn')) {
+    const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur);
+    if (b.dataset.v === 'talents') { const bd = tp > 0 ? String(tp > 99 ? '99+' : tp) : ''; if (b.dataset.badge !== bd) { b.dataset.badge = bd; b.classList.toggle('has-badge', !!bd); const i = b.querySelector('.nav-badge'); if (i) i.textContent = bd; } }
+  }
+  const v = VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
   const tt = `<h1 class="display">${v[1]}</h1><p>${v[2]}</p>`;
   if (tt !== ui._tt) { $('#tbtitle').innerHTML = tt; ui._tt = tt; }
   const active = st.heroes.filter(h => h.act).length;
@@ -1058,9 +1064,7 @@ function renderHeros() {
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
   const tab = ['combat', 'recolte', 'relique', 'dofus'].includes(ui.eqTab) ? ui.eqTab : 'combat';
   const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique'], ['dofus', 'Dofus']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
-  const fp = skillFree(h);
-  const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
-  return `${heroTabs(h)}${skb}<div class="hero-grid">
+  return `${heroTabs(h)}<div class="hero-grid">
     <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : tab === 'dofus' ? dofusPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
@@ -1562,6 +1566,7 @@ const ACTIONS = {
   talents(d) { if (d.hero) ui.hero = d.hero; ui.view = 'talents'; ui.skConfirm = false; ui.recruitOpen = false; scrollTop(); },
   skhero(d) { ui.hero = d.hero; ui.skSel = null; ui.skConfirm = false; },
   skbranch(d) { ui.skBranch = d.v; ui.skSel = null; },
+  skopen(d) { ui.skBranch = d.v; ui.skSel = d.id; },
   sknode(d) { if (ui.skSel === d.id) return ACTIONS.skbuy(d); ui.skSel = d.id; },
   skbuy(d) { const h = selHero(); const err = skillRank(st, h, d.id); if (err) toast(err, 'warn'); else { ui.skSel = d.id; ui.skJust = d.id; } },
   skrespec() { ui.skConfirm = true; },
@@ -1940,6 +1945,7 @@ function start(data) {
   shell();
   if (away > 15000) offline(away);
   render(true);
+  if (st.talentReset) { const n = st.talentReset; delete st.talentReset; setTimeout(() => toast(`🌳 Nouveaux talents de classe ! Les points de ${n > 1 ? 'tes ' + n + ' héros ont été rendus' : 'ton héros ont été rendus'} : ouvre l’onglet Talents pour les dépenser.`, 'quest'), 1200); }
   chatLoop();
   accSync();
   setInterval(() => accCloudSave(), 60000);
