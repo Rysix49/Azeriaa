@@ -3388,6 +3388,18 @@ label.btn { cursor: pointer; }
 .mc.big { background: radial-gradient(ellipse at 0 0, #a06ae81c, transparent 60%), linear-gradient(180deg, #1e1a26, #141018); border-color: #a06ae844; }
 .mc.big.archi { background: radial-gradient(ellipse at 0 0, #e8aa2e24, transparent 60%), linear-gradient(180deg, #221e18, #15120c); border-color: #e8aa2e66; }
 .unit.mon.big .sprite.has-art .ms { width: 74px; height: 74px; }
+
+/* Récap de retour */
+.away .cs-rate { font-style: normal; font-size: 11px; color: var(--muted); }
+.away-warn { padding: 7px 10px; border-radius: 10px; background: #5a3a0f55; border: 1px solid #c8932f66; font-size: 12.5px; }
+.away-heroes { display: flex; flex-direction: column; gap: 6px; }
+.away-hero { padding: 8px 10px; border-radius: 10px; background: #00000030; display: flex; flex-direction: column; gap: 3px; }
+.ah-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ah-lv { font-size: 12px; color: var(--muted); } .ah-dead { color: #ff8a7a; }
+.away-hero small { color: var(--muted); }
+.ah-nums { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; font-weight: 700; }
+.away-best { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(90deg, #ffd24a22, transparent); border: 1px solid #ffd24a55; }
+.away-best > div { display: flex; flex-direction: column; min-width: 0; } .away-best small { color: #ffd24a; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; font-size: 10px; } .away-best em { font-style: normal; font-size: 11px; color: var(--muted); }
 /* =====================================================================
    STEAMER — personnage, tourelles, jauge de Pression, cinématique de Surcharge
    (l'ordre compte : ce fichier est collé après style2.css)
@@ -4152,7 +4164,7 @@ label.btn { cursor: pointer; }
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="modal-back" id="modal" hidden></div>
 <script>
-const BUILD_ID = '1793412528';
+const BUILD_ID = '1793412781';
 /* =====================================================================
    AMAKNA IDLE — DONNÉES DU JEU
    Tout le contenu (classes, sorts, monstres, zones, objets, recettes)
@@ -6232,14 +6244,17 @@ function displayHp(st, h) {
 /* ---------------------------- Hors-ligne ---------------------------- */
 function simulateOffline(st, ms) {
   ms = Math.min(ms, OFFLINE_CAP_MS);
-  const sum = { ms, xp: 0, kamas: 0, kills: 0, loot: {}, levels: {}, deaths: 0, runs: 0, harvest: {}, gear: [] };
+  const sum = { ms, xp: 0, kamas: 0, kills: 0, loot: {}, levels: {}, deaths: 0, runs: 0, harvest: {}, gear: [], heroes: {}, food: [] };
   if (ms < 5000) return sum;
   const startLv = Object.fromEntries(st.heroes.map(h => [h.id, h.lvl]));
+  for (const h of st.heroes) sum.heroes[h.id] = { id: h.id, name: h.name, cls: h.cls, act: h.act ? { type: h.act.type, id: h.act.id, room: h.act.room, tier: h.act.tier } : null, xp: 0, kamas: 0, kills: 0, deaths: 0, runs: 0, gear: 0 };
+  const hs = h => sum.heroes[h.id] || (sum.heroes[h.id] = { id: h.id, name: h.name, cls: h.cls, act: null, xp: 0, kamas: 0, kills: 0, deaths: 0, runs: 0, gear: 0 });
   const ev = {
     log() {},
-    reward(h, xp, k, loot, gear = []) { sum.gear.push(...gear); sum.xp += xp; sum.kamas += k; sum.kills += h.fight.mons.length; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; },
-    defeat() { sum.deaths++; },
-    dungeonDone() { sum.runs++; },
+    reward(h, xp, k, loot, gear = []) { sum.gear.push(...gear); sum.xp += xp; sum.kamas += k; sum.kills += h.fight.mons.length; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; const o = hs(h); o.xp += xp; o.kamas += k; o.kills += h.fight.mons.length; o.gear += gear.length; },
+    defeat(h) { sum.deaths++; if (h) hs(h).deaths++; },
+    dungeonDone(h) { sum.runs++; if (h) hs(h).runs++; },
+    foodEnd(h) { if (h && !sum.food.includes(h.name)) sum.food.push(h.name); },
   };
   const res0 = { ...st.res }; const jobs0 = Object.fromEntries(Object.entries(st.jobs).map(([k, j]) => [k, j.lvl]));
   for (const h of st.heroes) tickHero(st, h, ms, ev, 1e6);
@@ -14901,15 +14916,26 @@ function offline(ms) {
 function showAway(s) {
   const box = $('#modal'); box.hidden = false;
   const loot = Object.entries({ ...s.loot, ...s.harvest }).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const h1 = Math.max(1, s.ms) / 3600000, per = v => fmt(Math.round(v / h1));
+  const gear = [...s.gear].sort((a, b) => (b.stasis ? 2 : 0) + itemQuality(b) - ((a.stasis ? 2 : 0) + itemQuality(a)) || ITEMS[b.id].lvl - ITEMS[a.id].lvl);
+  const best = gear[0];
+  const hero = Object.values(s.heroes || {}).filter(o => o.xp || o.kills || o.deaths || o.act);
+  const heroRows = hero.map(o => { const lv = s.levels[o.name], place = o.act ? placeName(o.act) : '';
+    return `<div class="away-hero"><div class="ah-top"><b>${esc(o.name)}</b>${lv ? `<span class="ah-lv">niv. ${lv[0]} → <b class="lvl">${lv[1]}</b></span>` : ''}</div>
+      <small>${place ? esc(place) + ' · ' : ''}${o.kills ? `${fmt(o.kills)} vaincus` : 'aucun combat'}${o.runs ? ` · ${o.runs} donjon${o.runs > 1 ? 's' : ''}` : ''}${o.deaths ? ` · <span class="ah-dead">${o.deaths} défaite${o.deaths > 1 ? 's' : ''}</span>` : ''}</small>
+      ${o.xp || o.kamas ? `<div class="ah-nums"><span>+${fmt(o.xp)} XP</span><span>+${fmt(o.kamas)} K</span>${o.gear ? `<span>🎁 ${o.gear}</span>` : ''}</div>` : ''}</div>`; }).join('');
+  const lvUp = Object.entries(s.levels).length;
   box.innerHTML = `<div class="panel away" role="dialog" aria-label="Pendant ton absence">
-    <span class="label">Pendant ton absence · ${fmtDur(s.real)}${s.real > OFFLINE_CAP_MS ? ` (20 min comptées au maximum)` : ''}</span>
-    <h2 class="display big-title">Tes héros ont continué</h2>
-    <div class="cstats"><div class="cs"><small>XP</small><b class="num">${fmt(s.xp)}</b></div><div class="cs"><small>Kamas</small><b class="num">${fmt(s.kamas)}</b></div><div class="cs"><small>Vaincus</small><b class="num">${fmt(s.kills)}</b></div>${s.runs ? `<div class="cs"><small>Donjons</small><b>${s.runs}</b></div>` : ''}</div>
-    ${Object.entries(s.levels).map(([n, [a, b]]) => `<div class="sub"><b style="color:var(--fg)">${esc(n)}</b> : niveau ${a} → <b class="lvl">${b}</b></div>`).join('')}
+    <span class="label">Pendant ton absence · ${fmtDur(s.real)}${s.real > OFFLINE_CAP_MS ? ` (${Math.round(OFFLINE_CAP_MS / 60000)} min comptées au maximum)` : ''}</span>
+    <h2 class="display big-title">${lvUp ? 'Tes héros ont progressé !' : 'Tes héros ont continué'}</h2>
+    <div class="cstats"><div class="cs"><small>XP</small><b class="num">${fmt(s.xp)}</b><em class="cs-rate">${per(s.xp)} / h</em></div><div class="cs"><small>Kamas</small><b class="num">${fmt(s.kamas)}</b><em class="cs-rate">${per(s.kamas)} / h</em></div><div class="cs"><small>Vaincus</small><b class="num">${fmt(s.kills)}</b></div>${s.runs ? `<div class="cs"><small>Donjons</small><b>${s.runs}</b></div>` : ''}${gear.length ? `<div class="cs"><small>Équipements</small><b class="num">${gear.length}</b></div>` : ''}</div>
+    ${(s.food || []).length ? `<div class="away-warn">🍞 Le repas de ${s.food.map(esc).join(', ')} est terminé.</div>` : ''}
+    ${s.deaths ? `<div class="away-warn">☠ ${s.deaths} défaite${s.deaths > 1 ? 's' : ''} : vérifie le matériel de tes héros.</div>` : ''}
+    ${heroRows ? `<div class="away-heroes">${heroRows}</div>` : ''}
     ${(s.jobs || []).map(([k, a, b]) => `<div class="sub">${(JOBS[k] || GATHER_JOBS[k]).name} : niveau ${a} → <b class="lvl">${b}</b></div>`).join('')}
-    ${s.gear.length ? `<div class="away-gear">${s.gear.map(g => `<span class="tile sm ${qClass(g)}" title="${esc(ITEMS[g.id].name)}">${itemIcon(g.id)}</span>`).join('')}</div>` : ''}
+    ${best ? `<div class="away-best"><span class="tile sm ${qClass(best)}" title="${esc(ITEMS[best.id].name)}">${itemIcon(best.id)}</span><div><small>Meilleur butin</small><b>${esc(ITEMS[best.id].name)}</b><em>niv. ${ITEMS[best.id].lvl}</em></div></div>` : ''}
+    ${gear.length > 1 ? `<div class="away-gear">${gear.slice(1, 25).map(g => `<span class="tile sm ${qClass(g)}" title="${esc(ITEMS[g.id].name)}">${itemIcon(g.id)}</span>`).join('')}${gear.length > 25 ? `<span class="sub">+${gear.length - 25}</span>` : ''}</div>` : ''}
     ${loot.length ? `<div class="rr-ing">${loot.map(([r, n]) => `<span class="ing ok">${RESOURCES[r].icon}<span class="ing-n">${RESOURCES[r].name}</span><b class="num">×${fmt(n)}</b></span>`).join('')}</div>` : ''}
-    ${s.deaths ? `<div class="sub">Défaites : ${s.deaths}</div>` : ''}
     <button class="btn gold lg" data-act="closeaway">Récupérer</button></div>`;
 }
 

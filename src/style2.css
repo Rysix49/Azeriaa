@@ -3380,3 +3380,15 @@ label.btn { cursor: pointer; }
 .mc.big { background: radial-gradient(ellipse at 0 0, #a06ae81c, transparent 60%), linear-gradient(180deg, #1e1a26, #141018); border-color: #a06ae844; }
 .mc.big.archi { background: radial-gradient(ellipse at 0 0, #e8aa2e24, transparent 60%), linear-gradient(180deg, #221e18, #15120c); border-color: #e8aa2e66; }
 .unit.mon.big .sprite.has-art .ms { width: 74px; height: 74px; }
+
+/* Récap de retour */
+.away .cs-rate { font-style: normal; font-size: 11px; color: var(--muted); }
+.away-warn { padding: 7px 10px; border-radius: 10px; background: #5a3a0f55; border: 1px solid #c8932f66; font-size: 12.5px; }
+.away-heroes { display: flex; flex-direction: column; gap: 6px; }
+.away-hero { padding: 8px 10px; border-radius: 10px; background: #00000030; display: flex; flex-direction: column; gap: 3px; }
+.ah-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ah-lv { font-size: 12px; color: var(--muted); } .ah-dead { color: #ff8a7a; }
+.away-hero small { color: var(--muted); }
+.ah-nums { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; font-weight: 700; }
+.away-best { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(90deg, #ffd24a22, transparent); border: 1px solid #ffd24a55; }
+.away-best > div { display: flex; flex-direction: column; min-width: 0; } .away-best small { color: #ffd24a; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; font-size: 10px; } .away-best em { font-style: normal; font-size: 11px; color: var(--muted); }

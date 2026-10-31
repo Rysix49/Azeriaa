@@ -1027,14 +1027,17 @@ function displayHp(st, h) {
 /* ---------------------------- Hors-ligne ---------------------------- */
 function simulateOffline(st, ms) {
   ms = Math.min(ms, OFFLINE_CAP_MS);
-  const sum = { ms, xp: 0, kamas: 0, kills: 0, loot: {}, levels: {}, deaths: 0, runs: 0, harvest: {}, gear: [] };
+  const sum = { ms, xp: 0, kamas: 0, kills: 0, loot: {}, levels: {}, deaths: 0, runs: 0, harvest: {}, gear: [], heroes: {}, food: [] };
   if (ms < 5000) return sum;
   const startLv = Object.fromEntries(st.heroes.map(h => [h.id, h.lvl]));
+  for (const h of st.heroes) sum.heroes[h.id] = { id: h.id, name: h.name, cls: h.cls, act: h.act ? { type: h.act.type, id: h.act.id, room: h.act.room, tier: h.act.tier } : null, xp: 0, kamas: 0, kills: 0, deaths: 0, runs: 0, gear: 0 };
+  const hs = h => sum.heroes[h.id] || (sum.heroes[h.id] = { id: h.id, name: h.name, cls: h.cls, act: null, xp: 0, kamas: 0, kills: 0, deaths: 0, runs: 0, gear: 0 });
   const ev = {
     log() {},
-    reward(h, xp, k, loot, gear = []) { sum.gear.push(...gear); sum.xp += xp; sum.kamas += k; sum.kills += h.fight.mons.length; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; },
-    defeat() { sum.deaths++; },
-    dungeonDone() { sum.runs++; },
+    reward(h, xp, k, loot, gear = []) { sum.gear.push(...gear); sum.xp += xp; sum.kamas += k; sum.kills += h.fight.mons.length; for (const [r, c] of Object.entries(loot)) sum.loot[r] = (sum.loot[r] || 0) + c; const o = hs(h); o.xp += xp; o.kamas += k; o.kills += h.fight.mons.length; o.gear += gear.length; },
+    defeat(h) { sum.deaths++; if (h) hs(h).deaths++; },
+    dungeonDone(h) { sum.runs++; if (h) hs(h).runs++; },
+    foodEnd(h) { if (h && !sum.food.includes(h.name)) sum.food.push(h.name); },
   };
   const res0 = { ...st.res }; const jobs0 = Object.fromEntries(Object.entries(st.jobs).map(([k, j]) => [k, j.lvl]));
   for (const h of st.heroes) tickHero(st, h, ms, ev, 1e6);

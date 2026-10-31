@@ -1885,15 +1885,26 @@ function offline(ms) {
 function showAway(s) {
   const box = $('#modal'); box.hidden = false;
   const loot = Object.entries({ ...s.loot, ...s.harvest }).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const h1 = Math.max(1, s.ms) / 3600000, per = v => fmt(Math.round(v / h1));
+  const gear = [...s.gear].sort((a, b) => (b.stasis ? 2 : 0) + itemQuality(b) - ((a.stasis ? 2 : 0) + itemQuality(a)) || ITEMS[b.id].lvl - ITEMS[a.id].lvl);
+  const best = gear[0];
+  const hero = Object.values(s.heroes || {}).filter(o => o.xp || o.kills || o.deaths || o.act);
+  const heroRows = hero.map(o => { const lv = s.levels[o.name], place = o.act ? placeName(o.act) : '';
+    return `<div class="away-hero"><div class="ah-top"><b>${esc(o.name)}</b>${lv ? `<span class="ah-lv">niv. ${lv[0]} → <b class="lvl">${lv[1]}</b></span>` : ''}</div>
+      <small>${place ? esc(place) + ' · ' : ''}${o.kills ? `${fmt(o.kills)} vaincus` : 'aucun combat'}${o.runs ? ` · ${o.runs} donjon${o.runs > 1 ? 's' : ''}` : ''}${o.deaths ? ` · <span class="ah-dead">${o.deaths} défaite${o.deaths > 1 ? 's' : ''}</span>` : ''}</small>
+      ${o.xp || o.kamas ? `<div class="ah-nums"><span>+${fmt(o.xp)} XP</span><span>+${fmt(o.kamas)} K</span>${o.gear ? `<span>🎁 ${o.gear}</span>` : ''}</div>` : ''}</div>`; }).join('');
+  const lvUp = Object.entries(s.levels).length;
   box.innerHTML = `<div class="panel away" role="dialog" aria-label="Pendant ton absence">
-    <span class="label">Pendant ton absence · ${fmtDur(s.real)}${s.real > OFFLINE_CAP_MS ? ` (20 min comptées au maximum)` : ''}</span>
-    <h2 class="display big-title">Tes héros ont continué</h2>
-    <div class="cstats"><div class="cs"><small>XP</small><b class="num">${fmt(s.xp)}</b></div><div class="cs"><small>Kamas</small><b class="num">${fmt(s.kamas)}</b></div><div class="cs"><small>Vaincus</small><b class="num">${fmt(s.kills)}</b></div>${s.runs ? `<div class="cs"><small>Donjons</small><b>${s.runs}</b></div>` : ''}</div>
-    ${Object.entries(s.levels).map(([n, [a, b]]) => `<div class="sub"><b style="color:var(--fg)">${esc(n)}</b> : niveau ${a} → <b class="lvl">${b}</b></div>`).join('')}
+    <span class="label">Pendant ton absence · ${fmtDur(s.real)}${s.real > OFFLINE_CAP_MS ? ` (${Math.round(OFFLINE_CAP_MS / 60000)} min comptées au maximum)` : ''}</span>
+    <h2 class="display big-title">${lvUp ? 'Tes héros ont progressé !' : 'Tes héros ont continué'}</h2>
+    <div class="cstats"><div class="cs"><small>XP</small><b class="num">${fmt(s.xp)}</b><em class="cs-rate">${per(s.xp)} / h</em></div><div class="cs"><small>Kamas</small><b class="num">${fmt(s.kamas)}</b><em class="cs-rate">${per(s.kamas)} / h</em></div><div class="cs"><small>Vaincus</small><b class="num">${fmt(s.kills)}</b></div>${s.runs ? `<div class="cs"><small>Donjons</small><b>${s.runs}</b></div>` : ''}${gear.length ? `<div class="cs"><small>Équipements</small><b class="num">${gear.length}</b></div>` : ''}</div>
+    ${(s.food || []).length ? `<div class="away-warn">🍞 Le repas de ${s.food.map(esc).join(', ')} est terminé.</div>` : ''}
+    ${s.deaths ? `<div class="away-warn">☠ ${s.deaths} défaite${s.deaths > 1 ? 's' : ''} : vérifie le matériel de tes héros.</div>` : ''}
+    ${heroRows ? `<div class="away-heroes">${heroRows}</div>` : ''}
     ${(s.jobs || []).map(([k, a, b]) => `<div class="sub">${(JOBS[k] || GATHER_JOBS[k]).name} : niveau ${a} → <b class="lvl">${b}</b></div>`).join('')}
-    ${s.gear.length ? `<div class="away-gear">${s.gear.map(g => `<span class="tile sm ${qClass(g)}" title="${esc(ITEMS[g.id].name)}">${itemIcon(g.id)}</span>`).join('')}</div>` : ''}
+    ${best ? `<div class="away-best"><span class="tile sm ${qClass(best)}" title="${esc(ITEMS[best.id].name)}">${itemIcon(best.id)}</span><div><small>Meilleur butin</small><b>${esc(ITEMS[best.id].name)}</b><em>niv. ${ITEMS[best.id].lvl}</em></div></div>` : ''}
+    ${gear.length > 1 ? `<div class="away-gear">${gear.slice(1, 25).map(g => `<span class="tile sm ${qClass(g)}" title="${esc(ITEMS[g.id].name)}">${itemIcon(g.id)}</span>`).join('')}${gear.length > 25 ? `<span class="sub">+${gear.length - 25}</span>` : ''}</div>` : ''}
     ${loot.length ? `<div class="rr-ing">${loot.map(([r, n]) => `<span class="ing ok">${RESOURCES[r].icon}<span class="ing-n">${RESOURCES[r].name}</span><b class="num">×${fmt(n)}</b></span>`).join('')}</div>` : ''}
-    ${s.deaths ? `<div class="sub">Défaites : ${s.deaths}</div>` : ''}
     <button class="btn gold lg" data-act="closeaway">Récupérer</button></div>`;
 }
 
