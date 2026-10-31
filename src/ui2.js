@@ -8,8 +8,10 @@ const LS_UI = 'amakna-idle-ui2';
 const VIEWS = [
   ['combat', 'Combats', 'Tes héros combattent seuls tant que la page est ouverte.'],
   ['heros', 'Héros', 'Équipement, caractéristiques et sorts de chaque héros.'],
+  ['talents', 'Talents', 'Un arbre de talents propre à chaque classe : 1 point tous les 3 niveaux.'],
+  ['familiers', 'Familiers', 'Adopte des compagnons et nourris-les de butin pour renforcer tes héros.', 'Famil.'],
   ['carte', 'Carte', 'Choisis où envoyer chaque héros.'],
-  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.'],
+  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.', 'Sac'],
   ['recolte', 'Récolte', 'Envoie un héros travailler la terre plutôt que combattre.'],
   ['ateliers', 'Ateliers', 'Transforme tes ressources en équipements.'],
   ['options', 'Options', 'Sauvegarde, statistiques et choix de l’interface.'],
@@ -24,6 +26,7 @@ const THEME = {
   /* sous-zones de la carte */
   Wabbits: ['#a8dcef', '#7ec45e'], Blops: ['#7cc0cc', '#3f8a7a'], Moon: ['#7ec8b0', '#2f7a48'], Porcos: ['#e8c0a8', '#b08a52'],
   Dragoeufs: ['#d98a5a', '#6a3226'], Frigost: ['#b4d4ee', '#9cbad6'],
+  Pandala: ['#b9dcc0', '#4f9a58'], Etang: ['#a6dcd8', '#3f9a8a'], Dunes: ['#efce8e', '#c28c4a'], Ocre: ['#8a6a58', '#3a2a24'], Srambad: ['#6a4a7e', '#2a2038'], Roseraie: ['#4a2a46', '#1c1220'],
   harvest: ['#ecd58e', '#b89140'], idle: ['#7a8a96', '#4f5a44'],
 };
 
@@ -31,6 +34,8 @@ const IC = d => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="no
 const ICONS = {
   combat: IC('<path d="M4 4l10 10M11.5 16.5l5-5M15 15l4.5 4.5M20 4 10 14M7.5 11.5l5 5M9 15l-4.5 4.5"/>'),
   heros: IC('<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-4 3.6-6.4 7.5-6.4s6.9 2.4 7.5 6.4"/>'),
+  talents: IC('<path d="M12 21v-7"/><path d="M12 14c-4 0-6.5-2.4-6.5-5.8C9 8.2 12 10 12 14Zm0 0c4 0 6.5-2.4 6.5-5.8C15 8.2 12 10 12 14Z"/><path d="M12 10.5C9.6 9 9.2 5.6 12 3c2.8 2.6 2.4 6 0 7.5Z"/>'),
+  familiers: IC('<ellipse cx="6.5" cy="10.5" rx="2" ry="2.6"/><ellipse cx="17.5" cy="10.5" rx="2" ry="2.6"/><ellipse cx="10" cy="6" rx="1.9" ry="2.5"/><ellipse cx="14" cy="6" rx="1.9" ry="2.5"/><path d="M12 12.5c-3 0-5.4 2.3-5.4 4.9 0 1.7 1.4 2.4 2.9 2.2 1-.1 1.5-.5 2.5-.5s1.5.4 2.5.5c1.5.2 2.9-.5 2.9-2.2 0-2.6-2.4-4.9-5.4-4.9Z"/>'),
   carte: IC('<path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/>'),
   inventaire: IC('<path d="M5 8.5h14l-1.2 11.5H6.2Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/><path d="M9.5 12.5h5"/>'),
   recolte: IC('<path d="M12 21V8"/><path d="M12 8c-2.2-.9-3.2-2.8-3.2-5 2.2.9 3.2 2.8 3.2 5Zm0 0c2.2-.9 3.2-2.8 3.2-5-2.2.9-3.2 2.8-3.2 5Z"/><path d="M12 13.5c-2.3-.7-3.7-2.4-3.9-4.6 2.3.6 3.7 2.4 3.9 4.6Zm0 0c2.3-.7 3.7-2.4 3.9-4.6-2.3.6-3.7 2.4-3.9 4.6Z"/>'),
@@ -45,7 +50,7 @@ const ui = {
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
   recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '', fcFold: {}, jrOpen: false,
 };
-const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'fcFold', 'jrOpen'];
+const UI_KEEP = ['view', 'hero', 'pet', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'djHeroic', 'fcFold', 'jrOpen'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -71,7 +76,7 @@ function loadGame(snapshot) {
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
   turretNew(h, s) { toast(`⚙️ ${h.name} déploie sa ${STM_NAMES[s].toLowerCase()} !`, 'quest'); },
-  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
+  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de talent !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
     for (const g of gear) toast(ITEMS[g.id].dofus ? `DOFUS ! ${h.name} a trouvé le ${ITEMS[g.id].name} !` : ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic || ITEMS[g.id].dofus ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
@@ -118,17 +123,21 @@ function placeName(act) { if (!act) return ''; const p = findPlace(act.type, act
 function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
 function foodChip(h) { if (!h.food || h.food.left <= 0) return ''; const r = RESOURCES[h.food.id]; return `${r.icon} ${r.name} · ${mmss(h.food.left)}`; }
 function themeStyle(th) { return `--sky:${th[0]};--ground:${th[1]}`; }
+/* Objets héroïques (butin des donjons héroïques) : classe `hx` en plus, pour le cadre rouge braise */
 function qClass(g) {
-  if (ITEMS[g.id].relic) return 'q-relic';
-  if (ITEMS[g.id].dofus) return 'q-dofus';
-  if (g.stasis) return 'q-stasis';
+  const d = ITEMS[g.id], hx = d.heroic ? ' hx' : '';
+  if (d.relic) return 'q-relic' + hx;
+  if (d.dofus) return 'q-dofus' + hx;
+  if (g.stasis) return 'q-stasis' + hx;
+  if (d.heroic) return 'q-heroic hx';
   const q = itemQuality(g); return q > 0.8 ? 'q-high' : q > 0.4 ? 'q-mid' : 'q-low';
 }
 function qualityTag(g) {
-  if (ITEMS[g.id].relic) return '<span class="qtag q-relic">Relique</span>';
-  if (ITEMS[g.id].dofus) return '<span class="qtag q-dofus">Dofus</span>';
-  if (g.stasis) return '<span class="qtag q-stasis">Stasifié ×2</span>';
-  return `<span class="qtag ${qClass(g)}">Jet ${Math.round(itemQuality(g) * 100)} %</span>`;
+  const d = ITEMS[g.id], hx = d.heroic ? '<span class="qtag q-heroic">Héroïque</span>' : '';
+  if (d.relic) return hx + '<span class="qtag q-relic">Relique</span>';
+  if (d.dofus) return hx + '<span class="qtag q-dofus">Dofus</span>';
+  if (g.stasis) return hx + '<span class="qtag q-stasis">Stasifié ×2</span>';
+  return `${hx}<span class="qtag ${itemQuality(g) > 0.8 ? 'q-high' : itemQuality(g) > 0.4 ? 'q-mid' : 'q-low'}">Jet ${Math.round(itemQuality(g) * 100)} %</span>`;
 }
 function statusOf(h) {
   if (!h.act) return ['idle', 'Inactif'];
@@ -137,7 +146,7 @@ function statusOf(h) {
   if (h.fight) return ['fighting', `Combat · tour ${h.fight.turn}`];
   return ['resting', 'En route'];
 }
-function actLabel(h) { return !h.act ? '' : h.act.type === 'dungeon' ? 'Donjon' : h.act.type === 'harvest' ? 'Récolte' : 'Zone'; }
+function actLabel(h) { return !h.act ? '' : h.act.type === 'dungeon' ? (findPlace('dungeon', h.act.id).heroic ? 'Donjon héroïque' : 'Donjon') : h.act.type === 'harvest' ? 'Récolte' : 'Zone'; }
 function arenaTheme(h) {
   if (!h.act) return THEME.idle;
   if (h.act.type === 'harvest') return harvestTheme(findPlace('harvest', h.act.id));
@@ -149,7 +158,7 @@ function heroChip(h, attrs, label, extraCls = '') {
 
 /* ---------------------------- Coquille de l'application ---------------------------- */
 function shell() {
-  const nav = VIEWS.map(([id, l]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span>${l}</span></button>`).join('');
+  const nav = VIEWS.map(([id, l, , short]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span${short ? ` data-short="${short}"` : ''}>${l}</span>${id === 'talents' ? '<i class="nav-badge"></i>' : ''}</button>`).join('');
   $('#app').innerHTML = `
   <aside class="side">
     <div class="brand">${eggSvg('egg-a')}<div><b class="display">Amakna</b><small>Idle · fan-game</small></div></div>
@@ -178,8 +187,12 @@ function shell() {
   </section>`;
 }
 function updateChrome() {
-  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String((ui.view === 'talents' ? 'heros' : ui.view) === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
-  const v = ui.view === 'talents' ? ['talents', 'Talents', 'Dépense tes points : 1 tous les 3 niveaux.'] : VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
+  const tp = st.heroes.reduce((a, h) => a + (skillFree(h) > 0 ? 1 : 0), 0); // nombre de héros avec des points de talent à dépenser
+  for (const b of document.querySelectorAll('.nav-btn')) {
+    const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur);
+    if (b.dataset.v === 'talents') { const bd = tp > 0 ? String(tp > 99 ? '99+' : tp) : ''; if (b.dataset.badge !== bd) { b.dataset.badge = bd; b.classList.toggle('has-badge', !!bd); const i = b.querySelector('.nav-badge'); if (i) i.textContent = bd; } }
+  }
+  const v = VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
   const tt = `<h1 class="display">${v[1]}</h1><p>${v[2]}</p>`;
   if (tt !== ui._tt) { $('#tbtitle').innerHTML = tt; ui._tt = tt; }
   const active = st.heroes.filter(h => h.act).length;
@@ -213,7 +226,7 @@ function renderParty() {
 }
 
 /* ---------------------------- Vue : Combats ---------------------------- */
-function heroSig(h) { return h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0); }
+function heroSig(h) { return h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0) + ':' + (h.pet || ''); }
 function combatSig() { return st.heroes.map(heroSig).join('|'); }
 /* Seules les cartes dont le contenu a changé sont redessinées : les ennemis morts de l'autre héros ne rejouent plus leur chute */
 function redrawCards() {
@@ -291,14 +304,14 @@ function fightCard(h) {
     let foes = `<div class="scene-empty">${h.act ? 'Récupère avant le prochain combat…' : 'Attend tes ordres au zaap d’Astrub.'}</div>`;
     if (h.fight) foes = h.fight.mons.map((m, i) => { const d = MONSTERS[m.mid];
       const cra = h.cls === 'cra', prey = cra && h.fight.mark === i && m.hp > 0;
-      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
+      return `<div class="unit mon${m.hp <= 0 ? ' dead still' : ''}${d.boss ? ' boss' : ''}${d.big ? ' big' : ''}${d.archi ? ' archi' : ''}${d.heroic ? ' heroic' : ''}${cra ? ' huntable' : ''}${prey ? ' prey' : ''}" data-mon="${i}" data-hp="${m.hp}"${cra ? ` data-act="cramark" data-hero="${h.id}" data-i="${i}" role="button" tabindex="0" aria-label="Traquer ${esc(d.name)}"` : ''}>
         ${cra ? reticleHtml(h) : ''}${h.cls === 'enutrof' ? `<span class="treasure${h.fight.treasure === i && m.hp > 0 ? ' on' : ''}" data-k="treasure" title="Il cache un trésor !" aria-hidden="true">💰</span>` : ''}${h.cls === 'sram' ? `<span class="trap${h.fight.trap === i && m.hp > 0 ? ' armed' : ''}" data-k="trap" aria-hidden="true">${TRAP_SVG}</span>` : ''}
         <i class="act-mark" aria-hidden="true">▼</i><div class="u-name" title="${esc(d.name)}">${esc(d.name)} <small>${d.lvl}</small></div>${bar('hp', m.hp, m.max)}<div class="u-hp num" data-k="mhp">${fmt(m.hp)}</div>${h.cls === 'steamer' ? `<div class="mst" data-k="mst">${stmMonChips(m)}</div>` : ''}
         <div class="sprite${MON_ART[m.mid] ? ' has-art' : ''}" aria-hidden="true">${monSprite(m.mid, d.icon)}</div></div>`; }).join('');
     stage = `<div class="vs"><span>VS</span><small data-k="turn">${h.fight ? `Tour ${h.fight.turn}` : ''}</small>${h.cls === 'sram' ? `<small class="invis-chip" data-k="invis"${h.fight && h.fight.invis ? '' : ' hidden'}>👁️ Invisible</small>` : ''}${h.cls === 'ecaflip' ? `<small class="cat${(h.clover || 0) >= ECA_CLOVER_MAX ? ' full' : ''}" data-k="clover" title="Pile ou Face chaque tour. Pile donne un Trèfle (+3 % crit, +4 % de Face). À 6 : Quitte ou Double.">${cloverHtml(h)}</small>` : ''}${h.cls === 'enutrof' ? `<small class="purse${(h.purse || 0) >= ENU_PURSE_MAX ? ' full' : ''}" data-k="purse" title="Bourse : à 10 pièces, Jackpot. À 5 pièces ou plus, un Pot-de-vin peut t’éviter le coup fatal.">${purseHtml(h)}</small>` : ''}${h.cls === 'cra' ? `<small class="focus" data-k="focus" title="Concentration : à 5, Tir Parfait">${focusHtml(h)}</small>` : ''}${h.cls === 'sacrieur' ? `<small class="stig${h.fight && h.fight.stig >= SAC_STIG_MAX ? ' full' : ''}" data-k="stig" title="Stigmates : +8 % de dégâts chacun. Une fois par combat, le Martyre évite le coup fatal.">${stigHtml(h)}</small>` : ''}${h.cls === 'zobal' ? `<small class="ferv${(h.ferv || 0) >= ZOB_FERV_MAX ? ' full' : ''}" data-k="ferv" title="Ferveur : 50 % de chances de +1 à chaque attaque lancée (10 max), +4 % d'effet du masque par point. Au maximum : Apothéose (+15 % de critique) pendant 20 s. Elle se garde d'un combat à l'autre. Changer de masque = Rupture.">${fervHtml(h)}</small>${zobMasks(h)}` : ''}${h.cls === 'xelor' ? `<small class="grains" data-k="grains" title="Grains du sablier : à 12, le Xélor rejoue un tour">${grainsHtml(h)}</small>` : ''}${h.cls === 'steamer' ? yardHtml(h) : ''}</div><div class="foes">${foes}</div>`;
   }
   const folded = !!(ui.fcFold && ui.fcFold[h.id]);
-  return `<article class="fc${folded ? ' fold' : ''}${harvest ? ' is-harvest' : ''}" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
+  return `<article class="fc${folded ? ' fold' : ''}${harvest ? ' is-harvest' : ''}${place && place.heroic ? ' heroic' : ''}" data-hero-card="${h.id}" style="--c:${CLASSES[h.cls].color}">
     <header class="fc-head">
       ${emblem(h.cls)}
       <div class="fc-who"><b class="fc-name">${esc(h.name)}</b><span class="fc-sub">${CLASSES[h.cls].name} · <span class="lvl">Niv. ${h.lvl}</span>${h.capital ? ` · <button class="link" data-act="gohero" data-hero="${h.id}">${h.capital} pts à répartir</button>` : ''}</span></div>
@@ -321,7 +334,7 @@ function fightCard(h) {
           ${h.cls === 'steamer' ? steamGauge(h) : ''}
           ${h.cls === 'steamer' ? `<button class="fury-btn steam-btn" data-act="steamsurge" data-hero="${h.id}" data-k="steambtn" title="Déclencher la Surcharge Stasis !" aria-label="Déclencher la Surcharge Stasis"${steamReady(h) && h.fight ? '' : ' hidden'}>${SURGE_ICON}</button>` : ''}
           ${h.cls === 'xelor' ? chronoBtn(h) : ''}
-          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}"${h.cls === 'steamer' ? ` style="--pr:${clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1).toFixed(3)}"` : ''}>${heroSprite(h.cls)}</div></div>
+          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}"${h.cls === 'steamer' ? ` style="--pr:${clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1).toFixed(3)}"` : ''}>${heroSprite(h.cls)}</div>${petSlot(h)}</div>
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
@@ -898,7 +911,7 @@ function patchCombat() {
       if (fresh.length) scene.dataset.fx = fresh[fresh.length - 1].n;
       if (pfNew) { scene.dataset.pf = h.fight.perfect.n; startPerfect(h, card, scene, fresh); } // Tir Parfait : cinématique, combat figé
       else if (rwNew) startRewind(h, card, scene, fresh); // Rembobinage : cinématique, combat figé, puis le tour est rejoué
-      else if (fresh.length) fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280));
+      else if (fresh.length) { fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280)); setTimeout(() => petReact(card, 'cheer'), lead + 120); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
       if (h.cls === 'sram') {
@@ -927,10 +940,11 @@ function patchCombat() {
     if (fg) {
       const prev = +fg.dataset.hp;
       if (h.fight && !isNaN(prev) && hp !== prev) {
-        if (hp < prev) floatNum(fg, '−' + fmt(prev - hp), 'dmg');
+        if (hp < prev) { floatNum(fg, '−' + fmt(prev - hp), 'dmg'); petReact(card, 'hurt'); }
         else if (h.fight.turn > 1) floatNum(fg, '+' + fmt(hp - prev), 'heal');
       }
       fg.dataset.hp = hp;
+      petPatch(h, card);
       const isDead = h.hp <= 0 && h.resting; fg.classList.toggle('dead', isDead); if (!isDead) fg.classList.remove('still'); fg.classList.toggle('active', !!h.fight); // 'still' : déjà à terre, on ne rejoue pas la chute quand la carte est redessinée
     }
     const hpt = q('hpt'); if (hpt) hpt.textContent = `${fmt(hp)} / ${fmt(t.maxHp)}`;
@@ -1058,17 +1072,30 @@ function renderHeros() {
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
   const tab = ['combat', 'recolte', 'relique', 'dofus'].includes(ui.eqTab) ? ui.eqTab : 'combat';
   const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique'], ['dofus', 'Dofus']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
-  const fp = skillFree(h);
-  const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
-  return `${heroTabs(h)}${skb}<div class="hero-grid">
+  return `${heroTabs(h)}<div class="hero-grid">
     <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : tab === 'dofus' ? dofusPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
-/* Y a-t-il en réserve un objet utilisable par le héros et meilleur que celui porté dans cet emplacement ? */
+/* « Meilleur » = meilleur en STATISTIQUES pour ce héros, pas en niveau d'objet.
+   On compare ses totaux réels (bonus de panoplie compris) avec l'objet porté puis avec le candidat,
+   chaque statistique ayant un poids (les PA, % dégâts, % PV, critique… valent bien plus qu'un point de Vitalité). */
+const UP_W = { vit: .5, sag: .6, res: 3, crit: 3, dodge: 3, pp: .8, pa: 14, dmgPct: 6, hpPct: 6, regen: 3, speed: 3 };
+function slotUpgrade(h, slot, g) {
+  const cur = h.equip[slot] && gearById(st, h.equip[slot]); if (cur && cur.uid === g.uid) return false;
+  let diff = 0;
+  if ((cur && ITEMS[cur.id].set) || ITEMS[g.id].set) { // une panoplie change les bonus : on compare les totaux réels du héros
+    const before = heroTotals(st, h), keep = h.equip[slot]; h.equip[slot] = g.uid; const after = heroTotals(st, h); h.equip[slot] = keep;
+    for (const k of new Set([...Object.keys(before), ...Object.keys(after)])) if (typeof after[k] === 'number' && typeof before[k] === 'number' && !/^(maxHp|critPct|dodgePct|resPct|ppTotal|xpBonus)$/.test(k)) diff += (after[k] - before[k]) * (UP_W[k] ?? 1);
+  } else {
+    const ks = new Set([...Object.keys(g.stats), ...Object.keys(cur ? cur.stats : {})]);
+    for (const k of ks) diff += ((g.stats[k] || 0) - ((cur && cur.stats[k]) || 0)) * (UP_W[k] ?? 1);
+  }
+  return diff > 0.5;
+}
+/* Y a-t-il en réserve (non porté) un objet utilisable par le héros et meilleur en stats que celui porté dans cet emplacement ? */
 function slotHasBetter(h, slot) {
-  const cur = h.equip[slot] && gearById(st, h.equip[slot]), cs = gearScore(cur);
   return st.gear.some(g => { const d = ITEMS[g.id]; if (!d || d.harvest || d.relic || d.dofus || !slotsFor(d.slot).includes(slot) || h.lvl < d.lvl) return false;
-    const by = equippedBy(st, g.uid); if (by && by.id === h.id) return false; return gearScore(g) > cs; });
+    return !equippedBy(st, g.uid) && slotUpgrade(h, slot, g); });
 }
 function slotTile(h, slot) {
   const g = h.equip[slot] && gearById(st, h.equip[slot]); const sel = ui.slot === slot;
@@ -1106,6 +1133,7 @@ function combatGear(h) {
         <div>${bar('xp thin', h.xp, xpToNext(h.lvl))}<small class="num">${h.lvl >= MAX_LEVEL ? 'Niveau max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))} XP`}</small></div></div>
       <button class="relic-mini${rel ? ' on' : ''}" data-act="eqtab" data-v="relique" title="Relique">${rel ? itemIcon(rel.id) : '<span class="ph">🔮</span>'}<small>${rel ? esc(ITEMS[rel.id].name) : 'Aucune relique'}</small></button>
       <button class="dofus-mini${nDofus ? ' on' : ''}" data-act="eqtab" data-v="dofus" title="Dofus">${nDofus ? dofusRow(h, true) : '<span class="ph">🥚</span>'}<small>${nDofus ? `${nDofus} Dofus équipé${nDofus > 1 ? 's' : ''}` : 'Aucun Dofus'}</small></button>
+      <button class="pet-mini${h.pet && PETS[h.pet] ? ' on' : ''}" data-act="gopet" data-hero="${h.id}" title="Familier">${h.pet && PETS[h.pet] ? `${petSprite(h.pet, 'still')}<small>${esc(PETS[h.pet].name)} · niv. ${petInfo(st, h.pet).lvl}</small>` : '<span class="ph">🐾</span><small>Aucun familier</small>'}</button>
       <div class="activity">${h.act ? `<span><span class="tag">${actLabel(h)}</span> <b>${esc(placeName(h.act))}</b></span>` : '<span class="sub">Inactif</span>'}
         <div class="row-btns">${h.act ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : ''}<button class="btn sm" data-act="gomap" data-hero="${h.id}">Carte</button></div></div>
     </div>
@@ -1132,7 +1160,7 @@ function combatGear(h) {
     const types = ['coiffe', 'cape', 'amulette', 'anneau', 'ceinture', 'bottes', 'arme'];
     body = `<div class="type-grid">${types.map(ty => {
       const items = free.filter(g => ITEMS[g.id].slot === ty); const slot = ty === 'anneau' ? 'anneau1' : ty;
-      const up = items.some(g => h.lvl >= ITEMS[g.id].lvl && gearScore(g) > gearScore(compareTarget(h, g)));
+      const up = items.some(g => h.lvl >= ITEMS[g.id].lvl && !equippedBy(st, g.uid) && slotsFor(ty).some(sl => slotUpgrade(h, sl, g)));
       return `<button class="type-btn${items.length ? '' : ' none'}" data-act="pickslot" data-slot="${slot}" ${items.length ? '' : 'disabled'}><span class="tb-ic">${SLOT_ICON[ty]}</span><span class="tb-t"><b>${SLOT_LABEL[slot]}${ty === 'anneau' ? 'x' : 's'}</b><small>${items.length ? `${items.length} objet${items.length > 1 ? 's' : ''}` : 'aucun'}</small></span>${up ? '<i class="tb-up" title="Un objet meilleur que celui porté est disponible">▲</i>' : ''}</button>`;
     }).join('')}</div>`;
   } else {
@@ -1247,7 +1275,7 @@ function dofusPanel(h) {
       return `<div class="relic-entry dofus-entry${has ? ' has' : ''}"><div class="relic-mini-ic">${itemIcon(id)}</div><div class="re-main"><b>${has ? esc(d.name) : '???'}</b> <small class="sub">niv. ${d.lvl}</small>
         <div class="sub">${Object.entries(d.stats).map(([k, [a, b]]) => `${a === b ? a : a + '–' + b} ${STAT_SHORT[k]}`).join(' · ')}</div><div class="re-src">${relicSources(id)}</div></div></div>`; }).join('')}</div>`;
 }
-function relicSources(id) { return Object.entries(RELIC_DROPS).filter(([, l]) => l.some(([r]) => r === id)).map(([m, l]) => `${monIcon(m)} ${MONSTERS[m].name} (${pct(l.find(([r]) => r === id)[1])})`).join(', '); }
+function relicSources(id) { return [...Object.entries(RELIC_DROPS).filter(([, l]) => l.some(([r]) => r === id)).map(([m, l]) => `${monIcon(m)} ${MONSTERS[m].name} (${pct(l.find(([r]) => r === id)[1])})`), ...Object.entries(HEROIC_LOOT).filter(([, l]) => l.some(([r]) => r === id)).map(([dj, l]) => `☠ ${findPlace('dungeon', dj).name} (${pct(l.find(([r]) => r === id)[1])} par donjon)`)].join(', '); }
 function relicPanel(h) {
   const cur = h.relic && gearById(st, h.relic);
   const owned = st.gear.filter(g => ITEMS[g.id].relic && g.uid !== h.relic).sort((a, b) => ITEMS[b.id].lvl - ITEMS[a.id].lvl);
@@ -1269,7 +1297,10 @@ function relicPanel(h) {
 /* ---------------------------- Vue : Carte ---------------------------- */
 function defaultPlace() {
   const h = selHero();
-  if (h && h.act && h.act.type !== 'harvest') return { type: h.act.type, id: h.act.id };
+  if (h && h.act && h.act.type !== 'harvest') {
+    if (h.act.type === 'dungeon' && HERO_BASE[h.act.id]) { ui.djHeroic = ui.djHeroic || {}; ui.djHeroic[HERO_BASE[h.act.id]] = true; return { type: 'dungeon', id: HERO_BASE[h.act.id] }; } // donjon héroïque : on affiche son donjon normal, en mode héroïque
+    return { type: h.act.type, id: h.act.id };
+  }
   const lv = h ? h.lvl : 1;
   const z = [...ZONES].reverse().find(x => !x.sub && lv >= x.lvl[0]) || ZONES[0];
   return { type: 'zone', id: z.id };
@@ -1427,7 +1458,7 @@ function renderOptions() {
 }
 
 /* ---------------------------- Rendu principal ---------------------------- */
-const RENDER = { combat: renderCombat, heros: renderHeros, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions, talents: renderTalents };
+const RENDER = { combat: renderCombat, heros: renderHeros, familiers: renderFamiliers, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions, talents: renderTalents };
 function canRebuild() {
   if (pointerDown || Date.now() - lastScroll < 800) return false;
   const a = document.activeElement;
@@ -1458,6 +1489,7 @@ function render(force) {
   } else {
     if (harvestViewFx(ui.view === 'recolte')) lastSlow = now; // un petit effet sur la carte de la plante : on retarde le redessin pour le laisser finir
     if (ui.view === 'carte') { const sg = carteSig(); if (sg !== ui._carteSig) { ui._carteSig = sg; renderMain(); lastSlow = now; } return; }
+    if (ui.view === 'familiers') { const sg = petSig(); if (sg !== ui._ptSig) { ui._ptSig = sg; renderMain(); lastSlow = now; } else petPatchView(); return; }
     if (ui.view === 'talents') { const h = selHero(), sg = h ? `${h.id}|${h.lvl}|${st.heroes.length}|${skillFree(h)}` : ''; if (sg !== ui._skSig) { ui._skSig = sg; renderMain(); lastSlow = now; } return; }
     if (now - lastSlow > 1500 && ui.view !== 'options') { renderMain(); lastSlow = now; }
   }
@@ -1546,7 +1578,27 @@ const ACTIONS = {
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
   talents(d) { if (d.hero) ui.hero = d.hero; ui.view = 'talents'; ui.skConfirm = false; ui.recruitOpen = false; scrollTop(); },
   skhero(d) { ui.hero = d.hero; ui.skSel = null; ui.skConfirm = false; },
+  gopet(d) { ui.view = 'familiers'; if (d.hero) ui.hero = d.hero; const h = heroById(d.hero); if (h && h.pet) ui.pet = h.pet; ui.recruitOpen = false; scrollTop(); },
+  petsel(d) { if (PETS[d.id]) ui.pet = d.id; },
+  petadopt(d) {
+    const why = adoptPet(st, d.id); if (why) { toast(why, 'warn'); return 'keep'; }
+    ui.pet = d.id; ui.petFx = { id: d.id, kind: 'eat' }; toast(`${PETS[d.id].name} rejoint ta ménagerie !`, 'quest');
+  },
+  petfeed(d) {
+    const e = st.pets[d.id], before = e ? e.meals : 0, n = d.n === 'all' ? (st.res[d.rid] || 0) : +d.n;
+    const r = feedPet(st, d.id, d.rid, n); if (typeof r === 'string') { toast(r, 'warn'); return 'keep'; }
+    ui.petFx = { id: d.id, kind: r.lvl1 > r.lvl0 ? 'lvl' : 'eat' };
+    if (r.lvl1 > r.lvl0) toast(`${PETS[d.id].name} passe niveau ${r.lvl1} !${r.lvl1 >= PET_MAXLVL ? ' Niveau maximal.' : ''}`, 'lvl');
+    else if (!before && r.meals) toast(`${PETS[d.id].name} mange ${r.n} × ${RESOURCES[d.rid].name}.`, 'info');
+  },
+  petwear(d) {
+    const h = heroById(d.hero); if (!h) return 'keep';
+    if (h.pet === d.id) { setHeroPet(st, h, null); toast(`${PETS[d.id].name} quitte ${h.name}.`, 'info'); }
+    else { const old = h.pet; setHeroPet(st, h, d.id); h.hp = Math.min(h.hp, heroTotals(st, h).maxHp); toast(`${PETS[d.id].name} accompagne maintenant ${h.name}${old ? ` (${PETS[old].name} retourne à la ménagerie)` : ''}.`, 'info'); }
+    for (const x of st.heroes) x.hp = Math.min(x.hp, heroTotals(st, x).maxHp);
+  },
   skbranch(d) { ui.skBranch = d.v; ui.skSel = null; },
+  skopen(d) { ui.skBranch = d.v; ui.skSel = d.id; },
   sknode(d) { if (ui.skSel === d.id) return ACTIONS.skbuy(d); ui.skSel = d.id; },
   skbuy(d) { const h = selHero(); const err = skillRank(st, h, d.id); if (err) toast(err, 'warn'); else { ui.skSel = d.id; ui.skJust = d.id; } },
   skrespec() { ui.skConfirm = true; },
@@ -1582,6 +1634,7 @@ const ACTIONS = {
   },
   togglemon(d) { ui.openMons = ui.openMons || {}; ui.openMons[d.k] = !ui.openMons[d.k]; },
   ztier(d) { ui.zoneTier = ui.zoneTier || {}; ui.zoneTier[d.id] = +d.t; },
+  djmode(d) { ui.djHeroic = ui.djHeroic || {}; ui.djHeroic[d.id] = d.m === '1'; },
   pick(d) {
     ui.sel = d.kind === 'gear' ? { k: 'gear', uid: d.uid } : { k: 'res', id: d.id }; ui.sellUid = null;
     if (innerWidth < 1000) setTimeout(() => { const el = $('.inspector'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 30);
@@ -1925,6 +1978,8 @@ function start(data) {
   shell();
   if (away > 15000) offline(away);
   render(true);
+  if (st.talentReset) { const n = st.talentReset; delete st.talentReset; setTimeout(() => toast(`🌳 Nouveaux talents de classe ! Les points de ${n > 1 ? 'tes ' + n + ' héros ont été rendus' : 'ton héros ont été rendus'} : ouvre l’onglet Talents pour les dépenser.`, 'quest'), 1200); }
+  if (st.balNotice) { delete st.balNotice; setTimeout(() => toast('⚖️ Équipement rééquilibré : stats des objets, panoplies, reliques et Dofus revues. Tes objets ont été adaptés à jet égal.', 'quest'), 2400); }
   chatLoop();
   accSync();
   setInterval(() => accCloudSave(), 60000);

@@ -607,3 +607,45 @@
   .tn-banner span { font-size: 21px; }
 }
 @media (prefers-reduced-motion: reduce) { .tl-p.next .tl-ring, .unit.act-next .act-mark, .unit.act-next::before, .tn-banner, .tn-banner span, .sp.fire .sp-ic, .sp.fire::after { animation: none; } .bar.hp::after { transition: none; } }
+
+/* =====================================================================
+   DONJONS HÉROÏQUES — rouge braise (#ff6a45) : bascule Normal/Héroïque, butin exclusif, monstres nimbés
+   ===================================================================== */
+:root { --heroic: #ff6a45; --heroic-2: #ffb49a; --heroic-bg: #2a0f0a; }
+.q-heroic { --qc: var(--heroic); }
+/* objets héroïques (équipement ; relique et Dofus héroïques gardent leur fond et ajoutent `.hx`) */
+.tile.q-heroic, .slot-t.q-heroic { background: radial-gradient(circle at 50% 110%, #ff6a4538, var(--heroic-bg) 74%); border-color: var(--heroic) !important; box-shadow: 0 0 0 1px #8a2a18, 0 0 12px #ff6a4566, inset 0 2px 7px #0008; }
+.tile.q-heroic .iart, .slot-t.q-heroic .iart { filter: drop-shadow(0 0 4px #ff6a45aa) drop-shadow(0 1px 0 #0008); }
+.tile.hx, .slot-t.hx { border-color: var(--heroic) !important; box-shadow: 0 0 0 1px #8a2a18, 0 0 14px #ff6a45aa, inset 0 2px 7px #0008 !important; }
+.tile.hx::before, .slot-t.hx::before { content: "☠"; position: absolute; top: 1px; left: 3px; z-index: 5; font-size: 9px; line-height: 1; color: var(--heroic-2); text-shadow: 0 0 4px #ff3a1c, 0 1px 0 #000; pointer-events: none; }
+.tile.lg.hx::before, .tile.md.hx::before { font-size: 12px; top: 3px; left: 5px; }
+.qtag.q-heroic { background: linear-gradient(180deg, #ff7a50, #b8321c); color: #fff; border-color: #ffb49a; box-shadow: 0 0 10px #ff6a4577; font-weight: 900; letter-spacing: .02em; }
+.qtag.q-heroic::before { content: "☠ "; }
+.bag-r.q-heroic, .bag-r.hx { background: #ff6a450f; }
+.iv-row.q-heroic, .iv-row.hx { border-color: #ff6a4577; background: linear-gradient(90deg, #ff6a4524, #1a0f0b 70%); }
+.insp-card.q-heroic, .insp-card.hx { box-shadow: 0 0 0 1px #ff6a4466 inset, 0 0 26px #ff6a4522; }
+.insp-card.q-heroic .ih-t .display, .insp-card.hx .ih-t .display { color: var(--heroic-2); text-shadow: 0 0 12px #ff3a1c88; }
+.slot-detail.q-heroic, .slot-detail.hx { border-color: var(--heroic); background: linear-gradient(180deg, #3a150e, #1a0f0b); }
+.detail-bar.q-heroic, .detail-bar.hx { border-color: var(--heroic); }
+/* monstres héroïques : nimbe rouge, nom en braise */
+.unit.mon.heroic .sprite { filter: drop-shadow(0 0 7px #ff3a1c) drop-shadow(0 0 14px #b8190a) saturate(1.2) contrast(1.06); }
+.unit.mon.heroic .u-name { color: var(--heroic-2); text-shadow: 0 0 8px #ff3a1c; }
+.unit.mon.heroic .u-name::before { content: "☠ "; }
+.unit.mon.heroic.dead .sprite { filter: grayscale(1); }
+.tl-p.mon.heroic .tl-ring { box-shadow: 0 0 0 2px #ff6a45, 0 0 10px #ff3a1c; }
+.fc.heroic { border-color: #ff6a4588; box-shadow: 0 0 0 1px #ff6a4533, 0 0 22px #ff3a1c22; }
+.fc.heroic .fc-head { background-image: linear-gradient(90deg, #ff3a1c1c, transparent 60%); }
+/* panneau du donjon */
+.djmodes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mc.heroic { border-color: #ff6a4577; background: radial-gradient(ellipse at 0 0, #ff3a1c22, transparent 62%), linear-gradient(180deg, #211510, #140e0b); }
+.mc-tags .hr { color: var(--heroic-2); border-color: #ff6a4599; background: #ff6a4522; }
+.hloot { padding: 12px; border-radius: 14px; border: 1px solid #ff6a4566; background: radial-gradient(ellipse at 0 0, #ff3a1c1f, transparent 60%), linear-gradient(180deg, #1f1410, #140e0b); }
+.hloot .label { color: var(--heroic-2); }
+.hl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.hl-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: #00000040; border: 1px solid #ff6a4533; min-width: 0; }
+.hl-item .tile { flex: none; }
+.hl-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; } .hl-main b { font-size: 14px; line-height: 1.15; } .hl-main small { color: var(--muted); font-size: 11.5px; }
+.hl-st { display: flex; flex-wrap: wrap; gap: 2px 9px; font-size: 12px; font-weight: 800; }
+.hl-pc { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.wn.hx .wn-ring { border-color: var(--heroic); box-shadow: 0 0 10px #ff3a1c; }
+@media (max-width: 700px) { .hl-grid { grid-template-columns: minmax(0, 1fr); } .djmodes { grid-template-columns: minmax(0, 1fr); } }

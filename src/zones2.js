@@ -138,65 +138,65 @@ DUNGEONS.push(
 
 /* ---------------------------- Panoplies ---------------------------- */
 Object.assign(SETS, {
-  wabbit:    { name: 'Panoplie du Wabbit',    bonus: { 2: { pp: 12 }, 3: { deg: 25, pp: 20 }, 4: { deg: 35, dodge: 3, pp: 30 }, 5: { deg: 55, dodge: 5, crit: 2, pp: 40 } } },
-  blop:      { name: 'Panoplie Blop',         bonus: { 2: { res: 3 }, 3: { vit: 60, deg: 20 }, 4: { vit: 90, deg: 45, res: 6 }, 5: { vit: 130, deg: 80, res: 8, regen: 1 } } },
-  kanniboul: { name: 'Panoplie Kanniboul',    bonus: { 2: { deg: 30 }, 3: { deg: 60, crit: 3 }, 4: { deg: 100, crit: 4, dodge: 3 }, 5: { deg: 150, crit: 6, dodge: 5 } } },
-  porcos:    { name: 'Panoplie du Porcos',    bonus: { 2: { vit: 60 }, 3: { deg: 50, vit: 120 }, 4: { deg: 90, vit: 170, res: 7 }, 5: { deg: 130, vit: 230, res: 10, kamas: 10 } } },
-  dragoeuf:  { name: 'Panoplie du Dragoeuf',  bonus: { 2: { vit: 100 }, 3: { deg: 60, vit: 160 }, 4: { deg: 110, vit: 220, crit: 3 }, 5: { deg: 160, vit: 300, crit: 5, res: 8 } } },
-  mansot:    { name: 'Panoplie du Mansot',    bonus: { 2: { vit: 140 }, 3: { deg: 80, vit: 220, res: 6 }, 4: { deg: 140, vit: 300, res: 9 }, 5: { deg: 210, vit: 400, res: 12, dodge: 4 } } },
+  wabbit:    { name: 'Panoplie du Wabbit',    bonus: { 2: { vit: 30, pp: 12 }, 3: { deg: 30, vit: 60, pp: 20 }, 4: { deg: 50, vit: 100, pp: 30, dodge: 3 }, 5: { deg: 70, vit: 140, pp: 40, dodge: 5, crit: 2 } } },
+  blop:      { name: 'Panoplie Blop',         bonus: { 2: { vit: 30, res: 3 }, 3: { deg: 35, vit: 110 }, 4: { deg: 65, vit: 130, res: 6 }, 5: { deg: 95, vit: 150, res: 8, regen: 1 } } },
+  kanniboul: { name: 'Panoplie Kanniboul',    bonus: { 2: { deg: 30, vit: 30 }, 3: { deg: 80, vit: 85, crit: 3 }, 4: { deg: 130, vit: 140, dodge: 3, crit: 4 }, 5: { deg: 180, vit: 200, dodge: 5, crit: 6 } } },
+  porcos:    { name: 'Panoplie du Porcos',    bonus: { 2: { vit: 80 }, 3: { deg: 70, vit: 160 }, 4: { deg: 110, vit: 210, res: 7 }, 5: { deg: 170, vit: 290, res: 10, kamas: 10 } } },
+  dragoeuf:  { name: 'Panoplie du Dragoeuf',  bonus: { 2: { vit: 95 }, 3: { deg: 75, vit: 200 }, 4: { deg: 150, vit: 300, crit: 3 }, 5: { deg: 190, vit: 360, res: 8, crit: 5 } } },
+  mansot:    { name: 'Panoplie du Mansot',    bonus: { 2: { vit: 110 }, 3: { deg: 60, vit: 160, res: 6 }, 4: { deg: 130, vit: 270, res: 9 }, 5: { deg: 180, vit: 340, res: 12, dodge: 4 } } },
 });
 
 /* ---------------------------- Équipements & reliques ---------------------------- */
 Object.assign(ITEMS, {
   /* Panoplie du Wabbit — oreilles, pattes et carottes */
-  coiffe_wabbit:   { icon: '🐰', name: 'Coiffe du Wabbit', slot: 'coiffe', lvl: 24, set: 'wabbit', stats: { deg: [12, 18], vit: [32, 48], pp: [10, 16] } },
-  bottes_wabbit:   { icon: '🐾', name: 'Pattes de Wabbit', slot: 'bottes', lvl: 26, set: 'wabbit', stats: { deg: [18, 28], vit: [14, 22], dodge: [2, 4] } },
+  coiffe_wabbit:   { icon: '🐰', name: 'Coiffe du Wabbit', slot: 'coiffe', lvl: 24, set: 'wabbit', stats: { deg: [14, 21], vit: [39, 55], pp: [10, 16] } },
+  bottes_wabbit:   { icon: '🐾', name: 'Pattes de Wabbit', slot: 'bottes', lvl: 26, set: 'wabbit', stats: { deg: [21, 32], vit: [16, 25], dodge: [2, 4] } },
   anneau_wabbit:   { icon: '🥕', name: 'Anneau de la Carotte Dorée', slot: 'anneau', lvl: 28, set: 'wabbit', stats: { deg: [17, 27], pp: [14, 22] } },
-  cape_wabbit:     { icon: '🧥', name: 'Cape du Wa Wabbit', slot: 'cape', lvl: 32, set: 'wabbit', stats: { vit: [30, 46], sag: [14, 26], pp: [12, 20] } },
-  sceptre_wabbit:  { icon: '🔱', name: 'Sceptre du Wa Wabbit', slot: 'arme', lvl: 34, set: 'wabbit', stats: { deg: [45, 68], crit: [1, 2] } },
-  relique_wabbit:  { name: 'Patte de Lapin du Wa Wabbit', slot: 'relique', lvl: 30, relic: true, stats: { kamas: [15, 25], dodge: [4, 7], pp: [15, 25] } },
+  cape_wabbit:     { icon: '🧥', name: 'Cape du Wa Wabbit', slot: 'cape', lvl: 32, set: 'wabbit', stats: { vit: [50, 72], sag: [14, 26], pp: [12, 20] } },
+  sceptre_wabbit:  { icon: '🔱', name: 'Sceptre du Wa Wabbit', slot: 'arme', lvl: 34, set: 'wabbit', stats: { deg: [50, 72], crit: [1, 2] } },
+  relique_wabbit:  { name: 'Patte de Lapin du Wa Wabbit', slot: 'relique', lvl: 30, relic: true, stats: { vit: [41, 59], pp: [15, 25], dodge: [4, 7], kamas: [15, 25] } },
 
   /* Panoplie Blop — une couleur par pièce, la masse est multicolore */
-  coiffe_blop:     { icon: '🟤', name: 'Coiffe Blop Coco', slot: 'coiffe', lvl: 38, set: 'blop', stats: { deg: [14, 22], vit: [52, 74], res: [2, 4] } },
-  cape_blop:       { icon: '🔴', name: 'Cape Blop Griotte', slot: 'cape', lvl: 40, set: 'blop', stats: { deg: [24, 36], vit: [30, 46], pp: [14, 22] } },
-  amulette_blop:   { icon: '🔵', name: 'Amulette Blop Indigo', slot: 'amulette', lvl: 44, set: 'blop', stats: { vit: [55, 84], res: [3, 5], pp: [16, 28] } },
-  anneau_blop:     { icon: '🟢', name: 'Anneau Blop Reinette', slot: 'anneau', lvl: 46, set: 'blop', stats: { deg: [28, 40], pp: [18, 30], sag: [8, 14] } },
-  masse_blop:      { icon: '🌈', name: 'Masse du Blop Multicolore', slot: 'arme', lvl: 49, set: 'blop', stats: { deg: [66, 98], vit: [15, 30] } },
-  relique_blop:    { name: 'Cœur Prismatique du Blop Royal', slot: 'relique', lvl: 48, relic: true, stats: { regen: [3, 4], res: [5, 8], vit: [40, 70] } },
+  coiffe_blop:     { icon: '🟤', name: 'Coiffe Blop Coco', slot: 'coiffe', lvl: 38, set: 'blop', stats: { deg: [15, 23], vit: [54, 77], res: [2, 4] } },
+  cape_blop:       { icon: '🔴', name: 'Cape Blop Griotte', slot: 'cape', lvl: 40, set: 'blop', stats: { deg: [29, 45], vit: [39, 55], pp: [14, 22] } },
+  amulette_blop:   { icon: '🔵', name: 'Amulette Blop Indigo', slot: 'amulette', lvl: 44, set: 'blop', stats: { vit: [63, 89], pp: [16, 28], res: [3, 5] } },
+  anneau_blop:     { icon: '🟢', name: 'Anneau Blop Reinette', slot: 'anneau', lvl: 46, set: 'blop', stats: { deg: [27, 41], sag: [8, 14], pp: [18, 30] } },
+  masse_blop:      { icon: '🌈', name: 'Masse du Blop Multicolore', slot: 'arme', lvl: 49, set: 'blop', stats: { deg: [59, 85], vit: [15, 24] } },
+  relique_blop:    { name: 'Cœur Prismatique du Blop Royal', slot: 'relique', lvl: 48, relic: true, stats: { vit: [24, 38], res: [5, 8], regen: [1, 2] } },
 
   /* Panoplie Kanniboul — os, plumes et masques */
-  coiffe_kanniboul:  { icon: '🎭', name: 'Masque du Kanniboul', slot: 'coiffe', lvl: 54, set: 'kanniboul', stats: { deg: [24, 36], vit: [50, 76], crit: [1, 2] } },
-  cape_kanniboul:    { icon: '🦚', name: 'Pagne de Plumes', slot: 'cape', lvl: 58, set: 'kanniboul', stats: { deg: [20, 32], vit: [66, 98], dodge: [2, 4] } },
-  ceinture_kanniboul:{ icon: '🦴', name: "Ceinture d'Os", slot: 'ceinture', lvl: 60, set: 'kanniboul', stats: { deg: [30, 46], vit: [40, 58] } },
-  bottes_kanniboul:  { icon: '🥾', name: 'Sandales du Chasseur', slot: 'bottes', lvl: 62, set: 'kanniboul', stats: { deg: [42, 58], vit: [34, 50], dodge: [3, 5] } },
-  lance_kanniboul:   { icon: '🔱', name: "Javelot d'Ebil", slot: 'arme', lvl: 64, set: 'kanniboul', stats: { deg: [68, 98], crit: [2, 4] } },
-  relique_kanniboul: { name: "Totem d'Ebil", slot: 'relique', lvl: 62, relic: true, stats: { deg: [20, 35], dmgPct: [10, 16], crit: [3, 6] } },
+  coiffe_kanniboul:  { icon: '🎭', name: 'Masque du Kanniboul', slot: 'coiffe', lvl: 54, set: 'kanniboul', stats: { deg: [36, 51], vit: [75, 107], crit: [1, 2] } },
+  cape_kanniboul:    { icon: '🦚', name: 'Pagne de Plumes', slot: 'cape', lvl: 58, set: 'kanniboul', stats: { deg: [20, 32], vit: [68, 96], dodge: [2, 4] } },
+  ceinture_kanniboul:{ icon: '🦴', name: "Ceinture d'Os", slot: 'ceinture', lvl: 60, set: 'kanniboul', stats: { deg: [37, 52], vit: [48, 68] } },
+  bottes_kanniboul:  { icon: '🥾', name: 'Sandales du Chasseur', slot: 'bottes', lvl: 62, set: 'kanniboul', stats: { deg: [46, 66], vit: [39, 55], dodge: [3, 5] } },
+  lance_kanniboul:   { icon: '🔱', name: "Javelot d'Ebil", slot: 'arme', lvl: 64, set: 'kanniboul', stats: { deg: [87, 123], crit: [2, 4] } },
+  relique_kanniboul: { name: "Totem d'Ebil", slot: 'relique', lvl: 62, relic: true, stats: { deg: [46, 66], crit: [3, 6], dmgPct: [10, 16] } },
 
   /* Panoplie du Porcos — lard, boucle et grosse chaîne dorée */
-  coiffe_porcos:   { icon: '🎩', name: 'Chapeau de Don Dorgan', slot: 'coiffe', lvl: 76, set: 'porcos', stats: { deg: [28, 42], vit: [70, 104], pp: [24, 38] } },
-  cape_porcos:     { icon: '🧥', name: 'Redingote de Farle', slot: 'cape', lvl: 78, set: 'porcos', stats: { vit: [80, 116], sag: [24, 40], res: [2, 4] } },
-  ceinture_porcos: { icon: '🎗️', name: 'Ceinture du Porsalu', slot: 'ceinture', lvl: 80, set: 'porcos', stats: { deg: [32, 50], vit: [52, 72] } },
-  amulette_porcos: { icon: '📿', name: 'Médaillon du Porcos', slot: 'amulette', lvl: 82, set: 'porcos', stats: { vit: [90, 130], res: [4, 6], pp: [28, 46] } },
-  rotissoire_cochon:{ icon: '🍖', name: 'Rôtissoire du Dragon Cochon', slot: 'arme', lvl: 88, set: 'porcos', stats: { deg: [78, 112], vit: [20, 35] } },
+  coiffe_porcos:   { icon: '🎩', name: 'Chapeau de Don Dorgan', slot: 'coiffe', lvl: 76, set: 'porcos', stats: { deg: [43, 61], vit: [107, 152], pp: [24, 38] } },
+  cape_porcos:     { icon: '🧥', name: 'Redingote de Farle', slot: 'cape', lvl: 78, set: 'porcos', stats: { vit: [108, 154], sag: [24, 40], res: [2, 4] } },
+  ceinture_porcos: { icon: '🎗️', name: 'Ceinture du Porsalu', slot: 'ceinture', lvl: 80, set: 'porcos', stats: { deg: [45, 64], vit: [68, 96] } },
+  amulette_porcos: { icon: '📿', name: 'Médaillon du Porcos', slot: 'amulette', lvl: 82, set: 'porcos', stats: { vit: [97, 138], pp: [28, 46], res: [4, 6] } },
+  rotissoire_cochon:{ icon: '🍖', name: 'Rôtissoire du Dragon Cochon', slot: 'arme', lvl: 88, set: 'porcos', stats: { deg: [96, 136], vit: [26, 41] } },
   /* Dofus : objet à part (emplacements Dofus du héros), pas de jet : les stats sont fixes */
-  dofus_turquoise: { name: 'Dofus Turquoise', slot: 'dofus', lvl: 80, dofus: true, stats: { crit: [20, 20], critDmg: [50, 50] } },
-  relique_porcos:  { name: 'Tirelire du Dragon Cochon', slot: 'relique', lvl: 80, relic: true, stats: { kamas: [50, 80], vit: [80, 130] } },
+  dofus_turquoise: { name: 'Dofus Turquoise', slot: 'dofus', lvl: 80, dofus: true, stats: { crit: [22, 22], critDmg: [60, 60] } },
+  relique_porcos:  { name: 'Tirelire du Dragon Cochon', slot: 'relique', lvl: 80, relic: true, stats: { deg: [33, 47], vit: [166, 237], kamas: [50, 80] } },
 
   /* Panoplie du Dragoeuf — coquille, ailes et braise */
-  coiffe_dragoeuf:  { icon: '🥚', name: 'Coquille du Dragoeuf', slot: 'coiffe', lvl: 90, set: 'dragoeuf', stats: { deg: [36, 52], vit: [90, 130], res: [2, 4] } },
-  cape_dragoeuf:    { icon: '🦇', name: 'Ailes de Dragoss', slot: 'cape', lvl: 94, set: 'dragoeuf', stats: { vit: [100, 144], sag: [34, 54], dodge: [3, 5] } },
-  amulette_dragoeuf:{ icon: '📿', name: 'Collier de Dragueuse', slot: 'amulette', lvl: 96, set: 'dragoeuf', stats: { deg: [40, 58], vit: [100, 140], pp: [30, 50] } },
-  anneau_dragoeuf:  { icon: '💍', name: 'Anneau de Dragoss Doré', slot: 'anneau', lvl: 98, set: 'dragoeuf', stats: { deg: [52, 72], pp: [32, 52], crit: [1, 2] } },
-  croc_crocabulia:  { icon: '🦷', name: 'Croc de Crocabulia', slot: 'arme', lvl: 104, set: 'dragoeuf', stats: { deg: [100, 140], crit: [3, 5] } },
-  relique_dragoeuf: { name: 'Œuf de Crocabulia', slot: 'relique', lvl: 100, relic: true, stats: { speed: [18, 28], dmgPct: [12, 18], vit: [80, 120] } },
+  coiffe_dragoeuf:  { icon: '🥚', name: 'Coquille du Dragoeuf', slot: 'coiffe', lvl: 90, set: 'dragoeuf', stats: { deg: [43, 62], vit: [109, 155], res: [2, 4] } },
+  cape_dragoeuf:    { icon: '🦇', name: 'Ailes de Dragoss', slot: 'cape', lvl: 94, set: 'dragoeuf', stats: { vit: [116, 165], sag: [34, 54], dodge: [3, 5] } },
+  amulette_dragoeuf:{ icon: '📿', name: 'Collier de Dragueuse', slot: 'amulette', lvl: 96, set: 'dragoeuf', stats: { deg: [43, 62], vit: [106, 151], pp: [30, 50] } },
+  anneau_dragoeuf:  { icon: '💍', name: 'Anneau de Dragoss Doré', slot: 'anneau', lvl: 98, set: 'dragoeuf', stats: { deg: [57, 81], pp: [32, 52], crit: [1, 2] } },
+  croc_crocabulia:  { icon: '🦷', name: 'Croc de Crocabulia', slot: 'arme', lvl: 104, set: 'dragoeuf', stats: { deg: [125, 178], crit: [3, 5] } },
+  relique_dragoeuf: { name: 'Œuf de Crocabulia', slot: 'relique', lvl: 100, relic: true, stats: { vit: [123, 175], dmgPct: [8, 12], speed: [10, 16] } },
 
   /* Panoplie du Mansot — fourrure, givre et glace éternelle */
-  coiffe_mansot:   { icon: '🧣', name: 'Capuche du Mansot', slot: 'coiffe', lvl: 108, set: 'mansot', stats: { deg: [46, 66], vit: [110, 160], res: [3, 5] } },
-  cape_mansot:     { icon: '🧥', name: 'Manteau du Mansot', slot: 'cape', lvl: 112, set: 'mansot', stats: { vit: [120, 170], sag: [40, 62], res: [3, 5] } },
-  bottes_mansot:   { icon: '🥾', name: 'Bottes de Givre', slot: 'bottes', lvl: 114, set: 'mansot', stats: { deg: [58, 80], vit: [70, 100], dodge: [4, 6] } },
-  ceinture_mansot: { icon: '🎗️', name: 'Ceinture de Glace', slot: 'ceinture', lvl: 118, set: 'mansot', stats: { deg: [54, 76], vit: [80, 116], pp: [36, 58] } },
-  masse_mansot:    { icon: '🔨', name: 'Masse du Mansot Royal', slot: 'arme', lvl: 126, set: 'mansot', stats: { deg: [120, 168], crit: [3, 6] } },
-  relique_mansot:  { name: 'Cœur de Givre du Mansot Royal', slot: 'relique', lvl: 120, relic: true, stats: { res: [8, 12], dmgPct: [14, 20], dodge: [4, 7] } },
+  coiffe_mansot:   { icon: '🧣', name: 'Capuche du Mansot', slot: 'coiffe', lvl: 108, set: 'mansot', stats: { deg: [49, 70], vit: [119, 170], res: [3, 5] } },
+  cape_mansot:     { icon: '🧥', name: 'Manteau du Mansot', slot: 'cape', lvl: 112, set: 'mansot', stats: { vit: [130, 184], sag: [40, 62], res: [3, 5] } },
+  bottes_mansot:   { icon: '🥾', name: 'Bottes de Givre', slot: 'bottes', lvl: 114, set: 'mansot', stats: { deg: [66, 94], vit: [81, 116], dodge: [4, 6] } },
+  ceinture_mansot: { icon: '🎗️', name: 'Ceinture de Glace', slot: 'ceinture', lvl: 118, set: 'mansot', stats: { deg: [56, 80], vit: [85, 121], pp: [36, 58] } },
+  masse_mansot:    { icon: '🔨', name: 'Masse du Mansot Royal', slot: 'arme', lvl: 126, set: 'mansot', stats: { deg: [143, 204], crit: [3, 6] } },
+  relique_mansot:  { name: 'Cœur de Givre du Mansot Royal', slot: 'relique', lvl: 120, relic: true, stats: { vit: [89, 126], res: [5, 8], dodge: [3, 5], dmgPct: [8, 12] } },
 });
 
 /* ---------------------------- Recettes (coût ×CRAFT_COST_MULT appliqué ici) ---------------------------- */

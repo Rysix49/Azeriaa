@@ -1,0 +1,550 @@
+/* =====================================================================
+   TALENTS DE CLASSE — un arbre par classe, 3 voies de 13 talents chacune
+   1 point de talent tous les 3 niveaux (66 au niveau 200).
+   Icônes : chaque talent / voie porte une spec « glyphe » ou « glyphe|badge » dessinée par skillicons*.js (skIco) — jamais d'emoji.
+   Chaque voie s'ouvre ligne par ligne (SKILL_GATE : points déjà dépensés dans la voie) et se termine
+   par un talent clé (coût 3) qui change la façon de jouer la classe.
+   Les clés de bonus propres à une classe (furyGain, faceDmg, grainGain…) sont lues par engine.js ;
+   les bonus génériques (deg, dmgPct, crit, hpPct…) passent par heroTotals().
+   ===================================================================== */
+const SKILL_LEVELS_PER_POINT = 3;
+const SKILL_GATE = [0, 0, 3, 6, 10, 15, 21];   // points déjà dépensés dans la voie pour ouvrir chaque ligne
+
+/* Libellés des bonus : clé → [nom, suffixe] */
+const SKILL_STAT = {
+  /* généraux */
+  deg: ['Dégâts', ' %'], dmgPct: ['Dégâts finaux', ' %'], dmg: ['Dommages fixes', ''], crit: ['Critique', ' %'], critDmg: ['Dégâts critiques', ' %'],
+  speed: ['Vitesse de combat', ' %'], pa: ['PA', ''], vit: ['Vitalité', ''], hpPct: ['PV max', ' %'], res: ['Résistance', ' %'], dodge: ['Esquive', ' %'],
+  regen: ['Régénération par tour', ' % PV'], soin: ['Soins', ''], pp: ['Prospection', ''], kamas: ['Kamas gagnés', ' %'], xpPct: ['XP de combat', ' %'],
+  /* passifs communs à toutes les classes */
+  execute: ['Dégâts aux ennemis sous 35 % de PV', ' %'], bossDmg: ['Dégâts aux boss et archimonstres', ' %'], lastStand: ['Dégâts sous 50 % de PV', ' %'],
+  firstStrike: ['Dégâts au premier tour', ' %'], killHeal: ['PV rendus par ennemi achevé', ' % PV'], thorns: ['Dégâts renvoyés', ' %'],
+  heavyDmg: ['Dégâts des sorts de 4 PA et +', ' %'], aoeDmg: ['Dégâts des sorts de zone', ' %'], poisonDmg: ['Dégâts de poison', ' %'],
+  undying: ['Survit à un coup fatal (1×/combat) avec', ' % PV'],
+  /* Iop */
+  furyGain: ['Gain de Fureur', ' %'], rageStep: ['Dégâts par cumul de Rage', ''], rageMax: ['Cumul de Rage max', ''], colereDmg: ['Dégâts de la Colère de Iop', ' %'], furyKeep: ['Fureur gardée après la Colère', ' %'],
+  /* Cra */
+  focusGain: ['Chance de Concentration double', ' %'], focusCrit: ['Critique par point de Concentration', ' %'], preyDmg: ['Dégâts sur la proie', ' %'],
+  perfectDmg: ['Dégâts du Tir Parfait', ' %'], perfectPierce: ['Transpercement du Tir Parfait', ' %'], poisonTurns: ['Durée du poison', ' tour'], dodgeFocus: ['Concentration gagnée en esquivant', ' %'],
+  /* Zobal */
+  rireDmg: ['Dégâts du Masque Rieur', ' %'], fervChance: ['Chances de gagner de la Ferveur', ' %'], apoCrit: ['Critique en Apothéose', ' %'],
+  larmeDef: ['Protection du Masque Pleureur', ' %'], larmeHeal: ['Soins du Masque Pleureur', ' %'], farceChance: ['Chances du Masque Farceur', ' %'],
+  ruptureDmg: ['Dégâts de Rupture', ' %'], fervHold: ['Durée de l’Apothéose', ' %'],
+  /* Sacrieur */
+  bloodRate: ['Remplissage du Sang versé', ' %'], colosseDmg: ['Dégâts du Colosse de Sang', ' %'], stigDmg: ['Dégâts par Stigmate', ' %'],
+  martyrHp: ['PV après le Martyre', ' % PV'], martyrBlast: ['Explosion du Martyre', ' %'], thirst: ['Soif de sang', ' %'], drainHeal: ['Soins des sorts de vol de vie', ' %'],
+  /* Enutrof */
+  coinChance: ['Chances de pièce en plus', ' %'], jackpotDmg: ['Dégâts du Jackpot', ' %'], jackpotKamas: ['Kamas par Jackpot', ' %'], ppDmg: ['« L’or fait la force »', ' %'],
+  chestRush: ['Dégâts de la Ruée vers l’or', ''], chestKamas: ['Kamas du monstre au trésor', ' %'], chestCoins: ['Pièces du coffre', ''],
+  bribeHp: ['PV après le Pot-de-vin', ' % PV'], bribeMin: ['Pièces requises (Pot-de-vin)', ''],
+  /* Ecaflip */
+  faceDmg: ['Dégâts de Face', ' %'], faceChance: ['Chances de Face', ' %'], pileDef: ['Protection de Pile', ' %'], cloverGain: ['Chance de Trèfle en plus', ' %'],
+  cloverCrit: ['Critique par Trèfle', ' %'], gambleWin: ['Réussite de Quitte ou Double', ' %'], gambleLoss: ['Coût d’un Quitte ou Double raté', ' %'], nineLives: ['Chances de Neuf Vies', ' %'],
+  /* Sram */
+  invisDmg: ['Dégâts en invisibilité', ' %'], invisMiss: ['Chances d’être raté en invisibilité', ' %'], invisCrit: ['Dégâts critiques en invisibilité', ' %'],
+  trapDmg: ['Dégâts du piège', ' %'], trapRearm: ['Chance de reposer un piège', ' %'],
+  /* Xélor */
+  grainGain: ['Grains par sort', ''], freezeChance: ['Chances de figer', ' %'], frozenDmg: ['Dégâts aux cibles figées', ' %'], rewindDmg: ['Dégâts du tour rembobiné', ' %'],
+  chronoGain: ['Chance de double Éclat du temps', ' %'], paradoxHp: ['PV après le Paradoxe', ' % PV'], paradoxGrains: ['Grains requis (Paradoxe)', ''],
+  /* Steamer */
+  turretDmg: ['Dégâts des tourelles', ' %'], burnDmg: ['Dégâts de Brûlure', ' %'], vaporDmg: ['Dégâts de Vapeur', ' %'], turretHp: ['PV des tourelles', ' %'],
+  turretHeal: ['Soins de la tourelle Défensive', ' %'], decoy: ['Chances de leurre', ' %'], steamRate: ['Remplissage de la Pression', ' %'],
+  surgeDmg: ['Dégâts de la Surcharge Stasis', ' %'], magChance: ['Chances de magnétiser', ' %'],
+};
+
+/* Disposition d'une voie : 13 talents sur 7 lignes × 3 colonnes. Un emplacement = [ligne, colonne, prérequis (emplacements, l'un d'eux suffit)].
+   SK_ORDER : emplacement → rang du talent dans la liste de la voie (les 8 premiers talents gardent leur identifiant d'origine ; les 5 derniers de la liste sont les ajouts). */
+const SK_TOPO = [[0, 1, []], [1, 0, [0]], [1, 2, [0]], [2, 0, [1]], [2, 1, [1, 2]], [2, 2, [2]], [3, 0, [3, 4]], [3, 2, [4, 5]], [4, 0, [6]], [4, 1, [6, 7]], [4, 2, [7]], [5, 1, [8, 9, 10]], [6, 1, [11]]];
+const SK_ORDER = [0, 1, 2, 8, 3, 9, 4, 5, 10, 11, 12, 6, 7];
+
+/* Construit une voie. Talent : [nom, icône, rangs max, bonus par rang, explication?]. Le 8e de la liste est le talent clé (1 rang, 3 points) ; les suivants sont placés par SK_ORDER. */
+function skMakeBranch(cls, id, name, icon, col, text, per, mile, nodes) {
+  const b = { id: cls + '_' + id, cls, name, icon, col, text, per, mile, nodes: [] };
+  const nid = d => `${cls}_${id}${d + 1}`;
+  nodes.forEach((n, d) => {
+    const slot = SK_ORDER.indexOf(d), [r, c, rq] = SK_TOPO[slot], key = d === 7;
+    b.nodes.push([nid(d), n[0], n[1], key ? 1 : n[2], n[3], r, c, rq.map(q => nid(SK_ORDER[q])), key ? 3 : 1, n[4] || '']);
+  });
+  return b;
+}
+
+const CLASS_TREES = {
+
+/* ============================== IOP : la Rage ============================== */
+iop: [
+  skMakeBranch('iop', 'rage', 'Voie de la Rage', 'flame', '#e0533f', 'Nourrir la colère : la Rage monte plus haut et la jauge de Fureur se remplit plus vite.',
+    { dmgPct: 0.2 }, [[4, { deg: 3 }], [8, { furyGain: 8 }], [12, { dmgPct: 3 }], [16, { rageStep: 2 }], [20, { colereDmg: 8 }], [24, { dmgPct: 4, crit: 2 }], [30, { furyGain: 10 }], [36, { colereDmg: 10, dmgPct: 3 }]], [
+    ['Sang Chaud', 'bloodrop|flame', 3, { furyGain: 8 }, 'La jauge de Fureur se remplit plus vite à chaque tour offensif.'],
+    ['Poings Serrés', 'fist', 4, { deg: 3 }],
+    ['Hargne', 'snarl', 4, { rageStep: 1 }, 'Chaque cumul de Rage donne davantage de Dégâts (12 de base).'],
+    ['Crescendo', 'bars|up', 1, { rageMax: 1 }, 'Un cumul de Rage supplémentaire (6 au lieu de 5).'],
+    ['Brasier', 'brazier', 3, { furyGain: 10 }],
+    ['Rugissement', 'lion', 3, { colereDmg: 8 }],
+    ['Fureur Contenue', 'volcano', 3, { colereDmg: 6, dmgPct: 1 }],
+    ['Colère Éternelle', 'comet', 1, { furyKeep: 35, colereDmg: 12 }, 'Après la Colère de Iop, 35 % de la jauge de Fureur reste pleine : la prochaine arrive bien plus vite.'],
+    ['Cri de Guerre', 'horn', 3, { furyGain: 6 }],
+    ['Muscles Bandés', 'arm', 3, { deg: 3 }],
+    ['Rage au Ventre', 'angry|plus', 3, { rageStep: 1 }],
+    ['Éruption', 'burst', 3, { colereDmg: 5 }],
+    ['Lame de Fond', 'wave', 3, { dmgPct: 1.5 }],
+  ]),
+  skMakeBranch('iop', 'tranchant', 'Voie du Tranchant', 'crossswords', '#f0a04b', 'Des coups plus lourds et plus précis, qui achèvent les blessés.',
+    { crit: 0.15 }, [[4, { crit: 2 }], [8, { heavyDmg: 5 }], [12, { critDmg: 10 }], [16, { execute: 5 }], [20, { dmgPct: 4 }], [24, { crit: 3, critDmg: 10 }], [30, { crit: 2, execute: 4 }], [36, { heavyDmg: 8, critDmg: 8 }]], [
+    ['Lame Aiguisée', 'sword|up', 3, { deg: 3 }],
+    ['Œil du Guerrier', 'eye|sword', 4, { crit: 2 }],
+    ['Poigne de Fer', 'gauntlet', 4, { heavyDmg: 3 }, 'Bonus aux sorts de 4 PA ou plus (Épée du Destin, Épée Céleste…).'],
+    ['Coup de Grâce', 'sword|skull', 3, { execute: 6 }, 'Dégâts en plus contre les ennemis sous 35 % de leurs PV.'],
+    ['Entaille Profonde', 'wound', 3, { critDmg: 8 }],
+    ['Briseur de Boss', 'demon', 3, { bossDmg: 5 }],
+    ['Maître d’Armes', 'medal', 3, { dmgPct: 2, crit: 1 }],
+    ['Épée du Destin', 'greatsword', 1, { heavyDmg: 12, execute: 10, critDmg: 10 }, 'La lame de Iop ne pardonne pas : ses plus gros sorts écrasent les ennemis affaiblis.'],
+    ['Taille Précise', 'target|sword', 3, { crit: 1.5 }],
+    ['Force Brute', 'hammer', 3, { heavyDmg: 3 }],
+    ['Estoc', 'rapier', 3, { critDmg: 6 }],
+    ['Pourfendeur', 'axe', 3, { execute: 4 }],
+    ['Chasseur de Primes', 'wanted', 3, { bossDmg: 4 }],
+  ]),
+  skMakeBranch('iop', 'rempart', 'Voie du Rempart', 'shield', '#5e8ad0', 'Tenir debout là où d’autres tombent.',
+    { hpPct: 0.15 }, [[4, { hpPct: 2 }], [8, { res: 2 }], [12, { regen: 0.3 }], [16, { hpPct: 3 }], [20, { killHeal: 2 }], [24, { res: 3, hpPct: 3 }], [30, { regen: 0.3, res: 2 }], [36, { hpPct: 4, lastStand: 8 }]], [
+    ['Peau Tannée', 'leather', 3, { vit: 25 }],
+    ['Cuirasse', 'breastplate', 4, { res: 1 }],
+    ['Endurance', 'lungs|up', 4, { hpPct: 1.5 }],
+    ['Second Souffle', 'breath', 3, { regen: 0.25 }],
+    ['Rage de Survivre', 'heart|flame', 3, { lastStand: 5 }, 'Dégâts en plus tant que ses PV sont sous la moitié.'],
+    ['Appétit de Guerre', 'drumstick', 3, { killHeal: 1.5 }, 'Chaque ennemi achevé lui rend des PV.'],
+    ['Muraille', 'wall', 3, { res: 1, hpPct: 2 }],
+    ['Increvable', 'heart|shield', 1, { undying: 20, hpPct: 5 }, 'Une fois par combat, un coup fatal le laisse à 20 % de ses PV.'],
+    ['Carrure', 'dumbbell', 3, { vit: 25 }],
+    ['Bouclier Levé', 'roundshield', 3, { res: 1 }],
+    ['Dos au Mur', 'barricade', 3, { lastStand: 4 }],
+    ['Ténacité', 'chain', 3, { hpPct: 1.5 }],
+    ['Festin du Guerrier', 'roast', 3, { killHeal: 1 }],
+  ]),
+],
+
+/* ============================== CRA : la Traque ============================== */
+cra: [
+  skMakeBranch('cra', 'traque', 'Voie de la Traque', 'bowarrow', '#6fb04f', 'Marquer la proie et ne plus la lâcher : Concentration et Tir Parfait.',
+    { crit: 0.15 }, [[4, { crit: 2 }], [8, { focusCrit: 1 }], [12, { preyDmg: 5 }], [16, { critDmg: 10 }], [20, { perfectDmg: 10 }], [24, { dmgPct: 4 }], [30, { preyDmg: 6, crit: 2 }], [36, { perfectDmg: 12, focusCrit: 1 }]], [
+    ['Regard de Faucon', 'hawk', 3, { crit: 2 }],
+    ['Concentration', 'crosshair', 4, { focusCrit: 1 }, 'Chaque point de Concentration donne davantage de critique (6 % de base).'],
+    ['Marque du Chasseur', 'mark', 4, { preyDmg: 3 }, 'Dégâts en plus sur la proie marquée.'],
+    ['Souffle Retenu', 'lungs', 3, { focusGain: 8 }, 'Chance de gagner un point de Concentration de plus à chaque tir sur la proie.'],
+    ['Tir Mortel', 'arrow|skull', 3, { perfectDmg: 10 }],
+    ['Flèche Traversante', 'pierce', 3, { perfectPierce: 15 }, 'Les dégâts en trop du Tir Parfait passent plus fort à l’ennemi suivant.'],
+    ['Patience du Chasseur', 'hourglass|up', 3, { preyDmg: 3, critDmg: 5 }],
+    ['Tir Absolu', 'shootstar', 1, { perfectDmg: 25, perfectPierce: 35, focusGain: 15 }, 'Le Tir Parfait devient dévastateur et transperce bien plus loin.'],
+    ['Œil de Lynx', 'lynx', 3, { crit: 1.5 }],
+    ['Carquois Garni', 'quiver', 3, { deg: 3 }],
+    ['Cible Verrouillée', 'target|lock', 3, { preyDmg: 3 }],
+    ['Respiration Calme', 'lotus', 3, { focusGain: 6 }],
+    ['Corde Tendue', 'bowdrawn', 3, { perfectDmg: 6 }],
+  ]),
+  skMakeBranch('cra', 'venin', 'Voie du Venin', 'skullbones', '#8a5ccf', 'Des poisons plus longs, plus cruels.',
+    { poisonDmg: 0.4 }, [[4, { poisonDmg: 4 }], [8, { crit: 2 }], [12, { poisonTurns: 1 }], [16, { poisonDmg: 6 }], [20, { dmgPct: 3 }], [24, { poisonDmg: 8 }], [30, { poisonDmg: 6 }], [36, { dmgPct: 3, crit: 2 }]], [
+    ['Pointes Enduites', 'dart|poison', 3, { poisonDmg: 3 }],
+    ['Dose Létale', 'syringe', 4, { poisonDmg: 3 }],
+    ['Poison Tenace', 'poisondrop|clock', 2, { poisonTurns: 1 }, 'Ses poisons durent un tour de plus par rang.'],
+    ['Toxine Virulente', 'biohazard', 3, { deg: 3, poisonDmg: 2 }],
+    ['Nuée de Venin', 'bee', 3, { aoeDmg: 4 }],
+    ['Cruauté', 'devil', 3, { execute: 5 }],
+    ['Maître Empoisonneur', 'snake', 3, { poisonDmg: 4, crit: 1 }],
+    ['Mort Lente', 'web', 1, { poisonDmg: 20, poisonTurns: 1 }, 'Ses poisons durent plus longtemps et rongent bien plus fort.'],
+    ['Racines Vénéneuses', 'vine', 3, { poisonDmg: 3 }],
+    ['Fiole Corrosive', 'flask', 3, { deg: 3 }],
+    ['Spores', 'mushroom', 3, { aoeDmg: 3 }],
+    ['Veine Toxique', 'bloodrop|poison', 3, { poisonDmg: 3, crit: 1 }],
+    ['Venin Amer', 'fang', 3, { execute: 3 }],
+  ]),
+  skMakeBranch('cra', 'esquive', 'Voie de l’Esquive', 'leaf', '#4fb8a0', 'Insaisissable : on ne touche pas un Cra qui bouge.',
+    { dodge: 0.12 }, [[4, { dodge: 1 }], [8, { speed: 3 }], [12, { dodge: 1 }], [16, { hpPct: 3 }], [20, { dodge: 1, speed: 3 }], [24, { dmgPct: 4 }], [30, { dodge: 1.5, speed: 3 }], [36, { dodgeFocus: 12, dmgPct: 3 }]], [
+    ['Pas Léger', 'boot', 3, { dodge: 1 }],
+    ['Réflexes', 'bolt', 4, { dodge: 1 }],
+    ['Souplesse', 'spring', 4, { speed: 2 }],
+    ['Esquive Parfaite', 'miss', 3, { dodgeFocus: 12 }, 'Quand il esquive un coup, chance de gagner un point de Concentration.'],
+    ['Course Folle', 'dash', 3, { speed: 3 }],
+    ['Ombre Mouvante', 'afterimage', 3, { dodge: 1, crit: 1 }],
+    ['Vent dans le Dos', 'windleaf', 3, { dmgPct: 2, res: 1 }],
+    ['Fantôme des Bois', 'pine', 1, { dodge: 4, dodgeFocus: 20, speed: 5 }, 'Quasi insaisissable, il transforme chaque esquive en concentration.'],
+    ['Pied Léger', 'footprint', 3, { speed: 2 }],
+    ['Roulade', 'rollarrow', 3, { dodge: 1 }],
+    ['Sens Aiguisés', 'ear', 3, { dodgeFocus: 8 }],
+    ['Danse des Feuilles', 'leaves', 3, { dmgPct: 1.5 }],
+    ['Instinct Sauvage', 'wolf', 3, { crit: 1.5 }],
+  ]),
+],
+
+/* ============================== ZOBAL : les Masques ============================== */
+zobal: [
+  skMakeBranch('zobal', 'rieur', 'Voie du Rieur', 'maskhappy', '#e9a23b', 'Le rire est une arme : dégâts, critiques et Apothéose.',
+    { dmgPct: 0.2 }, [[4, { dmgPct: 2 }], [8, { rireDmg: 4 }], [12, { crit: 2 }], [16, { apoCrit: 5 }], [20, { dmgPct: 3 }], [24, { rireDmg: 6 }], [30, { fervChance: 3, rireDmg: 5 }], [36, { apoCrit: 6, dmgPct: 3 }]], [
+    ['Fou Rire', 'laugh', 3, { rireDmg: 4 }],
+    ['Éclat de Voix', 'soundwave', 4, { deg: 3 }],
+    ['Ferveur Joyeuse', 'torch', 4, { fervChance: 3 }, 'Chaque attaque a plus de chances de donner un point de Ferveur.'],
+    ['Humour Noir', 'heartp', 3, { rireDmg: 4 }],
+    ['Cascade de Rires', 'partypopper', 3, { crit: 1.5 }],
+    ['Apothéose Éclatante', 'laurel', 3, { apoCrit: 4 }, 'Davantage de critique quand la Ferveur est au maximum.'],
+    ['Maître de Cérémonie', 'tophat', 3, { dmgPct: 2, fervChance: 3 }],
+    ['Éclat Solaire', 'sun', 1, { rireDmg: 15, apoCrit: 10, dmgPct: 4 }, 'Le Masque Rieur frappe bien plus fort et l’Apothéose devient presque garantie.'],
+    ['Gloussement', 'giggle', 3, { rireDmg: 3 }],
+    ['Voix de Stentor', 'bullhorn', 3, { deg: 3 }],
+    ['Fou Rire Contagieux', 'grin|plus', 3, { fervChance: 2 }],
+    ['Clowneries', 'clown', 3, { critDmg: 5 }],
+    ['Numéro Final', 'maskpair', 3, { apoCrit: 3 }],
+  ]),
+  skMakeBranch('zobal', 'pleureur', 'Voie du Pleureur', 'maskcry', '#4a8fd0', 'Un masque de larmes : encaisser, guérir, durer.',
+    { hpPct: 0.15 }, [[4, { hpPct: 2 }], [8, { larmeDef: 3 }], [12, { res: 2 }], [16, { larmeHeal: 10 }], [20, { hpPct: 3 }], [24, { killHeal: 2 }], [30, { larmeDef: 3, hpPct: 2 }], [36, { larmeHeal: 15, res: 2 }]], [
+    ['Larme Discrète', 'tear', 3, { vit: 25 }],
+    ['Voile de Tristesse', 'raincloud', 4, { larmeDef: 3 }],
+    ['Sanglot Salvateur', 'heartb|plus', 4, { larmeHeal: 8 }],
+    ['Mélancolie', 'fog', 3, { res: 1.5 }],
+    ['Torrent de Larmes', 'torrent', 3, { larmeHeal: 10 }],
+    ['Cœur Lourd', 'heartb|down', 3, { hpPct: 2 }],
+    ['Pleureuse Ancestrale', 'urn', 3, { larmeDef: 4, hpPct: 1 }],
+    ['Déluge Salvateur', 'stormcloud', 1, { larmeDef: 15, larmeHeal: 30, undying: 15 }, 'Une fois par combat, un coup fatal le laisse à 15 % de ses PV.'],
+    ['Sanglot Étouffé', 'sob', 3, { vit: 25 }],
+    ['Pluie Fine', 'drizzle', 3, { larmeHeal: 6 }],
+    ['Cuirasse de Larmes', 'dropshield', 3, { larmeDef: 2 }],
+    ['Marée Basse', 'seashell', 3, { res: 1 }],
+    ['Source Intarissable', 'fountain', 3, { larmeHeal: 8 }],
+  ]),
+  skMakeBranch('zobal', 'farceur', 'Voie du Farceur', 'jesterhat', '#b05bd0', 'Chaos contrôlé : sorts doublés et Ruptures dévastatrices.',
+    { crit: 0.12 }, [[4, { crit: 1.5 }], [8, { farceChance: 3 }], [12, { ruptureDmg: 8 }], [16, { critDmg: 8 }], [20, { fervHold: 10 }], [24, { dmgPct: 4 }], [30, { farceChance: 3, crit: 2 }], [36, { ruptureDmg: 15, dmgPct: 3 }]], [
+    ['Mauvais Tour', 'joker', 3, { crit: 1.5 }],
+    ['Double Jeu', 'cards2', 4, { farceChance: 2 }],
+    ['Rupture de Ton', 'brokennote', 4, { ruptureDmg: 8 }],
+    ['Surprise !', 'giftbox', 3, { critDmg: 6 }],
+    ['Fiesta Prolongée', 'partyhat', 3, { fervHold: 8 }, 'La Ferveur pleine reste active plus longtemps.'],
+    ['Pièce Truquée', 'trickcoin', 3, { farceChance: 2, crit: 1 }],
+    ['Bouffon Royal', 'harlequin', 3, { ruptureDmg: 8, dmgPct: 2 }],
+    ['Carnaval Total', 'fireworks', 1, { farceChance: 10, ruptureDmg: 30, fervHold: 20 }, 'Ses sorts doublent bien plus souvent et chaque Rupture est un feu d’artifice.'],
+    ['Gag Éclair', 'bananapeel', 3, { crit: 1.5 }],
+    ['Tour de Passe-Passe', 'wand', 3, { ruptureDmg: 6 }],
+    ['Cascade de Gags', 'circustent', 3, { farceChance: 2 }],
+    ['Éclat de Confettis', 'balloon', 3, { ruptureDmg: 8 }],
+    ['Surenchère', 'gavel', 3, { fervHold: 6 }],
+  ]),
+],
+
+/* ============================== SACRIEUR : le Sang ============================== */
+sacrieur: [
+  skMakeBranch('sacrieur', 'sang', 'Voie du Sang', 'chalice', '#c0392b', 'Faire couler le sang, jusqu’au Colosse.',
+    { dmgPct: 0.2 }, [[4, { dmgPct: 2 }], [8, { bloodRate: 8 }], [12, { stigDmg: 1 }], [16, { colosseDmg: 8 }], [20, { dmgPct: 3 }], [24, { bloodRate: 12 }], [30, { bloodRate: 8, colosseDmg: 8 }], [36, { stigDmg: 1, dmgPct: 3 }]], [
+    ['Saignée', 'dagger|blood', 3, { bloodRate: 6 }, 'La jauge de Sang versé se remplit plus vite.'],
+    ['Soif de Douleur', 'grimace', 4, { bloodRate: 6 }],
+    ['Sang Épais', 'bloodrop', 4, { deg: 3 }],
+    ['Stigmates Profonds', 'stigma', 3, { stigDmg: 1 }, 'Chaque Stigmate donne davantage de dégâts finaux (8 % de base).'],
+    ['Poing de Sang', 'fist|blood', 3, { colosseDmg: 8 }],
+    ['Offrande', 'candle', 3, { crit: 1.5, critDmg: 5 }],
+    ['Fureur Écarlate', 'rose', 3, { dmgPct: 2, bloodRate: 5 }],
+    ['Colosse Ancestral', 'golem', 1, { colosseDmg: 30, stigDmg: 2, bloodRate: 15 }, 'Le Colosse de Sang se remplit plus vite et écrase tout sur son passage.'],
+    ['Veines Gonflées', 'arm|blood', 3, { bloodRate: 5 }],
+    ['Coups de Sang', 'glove', 3, { deg: 3 }],
+    ['Rituel Sanglant', 'ritual', 3, { stigDmg: 0.5 }],
+    ['Marteau Écarlate', 'hammer|blood', 3, { colosseDmg: 6 }],
+    ['Frénésie', 'angry|bolt', 3, { crit: 1.5 }],
+  ]),
+  skMakeBranch('sacrieur', 'douleur', 'Voie de la Douleur', 'bounce', '#9b59b6', 'Renvoyer chaque coup, survivre au pire.',
+    { hpPct: 0.15 }, [[4, { hpPct: 2 }], [8, { thorns: 4 }], [12, { res: 2 }], [16, { martyrHp: 3 }], [20, { hpPct: 3 }], [24, { thorns: 6 }], [30, { thorns: 3, res: 2 }], [36, { martyrHp: 5, hpPct: 4 }]], [
+    ['Peau Épineuse', 'cactus', 3, { thorns: 3 }, 'Renvoie une plus grande part des dégâts reçus (30 % de base avec la Douleur partagée).'],
+    ['Chair Résistante', 'steak', 4, { vit: 30 }],
+    ['Masochisme', 'flail', 4, { thorns: 3 }],
+    ['Armure de Cicatrices', 'shieldscar', 3, { res: 1.5 }],
+    ['Dernier Souffle', 'breath|heart', 3, { martyrHp: 3 }, 'Après le Martyre, il garde davantage de PV.'],
+    ['Explosion de Rage', 'burst|skull', 3, { martyrBlast: 15 }, 'Le sang du Martyre explose plus fort.'],
+    ['Martyr Éternel', 'haloskull', 3, { hpPct: 2.5, thorns: 2 }],
+    ['Martyr Sublime', 'winghart', 1, { thorns: 12, martyrHp: 10, martyrBlast: 40 }, 'Le Martyre le laisse bien plus vivant et son sang ravage les ennemis.'],
+    ['Cicatrices Vives', 'bandage', 3, { vit: 30 }],
+    ['Épines d’Acier', 'thorns', 3, { thorns: 2 }],
+    ['Sang-Froid', 'heartb|snow', 3, { res: 1 }],
+    ['Contre-Coup', 'crossswords|shield', 3, { thorns: 2 }],
+    ['Détonateur', 'detonator', 3, { martyrBlast: 10 }],
+  ]),
+  skMakeBranch('sacrieur', 'vampire', 'Voie du Vampire', 'vamp', '#cf4b7a', 'Voler la vie pour ne plus jamais tomber.',
+    { hpPct: 0.1 }, [[4, { thirst: 3 }], [8, { hpPct: 2 }], [12, { drainHeal: 15 }], [16, { killHeal: 2 }], [20, { regen: 0.3 }], [24, { thirst: 4 }], [30, { drainHeal: 10, killHeal: 1 }], [36, { thirst: 3, execute: 5 }]], [
+    ['Morsure', 'puncture', 3, { drainHeal: 10 }, 'Ses sorts de vol de vie rendent davantage de PV.'],
+    ['Soif de Sang', 'vial', 4, { thirst: 2 }, 'Chaque ennemi achevé lui rend plus de PV (8 % des PV max de base).'],
+    ['Absorption Vorace', 'bloodrop|down', 4, { drainHeal: 10 }],
+    ['Festin', 'wineglass', 3, { killHeal: 1.5 }],
+    ['Régénération Sanguine', 'heart|plus', 3, { regen: 0.2 }],
+    ['Prédateur', 'wolf|blood', 3, { execute: 5 }],
+    ['Gourmandise', 'yum', 3, { thirst: 2, dmgPct: 1 }],
+    ['Seigneur Vampire', 'bat', 1, { thirst: 10, drainHeal: 30, regen: 0.5 }, 'Chaque ennemi achevé le soigne bien plus, comme ses sorts de vol de vie.'],
+    ['Crocs Acérés', 'fangs', 3, { deg: 3 }],
+    ['Goût du Sang', 'lips', 3, { drainHeal: 8 }],
+    ['Transfusion', 'iv', 3, { regen: 0.15 }],
+    ['Nuit Éternelle', 'moon', 3, { hpPct: 1.5 }],
+    ['Faim Insatiable', 'maw', 3, { thirst: 1 }],
+  ]),
+],
+
+/* ============================== ENUTROF : la Fièvre de l'Or ============================== */
+enutrof: [
+  skMakeBranch('enutrof', 'or', 'Voie de l’Or', 'coin', '#e8b92e', 'Plus il est riche, plus il frappe fort : bourse, Prospection et Jackpot.',
+    { pp: 1.5 }, [[4, { pp: 10 }], [8, { ppDmg: 8 }], [12, { kamas: 5 }], [16, { jackpotDmg: 10 }], [20, { pp: 20 }], [24, { ppDmg: 12 }], [30, { pp: 15, coinChance: 6 }], [36, { jackpotDmg: 15, ppDmg: 6 }]], [
+    ['Flair du Pauvre', 'nose', 3, { pp: 8 }],
+    ['Mains Pleines', 'handscoins', 4, { coinChance: 6 }, 'Chance de faire tomber une pièce de plus dans la bourse à chaque tour offensif.'],
+    ['L’Or Fait la Force', 'arm|coin', 4, { ppDmg: 5 }, 'Renforce le bonus « L’or fait la force » (+1 % de dégâts par 10 Prospection).'],
+    ['Pluie de Pièces', 'coinrain', 3, { jackpotDmg: 10 }],
+    ['Cupidité Sans Borne', 'greedy', 3, { coinChance: 8 }],
+    ['Prospecteur', 'minerhelm', 3, { pp: 10 }],
+    ['Banquier Véreux', 'bank', 3, { jackpotKamas: 4, kamas: 3 }],
+    ['Roi de l’Or', 'kingcoin', 1, { jackpotDmg: 30, jackpotKamas: 12, coinChance: 20, pp: 30 }, 'Le Jackpot dévaste tout et rapporte une fortune.'],
+    ['Pépites', 'nugget', 3, { pp: 6 }],
+    ['Poches Percées', 'pouchhole', 3, { coinChance: 4 }],
+    ['Éclat de l’Or', 'coin|star', 3, { ppDmg: 4 }],
+    ['Cascade de Pièces', 'pile', 3, { jackpotDmg: 8 }],
+    ['Coffre-Fort', 'safe', 3, { kamas: 3 }],
+  ]),
+  skMakeBranch('enutrof', 'tresor', 'Voie du Trésor', 'map', '#3fa7a0', 'Flairer le coffre et en tirer le maximum.',
+    { kamas: 0.4 }, [[4, { kamas: 3 }], [8, { chestCoins: 1 }], [12, { xpPct: 3 }], [16, { chestRush: 8 }], [20, { kamas: 4 }], [24, { chestKamas: 15 }], [30, { kamas: 4, chestRush: 8 }], [36, { xpPct: 4, chestKamas: 15 }]], [
+    ['Carte Annotée', 'scroll', 3, { kamas: 3 }],
+    ['Coup de Pelle', 'shovel', 4, { deg: 3 }],
+    ['Ruée Prolongée', 'minecart', 4, { chestRush: 6 }, 'Davantage de Dégâts pendant la Ruée vers l’or.'],
+    ['Coffre Bien Rempli', 'chest', 3, { chestKamas: 12 }, 'Le monstre au trésor rapporte plus de kamas.'],
+    ['Pièces Bonus', 'coin|plus', 2, { chestCoins: 1 }, 'Le coffre ouvert verse une pièce de plus dans la bourse.'],
+    ['Archéologue', 'fossil', 3, { xpPct: 2, pp: 6 }],
+    ['Chasseur de Trésors', 'compass', 3, { kamas: 3, dmgPct: 1.5 }],
+    ['Butin Légendaire', 'gem', 1, { chestRush: 25, chestKamas: 50, chestCoins: 2, kamas: 8 }, 'Le trésor du monstre vaut une fortune : Ruée géante, kamas décuplés.'],
+    ['Boussole Dorée', 'pin', 3, { kamas: 2 }],
+    ['Pioche Solide', 'pickaxe', 3, { deg: 3 }],
+    ['Fouilles Poussées', 'bone', 3, { xpPct: 2 }],
+    ['Sprint Doré', 'boot|coin', 3, { chestRush: 6 }],
+    ['Gros Lot', 'moneybag', 3, { chestKamas: 10 }],
+  ]),
+  skMakeBranch('enutrof', 'potdevin', 'Voie du Pot-de-vin', 'handshake', '#7b6ac0', 'Acheter sa survie, ruiner ses ennemis.',
+    { hpPct: 0.1 }, [[4, { hpPct: 2 }], [8, { bribeHp: 4 }], [12, { res: 2 }], [16, { hpPct: 3 }], [20, { bribeHp: 5 }], [24, { bribeHp: 6 }], [30, { bribeHp: 4, res: 2 }], [36, { hpPct: 4, dmgPct: 3 }]], [
+    ['Bourse Solide', 'purse', 3, { vit: 25 }],
+    ['Dessous-de-Table', 'briefcase', 4, { bribeHp: 3 }],
+    ['Poches Profondes', 'coat', 4, { res: 1 }],
+    ['Négociateur', 'speech|coin', 2, { bribeMin: -1 }, 'Le Pot-de-vin demande une pièce de moins (5 de base).'],
+    ['Assurance Vie', 'contract|heart', 3, { bribeHp: 3 }],
+    ['Garde du Corps', 'shades|shield', 3, { res: 1, hpPct: 1.5 }],
+    ['Corruption Totale', 'banknote', 3, { bribeHp: 2, dmgPct: 2 }],
+    ['Immunité Dorée', 'temple', 1, { bribeHp: 15, bribeMin: -1, undying: 10 }, 'En plus du Pot-de-vin, un second coup fatal peut être évité par combat.'],
+    ['Porte-Monnaie', 'wallet', 3, { vit: 25 }],
+    ['Pots-de-Vin Discrets', 'envelope|coin', 3, { bribeHp: 2 }],
+    ['Avocat d’Affaires', 'scales', 3, { res: 1 }],
+    ['Fonds de Réserve', 'piggy', 3, { hpPct: 1.5 }],
+    ['Chantage', 'smirk', 3, { dmgPct: 1.5 }],
+  ]),
+],
+
+/* ============================== ECAFLIP : Pile ou Face ============================== */
+ecaflip: [
+  skMakeBranch('ecaflip', 'face', 'Voie de Face', 'catface', '#f0b43a', 'Quand la chance sourit, tout est plus fort.',
+    { dmgPct: 0.2 }, [[4, { faceChance: 3 }], [8, { faceDmg: 6 }], [12, { crit: 2 }], [16, { dmgPct: 3 }], [20, { faceDmg: 8 }], [24, { faceChance: 5 }], [30, { faceDmg: 8, faceChance: 3 }], [36, { crit: 3, dmgPct: 3 }]], [
+    ['Pièce Chanceuse', 'coinface', 3, { faceChance: 3 }, 'Plus de chances de tomber sur Face au début du tour.'],
+    ['Sourire Carnassier', 'catgrin', 4, { faceDmg: 5 }, 'Face donne davantage de dégâts (+40 % de base).'],
+    ['Griffes Aiguisées', 'claws', 4, { deg: 3 }],
+    ['Coup de Maître', 'target|star', 3, { crit: 2 }],
+    ['Veine Insolente', 'horseshoe', 3, { faceChance: 3 }],
+    ['Face Éclatante', 'coinface|star', 3, { faceDmg: 6 }],
+    ['Joueur Invétéré', 'slot', 3, { dmgPct: 2, critDmg: 5 }],
+    ['Roi du Face', 'catking', 1, { faceDmg: 25, faceChance: 10, dmgPct: 4 }, 'Face tombe bien plus souvent et frappe bien plus fort.'],
+    ['Pile ou… Face !', 'coinflip', 3, { faceChance: 2 }],
+    ['Griffes Dorées', 'clawsg', 3, { deg: 3 }],
+    ['Éclat de Chance', 'sparkle', 3, { faceDmg: 4 }],
+    ['Moustaches en Éveil', 'whiskers|up', 3, { crit: 1.5 }],
+    ['Pari Gagnant', 'trophy', 3, { critDmg: 5 }],
+  ]),
+  skMakeBranch('ecaflip', 'pile', 'Voie de Pile', 'catscared', '#5ab0d9', 'Encaisser avec le sourire, garder ses trèfles.',
+    { res: 0.1 }, [[4, { pileDef: 4 }], [8, { res: 1.5 }], [12, { cloverGain: 8 }], [16, { dodge: 1 }], [20, { cloverCrit: 1 }], [24, { hpPct: 3 }], [30, { cloverGain: 8, pileDef: 3 }], [36, { cloverCrit: 1, hpPct: 4 }]], [
+    ['Moustaches Frémissantes', 'whiskers', 3, { dodge: 1 }],
+    ['Pile, Je Gagne', 'coinpaw', 4, { pileDef: 4 }, 'Pile réduit encore davantage les dégâts subis (−35 % de base).'],
+    ['Trèfle à Quatre Feuilles', 'clover', 4, { cloverGain: 8 }, 'Chance de gagner un Trèfle de plus quand Pile tombe.'],
+    ['Chance Insolente', 'clover|star', 3, { cloverCrit: 1 }, 'Chaque Trèfle donne davantage de critique (3 % de base).'],
+    ['Fourrure Épaisse', 'fur', 3, { res: 1.5 }],
+    ['Équilibriste', 'tightrope', 3, { dodge: 1, hpPct: 1 }],
+    ['Chat Gardien', 'catface|shield', 3, { pileDef: 4, cloverGain: 6 }],
+    ['Porte-Bonheur', 'amulet', 1, { pileDef: 15, cloverGain: 25, cloverCrit: 2 }, 'Pile devient un bouclier et les Trèfles pleuvent.'],
+    ['Ronronnement', 'catface|heart', 3, { vit: 25 }],
+    ['Quatre Feuilles Plus', 'clover|plus', 3, { cloverGain: 6 }],
+    ['Griffes Rentrées', 'paw', 3, { pileDef: 3 }],
+    ['Poil Soyeux', 'yarn', 3, { res: 1 }],
+    ['Nuit Féline', 'moon|eye', 3, { dodge: 1 }],
+  ]),
+  skMakeBranch('ecaflip', 'joueur', 'Voie du Joueur', 'dice', '#d96a5a', 'Quitte ou Double, Neuf Vies : miser gros.',
+    { pp: 1 }, [[4, { nineLives: 2 }], [8, { gambleWin: 3 }], [12, { pp: 10 }], [16, { kamas: 4 }], [20, { gambleWin: 4 }], [24, { nineLives: 3 }], [30, { gambleWin: 3, pp: 10 }], [36, { nineLives: 3, kamas: 4 }]], [
+    ['Dés Pipés', 'dice|star', 3, { gambleWin: 3 }, 'Plus de chances de réussir un Quitte ou Double (60 % de base).'],
+    ['Neuf Vies', 'nine', 4, { nineLives: 3 }, 'Plus de chances d’éviter un coup fatal.'],
+    ['Tapis Vert', 'chips', 4, { pp: 6 }],
+    ['Bonne Étoile', 'star', 3, { gambleLoss: 15 }, 'Un Quitte ou Double raté coûte moins de PV.'],
+    ['Va-Tout', 'roulette', 3, { gambleWin: 3 }],
+    ['Instinct de Survie', 'lifebuoy', 3, { nineLives: 3 }],
+    ['Parieur Fou', 'crazy', 3, { kamas: 4, dmgPct: 1.5 }],
+    ['Jackpot Félin', 'sevens', 1, { gambleWin: 8, nineLives: 6, gambleLoss: 50, kamas: 6 }, 'Quitte ou Double presque assuré, et un échec ne coûte presque rien.'],
+    ['Carte Maîtresse', 'ace', 3, { pp: 6 }],
+    ['Flair du Parieur', 'nose|coin', 3, { kamas: 3 }],
+    ['Coup de Poker', 'cards', 3, { gambleWin: 2 }],
+    ['Veine du Débutant', 'clover|up', 3, { gambleLoss: 10 }],
+    ['Sept Vies de Plus', 'nine|plus', 3, { nineLives: 2 }],
+  ]),
+],
+
+/* ============================== SRAM : Ombre & Pièges ============================== */
+sram: [
+  skMakeBranch('sram', 'ombre', 'Voie de l’Ombre', 'hood', '#6a5fb5', 'Invisible, il frappe sans être vu.',
+    { crit: 0.1 }, [[4, { invisDmg: 3 }], [8, { crit: 2 }], [12, { invisMiss: 5 }], [16, { invisCrit: 10 }], [20, { dmgPct: 3 }], [24, { invisDmg: 6 }], [30, { invisDmg: 5, invisMiss: 5 }], [36, { invisCrit: 12, dmgPct: 3 }]], [
+    ['Pas Feutré', 'sneak', 3, { invisDmg: 2 }, 'Davantage de dégâts tant qu’il est invisible (+15 % de base).'],
+    ['Voile d’Ombre', 'darkcloud', 4, { invisMiss: 4 }, 'Les monstres le ratent plus souvent quand il est invisible (30 % de base).'],
+    ['Frappe de l’Ombre', 'dagger', 4, { invisDmg: 3 }],
+    ['Disparition Totale', 'smoke', 3, { dodge: 1.5 }],
+    ['Coup dans le Dos', 'daggers', 3, { invisCrit: 8 }, 'Dégâts critiques en plus quand il est invisible.'],
+    ['Œil du Prédateur', 'eyeslit', 3, { crit: 1.5 }],
+    ['Maître de l’Ombre', 'darkmoon', 3, { invisDmg: 3, dmgPct: 1.5 }],
+    ['Lame Fantôme', 'ghostblade', 1, { invisDmg: 12, invisCrit: 30, invisMiss: 15 }, 'Invisible, il frappe comme un spectre et presque rien ne le touche.'],
+    ['Semelles de Velours', 'boot|feather', 3, { dodge: 1 }],
+    ['Lame Silencieuse', 'dagger|mute', 3, { deg: 3 }],
+    ['Cape Noire', 'cape', 3, { invisMiss: 3 }],
+    ['Estocade', 'thrust', 3, { invisCrit: 6 }],
+    ['Regard Mortel', 'eye|skull', 3, { crit: 1.5 }],
+  ]),
+  skMakeBranch('sram', 'pieges', 'Voie des Pièges', 'beartrap', '#a0522d', 'Poser le piège parfait au bon moment.',
+    { dmgPct: 0.15 }, [[4, { trapDmg: 8 }], [8, { poisonDmg: 5 }], [12, { trapRearm: 6 }], [16, { dmgPct: 3 }], [20, { trapDmg: 12 }], [24, { trapRearm: 8 }], [30, { trapRearm: 5, trapDmg: 10 }], [36, { dmgPct: 3, aoeDmg: 4 }]], [
+    ['Fil Tendu', 'tripwire', 3, { trapDmg: 8 }],
+    ['Mâchoires d’Acier', 'beartrap|gear', 4, { trapDmg: 8 }],
+    ['Poison Retardé', 'flask|clock', 4, { poisonDmg: 4 }],
+    ['Piège Rusé', 'bulb', 3, { trapRearm: 6 }, 'Chance de reposer aussitôt un piège sur un autre ennemi.'],
+    ['Explosif Sournois', 'bomb', 3, { aoeDmg: 4 }],
+    ['Chausse-Trappe', 'caltrop', 3, { trapDmg: 8 }],
+    ['Maître Artificier', 'dynamite', 3, { trapRearm: 6, dmgPct: 2 }],
+    ['Piège Mortel', 'skullbones|gear', 1, { trapDmg: 40, trapRearm: 25, poisonDmg: 10 }, 'Ses pièges frappent comme un marteau et se reposent presque toujours.'],
+    ['Fil de Fer', 'barbwire', 3, { trapDmg: 6 }],
+    ['Appât Empoisonné', 'bait|poison', 3, { poisonDmg: 4 }],
+    ['Charge Creuse', 'barrel', 3, { aoeDmg: 3 }],
+    ['Détente Facile', 'trigger', 3, { trapRearm: 4 }],
+    ['Pièges Surdimensionnés', 'beartrap|up', 3, { trapDmg: 8 }],
+  ]),
+  skMakeBranch('sram', 'voleur', 'Voie du Voleur', 'key', '#c9a227', 'Argent, butin et petites vilenies.',
+    { kamas: 0.4 }, [[4, { kamas: 3 }], [8, { pp: 10 }], [12, { xpPct: 3 }], [16, { kamas: 4 }], [20, { pp: 15 }], [24, { xpPct: 4 }], [30, { kamas: 4, pp: 10 }], [36, { xpPct: 4, firstStrike: 10 }]], [
+    ['Doigts Agiles', 'fingers', 3, { kamas: 3 }],
+    ['Poche Cachée', 'satchel', 4, { pp: 7 }],
+    ['Larcin', 'sack', 4, { kamas: 3 }],
+    ['Coup Bas', 'kick', 3, { firstStrike: 6 }, 'Dégâts en plus au premier tour d’un combat.'],
+    ['Receleur', 'pricetag', 3, { pp: 8 }],
+    ['Cambrioleur', 'lock', 3, { xpPct: 2, crit: 1 }],
+    ['Pillard', 'torch|coin', 3, { kamas: 3, bossDmg: 3 }],
+    ['Roi des Voleurs', 'keycrown', 1, { kamas: 12, pp: 30, firstStrike: 20, xpPct: 5 }, 'Il vole le premier tour comme il vole le reste : kamas, butin et expérience en plus.'],
+    ['Poche Intérieure', 'vest', 3, { pp: 6 }],
+    ['Main Leste', 'hand', 3, { kamas: 2 }],
+    ['Vol à la Tire', 'handbag', 3, { firstStrike: 5 }],
+    ['Casse du Siècle', 'vault', 3, { xpPct: 2 }],
+    ['Mauvais Garçon', 'shades', 3, { dmgPct: 1.5 }],
+  ]),
+],
+
+/* ============================== XÉLOR : le Sablier ============================== */
+xelor: [
+  skMakeBranch('xelor', 'sablier', 'Voie du Sablier', 'hourglass', '#4a8fd0', 'Remplir le sablier, rembobiner le temps.',
+    { dmgPct: 0.15 }, [[4, { rewindDmg: 5 }], [8, { grainGain: 0.25 }], [12, { dmgPct: 3 }], [16, { chronoGain: 10 }], [20, { rewindDmg: 8 }], [24, { speed: 5 }], [30, { grainGain: 0.15, chronoGain: 6 }], [36, { rewindDmg: 12, dmgPct: 3 }]], [
+    ['Grain de Sable', 'sandpile', 3, { grainGain: 0.15 }, 'Chaque sort ajoute un peu plus de grains au sablier.'],
+    ['Rouages Huilés', 'gear|drop', 4, { speed: 2 }],
+    ['Rembobinage Éclair', 'rewind', 4, { rewindDmg: 5 }, 'Dégâts en plus pendant le tour rejoué après un Rembobinage.'],
+    ['Sablier Élargi', 'hourglass|plus', 3, { grainGain: 0.15 }],
+    ['Éclat du Temps', 'crystal', 3, { chronoGain: 8 }, 'Chance qu’un Rembobinage remplisse deux fois l’Éclat du temps.'],
+    ['Maître du Temps', 'clock', 3, { deg: 3 }],
+    ['Boucle Temporelle', 'infinity', 3, { rewindDmg: 6, dmgPct: 2 }],
+    ['Seigneur des Âges', 'crownclock', 1, { grainGain: 0.4, rewindDmg: 25, chronoGain: 25 }, 'Chaque sort remplit davantage le sablier et le tour rejoué est un massacre.'],
+    ['Poussière de Temps', 'sandsparkle', 3, { grainGain: 0.1 }],
+    ['Engrenages Affûtés', 'gears', 3, { speed: 2 }],
+    ['Écho Temporel', 'bell|clock', 3, { rewindDmg: 4 }],
+    ['Horloge Interne', 'clock|heart', 3, { chronoGain: 5 }],
+    ['Minute Dilatée', 'stopwatch', 3, { deg: 3 }],
+  ]),
+  skMakeBranch('xelor', 'gel', 'Voie du Gel', 'snowflake', '#7fc8e8', 'Figer les ennemis, puis les briser.',
+    { crit: 0.1 }, [[4, { freezeChance: 3 }], [8, { frozenDmg: 5 }], [12, { crit: 2 }], [16, { freezeChance: 4 }], [20, { dmgPct: 3 }], [24, { frozenDmg: 8 }], [30, { frozenDmg: 6, freezeChance: 3 }], [36, { crit: 2, dmgPct: 3 }]], [
+    ['Givre', 'icecube', 3, { freezeChance: 2 }, 'Chances de figer la cible (12 % de base).'],
+    ['Cristaux Temporels', 'crystal|snow', 4, { frozenDmg: 4 }, 'Une cible figée subit davantage de dégâts (+25 % de base).'],
+    ['Distorsion Accrue', 'swirl|snow', 4, { freezeChance: 2 }],
+    ['Brise-Glace', 'icepick', 3, { frozenDmg: 5 }],
+    ['Aiguilles de Givre', 'icicles', 3, { deg: 3 }],
+    ['Instant Figé', 'clock|snow', 3, { freezeChance: 3 }],
+    ['Maître du Froid', 'frozenface', 3, { execute: 4, crit: 1 }],
+    ['Zéro Absolu', 'thermo', 1, { freezeChance: 15, frozenDmg: 25, aoeDmg: 6 }, 'Ses coups figent bien plus souvent et brisent les cibles gelées.'],
+    ['Flocons', 'snowman', 3, { freezeChance: 2 }],
+    ['Pointes de Glace', 'icespikes', 3, { deg: 3 }],
+    ['Éclats de Cristal', 'shards', 3, { frozenDmg: 4 }],
+    ['Souffle Polaire', 'blizzard', 3, { aoeDmg: 3 }],
+    ['Gel Persistant', 'snowcloud', 3, { crit: 1.5 }],
+  ]),
+  skMakeBranch('xelor', 'paradoxe', 'Voie du Paradoxe', 'portal', '#8e5bd0', 'Défier la mort, remonter le temps.',
+    { hpPct: 0.1 }, [[4, { hpPct: 2 }], [8, { paradoxHp: 3 }], [12, { res: 1.5 }], [16, { paradoxGrains: -1 }], [20, { hpPct: 3 }], [24, { paradoxHp: 5 }], [30, { paradoxHp: 4, res: 2 }], [36, { hpPct: 4, dodge: 1 }]], [
+    ['Pressentiment', 'crystalball', 3, { dodge: 1 }],
+    ['Mémoire du Futur', 'book|clock', 4, { hpPct: 1.5 }],
+    ['Faille Temporelle', 'rift', 4, { paradoxHp: 3 }, 'Le Paradoxe le ramène avec davantage de PV (30 % minimum de base).'],
+    ['Boucle de Secours', 'cycle', 2, { paradoxGrains: -1 }, 'Le Paradoxe se déclenche avec moins de grains (6 de base).'],
+    ['Résilience', 'anvil', 3, { res: 1.5 }],
+    ['Ancrage Temporel', 'anchor', 3, { vit: 30 }],
+    ['Gardien du Temps', 'shield|clock', 3, { paradoxHp: 3, hpPct: 1.5 }],
+    ['Éternité', 'ouroboros', 1, { paradoxHp: 20, paradoxGrains: -1, hpPct: 5 }, 'Le Paradoxe devient presque une seconde vie.'],
+    ['Vision Furtive', 'eye|clock', 3, { dodge: 1 }],
+    ['Mémoire Vive', 'brain', 3, { hpPct: 1.5 }],
+    ['Retour en Arrière', 'rewindtri', 3, { paradoxHp: 2 }],
+    ['Instant Gagné', 'watch', 3, { res: 1 }],
+    ['Courbe du Temps', 'timecurve', 3, { vit: 30 }],
+  ]),
+],
+
+/* ============================== STEAMER : les Tourelles ============================== */
+steamer: [
+  skMakeBranch('steamer', 'artillerie', 'Voie de l’Artillerie', 'cannon', '#e0602b', 'Plus de feu, plus de Vapeur.',
+    { dmgPct: 0.15 }, [[4, { turretDmg: 5 }], [8, { burnDmg: 8 }], [12, { dmgPct: 3 }], [16, { vaporDmg: 10 }], [20, { turretDmg: 8 }], [24, { crit: 2 }], [30, { turretDmg: 8, burnDmg: 8 }], [36, { vaporDmg: 12, dmgPct: 3 }]], [
+    ['Munitions Renforcées', 'ammo', 3, { turretDmg: 5 }, 'Les tirs de l’Offensive font plus de dégâts.'],
+    ['Canons Surchauffés', 'cannon|flame', 4, { burnDmg: 8 }],
+    ['Calibre Lourd', 'cannonball', 4, { turretDmg: 5 }],
+    ['Poudre Noire', 'powder', 3, { deg: 3 }],
+    ['Vapeur Brûlante', 'steam|flame', 3, { vaporDmg: 10 }],
+    ['Visée Assistée', 'crosshair|gear', 3, { crit: 1.5 }],
+    ['Ingénieur de Choc', 'goggles', 3, { turretDmg: 5, dmgPct: 1.5 }],
+    ['Batterie Infernale', 'cannons', 1, { turretDmg: 25, vaporDmg: 30, burnDmg: 30 }, 'Les tourelles pilonnent, la Vapeur dévaste, la Brûlure ronge.'],
+    ['Obus Perforants', 'rocket', 3, { turretDmg: 4 }],
+    ['Mèche Courte', 'fuse', 3, { burnDmg: 6 }],
+    ['Chaudière Poussée', 'boiler', 3, { vaporDmg: 6 }],
+    ['Rechargement Rapide', 'reload', 3, { speed: 2 }],
+    ['Artilleur d’Élite', 'rank', 3, { crit: 1.5 }],
+  ]),
+  skMakeBranch('steamer', 'blindage', 'Voie du Blindage', 'shield|gear', '#7f8c9a', 'Des tourelles increvables qui soignent.',
+    { hpPct: 0.15 }, [[4, { turretHp: 8 }], [8, { res: 2 }], [12, { turretHeal: 10 }], [16, { hpPct: 3 }], [20, { decoy: 2 }], [24, { turretHp: 15 }], [30, { turretHp: 10, decoy: 2 }], [36, { turretHeal: 15, res: 2 }]], [
+    ['Plaques d’Acier', 'plate', 3, { turretHp: 8 }],
+    ['Soudure Renforcée', 'weld', 4, { res: 1 }],
+    ['Circuit de Soin', 'circuit', 4, { turretHeal: 10 }, 'La tourelle Défensive soigne davantage.'],
+    ['Scaphandre Épais', 'divehelm', 3, { vit: 30 }],
+    ['Leurres Mécaniques', 'robot', 3, { decoy: 2 }, 'Plus de coups ennemis visent les tourelles à la place du Steamer (14 % de base).'],
+    ['Boulons Frais', 'nut', 3, { turretHp: 8 }],
+    ['Chef de Chantier', 'hardhat', 3, { hpPct: 2, turretHeal: 10 }],
+    ['Forteresse de Stasis', 'fortress', 1, { turretHp: 40, turretHeal: 40, decoy: 6, res: 3 }, 'Ses tourelles encaissent tout et soignent le Steamer sans relâche.'],
+    ['Rivets Géants', 'rivet', 3, { turretHp: 6 }],
+    ['Peinture Isolante', 'paint', 3, { res: 1 }],
+    ['Pompes de Soin', 'pump', 3, { turretHeal: 8 }],
+    ['Mannequins', 'dummy', 3, { decoy: 1 }],
+    ['Acier Trempé', 'ingot', 3, { hpPct: 1.5 }],
+  ]),
+  skMakeBranch('steamer', 'pression', 'Voie de la Pression', 'piston', '#d9a43a', 'Remplir la chaudière et surcharger au bon moment.',
+    { pp: 0.8 }, [[4, { steamRate: 6 }], [8, { pp: 8 }], [12, { surgeDmg: 8 }], [16, { steamRate: 8 }], [20, { magChance: 6 }], [24, { surgeDmg: 12 }], [30, { steamRate: 8, surgeDmg: 8 }], [36, { magChance: 6, dmgPct: 3 }]], [
+    ['Chaudière Neuve', 'boiler|star', 3, { steamRate: 6 }, 'La Pression se remplit plus vite.'],
+    ['Soupape', 'valve', 4, { steamRate: 6 }],
+    ['Électro-Aimant', 'magnet', 4, { magChance: 4 }, 'La tourelle Tactique magnétise plus souvent.'],
+    ['Surtension', 'bolt|up', 3, { surgeDmg: 8 }],
+    ['Récupérateur de Ferraille', 'recycle', 3, { pp: 8 }],
+    ['Turbine', 'turbine', 3, { steamRate: 8 }],
+    ['Maître-Mécano', 'wrench', 3, { surgeDmg: 8, magChance: 3 }],
+    ['Surcharge Absolue', 'burst|bolt', 1, { surgeDmg: 40, steamRate: 20, magChance: 15 }, 'La Surcharge Stasis arrive bien plus vite et rase tout.'],
+    ['Tuyauterie', 'pipes', 3, { steamRate: 4 }],
+    ['Manomètre', 'gauge', 3, { pp: 6 }],
+    ['Bobines', 'coil', 3, { magChance: 3 }],
+    ['Détendeur', 'steam|down', 3, { surgeDmg: 6 }],
+    ['Condensateur', 'battery', 3, { steamRate: 4 }],
+  ]),
+],
+};
+
+/* Bonus de puissance selon le total de points dépensés (toutes voies de la classe) */
+const SKILL_GLOBAL = [[15, { dmgPct: 3, hpPct: 3 }], [30, { xpPct: 5, kamas: 5 }], [45, { dmgPct: 5, hpPct: 5 }], [60, { crit: 3, speed: 8, pp: 20 }]];
+
+/* Index : voies et talents de toutes les classes */
+const SKILL_BRANCHES = []; const SKILL_NODE = {};
+for (const cls in CLASS_TREES) for (const b of CLASS_TREES[cls]) { SKILL_BRANCHES.push(b); for (const n of b.nodes) SKILL_NODE[n[0]] = { id: n[0], name: n[1], icon: n[2], max: n[3], fx: n[4], r: n[5], c: n[6], req: n[7], cost: n[8], txt: n[9], branch: b.id, cls }; }
+const SKILL_BRANCH = Object.fromEntries(SKILL_BRANCHES.map(b => [b.id, b]));
+function skillTree(cls) { return CLASS_TREES[cls] || []; }
+function skillFmt(k, v) { const s = SKILL_STAT[k]; if (!s) return ''; const a = +Math.abs(v).toFixed(2); return `${v < 0 ? '−' : '+'}${String(a).replace('.', ',')}${s[1]} ${s[0]}`; }

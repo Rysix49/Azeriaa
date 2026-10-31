@@ -1,0 +1,33 @@
+/* ===== Icônes dessinées des talents (voir skillicons.js) ===== */
+.gi { display: block; width: 100%; height: 100%; overflow: visible; }
+.gi path, .gi circle, .gi ellipse, .gi rect, .gi polygon { stroke: #1a130e; stroke-width: 1.15; stroke-linejoin: round; stroke-linecap: round; paint-order: stroke; }
+.gi .nf { fill: none; }
+.gi .hl { fill: #fff; fill-opacity: .6; stroke: none; }
+.gi .sh { fill: #000; fill-opacity: .24; stroke: none; }
+.gi .lw { stroke: #fff; stroke-opacity: .85; }
+.gi .nl { stroke: none; }
+.gi .k0 { fill: #1a130e; } .gi .k1 { fill: #e9eff5; } .gi .k2 { fill: #aab9c8; } .gi .k3 { fill: #667a8e; } .gi .k4 { fill: #262b36; }
+.gi .g1 { fill: #ffe98f; } .gi .g2 { fill: #f2b434; } .gi .g3 { fill: #b87a14; }
+.gi .r1 { fill: #ff9482; } .gi .r2 { fill: #e24b36; } .gi .r3 { fill: #9a281c; }
+.gi .o2 { fill: #f68c3c; }
+.gi .b1 { fill: #b0e0ff; } .gi .b2 { fill: #4f9ce2; } .gi .b3 { fill: #2b60a8; }
+.gi .n1 { fill: #c3ee92; } .gi .n2 { fill: #62b44a; } .gi .n3 { fill: #3a7b2c; }
+.gi .p1 { fill: #e5c2ff; } .gi .p2 { fill: #9b60d9; } .gi .p3 { fill: #62379b; }
+.gi .s1 { fill: #f8f1de; } .gi .s2 { fill: #d6c9a4; } .gi .s3 { fill: #a99a70; }
+.gi .w1 { fill: #c88c54; } .gi .w2 { fill: #8c582a; } .gi .w3 { fill: #5e3a18; }
+.gi .pk { fill: #ff9fc4; } .gi .t1 { fill: #8ee8d6; } .gi .t2 { fill: #35bba6; }
+.gi .ye { fill: #fff3a8; } .gi .sk { fill: #f4bf90; } .gi .sk2 { fill: #d9925f; } .gi .dk { fill: #3b3248; } .gi .gy { fill: #8b8f99; }
+.gi .nf.k2 { stroke: #aab9c8; } .gi .nf.k3 { stroke: #667a8e; }
+.gi .bd circle.k4 { stroke: #d9c9a0; stroke-width: 1.2; }
+.gi-fb { font-size: .8em; }
+/* emplacements */
+.sk-tic { display: inline-grid; place-items: center; width: 22px; height: 22px; flex: none; } .sk-tabs button .gi { width: 22px; height: 22px; }
+.sk-ico .gi { width: 38px; height: 38px; filter: drop-shadow(0 1px 1.5px #000a); } .sk-n.key .sk-ico .gi { width: 46px; height: 46px; }
+.sk-dico .gi { width: 40px; height: 40px; filter: drop-shadow(0 1px 2px #000a); }
+.sk-bico .gi { width: 40px; height: 40px; filter: drop-shadow(0 1px 2px #000a); } .sk-cico .gi { width: 40px; height: 40px; filter: drop-shadow(0 1px 2px #000a); }
+.sk-key-ic i .gi { width: 36px; height: 36px; } .sk-key-ic i { display: grid; place-items: center; }
+.gi.sk-mini { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -.2em; filter: none; }
+.sk-card::after { content: none !important; }
+.sk-card .sk-wm { position: absolute; right: -12px; bottom: -16px; width: 112px; height: 112px; opacity: .1; pointer-events: none; filter: grayscale(.4); z-index: 0; } .sk-card .sk-wm .gi { width: 100%; height: 100%; }
+.sk-n.lock .sk-ico { opacity: .78; } .sk-n.lock .sk-ico .gi { filter: drop-shadow(0 1px 1.5px #000a); } .sk-key-ic .gi { filter: drop-shadow(0 1px 1.5px #000a); }
+@media (max-width: 560px) { .sk-ico .gi { width: 34px; height: 34px; } .sk-n.key .sk-ico .gi { width: 40px; height: 40px; } .sk-key-ic i .gi { width: 30px; height: 30px; } .sk-dico .gi, .sk-bico .gi, .sk-cico .gi { width: 36px; height: 36px; } .sk-card .sk-wm { width: 92px; height: 92px; } }
