@@ -36,6 +36,7 @@ function monsterStats(mid) {
 function newState() {
   return {
     v: SAVE_VERSION,
+    bal: BAL_VERSION,       // version d'équilibrage de l'équipement (voir balmig.js)
     kamas: 200,
     archi: null,            // archimonstre repéré : { zone, mid, hero }
     res: { clef_bouftou: 1 },
@@ -195,8 +196,8 @@ function buffTotal(f, k) { return f.buffs.reduce((s, b) => s + (b.stats[k] || 0)
 
 /* Passifs de classe : puissance bonus selon la situation du combat */
 function passivePui(h, t, f) {
-  if (h.cls === 'iop' && f) return (f.rage || 0) * 12;
-  if (h.cls === 'enutrof') return Math.floor((t.pp || 0) / 10); // L'or fait la force : +1 % de dégâts par 10 Prospection
+  if (h.cls === 'iop' && f) return (f.rage || 0) * (12 + (t.rageStep || 0));
+  if (h.cls === 'enutrof') return Math.floor((t.pp || 0) / 10 * (1 + (t.ppDmg || 0) / 100)); // L'or fait la force : +1 % de dégâts par 10 Prospection
   return 0;
 }
 function spellPower(h, t, f, sp) {
@@ -205,16 +206,33 @@ function spellPower(h, t, f, sp) {
   return { scale, avg: ((sp.min + sp.max) / 2) * scale + t.dmg };
 }
 
-function rollSpell(h, t, f, sp, monRes) {
+/* Passifs de talents communs à toutes les classes : exécution, boss, dernier souffle, premier coup, gros sorts, zone, poison */
+function talentMult(h, t, f, sp, mon) {
+  let m = 1;
+  if (mon && t.execute && mon.hp <= mon.max * 0.35) m *= 1 + t.execute / 100;
+  if (mon && t.bossDmg) { const d = MONSTERS[mon.mid]; if (d && (d.boss || d.archi)) m *= 1 + t.bossDmg / 100; }
+  if (t.lastStand && h.hp < t.maxHp * 0.5) m *= 1 + t.lastStand / 100;
+  if (t.firstStrike && f && f.turn === 1) m *= 1 + t.firstStrike / 100;
+  if (t.heavyDmg && sp.pa >= 4) m *= 1 + t.heavyDmg / 100;
+  if (t.aoeDmg && sp.type === 'aoe') m *= 1 + t.aoeDmg / 100;
+  if (t.poisonDmg && sp.type === 'poison') m *= 1 + t.poisonDmg / 100;
+  return m;
+}
+function rollSpell(h, t, f, sp, monRes, mon) {
   const { scale } = spellPower(h, t, f, sp);
   let v = rnd(sp.min, sp.max) * scale + t.dmg;
-  const crit = Math.random() * 100 < t.critPct + (h.cls === 'cra' && f ? (h.focus || 0) * CRA_FOCUS_CRIT : 0) + (h.cls === 'ecaflip' ? (h.clover || 0) * 3 : 0) + (h.cls === 'zobal' && f && (h.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT : 0);
-  if (crit) v *= (h.cls === 'cra' ? 1.8 : 1.5) + (t.critDmg || 0) / 100;
-  if (h.cls === 'sram' && f && f.invis && sp.type !== 'heal') v *= 1 + SRAM_INVIS_DMG / 100;
-  if (h.cls === 'ecaflip' && f && f.coin === 'face' && sp.type !== 'heal') v *= ECA_FACE_DMG; // Face : +40 % de dégâts
-  if (t.dmgPct && sp.type !== 'heal') v *= 1 + t.dmgPct / 100;
-  if (h.cls === 'sacrieur' && sp.type !== 'heal') v *= 1 + SAC_STIG_DMG * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
-  if (h.cls === 'zobal' && f && zobMask(h) === 'rire' && sp.type !== 'heal') v *= 1 + (ZOB_RIRE_DMG + ZOB_FERV_STEP * (h.ferv || 1)) / 100; // Masque Rieur
+  const cls = h.cls, atk = sp.type !== 'heal';
+  const invis = cls === 'sram' && f && f.invis;
+  const crit = Math.random() * 100 < t.critPct + (cls === 'cra' && f ? (h.focus || 0) * (CRA_FOCUS_CRIT + (t.focusCrit || 0)) : 0) + (cls === 'ecaflip' ? (h.clover || 0) * (3 + (t.cloverCrit || 0)) : 0) + (cls === 'zobal' && f && (h.ferv || 0) >= ZOB_FERV_MAX ? ZOB_APOTHEOSE_CRIT + (t.apoCrit || 0) : 0);
+  if (crit) v *= (cls === 'cra' ? 1.8 : 1.5) + (t.critDmg || 0) / 100 + (invis ? (t.invisCrit || 0) / 100 : 0);
+  if (invis && atk) v *= 1 + (SRAM_INVIS_DMG + (t.invisDmg || 0)) / 100;
+  if (cls === 'ecaflip' && f && f.coin === 'face' && atk) v *= ECA_FACE_DMG + (t.faceDmg || 0) / 100; // Face : +40 % de dégâts
+  if (t.dmgPct && atk) v *= 1 + t.dmgPct / 100;
+  if (cls === 'sacrieur' && atk) v *= 1 + (SAC_STIG_DMG + (t.stigDmg || 0)) * ((f && f.stig) || 0) / 100; // Stigmates : +8 % de dégâts finaux chacun
+  if (cls === 'zobal' && f && zobMask(h) === 'rire' && atk) v *= 1 + (ZOB_RIRE_DMG + (t.rireDmg || 0) + ZOB_FERV_STEP * (h.ferv || 1)) / 100; // Masque Rieur
+  if (cls === 'cra' && f && mon && t.preyDmg && f.mons.indexOf(mon) === f.mark && atk) v *= 1 + t.preyDmg / 100; // proie marquée
+  if (cls === 'xelor' && f && f.rw && t.rewindDmg && atk) v *= 1 + t.rewindDmg / 100; // tour rejoué après un Rembobinage
+  if (atk) v *= talentMult(h, t, f, sp, mon);
   if (monRes) v *= 1 - monRes / 100;
   return { v: Math.max(1, Math.round(v)), crit };
 }
@@ -231,7 +249,7 @@ function heroTurn(st, h, t, ev) {
     f.stig = f.stig || 0;
     if (h.hp > t.maxHp * SAC_PACT_FLOOR) {
       const loss = Math.max(1, Math.min(Math.round(t.maxHp * SAC_PACT_LOSS), Math.round(h.hp - t.maxHp * SAC_PACT_FLOOR)));
-      h.hp -= loss; gainBlood(h, loss, t.maxHp); f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
+      h.hp -= loss; gainBlood(h, loss, t.maxHp, t); f.stig = Math.min(SAC_STIG_MAX, f.stig + 1); f.bloodSeq = (f.bloodSeq || 0) + 1; pre += `🩸 Pacte de sang −${loss} PV · `;
     }
   }
   const xel = h.cls === 'xelor';
@@ -283,37 +301,39 @@ function heroTurn(st, h, t, ev) {
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) actions.push('🎲×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2));
     }
-    if (h.cls === 'zobal' && zobMask(h) === 'farce' && (best.type === 'dmg' || best.type === 'aoe') && Math.random() * 100 < ZOB_FARCE_CHANCE + ZOB_FERV_STEP * (h.ferv || 1)) { // Masque Farceur : le sort est lancé deux fois
+    if (h.cls === 'zobal' && zobMask(h) === 'farce' && (best.type === 'dmg' || best.type === 'aoe') && Math.random() * 100 < Math.min(90, ZOB_FARCE_CHANCE + (t.farceChance || 0) + ZOB_FERV_STEP * (h.ferv || 1))) { // Masque Farceur : le sort est lancé deux fois
       const al2 = f.mons.filter(m => m.hp > 0);
       if (al2.length) { f.farceSeq = (f.farceSeq || 0) + 1; actions.push('🤪×2 ' + castSpell(st, h, t, best, target.hp > 0 ? target : al2[0], al2)); }
     }
-    if (h.cls === 'zobal' && best.type !== 'buff' && best.type !== 'heal' && Math.random() < ZOB_FERV_CHANCE) zobGain(h); // Ferveur : 50 % de chances de +1 à chaque attaque lancée
-    enuChest(h, f, actions);
+    if (h.cls === 'zobal' && best.type !== 'buff' && best.type !== 'heal' && Math.random() < ZOB_FERV_CHANCE + (t.fervChance || 0) / 100) zobGain(h, t); // Ferveur : 50 % de chances de +1 à chaque attaque lancée
+    enuChest(h, f, actions, t);
     if (best.type !== 'buff' && best.type !== 'heal') { f.turnCasts = (f.turnCasts || 0) + 1; if (/ CC/.test(line)) f.turnCrits = (f.turnCrits || 0) + 1; }
     f.fxSeq = (f.fxSeq || 0) + 1;
     (f.fx = f.fx || []).push({ n: f.fxSeq, id: best.id, t: tgts, pf: (f.perfectSeq || 0) > pf0 ? 1 : 0, tur: stm ? stm.shots : null }); // pf : ce tir est le Tir Parfait (la cinématique le joue à la place)
     if (f.fx.length > 16) f.fx.shift();
-    if (xel && gainGrains) f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0));
+    if (xel && gainGrains) { const gg = t.grainGain || 0; f.grains = Math.min(12, (f.grains || 0) + best.pa + (best.grains || 0) + Math.floor(gg) + (Math.random() < gg - Math.floor(gg) ? 1 : 0)); }
   }
   };
   if (h.cls === 'ecaflip') ecaToss(h, t, f, actions);
   if (h.cls === 'enutrof') {
-    enuChest(h, f, actions);
-    if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions); }
+    enuChest(h, f, actions, t);
+    if ((h.purse || 0) >= ENU_PURSE_MAX && f.mons.some(m => m.hp > 0)) { actions.push(enuJackpot(h, t, f)); enuChest(h, f, actions, t); }
   }
   const rwPre = xel ? f.mons.map(m => m.hp) : null;
   phase(true);
   const rewind = xel && (f.grains || 0) >= 12 && f.mons.some(m => m.hp > 0); // sablier plein : le Rembobinage se déclenche tout de suite, sans attendre le tour suivant
   if (rewind) f.grains -= 12;
-  if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; phase(false); }
+  if (rewind) { f.rewinds = (f.rewinds || 0) + 1; f.rwInfo = { n: f.rewinds, at: f.fxSeq || 0, pre: rwPre, mid: f.mons.map(m => m.hp) }; /* pour la cinématique : PV avant / après le premier jet, et dernier sort avant le retour dans le temps */ h.chrono = Math.min(CHRONO_MAX, (h.chrono || 0) + 1 + (Math.random() * 100 < (t.chronoGain || 0) ? 1 : 0)); actions.push('⏳ Rembobinage !'); for (const k of Object.keys(f.cds)) if (f.cds[k] > 0) f.cds[k]--; f.rw = true; phase(false); f.rw = false; }
   if (xel) h.grains = f.grains || 0;
+  const killsT = aliveBefore - f.mons.filter(m => m.hp > 0).length;
   if (h.cls === 'sacrieur') { // Soif de sang : chaque ennemi achevé rend des PV
-    const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
-    if (kills > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * SAC_THIRST * kills)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
+    if (killsT > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.round(t.maxHp * (SAC_THIRST + (t.thirst || 0) / 100) * killsT)); h.hp += r; actions.push(`🧛 Soif de sang +${r} PV`); }
   }
-  if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
-  if (h.cls === 'iop' && actions.length && (f.rage || 0) < 5) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/5`); }
-  if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length);
+  if (t.killHeal && killsT > 0 && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * t.killHeal / 100 * killsT))); h.hp += r; actions.push(`🍖 +${r} PV`); }
+  if (h.cls === 'enutrof' && (f.turnCasts || 0) > 0) enuGain(h, 1 + ((f.turnCrits || 0) > 0 ? 1 : 0) + (Math.random() * 100 < (t.coinChance || 0) ? 1 : 0)); // Cupidité : 1 pièce par tour offensif, +1 sur coup critique
+  const rageMax = 5 + (t.rageMax || 0);
+  if (h.cls === 'iop' && actions.length && (f.rage || 0) < rageMax) { f.rage = (f.rage || 0) + 1; actions.push(`Rage ${f.rage}/${rageMax}`); }
+  if (h.cls === 'iop' && actions.length) gainFury(h, f.turnCasts || 0, f.turnCrits || 0, f.mons.length, 1 + (t.furyGain || 0) / 100);
   if (h.cls === 'sram') {
     const wasInvis = f.invis; f.invis = false;
     const kills = aliveBefore - f.mons.filter(m => m.hp > 0).length;
@@ -339,27 +359,27 @@ function castSpell(st, h, t, sp, target, alive) {
   const xel = h.cls === 'xelor';
   const distort = (m, r) => {
     if (!xel) return '';
-    if (m.frozen) r.v = Math.round(r.v * 1.25);
-    if (m.hp - r.v > 0 && !m.frozen && Math.random() * 100 < 12 + (sp.freeze || 0)) { m.frozen = true; return '❄'; }
+    if (m.frozen) r.v = Math.round(r.v * (1.25 + (t.frozenDmg || 0) / 100));
+    if (m.hp - r.v > 0 && !m.frozen && Math.random() * 100 < 12 + (sp.freeze || 0) + (t.freezeChance || 0)) { m.frozen = true; return '❄'; }
     return '';
   };
   if (sp.type === 'aoe') {
-    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res); if (m.crack) r.v = Math.round(r.v * STM_CRACK); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
-    if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
+    const parts = alive.map(m => { const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res, m); if (m.crack) r.v = Math.round(r.v * STM_CRACK); const fz = distort(m, r); m.hp = Math.max(0, m.hp - r.v); return tag(r) + fz; });
+    if (h.cls === 'cra' && alive.includes(f.mons[f.mark])) craFocus(h, t);
     return `${sp.name} → ${parts.join('/')}`;
   }
   if (h.cls === 'cra' && sp.type === 'dmg' && f.mons.indexOf(target) === f.mark && (h.focus || 0) >= CRA_FOCUS_MAX) return perfectShot(h, t, f, sp, target);
-  const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res);
+  const r = rollSpell(h, t, f, sp, monsterStats(target.mid).res, target);
   if (target.crack) r.v = Math.round(r.v * STM_CRACK);
-  if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1);
+  if (h.cls === 'cra' && f.mons.indexOf(target) === f.mark && sp.type !== 'aoe') craFocus(h, t);
   if (sp.type === 'poison') {
-    target.poison = { dmg: r.v, turns: sp.turns };
+    target.poison = { dmg: r.v, turns: sp.turns + (t.poisonTurns || 0) };
     return `${sp.name} sur ${MONSTERS[target.mid].name} (${r.v}/tour)`;
   }
   const fz = distort(target, r);
   target.hp = Math.max(0, target.hp - r.v);
   let s = `${sp.name} ${tag(r)}${fz ? ` ❄ ${MONSTERS[target.mid].name} figé` : ''}`;
-  if (sp.type === 'drain') { const heal = Math.round(r.v / 2); h.hp = Math.min(t.maxHp, h.hp + heal); s += ` (+${heal} PV)`; }
+  if (sp.type === 'drain') { const heal = Math.round(r.v / 2 * (1 + (t.drainHeal || 0) / 100)); h.hp = Math.min(t.maxHp, h.hp + heal); s += ` (+${heal} PV)`; }
   return s;
 }
 
@@ -386,56 +406,67 @@ function monsterTurn(st, h, t, m, ev) {
   f.monAct = { n: ((f.monAct && f.monAct.n) || 0) + 1, i: f.mons.indexOf(m) }; // pour l'animation d'attaque
   if (h.cls === 'sram' && f.trap === f.mons.indexOf(m)) {
     f.trap = -1;
-    const tr = rollSpell(h, t, f, SRAM_TRAP, 0);
+    const tr = rollSpell(h, t, f, SRAM_TRAP, 0, m);
+    if (t.trapDmg) tr.v = Math.max(1, Math.round(tr.v * (1 + t.trapDmg / 100)));
     m.hp = Math.max(0, m.hp - tr.v);
     f.trapFx = { n: (f.trapFx ? f.trapFx.n : 0) + 1, i: f.mons.indexOf(m), v: tr.v };
-    ev.log(h, line + `🪤 ${def.name} déclenche le piège de ${h.name} : −${tr.v}${tr.crit ? ' CC' : ''} et perd son tour !${m.hp <= 0 && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'hero');
+    let again = '';
+    if (t.trapRearm && Math.random() * 100 < t.trapRearm) { // Piège rusé : un nouveau piège est posé aussitôt
+      const cand = f.mons.map((o, i) => (o.hp > 0 && o !== m ? i : -1)).filter(i => i >= 0);
+      if (cand.length) { f.trap = cand[irnd(0, cand.length - 1)]; again = ' · 🪤 piège reposé'; }
+    }
+    ev.log(h, line + `🪤 ${def.name} déclenche le piège de ${h.name} : −${tr.v}${tr.crit ? ' CC' : ''} et perd son tour !${again}${m.hp <= 0 && sramVanish(f) ? ' 💨 Disparition' : ''}`, 'hero');
     return;
   }
-  if (h.cls === 'sram' && f.invis && Math.random() < 0.3) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
-  if (Math.random() * 100 < t.dodgePct) { f.dodgeSeq = (f.dodgeSeq || 0) + 1; ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
+  if (h.cls === 'sram' && f.invis && Math.random() < Math.min(0.8, 0.3 + (t.invisMiss || 0) / 100)) { f.missSeq = (f.missSeq || 0) + 1; ev.log(h, line + `${def.name} frappe dans le vide : ${h.name} est invisible.`, 'mon'); return; }
+  if (Math.random() * 100 < t.dodgePct) { if (h.cls === 'cra' && t.dodgeFocus && Math.random() * 100 < t.dodgeFocus) craFocus(h, null); f.dodgeSeq = (f.dodgeSeq || 0) + 1; ev.log(h, line + `${h.name} esquive ${def.name}.`, 'mon'); return; }
   let dmg = rnd(ms.dmin, ms.dmax) * (SUBZONES[f.tier || 0] || SUBZONES[0]).dmg;
   let special = false;
   if (def.boss && f.turn % 3 === 0) { dmg *= 1.8; special = true; }
   const res = clamp(t.resPct + buffTotal(f, 'res'), 0, 60);
   dmg = Math.max(1, Math.round(dmg * (1 - res / 100) * (wet ? STM_WET : 1)));
-  if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100))); // Masque Pleureur
+  if (h.cls === 'zobal' && zobMask(h) === 'larme') dmg = Math.max(1, Math.round(dmg * (1 - (ZOB_LARME_DEF + ZOB_FERV_STEP * (h.ferv || 1)) / 100) * (1 - Math.min(60, t.larmeDef || 0) / 100))); // Masque Pleureur
   if (h.cls === 'ecaflip') {
-    if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF)); // Pile : −35 % de dégâts subis
-    if (h.hp - dmg <= 0 && Math.random() < 0.2 + 0.04 * (h.clover || 0)) { // Neuf Vies
+    if (f.coin === 'pile') dmg = Math.max(1, Math.round(dmg * ECA_PILE_DEF * (1 - Math.min(60, t.pileDef || 0) / 100))); // Pile : −35 % de dégâts subis
+    if (h.hp - dmg <= 0 && Math.random() < Math.min(0.75, 0.2 + 0.04 * (h.clover || 0) + (t.nineLives || 0) / 100)) { // Neuf Vies
       f.lifeSeq = (f.lifeSeq || 0) + 1; h.wait += ECA_LIFE_MS; // laisse la pirouette des Neuf Vies se jouer
       ev.log(h, line + `🐾 Neuf Vies ! ${h.name} retombe sur ses pattes : le coup de ${def.name} est évité.`, 'win');
       return;
     }
   }
-  if (h.cls === 'steamer' && stmDecoy(h, f, def, line, dmg, special, ev)) return; // une tourelle encaisse le coup à sa place
+  if (h.cls === 'steamer' && stmDecoy(h, f, def, line, dmg, special, ev, t)) return; // une tourelle encaisse le coup à sa place
   const hpBefore = h.hp;
   h.hp = Math.max(0, h.hp - dmg);
-  gainBlood(h, hpBefore - h.hp, t.maxHp); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
+  gainBlood(h, hpBefore - h.hp, t.maxHp, t); // Sacrieur : chaque PV perdu remplit la jauge de Sang versé
   ev.log(h, line + `${def.name} ${special ? 'déchaîne sa fureur' : 'frappe'} : −${dmg} PV.`, special ? 'boss' : 'mon');
   if (h.cls === 'sacrieur') {
     f.stig = Math.min(SAC_STIG_MAX, (f.stig || 0) + 1); // chaque coup reçu grave un Stigmate
-    const back = Math.min(m.hp, Math.max(1, Math.round(dmg * SAC_REFLECT))); // Douleur partagée
+    const back = Math.min(m.hp, Math.max(1, Math.round(dmg * (SAC_REFLECT + (t.thorns || 0) / 100)))); // Douleur partagée
     m.hp -= back; f.reflectSeq = (f.reflectSeq || 0) + 1;
     ev.log(h, `🪞 Douleur partagée : ${def.name} subit ${back}${m.hp <= 0 ? ' et succombe' : ''}.`, 'hero');
     if (h.hp <= 0 && !f.martyr) { // Martyre : le coup fatal est évité, le sang explose sur tous les ennemis
       f.martyr = true; f.martyrSeq = (f.martyrSeq || 0) + 1; f.stig = SAC_STIG_MAX;
-      h.hp = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_HP));
-      const blast = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_BLAST));
+      h.hp = Math.max(1, Math.round(t.maxHp * (SAC_MARTYR_HP + (t.martyrHp || 0) / 100)));
+      const blast = Math.max(1, Math.round(t.maxHp * SAC_MARTYR_BLAST * (1 + (t.martyrBlast || 0) / 100)));
       for (const o of f.mons) if (o.hp > 0) o.hp = Math.max(0, o.hp - blast);
       ev.log(h, `☠️ MARTYRE ! ${h.name} survit avec ${h.hp} PV et son sang explose : −${blast} PV à tous les ennemis.`, 'win');
     }
   }
-  if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= ENU_BRIBE_MIN) {
+  if (h.hp <= 0 && h.cls === 'enutrof' && !f.bribed && (h.purse || 0) >= Math.max(2, ENU_BRIBE_MIN + (t.bribeMin || 0))) {
     const spent = h.purse; h.purse = 0; f.bribed = true; f.bribeSeq = (f.bribeSeq || 0) + 1;
-    h.hp = Math.max(1, Math.round(t.maxHp * 0.15));
+    h.hp = Math.max(1, Math.round(t.maxHp * (0.15 + (t.bribeHp || 0) / 100)));
     f.mons.forEach(o => { if (o.hp > 0) o.bribed = true; });
     ev.log(h, `🤝 Pot-de-vin ! ${h.name} jette ${spent} 🪙 : les ennemis se ruent sur l’or et il s’en tire avec ${h.hp} PV.`, 'win');
   }
-  if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= 6) {
+  if (h.hp <= 0 && h.cls === 'xelor' && !f.paradox && (f.grains || 0) >= Math.max(2, 6 + (t.paradoxGrains || 0))) {
     f.paradox = true; f.grains = 0; h.grains = 0;
-    h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * 0.3));
+    h.hp = Math.max(f.hpMark || 0, Math.round(t.maxHp * (0.3 + (t.paradoxHp || 0) / 100)));
     ev.log(h, `⏳ Paradoxe ! ${h.name} remonte le temps et revient à ${h.hp} PV.`, 'win');
+  }
+  if (h.hp <= 0 && t.undying && !f.undying) { // Talent : un coup fatal par combat est évité
+    f.undying = true; f.undySeq = (f.undySeq || 0) + 1;
+    h.hp = Math.max(1, Math.round(t.maxHp * Math.min(60, t.undying) / 100));
+    ev.log(h, `✨ Increvable ! ${h.name} refuse de tomber et se relève avec ${h.hp} PV.`, 'win');
   }
 }
 
@@ -448,15 +479,15 @@ function ecaToss(h, t, f, actions) {
   f.double = false;
   if ((h.clover || 0) >= ECA_CLOVER_MAX) {
     h.clover = 0;
-    const win = Math.random() < 0.6;
+    const win = Math.random() < Math.min(0.95, 0.6 + (t.gambleWin || 0) / 100);
     f.gambleSeq = (f.gambleSeq || 0) + 1; f.gambleFx = { n: f.gambleSeq, win };
     if (win) { f.double = true; actions.push('🎲 Quitte ou Double : GAGNÉ ! Ses sorts frappent deux fois'); }
-    else { const loss = Math.max(0, Math.min(h.hp - 1, Math.round(t.maxHp * 0.08))); h.hp -= loss; actions.push(`🎲 Quitte ou Double : perdu… −${loss} PV`); }
+    else { const loss = Math.max(0, Math.min(h.hp - 1, Math.round(t.maxHp * 0.08 * (1 - Math.min(90, t.gambleLoss || 0) / 100)))); h.hp -= loss; actions.push(`🎲 Quitte ou Double : perdu… −${loss} PV`); }
   }
-  const face = Math.random() < 0.5 + 0.04 * (h.clover || 0);
+  const face = Math.random() < Math.min(0.92, 0.5 + 0.04 * (h.clover || 0) + (t.faceChance || 0) / 100);
   f.coin = face ? 'face' : 'pile'; f.coinSeq = (f.coinSeq || 0) + 1; f.coinFx = { n: f.coinSeq, face };
-  if (!face) h.clover = Math.min(ECA_CLOVER_MAX, (h.clover || 0) + 1);
-  actions.push(face ? '😼 FACE ! +40 % de dégâts' : `🙀 PILE ! −35 % de dégâts subis · 🍀 ${h.clover}/${ECA_CLOVER_MAX}`);
+  if (!face) h.clover = Math.min(ECA_CLOVER_MAX, (h.clover || 0) + 1 + (Math.random() * 100 < (t.cloverGain || 0) ? 1 : 0));
+  actions.push(face ? `😼 FACE ! +${Math.round((ECA_FACE_DMG - 1) * 100 + (t.faceDmg || 0))} % de dégâts` : `🙀 PILE ! −35 % de dégâts subis · 🍀 ${h.clover}/${ECA_CLOVER_MAX}`);
 }
 
 /* ---------------------- Fièvre de l'Or de l'Enutrof ----------------------
@@ -474,7 +505,7 @@ const SAC_STIG_MAX = 6, SAC_STIG_DMG = 8, SAC_PACT_LOSS = 0.05, SAC_PACT_FLOOR =
 const ZOB_FERV_MAX = 10, ZOB_FERV_CHANCE = 0.5, ZOB_FERV_HOLD = 20000, ZOB_FERV_STEP = 4, ZOB_RIRE_DMG = 12, ZOB_LARME_DEF = 10, ZOB_LARME_HEAL = 0.5, ZOB_FARCE_CHANCE = 15, ZOB_APOTHEOSE_CRIT = 15, ZOB_RUPTURE = 6;
 const ZOB_MASKS = { rire: { name: 'Masque Rieur', icon: '😆' }, larme: { name: 'Masque Pleureur', icon: '😢' }, farce: { name: 'Masque Farceur', icon: '🤪' } };
 const ZOB_RUPTURE_SPELL = { id: 'rupture', name: 'Rupture', min: 1, max: 1, type: 'aoe' };
-function zobGain(h) { if ((h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = (h.ferv || 1) + 1; if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD; } } // pleine, la Ferveur tient 20 s
+function zobGain(h, t) { if ((h.ferv || 1) < ZOB_FERV_MAX) { h.ferv = (h.ferv || 1) + 1; if (h.ferv >= ZOB_FERV_MAX) h.fervT = ZOB_FERV_HOLD * (1 + ((t && t.fervHold) || 0) / 100); } } // pleine, la Ferveur tient 20 s
 function zobMask(h) { return ZOB_MASKS[h.mask] ? h.mask : 'rire'; }
 function setMask(h, m) {
   if (h.cls !== 'zobal' || !ZOB_MASKS[m] || zobMask(h) === m) return false;
@@ -490,10 +521,10 @@ function zobTurnStart(h, t, f, ev) {
   if (f.rupt) {
     const n = f.rupt; f.rupt = 0; f.ruptSeq = (f.ruptSeq || 0) + 1;
     const { scale } = spellPower(h, t, f, ZOB_RUPTURE_SPELL), parts = [];
-    for (const m of f.mons) if (m.hp > 0) { const v = Math.max(1, Math.round(ZOB_RUPTURE * n * scale * (1 - monsterStats(m.mid).res / 100))); m.hp = Math.max(0, m.hp - v); parts.push(v); }
+    for (const m of f.mons) if (m.hp > 0) { const v = Math.max(1, Math.round(ZOB_RUPTURE * n * scale * (1 + (t.ruptureDmg || 0) / 100) * (1 - monsterStats(m.mid).res / 100))); m.hp = Math.max(0, m.hp - v); parts.push(v); }
     pre += `💥 RUPTURE (Ferveur ${n}) ${parts.join('/')} · `;
   }
-  if (zobMask(h) === 'larme' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * (ZOB_LARME_HEAL * (h.ferv || 1)) / 100))); h.hp += r; pre += `😢 Larmes +${r} PV · `; }
+  if (zobMask(h) === 'larme' && h.hp < t.maxHp) { const r = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * (ZOB_LARME_HEAL * (h.ferv || 1) * (1 + (t.larmeHeal || 0) / 100)) / 100))); h.hp += r; pre += `😢 Larmes +${r} PV · `; }
   return pre;
 }
 
@@ -503,7 +534,7 @@ function zobTurnStart(h, t, f, ev) {
    de sang écrase tous les ennemis (dégâts accrus par le sang sacrifié et les Stigmates, résistances ignorées). */
 const SAC_BLOOD_MAX = 300, SAC_BLOOD_RATE = 0.6, SAC_COLOSSE_COST = 0.35, SAC_COLOSSE_BLOOD = 1.25;
 const COLOSSE_SPELL = { id: 'colosse_ult', name: 'Colosse de Sang', min: 110, max: 150, type: 'aoe' };
-function gainBlood(h, lost, maxHp) { if (h.cls === 'sacrieur' && lost > 0 && maxHp > 0) h.blood = Math.min(SAC_BLOOD_MAX, (h.blood || 0) + lost / maxHp * 100 * SAC_BLOOD_RATE); }
+function gainBlood(h, lost, maxHp, t) { if (h.cls === 'sacrieur' && lost > 0 && maxHp > 0) h.blood = Math.min(SAC_BLOOD_MAX, (h.blood || 0) + lost / maxHp * 100 * SAC_BLOOD_RATE * (1 + ((t && t.bloodRate) || 0) / 100)); }
 function bloodReady(h) { return h.cls === 'sacrieur' && (h.blood || 0) >= SAC_BLOOD_MAX; }
 /* Soif de sang du Colosse : rend les PV différés (idempotent) */
 function colosseHeal(st, h) {
@@ -517,7 +548,7 @@ function unleashColosse(st, h, ev) {
   const t = heroTotals(st, h);
   const pay = Math.max(0, Math.min(Math.round(h.hp * SAC_COLOSSE_COST), Math.round(h.hp) - 1)); // le sacrifice ne tue jamais
   h.hp -= pay; f.stig = SAC_STIG_MAX; // le sang appelle le sang : Berserk garanti
-  const { scale } = spellPower(h, t, f, COLOSSE_SPELL), mult = 1 + SAC_STIG_DMG * f.stig / 100;
+  const { scale } = spellPower(h, t, f, COLOSSE_SPELL), mult = (1 + (SAC_STIG_DMG + (t.stigDmg || 0)) * f.stig / 100) * (1 + (t.colosseDmg || 0) / 100);
   let kills = 0;
   const hits = f.mons.map(m => {
     if (m.hp <= 0) return null;
@@ -529,7 +560,7 @@ function unleashColosse(st, h, ev) {
     m.hp = Math.max(0, m.hp - v); if (m.hp <= 0) kills++;
     return { v, crit };
   });
-  const heal = Math.round(t.maxHp * SAC_THIRST * kills); f.pendHeal = heal; // le soin n'est appliqué qu'à la fin de la cinématique (colosseHeal)
+  const heal = Math.round(t.maxHp * (SAC_THIRST + (t.thirst || 0) / 100) * kills); f.pendHeal = heal; // le soin n'est appliqué qu'à la fin de la cinématique (colosseHeal)
   h.blood = 0; h.bloodCount = (h.bloodCount || 0) + 1; f.ult = (f.ult || 0) + 1; f.colosse = (f.colosse || 0) + 1;
   ev.log(h, `🩸 COLOSSE DE SANG ! −${pay} PV sacrifiés · ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}${heal ? ` · 🧛 +${heal} PV` : ''}`, 'boss');
   return { hits, pay, heal };
@@ -563,19 +594,20 @@ function enuTarget(f, alive) {
 }
 function enuGain(h, n) { h.purse = Math.min(ENU_PURSE_MAX, (h.purse || 0) + n); }
 /* Le porteur du trésor est tombé : le coffre s'ouvre (une seule fois par combat) */
-function enuChest(h, f, actions) {
+function enuChest(h, f, actions, t) {
   if (f.treasure == null || f.treasure < 0 || f.chest) return;
   const c = f.mons[f.treasure]; if (!c || c.hp > 0) return;
   f.chest = true; f.chestSeq = (f.chestSeq || 0) + 1;
-  enuGain(h, 2);
+  const coins = 2 + ((t && t.chestCoins) || 0), rush = ENU_RUSH + ((t && t.chestRush) || 0);
+  enuGain(h, coins);
   const more = f.mons.some(m => m.hp > 0);
-  if (more) f.buffs.push({ id: 'ruee_or', stats: { deg: ENU_RUSH }, turns: 4 });
-  actions.push(`🗺️ Coffre ouvert ! +2 🪙${more ? ` · Ruée vers l’or (+${ENU_RUSH} Dégâts)` : ''}`);
+  if (more) f.buffs.push({ id: 'ruee_or', stats: { deg: rush }, turns: 4 });
+  actions.push(`🗺️ Coffre ouvert ! +${coins} 🪙${more ? ` · Ruée vers l’or (+${rush} Dégâts)` : ''}`);
 }
 function enuJackpot(h, t, f) {
   const alive = f.mons.filter(m => m.hp > 0);
   const hits = [];
-  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res); m.hp = Math.max(0, m.hp - r.v); hits.push({ i: f.mons.indexOf(m), v: r.v, crit: r.crit }); return `${r.v}${r.crit ? ' CC' : ''}`; });
+  const parts = alive.map(m => { const r = rollSpell(h, t, f, ENU_JACKPOT, monsterStats(m.mid).res, m); if (t.jackpotDmg) r.v = Math.max(1, Math.round(r.v * (1 + t.jackpotDmg / 100))); m.hp = Math.max(0, m.hp - r.v); hits.push({ i: f.mons.indexOf(m), v: r.v, crit: r.crit }); return `${r.v}${r.crit ? ' CC' : ''}`; });
   h.purse = 0; f.jackpots = (f.jackpots || 0) + 1; f.jackSeq = (f.jackSeq || 0) + 1;
   f.jackFx = { n: f.jackSeq, hits }; // pour la cinématique
   return `🎰 JACKPOT ! Pluie d’Or → ${parts.join('/')}`;
@@ -591,6 +623,8 @@ const SRAM_TRAP = { id: 'piege_sournois', name: 'Piège sournois', min: 9, max: 
    Le joueur choisit une proie (f.mark). Chaque tir dessus donne de la
    Concentration (h.focus). À 5, le prochain tir est un Tir Parfait qui transperce. */
 const CRA_FOCUS_MAX = 5, CRA_FOCUS_CRIT = 6;
+/* +1 Concentration (et parfois +1 de plus avec le talent Souffle retenu) */
+function craFocus(h, t) { h.focus = Math.min(CRA_FOCUS_MAX, (h.focus || 0) + 1 + (t && t.focusGain && Math.random() * 100 < t.focusGain ? 1 : 0)); }
 function craPrey(f, alive) {
   const cur = f.mons[f.mark];
   if (cur && cur.hp > 0) return cur;
@@ -608,9 +642,10 @@ function perfectShot(h, t, f, sp, target) {
   const { scale } = spellPower(h, t, f, sp);
   let v = (rnd(sp.min, sp.max) * scale + t.dmg) * 3;
   if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+  v *= (1 + (t.perfectDmg || 0) / 100) * talentMult(h, t, f, sp, target);
   v = Math.max(1, Math.round(v));
   const ti = f.mons.indexOf(target);
-  const over = Math.max(0, v - target.hp);
+  const over = Math.max(0, v - target.hp) * (1 + (t.perfectPierce || 0) / 100);
   target.hp = Math.max(0, target.hp - v);
   let pierce = null, s = `🏹 TIR PARFAIT ! ${sp.name} ${v} CC`;
   if (over > 0) {
@@ -629,9 +664,9 @@ function perfectShot(h, t, f, sp, target) {
    à la main : une épée colossale frappe tous les ennemis. */
 const FURY_MAX = 300;
 const FURY_PER_TURN = 4, FURY_PER_CRIT = 3;
-function gainFury(h, casts, crits, nMons = 1) {
+function gainFury(h, casts, crits, nMons = 1, mult = 1) {
   const before = h.fury || 0;
-  h.fury = Math.min(FURY_MAX, before + (casts ? FURY_PER_TURN * (1 + nMons) / 3 : 0) + crits * FURY_PER_CRIT);
+  h.fury = Math.min(FURY_MAX, before + ((casts ? FURY_PER_TURN * (1 + nMons) / 3 : 0) + crits * FURY_PER_CRIT) * mult);
 }
 function furyReady(h) { return h.cls === 'iop' && (h.fury || 0) >= FURY_MAX; }
 const COLERE_SPELL = { id: 'colere_ult', name: 'Colère de Iop', min: 140, max: 180, type: 'aoe' };
@@ -642,7 +677,7 @@ function unleashFury(st, h, ev) {
   const alive = f.mons.filter(m => m.hp > 0);
   if (!alive.length) return null;
   const t = heroTotals(st, h);
-  f.rage = 5; // la colère porte la Rage au maximum
+  f.rage = 5 + (t.rageMax || 0); // la colère porte la Rage au maximum
   const { scale } = spellPower(h, t, f, COLERE_SPELL);
   const hits = f.mons.map(m => {
     if (m.hp <= 0) return null;
@@ -650,11 +685,12 @@ function unleashFury(st, h, ev) {
     let v = rnd(COLERE_SPELL.min, COLERE_SPELL.max) * scale + t.dmg;
     if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
     if (t.dmgPct) v *= 1 + t.dmgPct / 100;
+    v *= (1 + (t.colereDmg || 0) / 100) * talentMult(h, t, f, COLERE_SPELL, m);
     v = Math.max(1, Math.round(v)); // ignore les résistances
     m.hp = Math.max(0, m.hp - v);
     return { v, crit };
   });
-  h.fury = 0;
+  h.fury = Math.round(FURY_MAX * Math.min(80, t.furyKeep || 0) / 100);
   h.furyCount = (h.furyCount || 0) + 1;
   f.ult = (f.ult || 0) + 1;
   ev.log(h, `⚔️ COLÈRE DE IOP ! ${hits.filter(Boolean).map(x => x.v + (x.crit ? ' CC' : '')).join(' / ')}`, 'boss');
@@ -692,9 +728,10 @@ function stmHas(h, s) { return h.lvl >= STM_UNLOCK[s]; }
 function stmAlive(f, s) { const T = f && f.tur && f.tur[s]; return !!T && T.hp > 0; }
 function steamReady(h) { return h.cls === 'steamer' && (h.steam || 0) >= STM_STEAM_MAX; }
 /* Début de combat : les tourelles sont déployées, réparées à neuf */
+function stmSteam(h, t, n) { h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + n * (1 + ((t && t.steamRate) || 0) / 100)); }
 function stmInit(h, t, f) {
   f.tur = {}; f.elems = [];
-  for (const s of STM_SLOTS) if (stmHas(h, s)) { const max = Math.max(1, Math.round(t.maxHp * STM_TUR_HP * STM_TUR_HPMULT[stmBaseLvl(h, s)])); f.tur[s] = { hp: max, max }; }
+  for (const s of STM_SLOTS) if (stmHas(h, s)) { const max = Math.max(1, Math.round(t.maxHp * STM_TUR_HP * STM_TUR_HPMULT[stmBaseLvl(h, s)] * (1 + (t.turretHp || 0) / 100))); f.tur[s] = { hp: max, max }; }
 }
 /* Le Steamer préfère les sorts qui changent d'élément, et surtout ceux qui déclenchent la Vapeur */
 function stmSpellBonus(h, f, sp, alive) {
@@ -707,18 +744,18 @@ function stmVapor(h, t, f, m, out) {
   m.burn = null; m.wet = 0;
   const hits = [];
   for (const o of f.mons) if (o.hp > 0) {
-    const r = rollSpell(h, t, f, STM_VAPOR_SPELL, monsterStats(o.mid).res);
-    const v = Math.max(1, Math.round(r.v * (o.crack ? STM_CRACK : 1)));
+    const r = rollSpell(h, t, f, STM_VAPOR_SPELL, monsterStats(o.mid).res, o);
+    const v = Math.max(1, Math.round(r.v * (1 + (t.vaporDmg || 0) / 100) * (o.crack ? STM_CRACK : 1)));
     o.hp = Math.max(0, o.hp - v); hits.push({ i: f.mons.indexOf(o), v });
   }
-  h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_VAPOR);
+  stmSteam(h, t, STM_STEAM_VAPOR);
   f.vapSeq = (f.vapSeq || 0) + 1;
   out.push({ i: f.mons.indexOf(m), hits });
 }
 /* Effet d'élément d'un tir de tourelle sur un ennemi encore debout */
 function stmElemHit(h, t, f, m, el, rv, vapors) {
   if (m.hp <= 0) return;
-  if (el === 'feu') { if (m.wet > 0) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.burn = { dmg: Math.max(1, Math.round(rv * STM_BURN)), turns: STM_BURN_TURNS }; }
+  if (el === 'feu') { if (m.wet > 0) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.burn = { dmg: Math.max(1, Math.round(rv * STM_BURN * (1 + (t.burnDmg || 0) / 100))), turns: STM_BURN_TURNS }; }
   else if (el === 'eau') { if (m.burn) { if (!vapors.length) stmVapor(h, t, f, m, vapors); return; } m.wet = STM_WET_TURNS; }
   else m.crack = true;
 }
@@ -736,15 +773,15 @@ function stmActivate(h, t, f, sp, target) {
       const order = [target && target.hp > 0 ? target : null, ...alive.slice().sort((a, b) => a.hp - b.hp)].filter((m, i, a) => m && a.indexOf(m) === i), parts = [];
       for (let b = 0; b < L; b++) {
         let m = order[b % order.length]; if (!m || m.hp <= 0) m = f.mons.find(x => x.hp > 0); if (!m) break;
-        const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res);
-        const v = Math.max(1, Math.round(r.v * STM_BARREL * (m.crack ? STM_CRACK : 1)));
+        const r = rollSpell(h, t, f, sp, monsterStats(m.mid).res, m);
+        const v = Math.max(1, Math.round(r.v * STM_BARREL * (1 + (t.turretDmg || 0) / 100) * (m.crack ? STM_CRACK : 1)));
         m.hp = Math.max(0, m.hp - v); shot.t.push(f.mons.indexOf(m)); shot.v.push(v); parts.push(v + (r.crit ? ' CC' : ''));
         stmElemHit(h, t, f, m, el, r.v, vapors);
       }
       txt.push(`${STM_ELEM_ICON[el]} Offensive ${parts.join('+')}`);
     } else if (s === 'def') {
       let heal = 0, rep = 0;
-      if (h.hp < t.maxHp) { heal = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * STM_HEAL[L] * (el === 'eau' ? 1.5 : 1)))); h.hp += heal; }
+      if (h.hp < t.maxHp) { heal = Math.min(t.maxHp - h.hp, Math.max(1, Math.round(t.maxHp * STM_HEAL[L] * (1 + (t.turretHeal || 0) / 100) * (el === 'eau' ? 1.5 : 1)))); h.hp += heal; }
       for (const o of STM_SLOTS) {
         const T = o !== 'def' && f.tur[o]; if (!T) continue;
         if (T.hp > 0 && T.hp < T.max) { const r = Math.min(T.max - T.hp, Math.round(T.max * 0.15 * L)); T.hp += r; rep += r; }
@@ -755,12 +792,12 @@ function stmActivate(h, t, f, sp, target) {
     } else {
       const foe = alive.filter(m => !m.mag).sort((a, b) => b.hp - a.hp)[0];
       if (foe) {
-        const d = MONSTERS[foe.mid], chance = STM_MAG[L] * (d.boss || d.archi ? 0.5 : 1);
+        const d = MONSTERS[foe.mid], chance = (STM_MAG[L] + (t.magChance || 0) / 100) * (d.boss || d.archi ? 0.5 : 1);
         shot.t.push(f.mons.indexOf(foe));
         if (Math.random() < chance) { foe.mag = true; shot.mag = true; txt.push(`🧲 Tactique : ${d.name} magnétisé`); }
       }
     }
-    h.steam = Math.min(STM_STEAM_MAX, (h.steam || 0) + STM_STEAM_ACT);
+    stmSteam(h, t, STM_STEAM_ACT);
     const before = stmBaseLvl(h, s); stmXp(h)[s]++; const after = stmBaseLvl(h, s);
     if (after > before) { f.evoSeq = (f.evoSeq || 0) + 1; f.evoFx = { n: f.evoSeq, s, lvl: after }; shot.evo = after; txt.push(`🔧 ${STM_NAMES[s]} niveau ${STM_ROMAN[after]} !`); }
     shots.push(shot);
@@ -769,8 +806,8 @@ function stmActivate(h, t, f, sp, target) {
   return { text: txt.join(' · '), shots: Object.assign(shots, { vapor: vapors[0] || null }) };
 }
 /* Un ennemi s'en prend à une tourelle plutôt qu'au Steamer. Retourne true si le coup est encaissé par une tourelle */
-function stmDecoy(h, f, def, line, dmg, special, ev) {
-  if (!f.tur || Math.random() >= STM_DECOY) return false;
+function stmDecoy(h, f, def, line, dmg, special, ev, t) {
+  if (!f.tur || Math.random() >= STM_DECOY + ((t && t.decoy) || 0) / 100) return false;
   const live = STM_SLOTS.filter(s => stmHas(h, s) && stmAlive(f, s)); if (!live.length) return false;
   const s = live[irnd(0, live.length - 1)], T = f.tur[s], real = Math.min(T.hp, dmg);
   T.hp = Math.max(0, T.hp - dmg);
@@ -791,20 +828,20 @@ function unleashSurge(st, h, ev) {
     const hits = f.mons.map((m, i) => {
       if (m.hp <= 0) return null;
       const crit = Math.random() * 100 < t.critPct + 20;
-      let v = (rnd(STM_SURGE.min, STM_SURGE.max) * scale + t.dmg) * mult;
+      let v = (rnd(STM_SURGE.min, STM_SURGE.max) * scale + t.dmg) * mult * (1 + (t.surgeDmg || 0) / 100);
       if (crit) v *= 1.5 + (t.critDmg || 0) / 100;
       if (t.dmgPct) v *= 1 + t.dmgPct / 100;
       if (m.crack) v *= STM_CRACK;
       v = Math.max(1, Math.round(v)); // ignore les résistances
       m.hp = Math.max(0, m.hp - v);
-      if (m.hp > 0) { if (el === 'eau') m.wet = STM_WET_TURNS; else if (el === 'terre') m.crack = true; else if (!m.wet) m.burn = { dmg: Math.max(1, Math.round(v * STM_BURN)), turns: STM_BURN_TURNS }; }
+      if (m.hp > 0) { if (el === 'eau') m.wet = STM_WET_TURNS; else if (el === 'terre') m.crack = true; else if (!m.wet) m.burn = { dmg: Math.max(1, Math.round(v * STM_BURN * (1 + (t.burnDmg || 0) / 100))), turns: STM_BURN_TURNS }; }
       return { i, v, crit };
     });
     res.volleys.push({ el, hits });
     if (el === 'feu' && f.mons.some(m => m.hp > 0 && m.wet > 0)) { // le feu sur des ennemis trempés : la Vapeur explose
       const v = { i: -1, hits: [] };
       for (const o of f.mons) if (o.hp > 0 && o.wet > 0) {
-        const r = rollSpell(h, t, f, STM_VAPOR_SPELL, 0); const d = Math.max(1, Math.round(r.v * 1.6 * (o.crack ? STM_CRACK : 1)));
+        const r = rollSpell(h, t, f, STM_VAPOR_SPELL, 0, o); const d = Math.max(1, Math.round(r.v * 1.6 * (1 + (t.vaporDmg || 0) / 100) * (o.crack ? STM_CRACK : 1)));
         o.hp = Math.max(0, o.hp - d); o.wet = 0; o.burn = null; v.hits.push({ i: f.mons.indexOf(o), v: d });
       }
       f.vapSeq = (f.vapSeq || 0) + 1; res.vapor = v; vapors.push(v);
@@ -885,7 +922,7 @@ function resolveWin(st, h, ev) {
     const pen = gap > 10 ? clamp(1 - (gap - 10) * 0.06, 0.1, 1) : 1;
     xp += ms.xp * pen;
     const chest = h.cls === 'enutrof' && f.mons.indexOf(m) === f.treasure; // Carte au trésor : kamas ×1,5, 35 % de ressources en double
-    kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 : 1);
+    kamas += irnd(ms.kamas[0], ms.kamas[1]) * (chest ? 1.5 * (1 + (t.chestKamas || 0) / 100) : 1);
     const ab = def.archi ? 3 : 1; // archimonstre : ressources ×3 (et en double), équipement bien plus fréquent
     for (const [rid, ch] of def.drops) if (Math.random() < Math.min(1, ch * ab * t.ppTotal / 100)) loot[rid] = (loot[rid] || 0) + (def.archi ? 2 : chest && Math.random() < 0.35 ? 2 : 1);
     for (const [rid, rc] of (RELIC_DROPS[def.base || m.mid] || [])) if (Math.random() < rc * (def.archi ? 20 : 1) * (SUBZONES[f.tier || 0] || SUBZONES[0]).drop * t.ppTotal / 100) {
@@ -905,7 +942,7 @@ function resolveWin(st, h, ev) {
   }
   const n = f.mons.length;
   xp *= (1 + (n - 1) * 0.15) * (1 + t.xpBonus / 100) * (place.bonusXp || 1);
-  kamas = Math.round(kamas * (1 + ((t.kamas || 0) + 10 * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
+  kamas = Math.round(kamas * (1 + ((t.kamas || 0) + (10 + (t.jackpotKamas || 0)) * (f.jackpots || 0)) / 100)); // chaque Jackpot : +10 % de kamas
   xp = Math.round(xp);
   st.kamas += kamas; st.stats.kamasEarned += kamas; st.stats.fights++;
   for (const [rid, c] of Object.entries(loot)) addRes(st, rid, c);
@@ -1304,11 +1341,16 @@ function migrate(obj) {
       if (h.auto) autoAllocate(h);
     }
     if (h.fight && h.fight.buffs) for (const b of h.fight.buffs) if (b.stats && 'pui' in b.stats) b.stats = convertOldStats(b.stats);
+    // v9 : l'arbre de compétences générique est remplacé par un arbre de talents propre à chaque classe → points remboursés
+    if (h.skills && Object.keys(h.skills).some(id => !SKILL_NODE[id] || SKILL_NODE[id].cls !== h.cls)) { h.skills = {}; st.talentReset = (st.talentReset || 0) + 1; }
     // contenu supprimé entre versions : on nettoie
     if (h.act && !findPlace(h.act.type, h.act.id)) setActivity(st, h, null);
     if (h.fight && h.fight.mons.some(m => !MONSTERS[m.mid])) h.fight = null;
   }
   st.gear = st.gear.filter(g => ITEMS[g.id]);
+  // équipement rééquilibré : les objets possédés sont convertis dans les nouvelles plages, à jet égal
+  if ((obj.bal || 0) < BAL_VERSION && st.gear.length) { for (const g of st.gear) balRemapGear(g); st.balNotice = true; }
+  st.bal = BAL_VERSION;
   for (const g of st.gear) migrateGear(g, (obj.v || 1) < 2);
   for (const k of Object.keys(st.res)) if (!RESOURCES[k]) delete st.res[k];
   st.v = SAVE_VERSION;
@@ -1345,27 +1387,29 @@ function fmtDur(ms) {
 if (typeof module !== 'undefined') module.exports = {};
 
 
-/* ---------- Arbre de compétences ---------- */
+/* ---------- Talents de classe (src/skilltrees.js : un arbre de 3 voies par classe) ---------- */
 function skillPoints(h) { return Math.floor(h.lvl / SKILL_LEVELS_PER_POINT); }
 function skillRanks(h) { return h.skills || (h.skills = {}); }
-function skillSpent(h) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n) s += h.skills[id] * n.cost; } return s; }
-function skillBranchSpent(h, bid) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (n && n.branch === bid) s += h.skills[id] * n.cost; } return s; }
+function skillMine(h, n) { return !!n && n.cls === h.cls; }
+function skillSpent(h) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (skillMine(h, n)) s += h.skills[id] * n.cost; } return s; }
+function skillBranchSpent(h, bid) { let s = 0; for (const id in (h.skills || {})) { const n = SKILL_NODE[id]; if (skillMine(h, n) && n.branch === bid) s += h.skills[id] * n.cost; } return s; }
 function skillFree(h) { return skillPoints(h) - skillSpent(h); }
 function skillCheck(h, id) {
-  const n = SKILL_NODE[id]; if (!n) return 'Compétence inconnue.';
+  const n = SKILL_NODE[id]; if (!n) return 'Talent inconnu.';
+  if (n.cls !== h.cls) return 'Ce talent appartient à une autre classe.';
   const rk = h.skills || {};
   if ((rk[id] || 0) >= n.max) return 'Rang maximal atteint.';
-  if (n.req.length && !n.req.some(q => rk[q] > 0)) return 'Apprends d’abord une compétence reliée.';
+  if (n.req.length && !n.req.some(q => rk[q] > 0)) return 'Apprends d’abord un talent relié.';
   const gate = SKILL_GATE[n.r]; if (skillBranchSpent(h, n.branch) < gate) return `Dépense ${gate} points dans cette voie pour ouvrir cette ligne.`;
-  if (skillFree(h) < n.cost) return n.cost > 1 ? `Il faut ${n.cost} points.` : 'Plus de point de compétence.';
+  if (skillFree(h) < n.cost) return n.cost > 1 ? `Il faut ${n.cost} points.` : 'Plus de point de talent.';
   return null;
 }
 function skillRank(st, h, id) { const err = skillCheck(h, id); if (err) return err; const rk = skillRanks(h); rk[id] = (rk[id] || 0) + 1; return null; }
 function skillTotals(h) {
   const t = {}, rk = h.skills; if (!rk) return t;
   const bs = {}; let tot = 0;
-  for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!n || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
-  for (const b of SKILL_BRANCHES) { const sp = bs[b.id] || 0; for (const k in b.per) t[k] = (t[k] || 0) + b.per[k] * sp; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
+  for (const id in rk) { const n = SKILL_NODE[id], r = rk[id]; if (!skillMine(h, n) || !r) continue; for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * r; bs[n.branch] = (bs[n.branch] || 0) + r * n.cost; tot += r * n.cost; }
+  for (const b of skillTree(h.cls)) { const sp = bs[b.id] || 0; for (const k in b.per) t[k] = (t[k] || 0) + b.per[k] * sp; for (const [at, fx] of b.mile) if (sp >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k]; }
   for (const [at, fx] of SKILL_GLOBAL) if (tot >= at) for (const k in fx) t[k] = (t[k] || 0) + fx[k];
   return t;
 }

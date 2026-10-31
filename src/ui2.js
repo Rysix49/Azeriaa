@@ -8,8 +8,9 @@ const LS_UI = 'amakna-idle-ui2';
 const VIEWS = [
   ['combat', 'Combats', 'Tes héros combattent seuls tant que la page est ouverte.'],
   ['heros', 'Héros', 'Équipement, caractéristiques et sorts de chaque héros.'],
+  ['talents', 'Talents', 'Un arbre de talents propre à chaque classe : 1 point tous les 3 niveaux.'],
   ['carte', 'Carte', 'Choisis où envoyer chaque héros.'],
-  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.'],
+  ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.', 'Sac'],
   ['recolte', 'Récolte', 'Envoie un héros travailler la terre plutôt que combattre.'],
   ['ateliers', 'Ateliers', 'Transforme tes ressources en équipements.'],
   ['options', 'Options', 'Sauvegarde, statistiques et choix de l’interface.'],
@@ -24,6 +25,7 @@ const THEME = {
   /* sous-zones de la carte */
   Wabbits: ['#a8dcef', '#7ec45e'], Blops: ['#7cc0cc', '#3f8a7a'], Moon: ['#7ec8b0', '#2f7a48'], Porcos: ['#e8c0a8', '#b08a52'],
   Dragoeufs: ['#d98a5a', '#6a3226'], Frigost: ['#b4d4ee', '#9cbad6'],
+  Pandala: ['#b9dcc0', '#4f9a58'], Etang: ['#a6dcd8', '#3f9a8a'], Dunes: ['#efce8e', '#c28c4a'], Ocre: ['#8a6a58', '#3a2a24'], Srambad: ['#6a4a7e', '#2a2038'], Roseraie: ['#4a2a46', '#1c1220'],
   harvest: ['#ecd58e', '#b89140'], idle: ['#7a8a96', '#4f5a44'],
 };
 
@@ -31,6 +33,7 @@ const IC = d => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="no
 const ICONS = {
   combat: IC('<path d="M4 4l10 10M11.5 16.5l5-5M15 15l4.5 4.5M20 4 10 14M7.5 11.5l5 5M9 15l-4.5 4.5"/>'),
   heros: IC('<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-4 3.6-6.4 7.5-6.4s6.9 2.4 7.5 6.4"/>'),
+  talents: IC('<path d="M12 21v-7"/><path d="M12 14c-4 0-6.5-2.4-6.5-5.8C9 8.2 12 10 12 14Zm0 0c4 0 6.5-2.4 6.5-5.8C15 8.2 12 10 12 14Z"/><path d="M12 10.5C9.6 9 9.2 5.6 12 3c2.8 2.6 2.4 6 0 7.5Z"/>'),
   carte: IC('<path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/>'),
   inventaire: IC('<path d="M5 8.5h14l-1.2 11.5H6.2Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/><path d="M9.5 12.5h5"/>'),
   recolte: IC('<path d="M12 21V8"/><path d="M12 8c-2.2-.9-3.2-2.8-3.2-5 2.2.9 3.2 2.8 3.2 5Zm0 0c2.2-.9 3.2-2.8 3.2-5-2.2.9-3.2 2.8-3.2 5Z"/><path d="M12 13.5c-2.3-.7-3.7-2.4-3.9-4.6 2.3.6 3.7 2.4 3.9 4.6Zm0 0c2.3-.7 3.7-2.4 3.9-4.6-2.3.6-3.7 2.4-3.9 4.6Z"/>'),
@@ -71,7 +74,7 @@ function loadGame(snapshot) {
 const liveEv = {
   log(h, text, cls) { h.log.push({ t: text, c: cls }); if (h.log.length > 30) h.log.splice(0, h.log.length - 30); },
   turretNew(h, s) { toast(`⚙️ ${h.name} déploie sa ${STM_NAMES[s].toLowerCase()} !`, 'quest'); },
-  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de compétence !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
+  levelup(h, spells) { toast(`${h.name} passe niveau ${h.lvl} !` + (h.lvl % SKILL_LEVELS_PER_POINT === 0 ? ' 🌳 +1 point de talent !' : '') + (spells.length ? ` Nouveau sort : ${spells.map(s => s.name).join(', ')}.` : ''), 'lvl'); },
   reward(h, xp, k, loot, gear = []) {
     for (const g of gear) toast(ITEMS[g.id].dofus ? `DOFUS ! ${h.name} a trouvé le ${ITEMS[g.id].name} !` : ITEMS[g.id].relic ? `RELIQUE ! ${h.name} a trouvé ${ITEMS[g.id].name} !` : g.stasis ? `${h.name} a trouvé ${ITEMS[g.id].name} STASIFIÉ ! Stats ×2 du jet max.` : `${h.name} a trouvé ${ITEMS[g.id].name} (jet ${Math.round(itemQuality(g) * 100)} %) !`, ITEMS[g.id].relic || ITEMS[g.id].dofus ? 'relic' : g.stasis ? 'stasis' : 'rare');
     for (const r of Object.keys(loot)) if (RESOURCES[r].rare) toast(`${h.name} obtient ${RESOURCES[r].icon} ${RESOURCES[r].name} !`, 'rare');
@@ -149,7 +152,7 @@ function heroChip(h, attrs, label, extraCls = '') {
 
 /* ---------------------------- Coquille de l'application ---------------------------- */
 function shell() {
-  const nav = VIEWS.map(([id, l]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span>${l}</span></button>`).join('');
+  const nav = VIEWS.map(([id, l, , short]) => `<button class="nav-btn" data-act="view" data-v="${id}">${ICONS[id]}<span${short ? ` data-short="${short}"` : ''}>${l}</span>${id === 'talents' ? '<i class="nav-badge"></i>' : ''}</button>`).join('');
   $('#app').innerHTML = `
   <aside class="side">
     <div class="brand">${eggSvg('egg-a')}<div><b class="display">Amakna</b><small>Idle · fan-game</small></div></div>
@@ -178,8 +181,12 @@ function shell() {
   </section>`;
 }
 function updateChrome() {
-  for (const b of document.querySelectorAll('.nav-btn')) { const cur = String((ui.view === 'talents' ? 'heros' : ui.view) === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur); }
-  const v = ui.view === 'talents' ? ['talents', 'Talents', 'Dépense tes points : 1 tous les 3 niveaux.'] : VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
+  const tp = st.heroes.reduce((a, h) => a + (skillFree(h) > 0 ? 1 : 0), 0); // nombre de héros avec des points de talent à dépenser
+  for (const b of document.querySelectorAll('.nav-btn')) {
+    const cur = String(ui.view === b.dataset.v); if (b.getAttribute('aria-current') !== cur) b.setAttribute('aria-current', cur);
+    if (b.dataset.v === 'talents') { const bd = tp > 0 ? String(tp > 99 ? '99+' : tp) : ''; if (b.dataset.badge !== bd) { b.dataset.badge = bd; b.classList.toggle('has-badge', !!bd); const i = b.querySelector('.nav-badge'); if (i) i.textContent = bd; } }
+  }
+  const v = VIEWS.find(x => x[0] === ui.view) || VIEWS[0];
   const tt = `<h1 class="display">${v[1]}</h1><p>${v[2]}</p>`;
   if (tt !== ui._tt) { $('#tbtitle').innerHTML = tt; ui._tt = tt; }
   const active = st.heroes.filter(h => h.act).length;
@@ -1058,17 +1065,30 @@ function renderHeros() {
   if (ui.recruitOpen) return heroTabs(h) + renderRecruit(false);
   const tab = ['combat', 'recolte', 'relique', 'dofus'].includes(ui.eqTab) ? ui.eqTab : 'combat';
   const seg = `<div class="seg">${[['combat', 'Équipement'], ['recolte', 'Récolte'], ['relique', 'Relique'], ['dofus', 'Dofus']].map(([v, l]) => `<button data-act="eqtab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`).join('')}</div>`;
-  const fp = skillFree(h);
-  const skb = `<button class="sk-open${fp > 0 ? ' has' : ''}" data-act="talents" data-hero="${h.id}"><span class="sk-oi">🌳</span><span class="sk-ot"><b class="display">Arbre de compétences</b><small>6 voies · 1 point tous les 3 niveaux · ${skillSpent(h)} dépensé${skillSpent(h) > 1 ? 's' : ''}</small></span><span class="sk-op num">${fp > 0 ? `${fp} point${fp > 1 ? 's' : ''} à dépenser` : 'Ouvrir'}</span></button>`;
-  return `${heroTabs(h)}${skb}<div class="hero-grid">
+  return `${heroTabs(h)}<div class="hero-grid">
     <section class="panel">${seg}${tab === 'recolte' ? harvestGear(h) : tab === 'relique' ? relicPanel(h) : tab === 'dofus' ? dofusPanel(h) : combatGear(h)}</section>
     <section class="panel">${statsPanel(h)}</section></div>`;
 }
-/* Y a-t-il en réserve un objet utilisable par le héros et meilleur que celui porté dans cet emplacement ? */
+/* « Meilleur » = meilleur en STATISTIQUES pour ce héros, pas en niveau d'objet.
+   On compare ses totaux réels (bonus de panoplie compris) avec l'objet porté puis avec le candidat,
+   chaque statistique ayant un poids (les PA, % dégâts, % PV, critique… valent bien plus qu'un point de Vitalité). */
+const UP_W = { vit: .5, sag: .6, res: 3, crit: 3, dodge: 3, pp: .8, pa: 14, dmgPct: 6, hpPct: 6, regen: 3, speed: 3 };
+function slotUpgrade(h, slot, g) {
+  const cur = h.equip[slot] && gearById(st, h.equip[slot]); if (cur && cur.uid === g.uid) return false;
+  let diff = 0;
+  if ((cur && ITEMS[cur.id].set) || ITEMS[g.id].set) { // une panoplie change les bonus : on compare les totaux réels du héros
+    const before = heroTotals(st, h), keep = h.equip[slot]; h.equip[slot] = g.uid; const after = heroTotals(st, h); h.equip[slot] = keep;
+    for (const k of new Set([...Object.keys(before), ...Object.keys(after)])) if (typeof after[k] === 'number' && typeof before[k] === 'number' && !/^(maxHp|critPct|dodgePct|resPct|ppTotal|xpBonus)$/.test(k)) diff += (after[k] - before[k]) * (UP_W[k] ?? 1);
+  } else {
+    const ks = new Set([...Object.keys(g.stats), ...Object.keys(cur ? cur.stats : {})]);
+    for (const k of ks) diff += ((g.stats[k] || 0) - ((cur && cur.stats[k]) || 0)) * (UP_W[k] ?? 1);
+  }
+  return diff > 0.5;
+}
+/* Y a-t-il en réserve (non porté) un objet utilisable par le héros et meilleur en stats que celui porté dans cet emplacement ? */
 function slotHasBetter(h, slot) {
-  const cur = h.equip[slot] && gearById(st, h.equip[slot]), cs = gearScore(cur);
   return st.gear.some(g => { const d = ITEMS[g.id]; if (!d || d.harvest || d.relic || d.dofus || !slotsFor(d.slot).includes(slot) || h.lvl < d.lvl) return false;
-    const by = equippedBy(st, g.uid); if (by && by.id === h.id) return false; return gearScore(g) > cs; });
+    return !equippedBy(st, g.uid) && slotUpgrade(h, slot, g); });
 }
 function slotTile(h, slot) {
   const g = h.equip[slot] && gearById(st, h.equip[slot]); const sel = ui.slot === slot;
@@ -1132,7 +1152,7 @@ function combatGear(h) {
     const types = ['coiffe', 'cape', 'amulette', 'anneau', 'ceinture', 'bottes', 'arme'];
     body = `<div class="type-grid">${types.map(ty => {
       const items = free.filter(g => ITEMS[g.id].slot === ty); const slot = ty === 'anneau' ? 'anneau1' : ty;
-      const up = items.some(g => h.lvl >= ITEMS[g.id].lvl && gearScore(g) > gearScore(compareTarget(h, g)));
+      const up = items.some(g => h.lvl >= ITEMS[g.id].lvl && !equippedBy(st, g.uid) && slotsFor(ty).some(sl => slotUpgrade(h, sl, g)));
       return `<button class="type-btn${items.length ? '' : ' none'}" data-act="pickslot" data-slot="${slot}" ${items.length ? '' : 'disabled'}><span class="tb-ic">${SLOT_ICON[ty]}</span><span class="tb-t"><b>${SLOT_LABEL[slot]}${ty === 'anneau' ? 'x' : 's'}</b><small>${items.length ? `${items.length} objet${items.length > 1 ? 's' : ''}` : 'aucun'}</small></span>${up ? '<i class="tb-up" title="Un objet meilleur que celui porté est disponible">▲</i>' : ''}</button>`;
     }).join('')}</div>`;
   } else {
@@ -1547,6 +1567,7 @@ const ACTIONS = {
   talents(d) { if (d.hero) ui.hero = d.hero; ui.view = 'talents'; ui.skConfirm = false; ui.recruitOpen = false; scrollTop(); },
   skhero(d) { ui.hero = d.hero; ui.skSel = null; ui.skConfirm = false; },
   skbranch(d) { ui.skBranch = d.v; ui.skSel = null; },
+  skopen(d) { ui.skBranch = d.v; ui.skSel = d.id; },
   sknode(d) { if (ui.skSel === d.id) return ACTIONS.skbuy(d); ui.skSel = d.id; },
   skbuy(d) { const h = selHero(); const err = skillRank(st, h, d.id); if (err) toast(err, 'warn'); else { ui.skSel = d.id; ui.skJust = d.id; } },
   skrespec() { ui.skConfirm = true; },
@@ -1925,6 +1946,8 @@ function start(data) {
   shell();
   if (away > 15000) offline(away);
   render(true);
+  if (st.talentReset) { const n = st.talentReset; delete st.talentReset; setTimeout(() => toast(`🌳 Nouveaux talents de classe ! Les points de ${n > 1 ? 'tes ' + n + ' héros ont été rendus' : 'ton héros ont été rendus'} : ouvre l’onglet Talents pour les dépenser.`, 'quest'), 1200); }
+  if (st.balNotice) { delete st.balNotice; setTimeout(() => toast('⚖️ Équipement rééquilibré : stats des objets, panoplies, reliques et Dofus revues. Tes objets ont été adaptés à jet égal.', 'quest'), 2400); }
   chatLoop();
   accSync();
   setInterval(() => accCloudSave(), 60000);
