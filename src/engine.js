@@ -43,6 +43,7 @@ function newState() {
     res: { clef_bouftou: 1 },
     mastery: {},            // recette (id de l'objet) -> nombre de fabrications
     gear: [],               // instances d'équipement : { uid, id, stats }
+    pets: {},               // familiers adoptés : id -> { meals } (voir pets.js) ; le héros porte h.pet
     jobs: Object.fromEntries([...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)].map(j => [j, { lvl: 1, xp: 0 }])),
     heroes: [],
     quests: {},             // id -> true quand réclamé
@@ -99,6 +100,7 @@ function heroTotals(st, h) {
   for (const slot of DOFUS_SLOTS) { const g = h.dofus && h.dofus[slot] && gearById(st, h.dofus[slot]); if (g) for (const [k, v] of Object.entries(g.stats)) t[k] = (t[k] || 0) + v; }
   const rel = h.relic && gearById(st, h.relic);
   if (rel) for (const [k, v] of Object.entries(rel.stats)) t[k] = (t[k] || 0) + v;
+  const pt = petTotals(st, h); if (pt) for (const [k, v] of Object.entries(pt)) t[k] = (t[k] || 0) + v;
   const cl = CLASSES[h.cls];
   if (cl.passive && cl.passive.stats) for (const [k, v] of Object.entries(cl.passive.stats)) t[k] = (t[k] || 0) + v;
   t.maxHp = Math.round((50 + h.lvl * 6) * cl.hpMult + t.vit);
@@ -1341,7 +1343,11 @@ function migrate(obj) {
   st.stats = Object.assign(newState().stats, obj.stats || {});
   for (const j of [...Object.keys(JOBS), ...Object.keys(GATHER_JOBS)]) if (!st.jobs[j]) st.jobs[j] = { lvl: 1, xp: 0 };
   st.mastery = st.mastery || {};
+  st.pets = (st.pets && typeof st.pets === 'object') ? st.pets : {};
+  for (const id of Object.keys(st.pets)) if (!PETS[id] || !(st.pets[id].meals >= 0)) delete st.pets[id]; // familier supprimé ou entrée illisible
   st.heroes = st.heroes.filter(h => CLASSES[h.cls]); // classe supprimée (Eniripsa) : le héros disparaît de la sauvegarde
+  const petTaken = {};
+  for (const h of st.heroes) { if (!h.pet || !st.pets[h.pet] || petTaken[h.pet]) h.pet = null; else petTaken[h.pet] = true; } // un familier n'a qu'un seul maître
   for (const h of st.heroes) {
     h.log = h.log || []; h.hequip = h.hequip || {}; h.dofus = h.dofus || {};
     // v8 : Force/Intelligence/Chance/Agilité fusionnées en Dégâts → points de capital remboursés

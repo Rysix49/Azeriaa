@@ -12,10 +12,10 @@
    8 / 26 / 50 (4 pièces), 9 / 28 (3 pièces), 6 / 18 / 40 (6 pièces). Plus de détails dans CLAUDE.md. */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const SRC = path.join(__dirname, '..', 'src') + path.sep;
-let src = ['data.js', 'zones2.js', 'zones3.js', 'balmig.js', 'heroic.js', 'skilltrees.js', 'engine.js'].map(f => fs.readFileSync(SRC + f, 'utf8')).join('\n;\n') + '\n;globalThis.__x={ITEMS,SETS,HEROIC_POWER};';
+let src = ['data.js', 'zones2.js', 'zones3.js', 'balmig.js', 'heroic.js', 'pets.js', 'skilltrees.js', 'engine.js'].map(f => fs.readFileSync(SRC + f, 'utf8')).join('\n;\n') + '\n;globalThis.__x={ITEMS,SETS,HEROIC_POWER,PETS,PET_TIERS};';
 const ctx = { console, Math, Date, Object, Array, JSON, Number, String, Set, Map, parseInt, parseFloat, isNaN, setTimeout }; ctx.globalThis = ctx;
 vm.createContext(ctx); vm.runInContext(src, ctx);
-const { ITEMS, SETS, HEROIC_POWER } = ctx.__x;
+const { ITEMS, SETS, HEROIC_POWER, PETS, PET_TIERS } = ctx.__x;
 
 const HP_MULT = 1.05;
 const UTIL = { pp: 0.04, sag: 0.03, xpPct: 0.06, kamas: 0.03, speed: 0.5 }; // % de puissance par point de stat
@@ -38,7 +38,7 @@ const vec = it => Object.fromEntries(Object.entries(it.stats).map(([k, r]) => [k
 function totals(L, vs) {
   const t = { vit: 0, deg: 5 * (L - 1), res: 0, pp: 0, crit: 0, dodge: 0, regen: 0, speed: 0, dmgPct: 0, critDmg: 0 };
   for (const v of vs) for (const [k, x] of Object.entries(v)) t[k] = (t[k] || 0) + x;
-  t.maxHp = (50 + 6 * L) * HP_MULT + t.vit; return t;
+  t.maxHp = ((50 + 6 * L) * HP_MULT + t.vit) * (1 + (t.hpPct || 0) / 100); return t;
 }
 function power(L, t) {
   const crit = Math.min(50, 3 + t.crit) / 100;
@@ -70,6 +70,8 @@ for (const [id, i] of Object.entries(ITEMS)) {
   else if (i.relic) { if (L <= 1) continue; show(`${id} (relique ${L})`, value(L, loadout(L, null, 'relique'), vec(i)), RELIC_B(L) * hm); }
   else if (i.dofus) show(`${id} (Dofus ${L})`, value(L, loadout(L, null, 'dofus'), vec(i)), DOFUS_B(L) * hm);
 }
+/* Familiers : stats au niveau maximal = budget du palier (5 → 12,5 % de puissance), évaluées au niveau de déblocage + 12 */
+for (const [id, p] of Object.entries(PETS)) { const L = Math.min(200, p.lvl + 12); show(`${id} (familier ${PET_TIERS[p.tier].name} ${L})`, value(L, loadout(L, null, 'pet'), p.stats), PET_TIERS[p.tier].budget); }
 for (const [sid, s] of Object.entries(SETS)) {
   if (sid === 'aventurier') continue;
   const its = Object.values(ITEMS).filter(i => i.set === sid), N = its.length, L = Math.round(its.reduce((a, i) => a + i.lvl, 0) / N);

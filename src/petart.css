@@ -1,0 +1,123 @@
+/* =====================================================================
+   FAMILIERS — animations communes des dessins (PET_ART) et de leur mise en scène
+   Les dessins (art6*.js) n'utilisent que ces classes ; ce qui est propre à
+   un seul dessin passe par PET_CSS[id] (sélecteurs préfixés .pet-<id>).
+   ===================================================================== */
+.pet-spr { display: inline-block; position: relative; line-height: 0; width: var(--ps, 64px); height: var(--ps, 64px); flex: none; }
+.pet-spr > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.pet-fb { display: inline-grid; place-items: center; font-size: calc(var(--ps, 64px) * .6); line-height: 1; }
+.pet * { transform-box: fill-box; }
+.pet .pt-body { transform-origin: 50% 100%; animation: ptBreath 2.8s ease-in-out infinite; }
+.pet .pt-head { transform-origin: 50% 100%; animation: ptHead 3.6s ease-in-out infinite; }
+.pet .pt-tail { transform-origin: 100% 80%; animation: ptTail 1.9s ease-in-out infinite; }
+.pet .pt-tail.r { transform-origin: 0% 80%; }
+.pet .pt-ear { transform-origin: 50% 100%; animation: ptEar 4.2s ease-in-out infinite; }
+.pet .pt-ear.b { animation-delay: -1.3s; animation-duration: 3.6s; }
+.pet .pt-wing { transform-origin: 100% 85%; animation: ptWing .55s ease-in-out infinite alternate; }
+.pet .pt-wing.b { animation-delay: -.2s; }
+.pet .pt-eye { transform-origin: 50% 50%; animation: ptBlink 5s infinite; }
+.pet .pt-eye.b { animation-delay: .06s; }
+.pet .pt-glow { animation: ptGlow 2.4s ease-in-out infinite; }
+.pet .pt-float { animation: ptFloat 3s ease-in-out infinite; }
+.pet .pt-shadow { transform-origin: 50% 50%; animation: ptShadow 3s ease-in-out infinite; }
+.pet .pt-squish { transform-origin: 50% 100%; animation: ptSquish 2.2s ease-in-out infinite; }
+.pet .pt-spark { transform-origin: 50% 50%; animation: ptSpark 2s ease-in-out infinite; }
+.pet .pt-spark.b { animation-delay: -.7s; }
+.pet .pt-spark.c { animation-delay: -1.3s; }
+.pet .pt-spin { transform-origin: 50% 50%; animation: ptSpin 9s linear infinite; }
+@keyframes ptBreath { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.985, 1.035); } }
+@keyframes ptHead { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+@keyframes ptTail { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(13deg); } }
+@keyframes ptEar { 0%, 78%, 100% { transform: rotate(0); } 84% { transform: rotate(-9deg); } 90% { transform: rotate(5deg); } 95% { transform: rotate(-3deg); } }
+@keyframes ptWing { from { transform: rotate(-16deg) scaleY(1); } to { transform: rotate(10deg) scaleY(.82); } }
+@keyframes ptBlink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.08); } }
+@keyframes ptGlow { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+@keyframes ptFloat { 0%, 100% { transform: translateY(1.5px); } 50% { transform: translateY(-3.5px); } }
+@keyframes ptShadow { 0%, 100% { transform: scale(.94); } 50% { transform: scale(1.05); } }
+@keyframes ptSquish { 0%, 100% { transform: scale(1.03, .96); } 50% { transform: scale(.97, 1.05); } }
+@keyframes ptSpark { 0%, 100% { transform: scale(.4); opacity: .2; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes ptSpin { to { transform: rotate(360deg); } }
+.pet-spr.still .pet *, .pet-spr.still .pet { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .pet *, .pet { animation: none !important; } }
+
+/* Dans la scène de combat : le familier se tient aux pieds du héros, face aux ennemis */
+.pet-slot { position: absolute; right: -30px; bottom: -6px; z-index: 4; pointer-events: none; --ps: 68px; }
+.pet-wrap { display: block; transform-origin: 50% 100%; filter: drop-shadow(0 2px 2px #0008); }
+.pet-wrap.cheer { animation: petCheer .5s cubic-bezier(.3, 1.6, .5, 1); }
+.pet-wrap.hurt { animation: petHurt .42s ease-out; }
+.pet-wrap.dead { filter: grayscale(1) brightness(.7); opacity: .6; }
+.pet-wrap.dead .pet-spr { transform: rotate(-12deg) translateY(4px); transition: transform .4s; }
+.pet-wrap.rest .pet * { animation-duration: 6s; }
+.pet-zz { position: absolute; left: 8%; top: -12px; font-size: 11px; font-weight: 900; color: #cfe3ff; text-shadow: 0 1px 2px #000; animation: petZz 2.4s ease-in-out infinite; pointer-events: none; }
+.pet-zz::after { content: " z"; font-size: 8px; }
+@keyframes petCheer { 0% { transform: translateY(0) scale(1, 1); } 25% { transform: translateY(0) scale(1.08, .9); } 55% { transform: translateY(-16px) scale(.94, 1.1); } 100% { transform: translateY(0) scale(1, 1); } }
+@keyframes petHurt { 0% { transform: translateX(0); } 20% { transform: translateX(-5px) rotate(-6deg); } 50% { transform: translateX(3px) rotate(4deg); } 100% { transform: translateX(0); } }
+@keyframes petZz { 0%, 100% { opacity: 0; transform: translateY(4px); } 40% { opacity: 1; } 100% { transform: translateY(-8px); } }
+.unit.hero .pet-slot { right: -32px; }
+@media (max-width: 560px) { .pet-slot { --ps: 50px; right: -12px; bottom: -4px; } .unit.hero .pet-slot { right: -14px; } }
+@media (prefers-reduced-motion: reduce) { .pet-wrap.cheer, .pet-wrap.hurt, .pet-zz { animation: none; } }
+
+/* ---------------------------- Écran « Familiers » ---------------------------- */
+.pt { display: flex; flex-direction: column; gap: 14px; }
+.pt-intro { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 12px; border: 1px dashed var(--line-2); color: var(--muted); font-size: 13px; }
+.pt-intro b { color: var(--gold-2); font-size: 15px; }
+.pt-main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 16px; align-items: start; }
+.pt-detail { grid-column: 2; grid-row: 1; position: sticky; top: 12px; }
+.pt-list { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.pt-tier h4 { margin: 0 0 8px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-family: var(--f-display); font-size: 18px; color: var(--tc); }
+.pt-tier h4 small { font-family: var(--f-body); font-size: 11.5px; color: var(--dim); font-weight: 700; }
+.pt-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); box-shadow: 0 0 8px var(--tc); align-self: center; }
+.pt-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.pkcard { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px 9px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--tc) 38%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 10%, var(--panel)), var(--panel)); text-align: center; transition: border-color .12s, transform .12s; }
+.pkcard:hover { border-color: var(--tc); transform: translateY(-1px); }
+.pkcard.sel { border-color: var(--tc); box-shadow: 0 0 0 1px var(--tc), 0 0 14px color-mix(in srgb, var(--tc) 45%, transparent); }
+.pkcard b { font-size: 13px; line-height: 1.15; }
+.pkcard small { font-size: 11px; font-weight: 800; }
+.pk-spr { --ps: 76px; display: grid; place-items: center; min-height: 80px; }
+.pkcard.lock .pk-spr { filter: grayscale(1) brightness(.45); }
+.pkcard:not(.own):not(.lock) .pk-spr { filter: saturate(.8) brightness(.85); }
+.pk-lv { color: var(--gold-2); } .pk-lock { color: var(--dim); } .pk-adopt { color: var(--win); }
+.pk-by { position: absolute; top: 5px; right: 5px; }
+.pd { display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--tc) 45%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 9%, var(--panel)), var(--panel) 40%); }
+.pd-stage { display: grid; place-items: end center; height: 190px; border-radius: 12px; background: radial-gradient(60% 50% at 50% 38%, color-mix(in srgb, var(--tc) 32%, transparent), transparent 75%), linear-gradient(180deg, #34503a 0%, #34503a 62%, #1f2c1c 62.4%, #1f2c1c 100%); border: 1px solid #00000066; overflow: hidden; padding-bottom: 8px; }
+.pd-spr { display: block; transform-origin: 50% 100%; }
+.pd-spr.eat { animation: petCheer .55s cubic-bezier(.3, 1.6, .5, 1); }
+.pd-spr.lvl { animation: petLvl .9s ease-out; }
+@keyframes petLvl { 0% { transform: scale(1); filter: brightness(1); } 25% { transform: translateY(-18px) scale(1.12); filter: brightness(1.6) drop-shadow(0 0 14px #ffe27a); } 55% { transform: translateY(0) scale(.95, 1.06); } 100% { transform: scale(1); filter: brightness(1); } }
+.pd-id h3 { margin: 2px 0 4px; font-size: 26px; line-height: 1.05; }
+.pd-id .sub { margin: 0; color: var(--muted); font-size: 13px; }
+.pd-tier { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 11px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: var(--tc); border: 1px solid var(--tc); background: color-mix(in srgb, var(--tc) 14%, transparent); }
+.pd-lv { display: flex; flex-direction: column; gap: 5px; }
+.pd-lvh { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.pd-lvh b { font-size: 18px; color: var(--gold-2); } .pd-lvh b small { font-size: 12px; color: var(--dim); }
+.pd-stats { display: flex; flex-direction: column; }
+.pd-stats .s { display: flex; justify-content: space-between; gap: 10px; color: var(--c); font-weight: 800; font-variant-numeric: tabular-nums; font-size: 13.5px; padding: 4px 0; border-bottom: 1px dotted #ffffff12; }
+.pd-stats .s small { color: var(--dim); font-weight: 700; }
+.pd-h { margin: 4px 0 -4px; font-family: var(--f-display); font-size: 16px; color: var(--fg); }
+.pd-h small { font-family: var(--f-body); font-size: 11.5px; color: var(--dim); font-weight: 700; margin-left: 6px; }
+.pd-heroes { display: flex; flex-wrap: wrap; gap: 6px; }
+.pd-heroes .htab { padding: 4px 12px 4px 4px; }
+.pd-heroes .htab small { font-size: 11px; }
+.pd-food { display: flex; flex-direction: column; gap: 6px; }
+.pfood { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; grid-template-areas: "ic n have" "ic btns btns"; gap: 2px 10px; align-items: center; padding: 7px 9px; border-radius: 10px; border: 1px solid var(--line); background: #ffffff05; }
+.pfood.has { border-color: var(--line-2); background: #ffffff0a; }
+.pfood.treat { border-color: #f6cd6a55; }
+.pfood > .tile { grid-area: ic; }
+.pfood:not(.has) > .tile { opacity: .5; }
+.pf-n { grid-area: n; display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.pf-n b { font-size: 13px; } .pf-n b em { font-style: normal; font-size: 10.5px; color: var(--gold-2); font-weight: 800; margin-left: 4px; }
+.pf-n small { font-size: 11px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pf-have { grid-area: have; font-weight: 900; color: var(--gold-2); font-size: 14px; }
+.pfood:not(.has) .pf-have { color: var(--dim); }
+.pf-btns { grid-area: btns; display: flex; gap: 6px; flex-wrap: wrap; }
+.pf-btns .btn { padding: 3px 11px; min-width: 44px; }
+.pd-adopt { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--line-2); }
+.pd-adopt b { color: var(--gold-2); font-size: 17px; } .pd-adopt small { display: block; color: var(--muted); font-size: 11.5px; }
+.pet-mini { display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 10px; border: 1px dashed #6fc46a55; background: #6fc46a0a; max-width: 100%; margin-top: 4px; }
+.pet-mini .pet-spr { --ps: 30px; }
+.pet-mini .ph { font-size: 20px; opacity: .45; width: 30px; text-align: center; }
+.pet-mini small { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.pet-mini.on { border-style: solid; border-color: #6fc46a99; }
+.pet-mini.on small { color: #b6e8a2; font-weight: 800; }
+@media (max-width: 1150px) { .pt-main { grid-template-columns: minmax(0, 1fr); } .pt-detail { grid-column: 1; grid-row: 1; position: static; } .pt-list { grid-column: 1; grid-row: 2; } }
+@media (max-width: 560px) { .pt-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .pk-spr { --ps: 50px; min-height: 54px; } .pkcard b { font-size: 12px; } .pd-stage { height: 170px; } .pd-id h3 { font-size: 23px; } }

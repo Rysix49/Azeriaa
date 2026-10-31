@@ -9,6 +9,7 @@ const VIEWS = [
   ['combat', 'Combats', 'Tes héros combattent seuls tant que la page est ouverte.'],
   ['heros', 'Héros', 'Équipement, caractéristiques et sorts de chaque héros.'],
   ['talents', 'Talents', 'Un arbre de talents propre à chaque classe : 1 point tous les 3 niveaux.'],
+  ['familiers', 'Familiers', 'Adopte des compagnons et nourris-les de butin pour renforcer tes héros.', 'Famil.'],
   ['carte', 'Carte', 'Choisis où envoyer chaque héros.'],
   ['inventaire', 'Inventaire', 'Ressources et équipements partagés par tout le groupe.', 'Sac'],
   ['recolte', 'Récolte', 'Envoie un héros travailler la terre plutôt que combattre.'],
@@ -34,6 +35,7 @@ const ICONS = {
   combat: IC('<path d="M4 4l10 10M11.5 16.5l5-5M15 15l4.5 4.5M20 4 10 14M7.5 11.5l5 5M9 15l-4.5 4.5"/>'),
   heros: IC('<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-4 3.6-6.4 7.5-6.4s6.9 2.4 7.5 6.4"/>'),
   talents: IC('<path d="M12 21v-7"/><path d="M12 14c-4 0-6.5-2.4-6.5-5.8C9 8.2 12 10 12 14Zm0 0c4 0 6.5-2.4 6.5-5.8C15 8.2 12 10 12 14Z"/><path d="M12 10.5C9.6 9 9.2 5.6 12 3c2.8 2.6 2.4 6 0 7.5Z"/>'),
+  familiers: IC('<ellipse cx="6.5" cy="10.5" rx="2" ry="2.6"/><ellipse cx="17.5" cy="10.5" rx="2" ry="2.6"/><ellipse cx="10" cy="6" rx="1.9" ry="2.5"/><ellipse cx="14" cy="6" rx="1.9" ry="2.5"/><path d="M12 12.5c-3 0-5.4 2.3-5.4 4.9 0 1.7 1.4 2.4 2.9 2.2 1-.1 1.5-.5 2.5-.5s1.5.4 2.5.5c1.5.2 2.9-.5 2.9-2.2 0-2.6-2.4-4.9-5.4-4.9Z"/>'),
   carte: IC('<path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/>'),
   inventaire: IC('<path d="M5 8.5h14l-1.2 11.5H6.2Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/><path d="M9.5 12.5h5"/>'),
   recolte: IC('<path d="M12 21V8"/><path d="M12 8c-2.2-.9-3.2-2.8-3.2-5 2.2.9 3.2 2.8 3.2 5Zm0 0c2.2-.9 3.2-2.8 3.2-5-2.2.9-3.2 2.8-3.2 5Z"/><path d="M12 13.5c-2.3-.7-3.7-2.4-3.9-4.6 2.3.6 3.7 2.4 3.9 4.6Zm0 0c2.3-.7 3.7-2.4 3.9-4.6-2.3.6-3.7 2.4-3.9 4.6Z"/>'),
@@ -48,7 +50,7 @@ const ui = {
   rtab: 'combat', onlyCraft: false, gjob: 'paysan', place: null, zoneTier: {}, openMons: {}, resetStep: 0, sellUid: null,
   recruitCls: 'iop', recruitName: '', recruitOpen: false, importMsg: '', detailHidden: false, lastSig: '', fcFold: {}, jrOpen: false,
 };
-const UI_KEEP = ['view', 'hero', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'djHeroic', 'fcFold', 'jrOpen'];
+const UI_KEEP = ['view', 'hero', 'pet', 'skBranch', 'invSort', 'invView', 'invRcat', 'invSlot', 'invFree', 'job', 'invFilter', 'eqTab', 'rtab', 'onlyCraft', 'gjob', 'place', 'zoneTier', 'djHeroic', 'fcFold', 'jrOpen'];
 let pointerDown = false;
 let lastScroll = 0;
 document.addEventListener('scroll', () => { lastScroll = Date.now(); }, true);
@@ -224,7 +226,7 @@ function renderParty() {
 }
 
 /* ---------------------------- Vue : Combats ---------------------------- */
-function heroSig(h) { return h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0); }
+function heroSig(h) { return h.id + ':' + (h.act ? h.act.type + h.act.id + h.act.room : '-') + ':' + (h.fight ? h.fight.mons.map(m => m.mid).join(',') : '-') + ':' + h.lvl + ':' + (h.capital > 0) + ':' + (h.pet || ''); }
 function combatSig() { return st.heroes.map(heroSig).join('|'); }
 /* Seules les cartes dont le contenu a changé sont redessinées : les ennemis morts de l'autre héros ne rejouent plus leur chute */
 function redrawCards() {
@@ -332,7 +334,7 @@ function fightCard(h) {
           ${h.cls === 'steamer' ? steamGauge(h) : ''}
           ${h.cls === 'steamer' ? `<button class="fury-btn steam-btn" data-act="steamsurge" data-hero="${h.id}" data-k="steambtn" title="Déclencher la Surcharge Stasis !" aria-label="Déclencher la Surcharge Stasis"${steamReady(h) && h.fight ? '' : ' hidden'}>${SURGE_ICON}</button>` : ''}
           ${h.cls === 'xelor' ? chronoBtn(h) : ''}
-          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}"${h.cls === 'steamer' ? ` style="--pr:${clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1).toFixed(3)}"` : ''}>${heroSprite(h.cls)}</div></div>
+          <div class="sprite${hasHeroArt(h.cls) ? ' has-art' : ''}"${h.cls === 'steamer' ? ` style="--pr:${clamp((h.steam || 0) / STM_STEAM_MAX, 0, 1).toFixed(3)}"` : ''}>${heroSprite(h.cls)}</div>${petSlot(h)}</div>
         ${stage}
         ${harvest ? '' : '<button type="button" class="wchip archi-btn in-scene" data-act="archifight" data-k="archibtn" hidden></button>'}
       </div>
@@ -909,7 +911,7 @@ function patchCombat() {
       if (fresh.length) scene.dataset.fx = fresh[fresh.length - 1].n;
       if (pfNew) { scene.dataset.pf = h.fight.perfect.n; startPerfect(h, card, scene, fresh); } // Tir Parfait : cinématique, combat figé
       else if (rwNew) startRewind(h, card, scene, fresh); // Rembobinage : cinématique, combat figé, puis le tour est rejoué
-      else if (fresh.length) fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280));
+      else if (fresh.length) { fresh.slice(-6).forEach((c, i) => setTimeout(() => playSpellFx(card, c), lead + i * 280)); setTimeout(() => petReact(card, 'cheer'), lead + 120); }
       const rw = h.fight.rewinds || 0, px = h.fight.paradox ? 1 : 0;
       const ma = h.fight.monAct; if (ma && ma.n > +(scene.dataset.ma || 0)) { scene.dataset.ma = ma.n; const el = card.querySelector(`[data-mon="${ma.i}"]`); if (el) { el.classList.remove('atk'); void el.offsetWidth; el.classList.add('atk'); setTimeout(() => el.classList.remove('atk'), 520); } }
       if (h.cls === 'sram') {
@@ -938,10 +940,11 @@ function patchCombat() {
     if (fg) {
       const prev = +fg.dataset.hp;
       if (h.fight && !isNaN(prev) && hp !== prev) {
-        if (hp < prev) floatNum(fg, '−' + fmt(prev - hp), 'dmg');
+        if (hp < prev) { floatNum(fg, '−' + fmt(prev - hp), 'dmg'); petReact(card, 'hurt'); }
         else if (h.fight.turn > 1) floatNum(fg, '+' + fmt(hp - prev), 'heal');
       }
       fg.dataset.hp = hp;
+      petPatch(h, card);
       const isDead = h.hp <= 0 && h.resting; fg.classList.toggle('dead', isDead); if (!isDead) fg.classList.remove('still'); fg.classList.toggle('active', !!h.fight); // 'still' : déjà à terre, on ne rejoue pas la chute quand la carte est redessinée
     }
     const hpt = q('hpt'); if (hpt) hpt.textContent = `${fmt(hp)} / ${fmt(t.maxHp)}`;
@@ -1130,6 +1133,7 @@ function combatGear(h) {
         <div>${bar('xp thin', h.xp, xpToNext(h.lvl))}<small class="num">${h.lvl >= MAX_LEVEL ? 'Niveau max' : `${fmt(h.xp)} / ${fmt(xpToNext(h.lvl))} XP`}</small></div></div>
       <button class="relic-mini${rel ? ' on' : ''}" data-act="eqtab" data-v="relique" title="Relique">${rel ? itemIcon(rel.id) : '<span class="ph">🔮</span>'}<small>${rel ? esc(ITEMS[rel.id].name) : 'Aucune relique'}</small></button>
       <button class="dofus-mini${nDofus ? ' on' : ''}" data-act="eqtab" data-v="dofus" title="Dofus">${nDofus ? dofusRow(h, true) : '<span class="ph">🥚</span>'}<small>${nDofus ? `${nDofus} Dofus équipé${nDofus > 1 ? 's' : ''}` : 'Aucun Dofus'}</small></button>
+      <button class="pet-mini${h.pet && PETS[h.pet] ? ' on' : ''}" data-act="gopet" data-hero="${h.id}" title="Familier">${h.pet && PETS[h.pet] ? `${petSprite(h.pet, 'still')}<small>${esc(PETS[h.pet].name)} · niv. ${petInfo(st, h.pet).lvl}</small>` : '<span class="ph">🐾</span><small>Aucun familier</small>'}</button>
       <div class="activity">${h.act ? `<span><span class="tag">${actLabel(h)}</span> <b>${esc(placeName(h.act))}</b></span>` : '<span class="sub">Inactif</span>'}
         <div class="row-btns">${h.act ? `<button class="btn sm ghost" data-act="stop" data-hero="${h.id}">Arrêter</button>` : ''}<button class="btn sm" data-act="gomap" data-hero="${h.id}">Carte</button></div></div>
     </div>
@@ -1454,7 +1458,7 @@ function renderOptions() {
 }
 
 /* ---------------------------- Rendu principal ---------------------------- */
-const RENDER = { combat: renderCombat, heros: renderHeros, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions, talents: renderTalents };
+const RENDER = { combat: renderCombat, heros: renderHeros, familiers: renderFamiliers, carte: renderCarte, inventaire: renderInventaire, recolte: renderRecolte, ateliers: renderAteliers, options: renderOptions, talents: renderTalents };
 function canRebuild() {
   if (pointerDown || Date.now() - lastScroll < 800) return false;
   const a = document.activeElement;
@@ -1485,6 +1489,7 @@ function render(force) {
   } else {
     if (harvestViewFx(ui.view === 'recolte')) lastSlow = now; // un petit effet sur la carte de la plante : on retarde le redessin pour le laisser finir
     if (ui.view === 'carte') { const sg = carteSig(); if (sg !== ui._carteSig) { ui._carteSig = sg; renderMain(); lastSlow = now; } return; }
+    if (ui.view === 'familiers') { const sg = petSig(); if (sg !== ui._ptSig) { ui._ptSig = sg; renderMain(); lastSlow = now; } else petPatchView(); return; }
     if (ui.view === 'talents') { const h = selHero(), sg = h ? `${h.id}|${h.lvl}|${st.heroes.length}|${skillFree(h)}` : ''; if (sg !== ui._skSig) { ui._skSig = sg; renderMain(); lastSlow = now; } return; }
     if (now - lastSlow > 1500 && ui.view !== 'options') { renderMain(); lastSlow = now; }
   }
@@ -1573,6 +1578,25 @@ const ACTIONS = {
   selhero(d) { ui.hero = d.hero; ui.recruitOpen = false; },
   talents(d) { if (d.hero) ui.hero = d.hero; ui.view = 'talents'; ui.skConfirm = false; ui.recruitOpen = false; scrollTop(); },
   skhero(d) { ui.hero = d.hero; ui.skSel = null; ui.skConfirm = false; },
+  gopet(d) { ui.view = 'familiers'; if (d.hero) ui.hero = d.hero; const h = heroById(d.hero); if (h && h.pet) ui.pet = h.pet; ui.recruitOpen = false; scrollTop(); },
+  petsel(d) { if (PETS[d.id]) ui.pet = d.id; },
+  petadopt(d) {
+    const why = adoptPet(st, d.id); if (why) { toast(why, 'warn'); return 'keep'; }
+    ui.pet = d.id; ui.petFx = { id: d.id, kind: 'eat' }; toast(`${PETS[d.id].name} rejoint ta ménagerie !`, 'quest');
+  },
+  petfeed(d) {
+    const e = st.pets[d.id], before = e ? e.meals : 0, n = d.n === 'all' ? (st.res[d.rid] || 0) : +d.n;
+    const r = feedPet(st, d.id, d.rid, n); if (typeof r === 'string') { toast(r, 'warn'); return 'keep'; }
+    ui.petFx = { id: d.id, kind: r.lvl1 > r.lvl0 ? 'lvl' : 'eat' };
+    if (r.lvl1 > r.lvl0) toast(`${PETS[d.id].name} passe niveau ${r.lvl1} !${r.lvl1 >= PET_MAXLVL ? ' Niveau maximal.' : ''}`, 'lvl');
+    else if (!before && r.meals) toast(`${PETS[d.id].name} mange ${r.n} × ${RESOURCES[d.rid].name}.`, 'info');
+  },
+  petwear(d) {
+    const h = heroById(d.hero); if (!h) return 'keep';
+    if (h.pet === d.id) { setHeroPet(st, h, null); toast(`${PETS[d.id].name} quitte ${h.name}.`, 'info'); }
+    else { const old = h.pet; setHeroPet(st, h, d.id); h.hp = Math.min(h.hp, heroTotals(st, h).maxHp); toast(`${PETS[d.id].name} accompagne maintenant ${h.name}${old ? ` (${PETS[old].name} retourne à la ménagerie)` : ''}.`, 'info'); }
+    for (const x of st.heroes) x.hp = Math.min(x.hp, heroTotals(st, x).maxHp);
+  },
   skbranch(d) { ui.skBranch = d.v; ui.skSel = null; },
   skopen(d) { ui.skBranch = d.v; ui.skSel = d.id; },
   sknode(d) { if (ui.skSel === d.id) return ACTIONS.skbuy(d); ui.skSel = d.id; },

@@ -117,10 +117,10 @@ main { width: 100%; max-width: 1440px; padding-block: 22px 40px; padding-left: 2
 
 .bottom-nav {
   display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
   background: #151911f2; backdrop-filter: blur(10px); border-top: 1px solid var(--line);
   padding-top: 6px; padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-  padding-left: max(6px, env(safe-area-inset-left, 0px)); padding-right: max(6px, env(safe-area-inset-right, 0px));
+  padding-left: max(3px, env(safe-area-inset-left, 0px)); padding-right: max(3px, env(safe-area-inset-right, 0px));
 }
 .bottom-nav .nav-btn { flex-direction: column; gap: 3px; padding: 6px 1px; font-size: 9.6px; letter-spacing: -.01em; justify-content: center; text-align: center; border-radius: 8px; min-width: 0; }
 .bottom-nav .nav-btn span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
